@@ -119,4 +119,23 @@ struct DiskScannerTests {
         #expect(result.deniedCount == 1)
         #expect(result.deniedSamples == [rootPath + "/locked"])
     }
+
+    @Test func graftsASeparatelyScannedFolder() async throws {
+        try write("keep/a.bin", bytes: 100_000)
+        try write("docs/project/package.json", bytes: 10)
+        try write("docs/project/node_modules/x.js", bytes: 200_000)
+        let whole = await scan()
+        let main = await scan(excluding: [rootPath + "/docs"])
+        let docs = await DiskScanner(options: .init(root: URL(filePath: rootPath + "/docs"))).scan()
+        let grafted = main.grafting(docs)
+        #expect(grafted.tree.totalSize == whole.tree.totalSize)
+        #expect(grafted.fileCount == whole.fileCount)
+        #expect(grafted.skippedPaths.isEmpty)
+        #expect(grafted.tree.size(of: rootPath + "/docs/project") == whole.tree.size(of: rootPath + "/docs/project"))
+        let artifact = try #require(grafted.artifacts.first)
+        #expect(artifact.path == rootPath + "/docs/project/node_modules")
+        #expect(grafted.size(of: artifact) == whole.size(of: try #require(whole.artifacts.first)))
+        // Grafting the same folder twice changes nothing.
+        #expect(grafted.grafting(docs).tree.totalSize == grafted.tree.totalSize)
+    }
 }
