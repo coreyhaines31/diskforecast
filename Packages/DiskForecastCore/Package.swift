@@ -9,6 +9,6 @@ let package = Package(
     ],
     targets: [
         .target(name: "DiskForecastCore"),
-        .testTarget(name: "DiskForecastCoreTests", dependencies: ["DiskForecastCore"])
+        .testTarget(name: "DiskForecastCoreTests", dependencies: ["DiskForecastCore"], resources: [.copy("Samples")])
     ]
 )
