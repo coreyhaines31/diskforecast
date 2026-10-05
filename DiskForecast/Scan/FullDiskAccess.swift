@@ -37,7 +37,16 @@ enum FullDiskAccess {
         ]
         var folders = Set(library.map { home + "/Library/" + $0 })
         folders.insert(home + "/.Trash")
+        // The Photos, Music, and TV libraries ask about media access, which a disk app shouldn't.
         folders.insert(home + "/Pictures/Photos Library.photoslibrary")
-        return folders
+        folders.insert(home + "/Music/Music")
+        folders.insert(home + "/Movies/TV")
+        return folders.union(alwaysSkipped(home: home))
+    }
+
+    /// Cloud drives (Google Drive, Dropbox, OneDrive): each asks for its own permission, and their
+    /// files mostly live online, so they're never scanned.
+    static func alwaysSkipped(home: String) -> Set<String> {
+        [home + "/Library/CloudStorage"]
     }
 }

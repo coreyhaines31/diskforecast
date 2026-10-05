@@ -58,7 +58,8 @@ final class ScanModel {
         generation += 1
         let generation = generation
         let fullAccess = FullDiskAccess.isGranted
-        let protected = fullAccess ? [] : FullDiskAccess.protectedFolders(home: home)
+        let protected = fullAccess
+            ? FullDiskAccess.alwaysSkipped(home: home) : FullDiskAccess.protectedFolders(home: home)
         let separate = fullAccess ? [] : FullDiskAccess.promptedFolders(home: home)
         let scanner = DiskScanner(options: .init(
             root: URL(filePath: home), excludedPaths: protected.union(separate)
