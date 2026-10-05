@@ -73,7 +73,10 @@ struct CleanupView: View {
         guard let result = scan.result else { return "Measuring your home folder…" }
         let seconds = Int(result.duration.rounded())
         var text = "\(result.fileCount.formatted()) files measured in \(seconds) s. Everything goes to the Trash first."
-        if !scan.scannedWithFullDiskAccess {
+        if !scan.pendingFolders.isEmpty {
+            let names = scan.pendingFolders.map { ($0 as NSString).lastPathComponent }
+            text += " Waiting to measure \(names.formatted()): allow access when macOS asks."
+        } else if !scan.scannedWithFullDiskAccess {
             text += " Some folders were skipped without Full Disk Access."
         }
         return text

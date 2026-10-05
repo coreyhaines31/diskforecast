@@ -17,6 +17,9 @@ final class ScanModel {
     private(set) var items: [CleanupItem] = []
     private(set) var scannedWithFullDiskAccess = false
     private(set) var finishedAt: Date?
+    /// Folders still being measured on their own, usually because macOS is asking permission.
+    private(set) var pendingFolders: [String] = []
+    private var generation = 0
     var onChange: (() -> Void)?
 
     private var scanner: DiskScanner?
@@ -52,13 +55,16 @@ final class ScanModel {
 
     func scan() {
         guard !isScanning else { return }
+        generation += 1
+        let generation = generation
         let fullAccess = FullDiskAccess.isGranted
-        let options = DiskScanner.Options(
-            root: URL(filePath: home),
-            excludedPaths: fullAccess ? [] : FullDiskAccess.protectedFolders(home: home)
-        )
-        let scanner = DiskScanner(options: options)
+        let protected = fullAccess ? [] : FullDiskAccess.protectedFolders(home: home)
+        let separate = fullAccess ? [] : FullDiskAccess.promptedFolders(home: home)
+        let scanner = DiskScanner(options: .init(
+            root: URL(filePath: home), excludedPaths: protected.union(separate)
+        ))
         self.scanner = scanner
+        pendingFolders = separate
         state = .scanning(files: 0)
         onChange?()
         progressTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
@@ -68,31 +74,55 @@ final class ScanModel {
                 self.onChange?()
             }
         }
-        let catalog = CleanupCatalog(home: home, staleAfterDays: Preferences.staleAfterDays)
         Task {
             let result = await scanner.scan()
-            let items = await Task.detached(priority: .utility) { catalog.items(from: result) }.value
-            self.finish(result: result, items: items, fullAccess: fullAccess)
+            guard generation == self.generation else { return }
+            await finish(result: result, fullAccess: fullAccess)
+        }
+        for folder in separate {
+            Task {
+                let branch = await DiskScanner(options: .init(
+                    root: URL(filePath: folder), excludedPaths: protected
+                )).scan()
+                await graft(branch, folder: folder, generation: generation)
+            }
         }
     }
 
-    private func finish(result: ScanResult, items: [CleanupItem], fullAccess: Bool) {
+    private func finish(result: ScanResult, fullAccess: Bool) async {
         progressTimer?.invalidate()
         scanner = nil
         self.result = result
-        self.items = items
         scannedWithFullDiskAccess = fullAccess
         finishedAt = Date()
+        await rebuildItems()
         state = .done
         onChange?()
     }
 
+    /// Adds a separately measured folder once both it and the main scan are done.
+    private func graft(_ branch: ScanResult, folder: String, generation: Int) async {
+        while generation == self.generation && isScanning {
+            try? await Task.sleep(for: .milliseconds(500))
+        }
+        guard generation == self.generation, let result else { return }
+        self.result = result.grafting(branch)
+        pendingFolders.removeAll { $0 == folder }
+        await rebuildItems()
+        onChange?()
+    }
+
+    private func rebuildItems() async {
+        guard let result else { return }
+        let catalog = CleanupCatalog(home: home, staleAfterDays: Preferences.staleAfterDays)
+        items = await Task.detached(priority: .utility) { catalog.items(from: result) }.value
+    }
+
     /// Rebuilds the list from the last scan, after a setting that shapes it changes.
     func rebuildCleanupList() {
-        guard let result, !isScanning else { return }
-        let catalog = CleanupCatalog(home: home, staleAfterDays: Preferences.staleAfterDays)
+        guard !isScanning else { return }
         Task {
-            items = await Task.detached(priority: .utility) { catalog.items(from: result) }.value
+            await rebuildItems()
             onChange?()
         }
     }

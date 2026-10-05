@@ -18,6 +18,12 @@ enum FullDiskAccess {
         }
     }
 
+    /// Folders macOS asks about one at a time. Each is scanned on its own, so an unanswered
+    /// prompt only holds up that folder.
+    static func promptedFolders(home: String) -> [String] {
+        ["Desktop", "Documents", "Downloads"].map { home + "/" + $0 }
+    }
+
     /// Folders that make macOS ask for permission (other apps' data, iCloud Drive, Mail, and so
     /// on). Skipped unless Full Disk Access is on.
     static func protectedFolders(home: String) -> Set<String> {
