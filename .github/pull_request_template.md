@@ -6,4 +6,4 @@
 
 
 
-- [ ] I agree to the [contributor terms](https://github.com/coreyhaines31/roomy/blob/main/CONTRIBUTING.md#contributor-terms).
+- [ ] I agree to the [contributor terms](https://github.com/coreyhaines31/diskforecast/blob/main/CONTRIBUTING.md#contributor-terms).

@@ -1,4 +1,4 @@
-@testable import RoomyCore
+@testable import DiskForecastCore
 import Testing
 
 struct ScanTreeTests {

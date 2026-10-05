@@ -1,13 +1,13 @@
 import Darwin
+@testable import DiskForecastCore
 import Foundation
-@testable import RoomyCore
 import Testing
 
 struct DiskScannerTests {
     let root: URL
 
     init() throws {
-        root = FileManager.default.temporaryDirectory.appending(path: "RoomyScan-\(UUID().uuidString)")
+        root = FileManager.default.temporaryDirectory.appending(path: "DiskForecastScan-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
     }
 

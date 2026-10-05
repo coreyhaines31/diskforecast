@@ -1,9 +1,9 @@
 included:
-  - Roomy
-  - Packages/RoomyCore/Sources
-  - Packages/RoomyCore/Tests
+  - DiskForecast
+  - Packages/DiskForecastCore/Sources
+  - Packages/DiskForecastCore/Tests
 excluded:
-  - Packages/RoomyCore/.build
+  - Packages/DiskForecastCore/.build
 opt_in_rules:
   - empty_count
   - first_where

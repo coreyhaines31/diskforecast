@@ -1,4 +1,4 @@
-import RoomyCore
+import DiskForecastCore
 import Testing
 
 @Test func brandNameIsSet() {
