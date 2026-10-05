@@ -6,12 +6,14 @@ import SwiftUI
 final class HostedWindow {
     private let title: String
     private let size: NSSize
+    private let resizable: Bool
     private let makeView: () -> AnyView
     private var window: NSWindow?
 
-    init(title: String, size: NSSize, view: @escaping () -> some View) {
+    init(title: String, size: NSSize, resizable: Bool = true, view: @escaping () -> some View) {
         self.title = title
         self.size = size
+        self.resizable = resizable
         self.makeView = { AnyView(view()) }
     }
 
@@ -19,7 +21,7 @@ final class HostedWindow {
         if window == nil {
             let window = NSWindow(contentViewController: NSHostingController(rootView: makeView()))
             window.title = title
-            window.styleMask = [.titled, .closable, .resizable, .miniaturizable]
+            window.styleMask = resizable ? [.titled, .closable, .resizable, .miniaturizable] : [.titled, .closable]
             window.setContentSize(size)
             window.isReleasedWhenClosed = false
             window.center()

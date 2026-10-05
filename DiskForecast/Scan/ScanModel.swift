@@ -43,6 +43,7 @@ final class ScanModel {
     /// Scans now, then twice a day.
     func start() {
         scan()
+        guard scheduleTimer == nil else { return }
         scheduleTimer = Timer.scheduledTimer(withTimeInterval: 12 * 3_600, repeats: true) { _ in
             MainActor.assumeIsolated { self.scan() }
         }

@@ -10,6 +10,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private weak var openMenu: NSMenu?
     var openCleanup: () -> Void = {}
     var openSystemData: () -> Void = {}
+    var grantAccess: () -> Void = {}
 
     init(disk: DiskStatus, scan: ScanModel) {
         self.disk = disk
@@ -58,6 +59,9 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         addConsumers(to: menu)
         addReclaim(to: menu)
         menu.addItem(.separator())
+        if !FullDiskAccess.isGranted {
+            menu.addItem(ClosureMenuItem("Grant Full Disk Access…") { [weak self] in self?.grantAccess() })
+        }
         menu.addItem(ClosureMenuItem("Quit \(Brand.name)", keyEquivalent: "q") { NSApp.terminate(nil) })
     }
 
