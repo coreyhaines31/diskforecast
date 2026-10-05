@@ -41,6 +41,7 @@ extension ScanResult {
             deniedCount: deniedCount + branch.deniedCount,
             deniedSamples: deniedSamples + branch.deniedSamples,
             skippedPaths: skippedPaths.filter { $0 != branchRoot } + branch.skippedPaths,
+            stalledPaths: stalledPaths + branch.stalledPaths,
             duration: duration
         )
     }

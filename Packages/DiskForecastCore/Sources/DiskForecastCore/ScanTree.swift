@@ -122,6 +122,8 @@ public struct ScanResult: Sendable {
     public let deniedSamples: [String]
     /// Folders skipped on purpose: other volumes and protected areas.
     public let skippedPaths: [String]
+    /// Folders that never opened, usually because macOS is waiting on a permission prompt.
+    public let stalledPaths: [String]
     public let duration: TimeInterval
 
     public func size(of artifact: ArtifactFinding) -> Int64 { tree.size(ofNode: artifact.node) }

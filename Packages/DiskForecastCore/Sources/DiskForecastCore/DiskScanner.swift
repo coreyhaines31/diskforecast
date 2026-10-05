@@ -17,6 +17,9 @@ public final class DiskScanner: @unchecked Sendable {
         public var largestFileLimit: Int
         public var diskImageThreshold: Int64
         public var workerCount: Int
+        /// How long a folder can take to open before the scan finishes without it. macOS holds
+        /// the first read of a guarded folder until its permission prompt is answered.
+        public var stallTimeout: TimeInterval
 
         public init(
             root: URL,
@@ -24,7 +27,8 @@ public final class DiskScanner: @unchecked Sendable {
             largeFileThreshold: Int64 = 100_000_000,
             largestFileLimit: Int = 50,
             diskImageThreshold: Int64 = 50_000_000,
-            workerCount: Int = ProcessInfo.processInfo.activeProcessorCount
+            workerCount: Int = ProcessInfo.processInfo.activeProcessorCount,
+            stallTimeout: TimeInterval = 10
         ) {
             self.root = root
             self.excludedPaths = excludedPaths
@@ -32,6 +36,7 @@ public final class DiskScanner: @unchecked Sendable {
             self.largestFileLimit = largestFileLimit
             self.diskImageThreshold = diskImageThreshold
             self.workerCount = max(1, workerCount)
+            self.stallTimeout = stallTimeout
         }
     }
 
@@ -49,6 +54,8 @@ public final class DiskScanner: @unchecked Sendable {
     private var queue: [Job] = []
     private var active = 0
     private var cancelled = false
+    private var finished = false
+    private var inFlight: [String: Date] = [:]
     private var names: [String] = []
     private var parents: [Int32] = []
     private var children: [[Int32]] = []
@@ -113,19 +120,19 @@ public final class DiskScanner: @unchecked Sendable {
         ownBytes = [0]
         queue = [Job(node: 0, path: root, insideArtifact: false)]
 
-        let group = DispatchGroup()
         for _ in 0..<options.workerCount {
-            group.enter()
-            let worker = Thread { [self] in
-                work()
-                group.leave()
-            }
+            let worker = Thread { [self] in work() }
             worker.qualityOfService = .utility
             worker.stackSize = 1 << 20
             worker.start()
         }
-        group.wait()
 
+        condition.lock()
+        defer { condition.unlock() }
+        let stalled = waitUntilDone()
+        finished = true
+        condition.broadcast()
+        // Workers stuck on a prompt may return later; they find `finished` set and change nothing.
         let tree = ScanTree(rootPath: root, names: names, parents: parents, children: children, ownBytes: ownBytes)
         return ScanResult(
             tree: tree,
@@ -136,8 +143,25 @@ public final class DiskScanner: @unchecked Sendable {
             deniedCount: deniedCount,
             deniedSamples: deniedSamples,
             skippedPaths: skippedPaths.sorted(),
+            stalledPaths: stalled.sorted(),
             duration: Date().timeIntervalSince(started)
         )
+    }
+
+    /// Waits, holding the lock between checks, until nothing is queued and every folder still
+    /// being read has been stuck past the timeout. Returns those stuck folders.
+    private func waitUntilDone() -> [String] {
+        while !cancelled {
+            if queue.isEmpty {
+                if active == 0 { return [] }
+                let now = Date()
+                if inFlight.values.allSatisfy({ now.timeIntervalSince($0) > options.stallTimeout }) {
+                    return Array(inFlight.keys)
+                }
+            }
+            condition.wait(until: Date().addingTimeInterval(1))
+        }
+        return []
     }
 
     private func work() {
@@ -149,23 +173,28 @@ public final class DiskScanner: @unchecked Sendable {
         defer { reader.deallocate() }
         while true {
             condition.lock()
-            while queue.isEmpty && active > 0 && !cancelled {
+            while queue.isEmpty && !finished && !cancelled {
                 condition.wait()
             }
-            if cancelled || queue.isEmpty {
-                condition.broadcast()
+            if finished || cancelled {
                 condition.unlock()
                 return
             }
             let job = queue.removeLast()
             active += 1
+            inFlight[job.path] = Date()
             condition.unlock()
 
             let listing = list(job, reader: reader)
 
             condition.lock()
+            if finished {
+                condition.unlock()
+                return
+            }
             record(listing, for: job)
             active -= 1
+            inFlight[job.path] = nil
             condition.broadcast()
             condition.unlock()
         }
