@@ -5,6 +5,7 @@ import DiskForecastCore
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var disk = DiskStatus(supportFolder: Self.supportFolder)
     private let scan = ScanModel()
+    private let updater = Updater()
     private var statusItemController: StatusItemController?
     private lazy var cleanupWindow = HostedWindow(title: "Cleanup", size: NSSize(width: 720, height: 620)) {
         CleanupView(scan: self.scan, disk: self.disk) { self.systemDataWindow.show() }
@@ -26,7 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.registerDefaults()
-        statusItemController = StatusItemController(disk: disk, scan: scan)
+        statusItemController = StatusItemController(disk: disk, scan: scan, updater: updater)
         statusItemController?.openCleanup = { [weak self] in self?.cleanupWindow.show() }
         statusItemController?.openSystemData = { [weak self] in self?.systemDataWindow.show() }
         disk.onChange = { [weak self] in self?.statusItemController?.update() }

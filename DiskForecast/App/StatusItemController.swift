@@ -7,14 +7,16 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let disk: DiskStatus
     private let scan: ScanModel
+    private let updater: Updater
     private weak var openMenu: NSMenu?
     var openCleanup: () -> Void = {}
     var openSystemData: () -> Void = {}
     var grantAccess: () -> Void = {}
 
-    init(disk: DiskStatus, scan: ScanModel) {
+    init(disk: DiskStatus, scan: ScanModel, updater: Updater) {
         self.disk = disk
         self.scan = scan
+        self.updater = updater
         super.init()
         let menu = NSMenu()
         menu.delegate = self
@@ -62,6 +64,9 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         if !FullDiskAccess.isGranted {
             menu.addItem(ClosureMenuItem("Grant Full Disk Access…") { [weak self] in self?.grantAccess() })
         }
+        let updates = ClosureMenuItem("Check for Updates…") { [updater] in updater.checkForUpdates() }
+        updates.isEnabled = updater.canCheck
+        menu.addItem(updates)
         menu.addItem(ClosureMenuItem("Quit \(Brand.name)", keyEquivalent: "q") { NSApp.terminate(nil) })
     }
 

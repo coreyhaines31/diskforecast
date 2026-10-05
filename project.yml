@@ -43,8 +43,7 @@ targets:
         NSRemovableVolumesUsageDescription: Measuring removable drives shows what's taking up space on them.
         NSNetworkVolumesUsageDescription: Measuring network drives shows what's taking up space on them.
         SUFeedURL: https://github.com/coreyhaines31/diskforecast/releases/latest/download/appcast.xml
-        # TODO(release): replace with this app's Sparkle public key (generate_keys --account diskforecast).
-        SUPublicEDKey: REPLACE_WITH_SPARKLE_PUBLIC_ED_KEY
+        SUPublicEDKey: iSkAJpvB/5bpjm9er9TjhQ3JrOslH0YrnPPdjoE8ELI=
         SUEnableAutomaticChecks: true
     settings:
       base:
