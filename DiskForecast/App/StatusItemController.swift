@@ -8,6 +8,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let disk: DiskStatus
     private let scan: ScanModel
     private weak var openMenu: NSMenu?
+    var openCleanup: () -> Void = {}
 
     init(disk: DiskStatus, scan: ScanModel) {
         self.disk = disk
@@ -79,6 +80,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         if case .scanning(let files) = scan.state {
             let counted = files.formatted(.number.notation(.compactName))
             menu.addItem(label("Measuring… \(counted) files"))
+            menu.addItem(ClosureMenuItem("Open Cleanup…") { [weak self] in self?.openCleanup() })
             return
         }
         let safe = scan.safeToClear
@@ -91,6 +93,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
                 )
             })
         }
+        menu.addItem(ClosureMenuItem("Open Cleanup…") { [weak self] in self?.openCleanup() })
         menu.addItem(ClosureMenuItem("Rescan") { [scan] in scan.scan() })
     }
 
