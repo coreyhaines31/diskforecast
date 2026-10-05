@@ -44,13 +44,25 @@ public struct CleanupItem: Sendable, Identifiable {
     public let action: CleanupAction
     public let entries: [CleanupEntry]
 
+    public init(
+        id: String, title: String, explanation: String,
+        group: CleanupGroup, action: CleanupAction, entries: [CleanupEntry]
+    ) {
+        self.id = id
+        self.title = title
+        self.explanation = explanation
+        self.group = group
+        self.action = action
+        self.entries = entries
+    }
+
     public var bytes: Int64 { entries.reduce(0) { $0 + $1.bytes } }
 }
 
 /// Turns a scan of the home folder into the cleanup list: known caches, logs, build folders, AI
 /// models, and big downloads, each with a plain explanation. No path is counted twice: the
 /// specific rules claim their paths first, and broader ones skip or subtract what's claimed.
-public struct CleanupCatalog {
+public struct CleanupCatalog: Sendable {
     public let home: String
     public let staleAfterDays: Int
     public let now: Date
