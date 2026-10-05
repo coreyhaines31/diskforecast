@@ -103,7 +103,7 @@ public final class DiskScanner: @unchecked Sendable {
 
     public func scanBlocking() -> ScanResult {
         let started = Date()
-        let rootPath = options.root.standardizedFileURL.path(percentEncoded: false)
+        let rootPath = options.root.path(percentEncoded: false)
         let root = rootPath.count > 1 && rootPath.hasSuffix("/") ? String(rootPath.dropLast()) : rootPath
         var info = stat()
         rootDevice = lstat(root, &info) == 0 ? info.st_dev : 0
