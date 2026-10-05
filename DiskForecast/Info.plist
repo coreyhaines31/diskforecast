@@ -24,8 +24,6 @@
 	<string>public.app-category.utilities</string>
 	<key>LSUIElement</key>
 	<true/>
-	<key>NSAppleEventsUsageDescription</key>
-	<string>Some fixes, like removing local Time Machine snapshots, ask for your administrator password.</string>
 	<key>NSDesktopFolderUsageDescription</key>
 	<string>Measuring your Desktop shows what's taking up space there.</string>
 	<key>NSDocumentsFolderUsageDescription</key>

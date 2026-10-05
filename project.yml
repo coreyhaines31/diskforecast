@@ -42,7 +42,6 @@ targets:
         NSDownloadsFolderUsageDescription: Measuring your Downloads finds large and old files you might not need.
         NSRemovableVolumesUsageDescription: Measuring removable drives shows what's taking up space on them.
         NSNetworkVolumesUsageDescription: Measuring network drives shows what's taking up space on them.
-        NSAppleEventsUsageDescription: Some fixes, like removing local Time Machine snapshots, ask for your administrator password.
         SUFeedURL: https://github.com/coreyhaines31/diskforecast/releases/latest/download/appcast.xml
         # TODO(release): replace with this app's Sparkle public key (generate_keys --account diskforecast).
         SUPublicEDKey: REPLACE_WITH_SPARKLE_PUBLIC_ED_KEY
