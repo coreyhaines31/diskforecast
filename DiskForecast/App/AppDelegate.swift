@@ -6,6 +6,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var disk = DiskStatus(supportFolder: Self.supportFolder)
     private let scan = ScanModel()
     private let updater = Updater()
+    private lazy var settingsWindow = SettingsWindow(updater: updater, scan: scan)
     private var statusItemController: StatusItemController?
     private lazy var cleanupWindow = HostedWindow(title: "Cleanup", size: NSSize(width: 720, height: 620)) {
         CleanupView(scan: self.scan, disk: self.disk) { self.systemDataWindow.show() }
@@ -33,6 +34,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         disk.onChange = { [weak self] in self?.statusItemController?.update() }
         scan.onChange = { [weak self] in self?.statusItemController?.update() }
         statusItemController?.grantAccess = { [weak self] in self?.onboardingWindow.show() }
+        statusItemController?.openSettings = { [weak self] in self?.settingsWindow.show() }
+        NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.statusItemController?.update() }
+        }
         disk.start()
         if FullDiskAccess.isGranted || Preferences.onboardingDone {
             scan.start()

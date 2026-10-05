@@ -87,6 +87,16 @@ final class ScanModel {
         onChange?()
     }
 
+    /// Rebuilds the list from the last scan, after a setting that shapes it changes.
+    func rebuildCleanupList() {
+        guard let result, !isScanning else { return }
+        let catalog = CleanupCatalog(home: home, staleAfterDays: Preferences.staleAfterDays)
+        Task {
+            items = await Task.detached(priority: .utility) { catalog.items(from: result) }.value
+            onChange?()
+        }
+    }
+
     /// Takes trashed entries off the list without waiting for the next scan.
     func remove(_ paths: Set<String>) {
         items = items.compactMap { item in

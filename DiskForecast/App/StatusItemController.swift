@@ -12,6 +12,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     var openCleanup: () -> Void = {}
     var openSystemData: () -> Void = {}
     var grantAccess: () -> Void = {}
+    var openSettings: () -> Void = {}
 
     init(disk: DiskStatus, scan: ScanModel, updater: Updater) {
         self.disk = disk
@@ -64,6 +65,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         if !FullDiskAccess.isGranted {
             menu.addItem(ClosureMenuItem("Grant Full Disk Access…") { [weak self] in self?.grantAccess() })
         }
+        menu.addItem(ClosureMenuItem("Settings…", keyEquivalent: ",") { [weak self] in self?.openSettings() })
         let updates = ClosureMenuItem("Check for Updates…") { [updater] in updater.checkForUpdates() }
         updates.isEnabled = updater.canCheck
         menu.addItem(updates)
