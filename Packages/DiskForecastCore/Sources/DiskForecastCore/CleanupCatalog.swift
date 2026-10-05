@@ -119,8 +119,13 @@ public struct CleanupCatalog: Sendable {
         relatives.map { Candidate(path: path($0)) }
     }
 
-    func children(of relative: String, except excluded: (String) -> Bool = { _ in false }) -> [Candidate] {
+    /// What's directly inside a folder the scan reached. Folders it didn't reach aren't listed, so
+    /// building the list never touches a folder macOS would ask permission for.
+    func children(
+        of relative: String, in scan: ScanResult, except excluded: (String) -> Bool = { _ in false }
+    ) -> [Candidate] {
         let folder = path(relative)
+        guard scan.tree.node(at: folder) != nil else { return [] }
         let names = (try? FileManager.default.contentsOfDirectory(atPath: folder)) ?? []
         return names.filter { !excluded($0) && $0 != ".DS_Store" }.map { Candidate(path: folder + "/" + $0) }
     }
@@ -139,8 +144,8 @@ public struct CleanupCatalog: Sendable {
         scan.diskImages.map { Candidate(path: $0.path, detail: "Modified \(Age.phrase(from: $0.modified, to: now))") }
     }
 
-    func downloads() -> [Candidate] {
-        children(of: "Downloads").map { candidate in
+    func downloads(_ scan: ScanResult) -> [Candidate] {
+        children(of: "Downloads", in: scan).map { candidate in
             let url = URL(filePath: candidate.path)
             let values = try? url.resourceValues(forKeys: [.addedToDirectoryDateKey, .contentModificationDateKey])
             let date = values?.addedToDirectoryDate ?? values?.contentModificationDate
@@ -153,6 +158,8 @@ extension ScanResult {
     /// Bytes under a scanned folder, or the allocated size of a single file.
     public func allocatedSize(of path: String) -> Int64? {
         if let size = tree.size(of: path) { return size }
+        // Only look at files in folders the scan reached, so this never sets off a permission prompt.
+        guard tree.node(at: (path as NSString).deletingLastPathComponent) != nil else { return nil }
         var info = stat()
         guard lstat(path, &info) == 0, info.st_mode & S_IFMT != S_IFDIR else { return nil }
         return Int64(info.st_blocks) * 512
