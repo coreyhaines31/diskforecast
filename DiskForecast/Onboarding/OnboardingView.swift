@@ -20,7 +20,8 @@ struct OnboardingView: View {
                 .fixedSize(horizontal: false, vertical: true)
             VStack(alignment: .leading, spacing: 6) {
                 Label("Click Open System Settings.", systemImage: "1.circle")
-                Label("Turn on \(Brand.name) under Full Disk Access.", systemImage: "2.circle")
+                Label("Turn on \(Brand.name) in the list. If it's missing, click + and choose it.",
+                      systemImage: "2.circle")
                 Label("Come back here. \(Brand.name) notices on its own.", systemImage: "3.circle")
             }
             Text("\(Brand.name) only reads sizes and names. It sends nothing anywhere, and it never deletes "
