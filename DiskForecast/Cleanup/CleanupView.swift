@@ -76,6 +76,8 @@ struct CleanupView: View {
         if !scan.pendingFolders.isEmpty {
             let names = scan.pendingFolders.map { ($0 as NSString).lastPathComponent }
             text += " Waiting to measure \(names.formatted()): allow access when macOS asks."
+        } else if !result.stalledPaths.isEmpty {
+            text += " \(result.stalledPaths.count) folders weren't measured while macOS waited for permission."
         } else if !scan.scannedWithFullDiskAccess {
             text += " Some folders were skipped without Full Disk Access."
         }
