@@ -4,6 +4,7 @@ import DiskForecastCore
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var disk = DiskStatus(supportFolder: Self.supportFolder)
+    private let scan = ScanModel()
     private var statusItemController: StatusItemController?
 
     static var supportFolder: URL {
@@ -12,9 +13,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.registerDefaults()
-        statusItemController = StatusItemController(disk: disk)
+        statusItemController = StatusItemController(disk: disk, scan: scan)
         disk.onChange = { [weak self] in self?.statusItemController?.update() }
+        scan.onChange = { [weak self] in self?.statusItemController?.update() }
         disk.start()
+        scan.start()
         NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didWakeNotification, object: nil, queue: .main
         ) { [weak self] _ in
