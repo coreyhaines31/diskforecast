@@ -243,50 +243,45 @@ footer a:hover { color: var(--ink); }
 .footer-alts .label { font-weight: 600; color: var(--ink-3); }
 .footer-links { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 
-/* Sub pages: alternatives, guide, privacy */
-.sub-hero { position: relative; padding: clamp(48px, 7vw, 88px) 0 clamp(32px, 4vw, 48px); }
-.sub-hero h1 { font-size: clamp(42px, 6vw, 74px); max-width: 15em; }
-.sub-hero .lede { margin: 22px 0 0; max-width: 38em; }
-.sub-hero .actions { margin-top: 30px; }
-.tldr { margin: clamp(36px, 5vw, 52px) 0 0; max-width: 860px; background: var(--surface); border-radius: 20px; padding: 24px 28px; box-shadow: var(--shadow-card); border-left: 4px solid var(--sky-500); }
-.tldr h2 { font: 500 12.5px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--sky-700); margin-bottom: 12px; }
+/* Sub pages: alternatives, guide, privacy. One readable column, glass where something deserves a frame. */
+.wrap.narrow { max-width: calc(820px + 2 * var(--gutter)); }
+.sub-hero { position: relative; padding: clamp(56px, 8vw, 104px) 0 clamp(24px, 3vw, 40px); }
+.sub-hero h1 { font-size: clamp(40px, 6vw, 68px); letter-spacing: -0.045em; }
+.sub-hero .lede { margin: 22px 0 0; }
+.sub-hero .actions { margin-top: 32px; }
+.tldr { margin: clamp(36px, 5vw, 52px) 0 0; border-radius: 28px; padding: 26px 30px; }
+.tldr h2 { font-family: var(--sans); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink-2); margin-bottom: 8px; }
 .tldr p { margin: 0; font-size: 18px; line-height: 1.55; }
-section.tight { padding: clamp(48px, 7vw, 80px) 0; }
-section.tint { background: linear-gradient(180deg, transparent, var(--sky-100) 18%, var(--sky-100) 82%, transparent); }
-.prose { max-width: 760px; }
-.prose h2 { font-size: clamp(32px, 4vw, 46px); margin: 0 0 18px; }
+section.tight { padding: clamp(56px, 8vw, 96px) 0 0; }
+.prose h2 { font-size: clamp(30px, 4vw, 44px); margin: 0 0 18px; }
 .prose h3 { font-size: 21px; margin: 36px 0 10px; }
 .prose p, .prose li { color: var(--ink-2); line-height: 1.65; }
 .prose p strong, .prose li strong { color: var(--ink); font-weight: 600; }
 .prose ul { padding-left: 20px; margin: 0 0 1em; }
 .prose li { margin-bottom: 8px; }
-.prose li::marker { color: var(--sky-500); }
-.prose pre { background: var(--code-bg); color: var(--code-ink); border-radius: 12px; padding: 16px 18px; overflow-x: auto; font: 14px/1.65 var(--mono); margin: 12px 0 18px; }
+.prose li::marker { color: var(--ink-3); }
+.prose pre { background: var(--code-bg); color: var(--code-ink); border-radius: 14px; padding: 16px 18px; overflow-x: auto; font: 14px/1.65 var(--mono); margin: 12px 0 18px; }
 .prose pre code { background: none; padding: 0; color: inherit; font: inherit; }
-.prose .callout { background: var(--surface); border-radius: 16px; padding: 18px 22px; margin: 22px 0; box-shadow: var(--shadow-card); }
+.prose .callout { background: var(--surface-2); border-radius: 18px; padding: 18px 22px; margin: 22px 0; }
 .prose .callout p { margin: 0; font-size: 16px; }
-.prose .callout p + p { margin-top: 8px; }
-.prose .wide { margin: 28px 0; }
+.prose .table-card { margin: 8px 0 0; padding: 4px 18px; border-radius: 24px; }
+.prose .table-foot { text-align: left; margin: 14px 0 0; }
 .steps { counter-reset: step; list-style: none; padding: 0 !important; margin: 0; }
-.steps > li { counter-increment: step; position: relative; padding-left: 52px; margin-bottom: 28px; }
-.steps > li::before { content: counter(step); position: absolute; left: 0; top: -1px; width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--sky-500); color: var(--sky-700); font: 500 14px/31px var(--mono); text-align: center; }
+.steps > li { counter-increment: step; position: relative; padding-left: 48px; margin-bottom: 28px; }
+.steps > li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; font: 600 14px/30px var(--sans); text-align: center; }
 .steps > li > b { color: var(--ink); display: block; margin-bottom: 4px; font-size: 18px; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
-.two > div { background: var(--surface); border-radius: 18px; padding: 22px 24px; box-shadow: var(--shadow-card); }
-.two h3 { margin: 0 0 10px; font-size: 18px; }
-.two ul { margin: 0; padding-left: 18px; }
-.two li { font-size: 15.5px; margin-bottom: 6px; }
-.related { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-.related a { display: block; background: var(--surface); border-radius: 18px; padding: 20px 22px; text-decoration: none; box-shadow: var(--shadow-card); transition: transform .2s ease; }
-.related a:hover { transform: translateY(-2px); }
-.related a:hover b { color: var(--sky-700); }
-.related b { display: block; margin-bottom: 6px; font-size: 17px; }
+.related { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; max-width: 980px; margin: 0 auto; }
+.related a { display: block; border-radius: 24px; padding: 22px 24px; color: var(--ink); transition: transform .2s ease; }
+.related a:hover { text-decoration: none; transform: translateY(-2px); }
+.related a:hover b { color: var(--accent); }
+.related b { display: block; margin-bottom: 6px; font-size: 17px; letter-spacing: -0.02em; }
 .related span { color: var(--ink-2); font-size: 15px; line-height: 1.5; display: block; }
-.glance { max-width: 860px; margin: 0 0 44px; }
+.glance { margin-bottom: 40px; }
 .glance .compare { min-width: 0; }
-.glance .compare td:first-child { width: auto; }
-.head-sm { margin-bottom: 28px; }
-.head-sm h2 { font-size: clamp(30px, 3.6vw, 42px); }
+.glance .compare td:first-child { width: 60%; font-weight: 400; }
+.head-sm { margin-bottom: 32px; }
+.head-sm h2 { font-size: clamp(30px, 4vw, 44px); }
 
 /* ---------- Hi-fi macOS 26 mockups, drawn in code. They follow the visitor's light or dark setting, like a real Mac. ---------- */
 .mk { --m-text: #1d1d1f; --m-sub: #6e6e73; --m-faint: #9a9aa0; --m-sep: rgba(0,0,0,0.09); --m-menu: rgba(250,250,252,0.62); --m-hl: #0a7aff;

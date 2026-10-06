@@ -35,7 +35,7 @@ PAGES = [
         <p><strong>It answers “what's using my space?”</strong> We couldn't find anything in its materials that answers “when will I run out?”, which is the question Disk Forecast is built around.</p>
         <p><strong>System Data gets a snapshots view.</strong> Disk Forecast breaks System Data into every part it can measure, explains each in plain English, and fixes it with Apple's own tools.</p>
             """},
-            {"id": "compare", "tint": True, "html": """
+            {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs DiskBuddy</h2>
         <p>DiskBuddy facts come from its launch and release posts, September to October 2026.</p>
         {{TABLE}}
@@ -95,7 +95,7 @@ PAGES = [
         <p><strong>The App Store version sees less.</strong> In Apple's sandbox it can't scan as an administrator or see hidden and system files, which is why DaisyDisk also sells a direct build. Know which one you have.</p>
         <p><strong>The judgment is yours.</strong> A picture shows size, not meaning. Disk Forecast sorts what it finds into “Safe to clear” and “Worth a look,” with a one-line explanation of every item.</p>
             """},
-            {"id": "compare", "tint": True, "html": """
+            {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs DaisyDisk</h2>
         <p>DaisyDisk facts come from its own site and App Store listing as of October 2026.</p>
         {{TABLE}}
@@ -154,7 +154,7 @@ PAGES = [
         <p>Regulars on Apple's own support forums have warned against Mac cleaner apps for years, and they have a point. On a modern Mac with APFS and an SSD, there's nothing to tune. A Mac with 100 GB free runs the same as one with 300 GB free.</p>
         <p>The real reasons to clear space are practical: room for a macOS update, a project, a phone backup, a video export. That's what Disk Forecast is for. It tells you when you'll need the room, shows you what's taking it, and reclaims it safely.</p>
             """},
-            {"id": "compare", "tint": True, "html": """
+            {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs CleanMyMac</h2>
         <p>CleanMyMac facts come from MacPaw's store and coverage of the 2025 price change.</p>
         {{TABLE}}
@@ -211,7 +211,7 @@ PAGES = [
         <p><strong>You have to remember to look.</strong> You open it when the disk is already full. Disk Forecast watches every day and tells you weeks ahead.</p>
         <p><strong>System Data stays a mystery.</strong> Snapshots, purgeable space, and simulator runtimes don't show up as tidy blocks. Disk Forecast breaks them out and explains each one.</p>
             """},
-            {"id": "compare", "tint": True, "html": """
+            {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs GrandPerspective</h2>
         {{TABLE}}
         <h3>What GrandPerspective does better</h3>
