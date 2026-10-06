@@ -1,6 +1,6 @@
-name: Roomy
+name: DiskForecast
 options:
-  bundleIdPrefix: app.roomy
+  bundleIdPrefix: app.diskforecast
   deploymentTarget:
     macOS: "14.0"
   createIntermediateGroups: true
@@ -14,24 +14,24 @@ settings:
     CODE_SIGN_STYLE: Automatic
     DEAD_CODE_STRIPPING: YES
 packages:
-  RoomyCore:
-    path: Packages/RoomyCore
+  DiskForecastCore:
+    path: Packages/DiskForecastCore
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
     exactVersion: "2.10.0"
 targets:
-  Roomy:
+  DiskForecast:
     type: application
     platform: macOS
     sources:
-      - Roomy
+      - DiskForecast
     dependencies:
-      - package: RoomyCore
+      - package: DiskForecastCore
       - package: Sparkle
     info:
-      path: Roomy/Info.plist
+      path: DiskForecast/Info.plist
       properties:
-        CFBundleDisplayName: Roomy
+        CFBundleDisplayName: Disk Forecast
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSUIElement: true
@@ -42,22 +42,20 @@ targets:
         NSDownloadsFolderUsageDescription: Measuring your Downloads finds large and old files you might not need.
         NSRemovableVolumesUsageDescription: Measuring removable drives shows what's taking up space on them.
         NSNetworkVolumesUsageDescription: Measuring network drives shows what's taking up space on them.
-        NSAppleEventsUsageDescription: Some fixes, like removing local Time Machine snapshots, ask for your administrator password.
-        # TODO(release): replace with the appcast URL and the Sparkle public key for this app.
-        SUFeedURL: https://example.invalid/appcast.xml
-        SUPublicEDKey: REPLACE_WITH_SPARKLE_PUBLIC_ED_KEY
+        SUFeedURL: https://github.com/coreyhaines31/diskforecast/releases/latest/download/appcast.xml
+        SUPublicEDKey: iSkAJpvB/5bpjm9er9TjhQ3JrOslH0YrnPPdjoE8ELI=
         SUEnableAutomaticChecks: true
     settings:
       base:
-        PRODUCT_NAME: Roomy
-        PRODUCT_MODULE_NAME: Roomy
-        PRODUCT_BUNDLE_IDENTIFIER: app.roomy.Roomy
+        PRODUCT_NAME: Disk Forecast
+        PRODUCT_MODULE_NAME: DiskForecast
+        PRODUCT_BUNDLE_IDENTIFIER: app.diskforecast.DiskForecast
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
 schemes:
-  Roomy:
+  DiskForecast:
     build:
       targets:
-        Roomy: all
+        DiskForecast: all
     test:
       targets:
-        - package: RoomyCore/RoomyCoreTests
+        - package: DiskForecastCore/DiskForecastCoreTests

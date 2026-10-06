@@ -9,7 +9,7 @@ Bug reports, ideas, and pull requests are welcome. Open an issue first for anyth
 
 ## Contributor terms
 
-Roomy is licensed under FSL-1.1-MIT, and some future features may be sold under a commercial license. To keep that possible, every contribution comes with these terms. By opening a pull request, you agree that:
+Disk Forecast is licensed under FSL-1.1-MIT, and some future features may be sold under a commercial license. To keep that possible, every contribution comes with these terms. By opening a pull request, you agree that:
 
 1. You wrote the contribution, or otherwise have the right to submit it.
 2. You grant Corey Haines a perpetual, worldwide, non-exclusive, royalty-free, irrevocable license to use, modify, and distribute your contribution, and to sublicense and relicense it under any terms, including commercial ones.

@@ -1,0 +1,42 @@
+{
+  "96D8DED9-F25C-44CC-8449-C19BC9B1ACEB" : {
+    "build" : "23E244",
+    "deletable" : true,
+    "identifier" : "96D8DED9-F25C-44CC-8449-C19BC9B1ACEB",
+    "kind" : "Patchable Cryptex Disk Image",
+    "lastUsedAt" : "2026-05-29T18:55:34Z",
+    "mountPath" : "\/Library\/Developer\/CoreSimulator\/Volumes\/iOS_23E244",
+    "parentMountPath" : "\/System\/Library\/AssetsV2\/com_apple_MobileAsset_iOSSimulatorRuntime\/7c5f8c6167dde76995389b472106f0fde204e050.asset\/AssetData",
+    "path" : "\/System\/Library\/AssetsV2\/com_apple_MobileAsset_iOSSimulatorRuntime\/7c5f8c6167dde76995389b472106f0fde204e050.asset\/AssetData\/Restore\/043-15459-333.dmg",
+    "platformIdentifier" : "com.apple.platform.iphonesimulator",
+    "runtimeBundlePath" : "\/Library\/Developer\/CoreSimulator\/Volumes\/iOS_23E244\/Library\/Developer\/CoreSimulator\/Profiles\/Runtimes\/iOS 26.4.simruntime",
+    "runtimeIdentifier" : "com.apple.CoreSimulator.SimRuntime.iOS-26-4",
+    "signatureState" : "Verified",
+    "sizeBytes" : 8485747282,
+    "state" : "Ready",
+    "supportedArchitectures" : [
+      "arm64"
+    ],
+    "version" : "26.4"
+  },
+  "BFFFDB89-8790-46C2-9E3B-D56B751C8009" : {
+    "build" : "23C54",
+    "deletable" : true,
+    "identifier" : "BFFFDB89-8790-46C2-9E3B-D56B751C8009",
+    "kind" : "Patchable Cryptex Disk Image",
+    "lastUsedAt" : "2026-05-02T06:03:26Z",
+    "mountPath" : "\/Library\/Developer\/CoreSimulator\/Volumes\/iOS_23C54",
+    "parentMountPath" : "\/System\/Library\/AssetsV2\/com_apple_MobileAsset_iOSSimulatorRuntime\/e4478b4b9014ff28fe3c265daca488f55a284f4c.asset\/AssetData",
+    "path" : "\/System\/Library\/AssetsV2\/com_apple_MobileAsset_iOSSimulatorRuntime\/e4478b4b9014ff28fe3c265daca488f55a284f4c.asset\/AssetData\/Restore\/043-87504-067.dmg",
+    "platformIdentifier" : "com.apple.platform.iphonesimulator",
+    "runtimeBundlePath" : "\/Library\/Developer\/CoreSimulator\/Volumes\/iOS_23C54\/Library\/Developer\/CoreSimulator\/Profiles\/Runtimes\/iOS 26.2.simruntime",
+    "runtimeIdentifier" : "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+    "signatureState" : "Verified",
+    "sizeBytes" : 8381044573,
+    "state" : "Ready",
+    "supportedArchitectures" : [
+      "arm64"
+    ],
+    "version" : "26.2"
+  }
+}
