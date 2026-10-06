@@ -262,6 +262,7 @@ section.tight { padding: clamp(56px, 8vw, 96px) 0 0; }
 .prose .callout p { margin: 0; font-size: 16px; }
 .prose .table-card { margin: 8px 0 0; padding: 4px 18px; border-radius: 24px; }
 .prose .table-foot { text-align: left; margin: 14px 0 0; }
+.prose .compare { min-width: 0; }
 .steps { counter-reset: step; list-style: none; padding: 0 !important; margin: 0; }
 .steps > li { counter-increment: step; position: relative; padding-left: 48px; margin-bottom: 28px; }
 .steps > li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; font: 600 14px/30px var(--sans); text-align: center; }
@@ -380,7 +381,7 @@ section.tight { padding: clamp(56px, 8vw, 96px) 0 0; }
   .actions { flex-direction: column; align-items: stretch; max-width: 360px; }
   .hero .actions, .head .actions, .cta-card .actions { margin-left: auto; margin-right: auto; }
   .actions .btn, .actions .btn-quiet { justify-content: center; }
-  .desk { height: 520px; border-radius: 18px; }
+  .desk { height: 440px; border-radius: 22px; }
   .mk-menubar .l span, .mk-menubar .r .hide-sm { display: none; }
   .desk .mk-nsmenu { right: 10px; left: 10px; width: auto; max-width: 300px; margin-left: auto; }
   .mk-list { padding: 2px 12px 4px; }
@@ -390,6 +391,8 @@ section.tight { padding: clamp(56px, 8vw, 96px) 0 0; }
   .steps > li { padding-left: 46px; }
   .compare { font-size: 14px; }
   .compare th, .compare td { padding: 12px 10px; }
+  .prose .compare th, .prose .compare td { padding: 11px 8px; }
+  .prose .table-card { padding: 2px 8px; }
 }
 .prose :not(pre) > code { overflow-wrap: anywhere; }
 .mk-foot > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
