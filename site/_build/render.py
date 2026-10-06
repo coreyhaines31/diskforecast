@@ -63,7 +63,7 @@ def head(title, description, path):
 
 
 def nav():
-    return f'''  <div class="sky" aria-hidden="true"></div>
+    return f'''  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="nav">
     <div class="wrap">
       <a class="brand" href="/"><img src="/images/icon.svg" alt=""> Disk Forecast</a>

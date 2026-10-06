@@ -1,122 +1,151 @@
 /* Disk Forecast — one stylesheet for every page.
-   Daylight palette: paper, ink, five sky stops, and one sun color reserved for the download button. */
+   Apple-style and quiet: system type, one accent blue, and liquid-glass surfaces over a calm daylight color field. */
 :root {
-  --bg: #fbfaf6;
-  --bg-sky: #dceaf6;
+  --bg: #f5f6f8;
   --surface: #ffffff;
-  --surface-2: #f1f4f7;
-  --ink: #13202d;
-  --ink-2: #4b5967;
-  --ink-3: #7a8794;
-  --line: #dde3e9;
-  --sky-100: #e4eff9;
-  --sky-300: #9cc3e6;
-  --sky-500: #3f7fbf;
-  --sky-700: #245a8f;
-  --sky-900: #153652;
-  --sun: #f5b63a;
-  --sun-hi: #ffcb5e;
-  --sun-ink: #2b1c00;
-  --storm: #c9543e;
-  --code-bg: #13202d;
-  --code-ink: #dbe6f0;
-  --shadow-card: 0 1px 1px rgba(19,32,45,0.04), 0 2px 4px rgba(19,32,45,0.04), 0 8px 16px rgba(19,32,45,0.05), 0 24px 48px rgba(19,32,45,0.06);
-  --shadow-win: 0 0 0 0.5px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06), 0 12px 28px rgba(0,0,0,0.12), 0 40px 80px rgba(21,54,82,0.16);
+  --surface-2: #eef0f3;
+  --ink: #1d1d1f;
+  --ink-2: #6e6e73;
+  --ink-3: #8e8e93;
+  --line: rgba(0,0,0,0.08);
+  --accent: #0a6cdf;
+  --accent-hi: #3a8ef2;
+  /* The color field the glass blurs: sky, sun, mint, lilac */
+  --f-sky: #9ccdff;
+  --f-sun: #ffd98a;
+  --f-mint: #bfeedd;
+  --f-lilac: #cdd2ff;
+  /* Liquid glass */
+  --glass: rgba(255,255,255,0.58);
+  --glass-strong: rgba(255,255,255,0.78);
+  --glass-solid: #fbfbfd;
+  --glass-blur: blur(24px) saturate(180%);
+  --glass-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.04), 0 1px 2px rgba(15,30,55,0.05), 0 14px 40px rgba(15,30,55,0.10);
+  --rim: linear-gradient(140deg, rgba(255,255,255,0.95), rgba(255,255,255,0.25) 35%, rgba(255,255,255,0.06) 60%, rgba(255,255,255,0.7));
+  --code-bg: #1d1d1f;
+  --code-ink: #e8e8ed;
+  --shadow-win: 0 0 0 0.5px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06), 0 16px 36px rgba(15,30,55,0.14), 0 44px 90px rgba(15,30,55,0.16);
+  /* Older names, kept until every rule uses the ones above */
+  --ink-1: var(--ink); --sky-100: rgba(10,108,223,0.07); --sky-300: rgba(10,108,223,0.25); --sky-500: var(--accent); --sky-700: var(--accent); --sky-900: var(--ink);
+  --sun: var(--accent); --sun-hi: var(--accent-hi); --sun-ink: #fff; --storm: var(--ink); --bg-sky: var(--f-sky);
+  --shadow-card: var(--glass-shadow);
   --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, "Helvetica Neue", Arial, sans-serif;
   --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-  --max: 1120px;
+  --max: 1080px;
   --gutter: clamp(16px, 5vw, 40px);
-  --section: clamp(64px, 8vw, 104px);
+  --section: clamp(88px, 12vw, 160px);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0b141e;
-    --bg-sky: #12263b;
-    --surface: #111d2a;
-    --surface-2: #162536;
-    --ink: #e8eef4;
-    --ink-2: #a9b6c3;
-    --ink-3: #7c8a98;
-    --line: #233446;
-    --sky-100: #16293d;
-    --sky-300: #2f5a83;
-    --sky-500: #6fa8dd;
-    --sky-700: #9cc7ee;
-    --sky-900: #d4e6f7;
-    --storm: #ef7a62;
-    --code-bg: #070e15;
-    --shadow-card: 0 0 0 1px rgba(255,255,255,0.04), 0 8px 24px rgba(0,0,0,0.35);
-    --shadow-win: 0 0 0 0.5px rgba(255,255,255,0.16), 0 12px 28px rgba(0,0,0,0.4), 0 40px 80px rgba(0,0,0,0.45);
+    --bg: #0a0c10;
+    --surface: #15181e;
+    --surface-2: #1c2027;
+    --ink: #f5f5f7;
+    --ink-2: #a1a1a6;
+    --ink-3: #7c7c82;
+    --line: rgba(255,255,255,0.1);
+    --accent: #3d95ff;
+    --accent-hi: #66acff;
+    --f-sky: #1d4d85;
+    --f-sun: #5e4618;
+    --f-mint: #174f44;
+    --f-lilac: #2d3370;
+    --glass: rgba(38,44,56,0.46);
+    --glass-strong: rgba(38,44,56,0.7);
+    --glass-solid: #1a1e25;
+    --glass-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.3), 0 20px 50px rgba(0,0,0,0.45);
+    --rim: linear-gradient(140deg, rgba(255,255,255,0.3), rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.16));
+    --code-bg: #000;
+    --shadow-win: 0 0 0 0.5px rgba(255,255,255,0.16), 0 16px 36px rgba(0,0,0,0.45), 0 44px 90px rgba(0,0,0,0.5);
     color-scheme: dark;
   }
+}
+/* Without backdrop-filter, glass becomes a solid surface so text stays readable. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root { --glass: var(--glass-solid); --glass-strong: var(--glass-solid); }
 }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
 body {
-  margin: 0; background: var(--bg); color: var(--ink); overflow-x: hidden;
-  font: 400 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  margin: 0; background: var(--bg); color: var(--ink); overflow-x: hidden; position: relative;
+  font: 400 17px/1.55 var(--sans); letter-spacing: -0.012em; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
 }
-a { color: inherit; text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 0.18em; }
 img, svg { display: block; max-width: 100%; }
-code { font: 0.88em var(--mono); background: var(--surface-2); padding: 0.12em 0.4em; border-radius: 6px; }
+code { font: 0.88em var(--mono); background: var(--surface-2); padding: 0.12em 0.4em; border-radius: 6px; letter-spacing: 0; }
 h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
 h1, h2 { font-family: var(--display); font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; }
-h1 em, h2 em { font-style: normal; color: var(--sky-700); }
-h3 { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+h1 em, h2 em { font-style: normal; color: var(--accent); }
+h3 { font-size: 19px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.3; }
 p { margin: 0 0 1em; }
 .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
-.eyebrow { font: 500 12.5px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--sky-700); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
-.eyebrow::before { content: ""; width: 18px; height: 1px; background: currentColor; }
-.lede { font-size: clamp(18px, 1.9vw, 21px); line-height: 1.5; color: var(--ink-2); }
+.eyebrow { font-size: 15px; font-weight: 600; color: var(--ink-2); margin-bottom: 14px; }
+.lede { font-size: clamp(19px, 2vw, 23px); line-height: 1.45; color: var(--ink-2); letter-spacing: -0.015em; }
 
-/* Sky behind the top of every page: a gradual fade, never a band */
-.sky { position: absolute; inset: 0 0 auto; height: 900px; z-index: -1; pointer-events: none;
-  background: radial-gradient(1200px 520px at 78% -10%, var(--bg-sky), transparent 70%), linear-gradient(var(--bg-sky), var(--bg) 85%); opacity: 0.9; }
+/* Liquid glass: translucent, blurred, with a thin specular rim */
+.glass { position: relative; background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); }
+.glass::after, .nav .wrap::after, .btn-quiet::after, .badge::after, .stars::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none; background: var(--rim);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
 
-/* Nav */
-.nav { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 78%, transparent);
-  -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); border-bottom: 1px solid transparent; transition: border-color .2s; }
-.nav.scrolled { border-bottom-color: var(--line); }
-.nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; }
-.brand img { width: 30px; height: 30px; }
-.nav nav { display: flex; align-items: center; gap: 4px; }
-.nav nav a { text-decoration: none; font-size: 14.5px; color: var(--ink-2); padding: 8px 12px; border-radius: 8px; transition: color .15s, background .15s; }
-.nav nav a:hover { color: var(--ink); background: var(--surface-2); }
-.nav nav a.btn { color: var(--sun-ink); padding: 8px 16px; margin-left: 6px; }
-.nav nav a.btn:hover { background: var(--sun-hi); }
+/* The color field: soft daylight blobs behind the top of the page, for the glass to refract */
+.sky { position: absolute; inset: 0 0 auto; height: 1100px; z-index: -1; pointer-events: none; overflow: hidden;
+  -webkit-mask: linear-gradient(#000 45%, transparent); mask: linear-gradient(#000 45%, transparent); }
+.sky i { position: absolute; opacity: 0.8; animation: drift 26s ease-in-out infinite alternate; }
+.sky i:nth-child(1) { width: 640px; height: 640px; left: -8%; top: -160px; background: radial-gradient(circle, var(--f-sky), transparent 68%); }
+.sky i:nth-child(2) { width: 560px; height: 560px; right: -6%; top: -120px; background: radial-gradient(circle, var(--f-sun), transparent 68%); animation-duration: 32s; }
+.sky i:nth-child(3) { width: 520px; height: 520px; left: 32%; top: 260px; background: radial-gradient(circle, var(--f-mint), transparent 68%); animation-duration: 22s; }
+.sky i:nth-child(4) { width: 480px; height: 480px; right: 12%; top: 380px; background: radial-gradient(circle, var(--f-lilac), transparent 68%); animation-duration: 29s; }
+@keyframes drift { to { transform: translate3d(40px, 30px, 0) scale(1.08); } }
 
-/* Buttons: sun is reserved for the download */
-.btn { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 600; font-size: 16px; border-radius: 12px;
-  padding: 14px 22px 14px 18px; background: linear-gradient(180deg, var(--sun-hi), var(--sun)); color: var(--sun-ink); white-space: nowrap;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -2px 0 rgba(140,80,0,0.18), 0 1px 2px rgba(120,70,0,0.18), 0 4px 10px rgba(200,130,10,0.2), 0 12px 28px rgba(200,130,10,0.18);
-  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease; }
-.btn svg { width: 18px; height: 18px; flex: none; }
-.btn:hover { transform: translateY(-1px); filter: saturate(1.1) brightness(1.03);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -2px 0 rgba(140,80,0,0.18), 0 2px 3px rgba(120,70,0,0.2), 0 8px 16px rgba(200,130,10,0.24), 0 20px 40px rgba(200,130,10,0.22); }
-.btn:active { transform: translateY(0); }
-.nav .btn { font-size: 14.5px; border-radius: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 1px 2px rgba(120,70,0,0.2), 0 4px 10px rgba(200,130,10,0.18); }
-.btn-quiet { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 500; font-size: 16px; border-radius: 12px;
-  padding: 13px 20px 13px 17px; color: var(--ink); background: transparent; border: 1px solid var(--line); white-space: nowrap; transition: border-color .18s, background .18s; }
-.btn-quiet svg { width: 17px; height: 17px; flex: none; }
-.btn-quiet:hover { border-color: var(--sky-500); background: var(--sky-100); }
+/* Nav: a floating glass capsule */
+.nav { position: sticky; top: 12px; z-index: 20; padding: 12px var(--gutter) 0; margin-top: -12px; pointer-events: none; }
+.nav .wrap { pointer-events: auto; position: relative; max-width: 980px; height: 52px; padding: 0 6px 0 14px; border-radius: 999px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--glass-strong); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); }
+.brand { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 16px; color: var(--ink); letter-spacing: -0.02em; white-space: nowrap; }
+.brand:hover { text-decoration: none; }
+.brand img { width: 28px; height: 28px; }
+.nav nav { display: flex; align-items: center; gap: 2px; }
+.nav nav a { font-size: 14px; color: var(--ink); opacity: 0.78; padding: 7px 12px; border-radius: 999px; transition: opacity .15s, background .15s; }
+.nav nav a:hover { opacity: 1; text-decoration: none; }
+.nav nav a.btn { opacity: 1; margin-left: 6px; padding: 8px 16px; font-size: 14px; color: #fff; }
+
+/* Buttons: a glossy accent pill for the download, clear glass for everything else */
+.btn { display: inline-flex; align-items: center; gap: 9px; font-weight: 500; font-size: 17px; border-radius: 999px; white-space: nowrap; color: #fff;
+  padding: 13px 26px 13px 22px; background: linear-gradient(180deg, var(--accent-hi), var(--accent) 60%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.18), 0 1px 2px rgba(10,60,140,0.18), 0 10px 26px rgba(10,108,223,0.28);
+  transition: transform .2s ease, box-shadow .2s ease; }
+.btn svg { width: 17px; height: 17px; flex: none; }
+.btn:hover { text-decoration: none; transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.18), 0 2px 4px rgba(10,60,140,0.2), 0 16px 34px rgba(10,108,223,0.34); }
+.btn:active { transform: none; }
+.btn-quiet { position: relative; display: inline-flex; align-items: center; gap: 9px; font-weight: 500; font-size: 17px; border-radius: 999px; white-space: nowrap;
+  padding: 13px 24px 13px 20px; color: var(--ink); background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow);
+  transition: background .2s ease; }
+.btn-quiet svg { width: 16px; height: 16px; flex: none; }
+.btn-quiet:hover { text-decoration: none; background: var(--glass-strong); }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.fineprint { font-size: 13.5px; color: var(--ink-3); margin: 18px 0 0; line-height: 1.6; }
-.fineprint code { font-size: 12.5px; overflow-wrap: anywhere; }
-.stars { display: inline-flex; align-items: center; gap: 7px; margin-top: 18px; font-size: 14px; color: var(--ink-2); text-decoration: none; }
-.stars svg { color: var(--sun); }
-.stars:hover { color: var(--ink); }
+.fineprint { font-size: 13px; color: var(--ink-3); margin: 20px 0 0; line-height: 1.6; }
+.fineprint code { font-size: 12px; overflow-wrap: anywhere; background: none; padding: 0; }
+.stars { position: relative; display: inline-flex; align-items: center; gap: 7px; margin-top: 20px; padding: 7px 14px; border-radius: 999px; font-size: 14px; font-weight: 500; color: var(--ink);
+  background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); }
+.stars:hover { text-decoration: none; background: var(--glass-strong); }
+.stars svg { color: var(--ink-2); }
 
 /* Hero */
 .hero { position: relative; padding: clamp(40px, 7vw, 88px) 0 var(--section); }
 .hero .wrap { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
-.badge { display: inline-flex; align-items: center; gap: 10px; font: 500 12.5px/1 var(--mono); letter-spacing: 0.04em; color: var(--sky-700);
-  border: 1px solid var(--sky-300); border-radius: 999px; padding: 8px 14px; margin-bottom: 26px; background: color-mix(in srgb, var(--surface) 60%, transparent); }
-.badge i { width: 6px; height: 6px; border-radius: 50%; background: var(--sky-500); }
+.badge { position: relative; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: var(--ink-2);
+  border-radius: 999px; padding: 7px 15px 7px 12px; margin-bottom: 28px; background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); }
+.badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
 .hero h1 { font-size: clamp(46px, 6.6vw, 86px); }
 .hero .lede { margin: 24px 0 32px; max-width: 34em; }
 
