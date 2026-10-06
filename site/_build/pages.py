@@ -35,7 +35,7 @@ PAGES = [
         <p><strong>It answers “what's using my space?”</strong> We couldn't find anything in its materials that answers “when will I run out?”, which is the question Disk Forecast is built around.</p>
         <p><strong>System Data gets a snapshots view.</strong> Disk Forecast breaks System Data into every part it can measure, explains each in plain English, and fixes it with Apple's own tools.</p>
             """},
-            {"id": "compare", "tint": True, "html": """
+            {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs DiskBuddy</h2>
         <p>DiskBuddy facts come from its launch and release posts, September to October 2026.</p>
         {{TABLE}}
@@ -95,7 +95,7 @@ PAGES = [
         <p><strong>The App Store version sees less.</strong> In Apple's sandbox it can't scan as an administrator or see hidden and system files, which is why DaisyDisk also sells a direct build. Know which one you have.</p>
         <p><strong>The judgment is yours.</strong> A picture shows size, not meaning. Disk Forecast sorts what it finds into “Safe to clear” and “Worth a look,” with a one-line explanation of every item.</p>
             """},
-            {"id": "compare", "tint": True, "html": """
+            {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs DaisyDisk</h2>
         <p>DaisyDisk facts come from its own site and App Store listing as of October 2026.</p>
         {{TABLE}}
@@ -154,7 +154,7 @@ PAGES = [
         <p>Regulars on Apple's own support forums have warned against Mac cleaner apps for years, and they have a point. On a modern Mac with APFS and an SSD, there's nothing to tune. A Mac with 100 GB free runs the same as one with 300 GB free.</p>
         <p>The real reasons to clear space are practical: room for a macOS update, a project, a phone backup, a video export. That's what Disk Forecast is for. It tells you when you'll need the room, shows you what's taking it, and reclaims it safely.</p>
             """},
-            {"id": "compare", "tint": True, "html": """
+            {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs CleanMyMac</h2>
         <p>CleanMyMac facts come from MacPaw's store and coverage of the 2025 price change.</p>
         {{TABLE}}
@@ -211,7 +211,7 @@ PAGES = [
         <p><strong>You have to remember to look.</strong> You open it when the disk is already full. Disk Forecast watches every day and tells you weeks ahead.</p>
         <p><strong>System Data stays a mystery.</strong> Snapshots, purgeable space, and simulator runtimes don't show up as tidy blocks. Disk Forecast breaks them out and explains each one.</p>
             """},
-            {"id": "compare", "tint": True, "html": """
+            {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs GrandPerspective</h2>
         {{TABLE}}
         <h3>What GrandPerspective does better</h3>
@@ -332,8 +332,8 @@ pip cache purge</code></pre>
         </ul>
     """,
     "shortcut": """
-        <h2>Or do it in one window</h2>
-        <p>Disk Forecast breaks System Data into the parts above, explains each in plain English, and runs Apple's own tool for each fix after you confirm. It's free, it lives in your menu bar, and it tells you weeks ahead when your disk will fill.</p>
+          <h2>Or do it in one window.</h2>
+          <p>Disk Forecast breaks System Data into the parts above, explains each one, and runs Apple&#39;s own tool for each fix after you confirm. It&#39;s free.</p>
     """,
 }
 
@@ -341,7 +341,7 @@ pip cache purge</code></pre>
 PRIVACY = {
     "path": "/privacy",
     "title": "Disk Forecast privacy policy",
-    "description": "Disk Forecast collects nothing. The app's only network request is checking GitHub for updates.",
+    "description": "The Disk Forecast app collects nothing; its only network request is checking GitHub for updates. The website counts visits with cookie-free Fathom Analytics.",
     "h1": "Privacy policy",
     "html": """
         <p><strong>Last updated October 2026.</strong></p>
@@ -350,7 +350,7 @@ PRIVACY = {
         <p>To do its job it reads file and folder names and sizes on your Mac, and keeps a small daily history of free space for the forecast. It doesn't read what's inside your files, and it never scans cloud drives like Google Drive, Dropbox, or OneDrive. All of that stays on your Mac. Nothing about your files, folders, or disk is ever sent anywhere.</p>
         <p>The app's only network request is Sparkle's check for updates, which fetches a small update feed from the latest GitHub release. GitHub sees that request like any other web request, including your IP address. You can turn automatic checks off in Settings › General.</p>
         <h2>diskforecast.com</h2>
-        <p>This website runs no analytics and sets no cookies. It's static pages hosted on Vercel, which keeps standard server logs. The homepage asks GitHub's public API for the repository's star count from your browser, and the pages load their fonts from Google Fonts. Both see those requests like any other web request.</p>
+        <p>This website counts visits with Fathom Analytics, a cookie-free analytics service. It sets no cookies and doesn't collect personal data. The site is static pages hosted on Vercel, which keeps standard server logs. The homepage asks GitHub's public API for the repository's star count from your browser, and the pages load their fonts from Google Fonts. Both see those requests like any other web request.</p>
         <h2>Downloads</h2>
         <p>The app is downloaded from GitHub Releases, or through Homebrew, which downloads it from GitHub. Their privacy policies cover those downloads.</p>
         <h2>Questions</h2>
