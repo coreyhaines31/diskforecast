@@ -140,14 +140,15 @@ p { margin: 0 0 1em; }
 .stars:hover { text-decoration: none; background: var(--glass-strong); }
 .stars svg { color: var(--ink-2); }
 
-/* Hero */
-.hero { position: relative; padding: clamp(40px, 7vw, 88px) 0 var(--section); }
-.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
+/* Hero: one big line, one sentence, two buttons, then the product */
+.hero { position: relative; padding: clamp(56px, 9vw, 120px) 0 var(--section); text-align: center; }
+.hero h1 { font-size: clamp(48px, 8.6vw, 104px); letter-spacing: -0.048em; line-height: 1.0; max-width: 11.5em; margin: 0 auto; }
+.hero .lede { margin: 26px auto 36px; max-width: 30em; }
+.hero .actions { justify-content: center; }
 .badge { position: relative; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: var(--ink-2);
   border-radius: 999px; padding: 7px 15px 7px 12px; margin-bottom: 28px; background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); }
 .badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
-.hero h1 { font-size: clamp(46px, 6.6vw, 86px); }
-.hero .lede { margin: 24px 0 32px; max-width: 34em; }
+.hero .desk { margin: clamp(56px, 8vw, 96px) auto 0; max-width: 860px; }
 
 /* Section rhythm */
 section { padding: var(--section) 0; position: relative; }
@@ -319,19 +320,19 @@ section.tint { background: linear-gradient(180deg, transparent, var(--sky-100) 1
 .head-sm h2 { font-size: clamp(30px, 3.6vw, 42px); }
 
 /* ---------- Hi-fi macOS 26 mockups, drawn in code. They follow the visitor's light or dark setting, like a real Mac. ---------- */
-.mk { --m-text: #1d1d1f; --m-sub: #6e6e73; --m-faint: #9a9aa0; --m-sep: rgba(0,0,0,0.09); --m-menu: rgba(246,246,248,0.84); --m-hl: #0a7aff;
+.mk { --m-text: #1d1d1f; --m-sub: #6e6e73; --m-faint: #9a9aa0; --m-sep: rgba(0,0,0,0.09); --m-menu: rgba(250,250,252,0.62); --m-hl: #0a7aff;
   --m-win: #ffffff; --m-bar: #f6f6f8; --m-group: #f4f4f6; --m-btn: rgba(0,0,0,0.06); --m-track: rgba(0,0,0,0.08);
   font: 13px/1.35 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; color: var(--m-text); text-align: left; letter-spacing: 0; }
 @media (prefers-color-scheme: dark) {
-  .mk { --m-text: #f2f2f4; --m-sub: #a1a1a7; --m-faint: #7c7c83; --m-sep: rgba(255,255,255,0.1); --m-menu: rgba(40,40,44,0.82); --m-hl: #0a84ff;
+  .mk { --m-text: #f2f2f4; --m-sub: #a1a1a7; --m-faint: #7c7c83; --m-sep: rgba(255,255,255,0.1); --m-menu: rgba(36,36,40,0.62); --m-hl: #0a84ff;
     --m-win: #1f1f22; --m-bar: #2a2a2e; --m-group: #2a2a2e; --m-btn: rgba(255,255,255,0.1); --m-track: rgba(255,255,255,0.12); }
 }
 
 /* Desktop with the menu bar and the open menu */
-.desk { position: relative; border-radius: 22px; overflow: hidden; height: 560px; box-shadow: var(--shadow-win);
-  background: radial-gradient(500px 300px at 85% 10%, rgba(255,222,150,0.9), transparent 70%), radial-gradient(700px 500px at 10% 100%, #9cc6ea, transparent 70%), linear-gradient(170deg, #cfe3f5, #8dbbe3 60%, #5b97cf); }
+.desk { position: relative; border-radius: 28px; overflow: hidden; height: 490px; box-shadow: var(--shadow-win);
+  background: radial-gradient(45% 60% at 82% 8%, #ffe2a6, transparent 70%), radial-gradient(55% 70% at 8% 100%, #9fd2ff, transparent 70%), radial-gradient(40% 50% at 45% 70%, #c9f0e4, transparent 70%), linear-gradient(165deg, #dbe9f7, #a9cdf0 55%, #6fa6dd); }
 @media (prefers-color-scheme: dark) {
-  .desk { background: radial-gradient(500px 300px at 85% 10%, rgba(245,170,90,0.35), transparent 70%), radial-gradient(700px 500px at 10% 100%, #1d4a75, transparent 70%), linear-gradient(170deg, #20354d, #142a43 60%, #0b1b2e); }
+  .desk { background: radial-gradient(45% 60% at 82% 8%, rgba(245,170,90,0.4), transparent 70%), radial-gradient(55% 70% at 8% 100%, #1d4f86, transparent 70%), radial-gradient(40% 50% at 45% 70%, rgba(40,120,100,0.45), transparent 70%), linear-gradient(165deg, #1d3049, #13263d 55%, #0a1828); }
 }
 .mk-menubar { display: flex; justify-content: space-between; align-items: center; height: 30px; padding: 0 14px; font-size: 13px; color: #1d1d1f;
   background: rgba(255,255,255,0.28); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
@@ -345,9 +346,9 @@ section.tint { background: linear-gradient(180deg, transparent, var(--sky-100) 1
 .mk-menubar .item.on { background: rgba(0,0,0,0.12); }
 @media (prefers-color-scheme: dark) { .mk-menubar .item.on { background: rgba(255,255,255,0.2); } }
 .mk-menubar .item svg { width: 16px; height: 16px; stroke-width: 1.6; }
-.desk .mk-nsmenu { position: absolute; top: 36px; right: 44px; }
+.desk .mk-nsmenu { position: absolute; top: 36px; right: 28px; }
 
-.mk-nsmenu { width: 300px; padding: 5px; border-radius: 13px; background: var(--m-menu); -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%);
+.mk-nsmenu { width: 300px; padding: 6px; border-radius: 16px; background: var(--m-menu); -webkit-backdrop-filter: blur(30px) saturate(200%); backdrop-filter: blur(30px) saturate(200%);
   box-shadow: 0 0 0 0.5px rgba(0,0,0,0.18), inset 0 0.5px 0 rgba(255,255,255,0.6), 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08); }
 @media (prefers-color-scheme: dark) { .mk-nsmenu { box-shadow: 0 0 0 0.5px rgba(0,0,0,0.6), inset 0 0 0 0.5px rgba(255,255,255,0.14), 0 14px 36px rgba(0,0,0,0.5); } }
 .mk-item { display: flex; align-items: center; gap: 9px; padding: 3.5px 9px; border-radius: 7px; white-space: nowrap; }
@@ -407,7 +408,6 @@ section.tint { background: linear-gradient(180deg, transparent, var(--sky-100) 1
   .hero .wrap, .forecast, .feature, .feature.flip { grid-template-columns: minmax(0, 1fr); }
   .feature.flip > .copy { order: 0; }
   .details { grid-template-columns: repeat(2, 1fr); }
-  .desk { height: 560px; max-width: 620px; }
 }
 @media (max-width: 760px) {
   .nav nav a:not(.btn):not(.keep) { display: none; }
