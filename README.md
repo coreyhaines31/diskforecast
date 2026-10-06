@@ -57,7 +57,7 @@ xcodebuild -project DiskForecast.xcodeproj -scheme DiskForecast test
 swiftlint --strict
 ```
 
-The scanner, forecast, cleanup catalog, Trash rules, and System Data parsers live in `Packages/DiskForecastCore` with unit tests, so they can be tested without launching the app. The app icon is drawn by `Scripts/render-app-icon`.
+The scanner, forecast, cleanup catalog, Trash rules, and System Data parsers live in `Packages/DiskForecastCore` with unit tests, so they can be tested without launching the app. The app icon is rendered from `site/images/icon.svg` by `Scripts/render-app-icon.sh`, so the app and the site share one drawing.
 
 ## Releasing
 
