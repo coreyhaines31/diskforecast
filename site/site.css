@@ -5,8 +5,8 @@
   --surface: #ffffff;
   --surface-2: #eef0f3;
   --ink: #1d1d1f;
-  --ink-2: #6e6e73;
-  --ink-3: #8e8e93;
+  --ink-2: #636368;
+  --ink-3: #6e6e73;
   --line: rgba(0,0,0,0.08);
   --accent: #0a6cdf;
   --accent-hi: #3a8ef2;
@@ -40,7 +40,7 @@
     --surface-2: #1c2027;
     --ink: #f5f5f7;
     --ink-2: #a1a1a6;
-    --ink-3: #7c7c82;
+    --ink-3: #8a8a90;
     --line: rgba(255,255,255,0.1);
     --accent: #3d95ff;
     --accent-hi: #66acff;
@@ -280,11 +280,11 @@ section.tight { padding: clamp(56px, 8vw, 96px) 0 0; }
 .head-sm h2 { font-size: clamp(30px, 4vw, 44px); }
 
 /* ---------- Hi-fi macOS 26 mockups, drawn in code. They follow the visitor's light or dark setting, like a real Mac. ---------- */
-.mk { --m-text: #1d1d1f; --m-sub: #6e6e73; --m-faint: #9a9aa0; --m-sep: rgba(0,0,0,0.09); --m-menu: rgba(250,250,252,0.62); --m-hl: #0a7aff;
+.mk { --m-text: #1d1d1f; --m-sub: #6e6e73; --m-faint: #9a9aa0; --m-sep: rgba(0,0,0,0.09); --m-menu: rgba(250,250,252,0.62); --m-hl: #0a6cdf;
   --m-win: #ffffff; --m-bar: #f6f6f8; --m-group: #f4f4f6; --m-btn: rgba(0,0,0,0.06); --m-track: rgba(0,0,0,0.08);
   font: 13px/1.35 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; color: var(--m-text); text-align: left; letter-spacing: 0; }
 @media (prefers-color-scheme: dark) {
-  .mk { --m-text: #f2f2f4; --m-sub: #a1a1a7; --m-faint: #7c7c83; --m-sep: rgba(255,255,255,0.1); --m-menu: rgba(36,36,40,0.62); --m-hl: #0a84ff;
+  .mk { --m-text: #f2f2f4; --m-sub: #a1a1a7; --m-faint: #7c7c83; --m-sep: rgba(255,255,255,0.1); --m-menu: rgba(36,36,40,0.62); --m-hl: #0070e8;
     --m-win: #1f1f22; --m-bar: #2a2a2e; --m-group: #2a2a2e; --m-btn: rgba(255,255,255,0.1); --m-track: rgba(255,255,255,0.12); }
 }
 
