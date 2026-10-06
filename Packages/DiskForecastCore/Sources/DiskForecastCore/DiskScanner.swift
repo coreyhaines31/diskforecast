@@ -295,7 +295,9 @@ extension DiskScanner {
         let found = job.insideArtifact ? [] : ArtifactKind.detect(directories: directoryNames, files: fileNames)
         let artifactNames = Set(found.map(\.folderName))
         if !found.isEmpty {
-            let newest = modified.filter { !artifactNames.contains($0.key) }.values.max() ?? .distantPast
+            // Everything directly in the project counts, the build folder and .git included: a
+            // recent install or commit means the project is in use.
+            let newest = modified.values.max() ?? .distantPast
             listing.artifacts = found.map { ($0, newest) }
         }
         let skipped = Set(listing.skipped)

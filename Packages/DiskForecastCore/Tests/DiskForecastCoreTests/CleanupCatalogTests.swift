@@ -30,6 +30,15 @@ struct CleanupCatalogTests {
         return Dictionary(uniqueKeysWithValues: items.map { ($0.id, $0) })
     }
 
+    @Test func countsARecentInstallAsActive() async throws {
+        let old = now.addingTimeInterval(-90 * 86_400)
+        try write("code/app/package.json", bytes: 10, modified: old)
+        try write("code/app/node_modules/pkg/index.js", bytes: 2_000_000)
+        let items = await items()
+        #expect(items["stale-builds"] == nil)
+        #expect(items["active-builds"]?.entries.count == 1)
+    }
+
     @Test func groupsKnownLocations() async throws {
         let old = now.addingTimeInterval(-90 * 86_400)
         try write("Library/Caches/com.example.app/blob", bytes: 2_000_000)
@@ -39,6 +48,8 @@ struct CleanupCatalogTests {
         try write(".cache/pip/http/blob", bytes: 1_200_000)
         try write("code/old/package.json", bytes: 10, modified: old)
         try write("code/old/node_modules/pkg/index.js", bytes: 2_000_000)
+        let installed = home.path + "/code/old/node_modules"
+        try FileManager.default.setAttributes([.modificationDate: old], ofItemAtPath: installed)
         try write("code/new/package.json", bytes: 10)
         try write("code/new/node_modules/pkg/index.js", bytes: 2_000_000)
         try write("Downloads/Installer.dmg", bytes: 12_000_000)

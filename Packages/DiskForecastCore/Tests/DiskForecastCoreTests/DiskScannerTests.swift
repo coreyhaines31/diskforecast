@@ -78,6 +78,8 @@ struct DiskScannerTests {
         try write("rust/target/debug/app", bytes: 5_000)
         try write("not-a-project/target/thing", bytes: 5_000)
         try write("not-a-project/node_modules/thing", bytes: 5_000)
+        let installed = rootPath + "/old-app/node_modules"
+        try FileManager.default.setAttributes([.modificationDate: old], ofItemAtPath: installed)
         let result = await scan()
         #expect(result.artifacts.map(\.path) == [rootPath + "/old-app/node_modules", rootPath + "/rust/target"])
         let nodeModules = try #require(result.artifacts.first)

@@ -104,7 +104,7 @@ public struct FileFinding: Sendable, Hashable {
 public struct ArtifactFinding: Sendable, Hashable {
     public let kind: ArtifactKind
     public let path: String
-    /// The newest modification date among the project's other files.
+    /// The newest modification date among the entries directly in the project.
     public let projectModified: Date
     public let node: Int
 
