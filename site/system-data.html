@@ -16,11 +16,12 @@
   <link rel="apple-touch-icon" href="/images/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
 </head>
 <body>
-  <div class="sky" aria-hidden="true"></div>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="nav">
     <div class="wrap">
       <a class="brand" href="/"><img src="/images/icon.svg" alt=""> Disk Forecast</a>
@@ -35,15 +36,15 @@
   </div>
   <main>
     <div class="sub-hero">
-      <div class="wrap">
+      <div class="wrap narrow">
         <div class="eyebrow">Guide</div>
         <h1>How to clear System Data on your Mac.</h1>
         <p class="lede">System Data is the gray bar in Storage settings that keeps growing and won't say why. Here's what's inside it, which parts you can reclaim, and the exact steps, using only Apple's own tools.</p>
-        <div class="tldr"><h2>The short version</h2><p>System Data is a catch-all, not one thing. The big parts are usually local Time Machine snapshots, Xcode simulator runtimes, caches, and purgeable space. Restart first, then check snapshots and simulators: that's where the most space hides. Leave purgeable space alone, since macOS frees it on its own, and never delete folders under /System or /private/var by hand.</p></div>
+        <div class="tldr glass"><h2>The short version</h2><p>System Data is a catch-all, not one thing. The big parts are usually local Time Machine snapshots, Xcode simulator runtimes, caches, and purgeable space. Restart first, then check snapshots and simulators: that's where the most space hides. Leave purgeable space alone, since macOS frees it on its own, and never delete folders under /System or /private/var by hand.</p></div>
       </div>
     </div>
     <section class="tight">
-      <div class="wrap"><div class="prose">
+      <div class="wrap narrow"><div class="prose">
 
         <h2>First, look at what you have</h2>
         <p>Open <strong>System Settings › General › Storage</strong>. The colored bar at the top splits your disk into categories, and System Data is usually the gray slice near the end. Hover over it to see its size.</p>
@@ -99,19 +100,19 @@ pip cache purge</code></pre>
     
       </div></div>
     </section>
-    <section class="tight tint" id="shortcut">
-      <div class="wrap feature flip">
-        <div class="copy prose">
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
 
-        <h2>Or do it in one window</h2>
-        <p>Disk Forecast breaks System Data into the parts above, explains each in plain English, and runs Apple's own tool for each fix after you confirm. It's free, it lives in your menu bar, and it tells you weeks ahead when your disk will fill.</p>
+          <h2>Or do it in one window.</h2>
+          <p>Disk Forecast breaks System Data into the parts above, explains each one, and runs Apple&#39;s own tool for each fix after you confirm. It&#39;s free.</p>
     
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
         <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
           </div>
         </div>
-        <div class="backdrop">
+        <div class="stage glass">
           <div class="mk mk-win" role="img" aria-label="The Disk Forecast System Data window, titled System Data, explained. It lists purgeable space, three local Time Machine snapshots, the Spotlight index, simulators with two iOS runtimes, Apple Intelligence and Siri models, and Docker, each with a plain explanation and, except purgeable space, a button that runs the owning tool's own fix.">
             <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">System Data</div></div>
             <div class="mk-hdr"><div><b>System Data, explained</b><span>What macOS files under System Data in Storage settings, and how to reclaim it with Apple's and each tool's own commands. Nothing runs until you confirm.</span></div><div class="mk-pill">Refresh</div></div>
@@ -127,10 +128,10 @@ pip cache purge</code></pre>
         </div>
       </div>
     </section>
-    <section class="tight">
+    <section class="tight lit">
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
-        <div class="faq">
+        <div class="faq glass">
           <details><summary>Why is System Data so big on my Mac?</summary><p>Because it&#x27;s where macOS counts everything it doesn&#x27;t file under a named category. Local Time Machine snapshots alone can take 30 to 60 GB, and Xcode simulator runtimes, caches, the Spotlight index, Apple Intelligence models, and Docker&#x27;s disk image all land there too.</p></details>
           <details><summary>Is it safe to delete System Data?</summary><p>Some of it. Caches, old simulator runtimes, and local Time Machine snapshots can be removed with Apple&#x27;s own tools. Purgeable space should be left for macOS to manage, and you should never delete files under /System or /private/var by hand.</p></details>
           <details><summary>Why does System Data keep coming back?</summary><p>Most of it is supposed to. Caches refill as you use apps, Time Machine makes a new local snapshot every hour, and Spotlight rebuilds its index. Clearing it buys room; it doesn&#x27;t stop the growth. That&#x27;s why a forecast helps.</p></details>
@@ -139,17 +140,17 @@ pip cache purge</code></pre>
         </div>
       </div>
     </section>
-    <section class="cta">
+    <section class="cta lit">
       <div class="wrap">
-        <div class="cta-card">
-          <img src="/images/icon.svg" alt="" width="88" height="88">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96">
           <h2>Know before it's full.</h2>
           <p>Free. No account, no subscription.</p>
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
         <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
           </div>
-          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel<br><code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
         </div>
       </div>
     </section>
@@ -161,11 +162,6 @@ pip cache purge</code></pre>
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/system-data">Clear System Data</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-  <script>
-    const nav = document.querySelector(".nav");
-    const edge = () => nav.classList.toggle("scrolled", window.scrollY > 8);
-    edge(); window.addEventListener("scroll", edge, { passive: true });
-  </script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why is System Data so big on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Because it's where macOS counts everything it doesn't file under a named category. Local Time Machine snapshots alone can take 30 to 60 GB, and Xcode simulator runtimes, caches, the Spotlight index, Apple Intelligence models, and Docker's disk image all land there too."}}, {"@type": "Question", "name": "Is it safe to delete System Data?", "acceptedAnswer": {"@type": "Answer", "text": "Some of it. Caches, old simulator runtimes, and local Time Machine snapshots can be removed with Apple's own tools. Purgeable space should be left for macOS to manage, and you should never delete files under /System or /private/var by hand."}}, {"@type": "Question", "name": "Why does System Data keep coming back?", "acceptedAnswer": {"@type": "Answer", "text": "Most of it is supposed to. Caches refill as you use apps, Time Machine makes a new local snapshot every hour, and Spotlight rebuilds its index. Clearing it buys room; it doesn't stop the growth. That's why a forecast helps."}}, {"@type": "Question", "name": "Does restarting reduce System Data?", "acceptedAnswer": {"@type": "Answer", "text": "Often, a little. A restart clears temporary files and swap, and gives Storage settings a chance to recalculate. It's the free first step."}}, {"@type": "Question", "name": "Can an app clear System Data for me?", "acceptedAnswer": {"@type": "Answer", "text": "Disk Forecast breaks System Data into its parts, explains each in plain English, and runs Apple's own tool for each fix after you confirm. It's free, with the source on GitHub."}}]}</script>
 </body>
 </html>

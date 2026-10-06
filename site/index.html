@@ -16,8 +16,9 @@
   <link rel="apple-touch-icon" href="/images/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -26,7 +27,7 @@
     <symbol id="i-drive" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="19" height="10" rx="3"/><path d="M2.5 12h19M17 14.5h.01"/></g></symbol>
     <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7.5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
   </svg>
-  <div class="sky" aria-hidden="true"></div>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="nav">
     <div class="wrap">
       <a class="brand" href="/"><img src="/images/icon.svg" alt=""> Disk Forecast</a>
@@ -44,9 +45,9 @@
     <div class="hero">
       <div class="wrap">
         <div>
-          <div class="badge"><i></i>Free · Source on GitHub · No account</div>
+          <div class="badge"><i></i>Free, with the source on GitHub</div>
           <h1>Know before your Mac runs <em>out of space.</em></h1>
-          <p class="lede">Disk Forecast sits in your menu bar, learns how fast your disk fills, and tells you the day it'll run out. When it's time to make room, it shows you exactly what's safe to clear.</p>
+          <p class="lede">Disk Forecast warns you weeks before your disk fills, then shows you exactly what&#39;s safe to clear.</p>
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg aria-hidden="true"><use href="#i-download"/></svg>Download free</a>
             <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg aria-hidden="true"><use href="#i-github"/></svg>View source code</a>
@@ -55,7 +56,7 @@
             <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .67.42l1.88 3.81 4.2.61a.75.75 0 0 1 .42 1.28l-3.04 2.97.72 4.19a.75.75 0 0 1-1.09.79L8 12.35l-3.76 1.97a.75.75 0 0 1-1.09-.79l.72-4.19L.83 6.37a.75.75 0 0 1 .42-1.28l4.2-.61L7.33.67A.75.75 0 0 1 8 .25z"/></svg>
             <span><span data-stars-count>0</span> <span data-stars-label>stars</span> on GitHub</span>
           </a>
-          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · Notarized by Apple<br><code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
         </div>
 
         <!-- mockup:menu -->
@@ -95,30 +96,14 @@
       </div>
     </div>
 
-    <div class="wrap">
-      <div class="promises">
-        <a href="#forecast"><span class="k">01 · Forecast</span><b>Full in ~41 days</b><span>A countdown built from how fast your disk actually fills.</span></a>
-        <a href="#explain"><span class="k">02 · Explain</span><b>System Data, decoded</b><span>What's really inside the gray bar, in plain English.</span></a>
-        <a href="#reclaim"><span class="k">03 · Reclaim</span><b>Trash, never gone</b><span>Clear the safe stuff from the menu. Change your mind? It's in the Trash.</span></a>
-      </div>
-    </div>
-
-    <section id="forecast">
-      <div class="wrap forecast">
-        <div>
-          <div class="eyebrow">Forecast</div>
-          <div class="head" style="margin-bottom:0">
-            <h2>A weather report for your disk.</h2>
-            <p>Every hour, Disk Forecast checks how much space is free and keeps a daily history. After 3 days it can see your pace, and a straight line through the last 30 days tells you when you'll hit zero, while you still have weeks to act.</p>
-          </div>
-          <ul class="facts">
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span><b>Built from your own history.</b> Your disk and your habits, not an average of other people's Macs.</span></li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span><b>Weeks of warning, not minutes.</b> macOS speaks up when the disk is already nearly full. Disk Forecast tells you while it's still your choice.</span></li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18M3 5v3h18V5"/><path d="M15 6.5h3"/><path d="M8 12v7M12 14v5M16 11v8"/></svg><span><b>Always in view.</b> Free space lives in the menu bar, so a 30 GB surprise never sneaks up on you.</span></li>
-          </ul>
+    <section id="forecast" class="lit">
+      <div class="wrap">
+        <div class="head center">
+          <h2>A weather report for your disk.</h2>
+          <p>Every hour it checks your free space. After 3 days it knows your pace, and a straight line through the last 30 days tells you when you&#39;ll hit zero.</p>
         </div>
-        <div class="chart-card" role="img" aria-label="Chart of free space since September 5: it falls from about 229 GB to 142 GB today, with a jump after a cleanup in late September. A dashed forecast line continues to zero around November 15, inside a shaded range of likely outcomes.">
-          <div class="chart-top"><b>Macintosh HD · free space</b><span>last 30 days + forecast</span></div>
+        <div class="chart-card glass" role="img" aria-label="Chart of free space since September 5: it falls from about 229 GB to 142 GB today, with a jump after a cleanup in late September. A dashed forecast line continues to zero around November 15, inside a shaded range of likely outcomes.">
+          <div class="chart-top"><b>Macintosh HD</b><span>Free space, last 30 days and forecast</span></div>
           <div class="chart">
             <svg viewBox="0 0 640 240" preserveAspectRatio="none" aria-hidden="true">
               <g class="grid"><line x1="0" y1="60.8" x2="640" y2="60.8"/><line x1="0" y1="145.4" x2="640" y2="145.4"/></g>
@@ -134,26 +119,18 @@
             <i class="dotmark end" style="left:94.67%;top:95.83%"></i>
           </div>
           <div class="axis" aria-hidden="true"><span style="left:2%">Sep 5</span><span style="left:34.67%">Oct 1</span><span style="left:76%">Nov 1</span></div>
-          <div class="outlook">
-            <div><small>Today</small><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="8" fill="#f5b63a"/><g stroke="#f5b63a" stroke-width="2.4" stroke-linecap="round"><path d="M20 4v4M20 32v4M4 20h4M32 20h4M8.7 8.7l2.8 2.8M28.5 28.5l2.8 2.8M8.7 31.3l2.8-2.8M28.5 11.5l2.8-2.8"/></g></svg><b>142 GB</b></div>
-            <div><small>Oct 19</small><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="25" cy="14" r="7" fill="#f5b63a"/><path d="M12 32c-3.6 0-6.5-2.7-6.5-6.1 0-3.2 2.5-5.8 5.7-6C12.3 17 15.2 15 18.6 15c4 0 7.3 2.9 7.8 6.8 2.7.4 4.9 2.6 4.9 5.4 0 3-2.4 4.8-5.5 4.8z" fill="var(--sky-300)"/></svg><b>~93 GB</b></div>
-            <div><small>Nov 2</small><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 30c-4 0-7-3-7-6.6 0-3.5 2.7-6.3 6.1-6.5C11.4 13.4 14.8 11 18.8 11c4.6 0 8.4 3.3 9 7.8 3.1.4 5.6 3 5.6 6.2 0 3.4-2.8 5-6.2 5z" fill="var(--sky-500)"/></svg><b>~44 GB</b></div>
-            <div class="bad"><small>Nov 15</small><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 25c-4 0-7-2.8-7-6.3 0-3.3 2.7-6 6.1-6.2C11.4 9.2 14.8 7 18.8 7c4.6 0 8.4 3.2 9 7.4 3.1.4 5.6 2.8 5.6 5.9 0 3.2-2.8 4.7-6.2 4.7z" fill="var(--ink-3)"/><path d="M13 29l-2 5M20 29l-2 5M27 29l-2 5" stroke="var(--sky-500)" stroke-width="2.4" stroke-linecap="round"/></svg><b>Full</b></div>
-          </div>
         </div>
       </div>
     </section>
 
-    <section id="explain" class="tint">
-      <div class="wrap feature flip">
-        <div class="copy">
-          <div class="eyebrow">Explain</div>
-          <h2>System Data, finally explained.</h2>
-          <p>Storage settings shows a gray bar called System Data and stops there. Disk Forecast opens it up and gives every part a plain-English line: what it is, whether it's safe to touch, and the fix Apple's own tools offer.</p>
-          <p>Local Time Machine snapshots, simulator runtimes, purgeable space, Apple Intelligence models, the Spotlight index, Docker. Nothing runs until you confirm.</p>
-          <p><a href="/system-data">Read the guide to clearing System Data →</a></p>
+    <section id="explain" class="lit">
+      <div class="wrap">
+        <div class="head center">
+          <h2>System Data, explained.</h2>
+          <p>Storage settings shows a gray bar and stops there. Disk Forecast names every part, says what it is, and fixes it with Apple&#39;s own tools when you ask.</p>
+          <p class="more"><a href="/system-data">Read the System Data guide</a></p>
         </div>
-        <div class="backdrop">
+        <div class="stage glass">
           <!-- mockup:system-data -->
           <div class="mk mk-win" role="img" aria-label="The Disk Forecast System Data window, titled System Data, explained. It lists purgeable space, three local Time Machine snapshots, the Spotlight index, simulators with two iOS runtimes, Apple Intelligence and Siri models, and Docker, each with a plain explanation and, except purgeable space, a button that runs the owning tool's own fix.">
             <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">System Data</div></div>
@@ -172,17 +149,14 @@
       </div>
     </section>
 
-    <section id="reclaim">
+    <section id="reclaim" class="lit">
       <div class="wrap">
-        <div class="feature">
-          <div class="copy">
-            <div class="eyebrow">Reclaim</div>
-            <h2>Reclaim space you can actually spare.</h2>
-            <p>The Cleanup window sorts what it finds by risk. <strong>Safe to clear</strong> is what rebuilds itself: package manager caches, app caches (never macOS's own), logs, Xcode build data, and build folders like node_modules in old projects. A project counts as old when nothing directly inside its folder has changed in 30 days, and you can change that in Settings.</p>
-            <p><strong>Worth a look</strong> is what only you can judge: local AI models from Ollama, LM Studio, and Hugging Face, build folders in projects you're still working on, virtual machines, installers, big downloads. Every line says in plain English what you're looking at.</p>
-          </div>
-          <div class="backdrop">
-            <!-- mockup:cleanup -->
+        <div class="head center">
+          <h2>Reclaim space you can spare.</h2>
+          <p>Caches, logs, and build folders from old projects rebuild themselves, so they come checked. Everything else waits for your call, and all of it goes to the Trash.</p>
+        </div>
+        <div class="stage glass">
+          <!-- mockup:cleanup -->
             <div class="mk mk-win" role="img" aria-label="The Disk Forecast Cleanup window, headed Reclaim space. Safe to clear, 12.4 GB, all checked: build folders in old projects, package manager caches, app caches, Xcode device support, Xcode DerivedData, and logs. Worth a look, 47 GB, unchecked: Ollama models, build folders in active projects, the Docker disk image, big downloads, and disk images and installers. The footer reads 12.4 GB selected, with Open Trash and Move to Trash buttons.">
               <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">Cleanup</div></div>
               <div class="mk-hdr"><div><b>Reclaim space</b><span>1,284,906 files measured in 9 s. Everything goes to the Trash first.</span></div><div class="mk-pill">Rescan</div></div>
@@ -204,105 +178,85 @@
               <div class="mk-foot"><span>12.4 GB selected</span><div class="mk-pill">Open Trash</div><div class="mk-pill blue">Move to Trash…</div></div>
             </div>
             <!-- /mockup:cleanup -->
+        </div>
+      </div>
+    </section>
+
+    <section id="careful" class="lit">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Careful by default.</h2>
+          <p>Everything goes to the Trash, nothing leaves your Mac, and nothing costs a thing.</p>
+        </div>
+        <div class="points glass">
+          <div><h3>Trash, never gone</h3><p>Everything you clear goes to the Trash. Change your mind and put it back.</p></div>
+          <div><h3>Apple&#39;s own tools</h3><p>System fixes run <code>tmutil</code>, <code>mdutil</code>, or <code>xcrun simctl</code>, and show you the command first.</p></div>
+          <div><h3>Counted once</h3><p>APFS clones and hard links share space on disk, so they&#39;re counted once and totals aren&#39;t inflated.</p></div>
+          <div><h3>Home folder is enough</h3><p>Full Disk Access is optional. Cloud drives like Dropbox are never scanned.</p></div>
+          <div><h3>Stays on your Mac</h3><p>No telemetry, no account. The only network call checks for updates, and you can turn it off.</p></div>
+          <div><h3>Free. Really.</h3><p>No trial, no subscription. Source on GitHub, signed and notarized by Apple.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="why" class="lit">
+      <div class="wrap">
+        <div class="founder glass">
+          <img src="/images/corey.jpg" alt="Corey Haines" width="72" height="72">
+          <div>
+            <p><strong>Why it exists.</strong> I build a lot of side projects, and my Mac kept filling up without warning. Storage settings lumped most of it into System Data and stopped there, and the tools that explain it cost $19 to $49. When I finally looked, 99 GB of my disk was build folders from projects I hadn&#39;t touched in a month. So I built the app I wanted: it warns me weeks ahead, explains where the space went, and moves files to the Trash instead of deleting them. And it&#39;s free.</p>
+            <cite>Corey Haines, maker of Disk Forecast and Midnight Oil</cite>
           </div>
         </div>
-        <div class="trust">
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 12.5h9l1-12.5"/><path d="M10 11v5M14 11v5"/></svg><h3>Trash, never delete</h3><p>Every file it clears goes to the Trash. Change your mind and put it back.</p></div>
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17l6-6 4 4 6-6"/><path d="M4 5h16v14H4z"/></svg><h3>Apple's own tools</h3><p>System fixes run <code>tmutil</code>, <code>mdutil</code>, and <code>xcrun simctl</code>, the commands Apple ships. Never a mystery script.</p></div>
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><h3>Nothing without a yes</h3><p>Every action shows what it will do, and the exact command it runs, then waits for you to confirm.</p></div>
-        </div>
       </div>
     </section>
 
-    <section id="details" class="tint">
+    <section id="compare" class="lit">
       <div class="wrap">
-        <div class="head">
-          <div class="eyebrow">Under the hood</div>
-          <h2>Careful where it counts.</h2>
-          <p>A disk tool is only as good as its numbers. These are the parts you won't see, and the reasons you can trust what you do.</p>
+        <div class="head center">
+          <h2>How it compares.</h2>
+          <p>Free, next to the apps people usually reach for.</p>
         </div>
-        <div class="details">
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2.5L5 13.5h6l-1 8 8-11h-6z"/></svg><h3>A fast scanner</h3><p>Reads folders in bulk with <code>getattrlistbulk</code> on a pool of threads, so a rescan is something you just do.</p></div>
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="12" height="12" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4"/></svg><h3>Counted once</h3><p>APFS clones and hard links share the same space on disk. Disk Forecast counts them once, so its totals aren't inflated.</p></div>
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-6.5 8 6.5V20H4z"/><path d="M10 20v-5h4v5"/></svg><h3>Your home folder is enough</h3><p>It works with access to your home folder. Full Disk Access is optional and adds the folders macOS guards. Cloud drives are never scanned.</p></div>
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg><h3>Updates itself</h3><p>Signed with Developer ID and notarized by Apple. New versions arrive through Sparkle, and you can turn automatic checks off.</p></div>
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9h14l-1.5 11h-11z"/><path d="M8 9a4 4 0 0 1 8 0"/></svg><h3>One line with Homebrew</h3><p><code>brew install --cask coreyhaines31/tap/diskforecast</code>, or download the app from GitHub.</p></div>
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><h3>Stays on your Mac</h3><p>No telemetry, no account. What it learns about your disk never leaves the Mac it's on.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="compare">
-      <div class="wrap">
-        <div class="head">
-          <div class="eyebrow">Compare</div>
-          <h2>How it stacks up.</h2>
-          <p>What you get for free, next to the apps people usually reach for. Each one has a longer write-up: <a href="/alternatives/diskbuddy">DiskBuddy</a>, <a href="/alternatives/daisydisk">DaisyDisk</a>, <a href="/alternatives/cleanmymac">CleanMyMac</a>, <a href="/alternatives/grandperspective">GrandPerspective</a>.</p>
-        </div>
-        <div class="table-scroll"><table class="compare">
+        <div class="table-card glass"><div class="table-scroll"><table class="compare">
           <thead><tr><th></th><th class="us">Disk Forecast</th><th><a href="/alternatives/diskbuddy">DiskBuddy</a></th><th><a href="/alternatives/daisydisk">DaisyDisk</a></th><th><a href="/alternatives/cleanmymac">CleanMyMac</a></th></tr></thead>
           <tbody>
             <tr><td>Price</td><td class="us">Free</td><td>$19 at launch, now $49</td><td>$9.99 one-time</td><td>From $47.50 a year</td></tr>
-            <tr><td>Tells you when the disk will be full</td><td class="us">Yes<span class="note">from your own daily history</span></td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
-            <tr><td>System Data broken down</td><td class="us">Yes<span class="note">in plain English, with Apple's fixes</span></td><td>Snapshots view</td><td class="n">—</td><td class="n">—</td></tr>
+            <tr><td>Tells you when the disk will be full</td><td class="us">Yes</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+            <tr><td>System Data explained</td><td class="us">Yes</td><td>Snapshots view</td><td class="n">—</td><td class="n">—</td></tr>
             <tr><td>Deletes go to the Trash only</td><td class="us">Yes</td><td>Yes</td><td class="n">—</td><td class="n">—</td></tr>
-            <tr><td>Developer and AI-model clutter</td><td class="us">Yes<span class="note">caches, build folders, local models</span></td><td>Yes<span class="note">local LLM model finder</span></td><td class="n">—</td><td class="n">—</td></tr>
             <tr><td>Source available</td><td class="us">Yes, on GitHub</td><td class="n">—</td><td>No</td><td>No</td></tr>
-            <tr><td>Telemetry</td><td class="us">None</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
           </tbody>
-        </table></div>
-        <p class="table-foot">“—” means we couldn't confirm it from the vendor's own materials as of October 2026. Competitor prices and features change; <a href="https://github.com/coreyhaines31/diskforecast/issues">tell us</a> if something here is out of date.</p>
+        </table></div></div>
+        <p class="table-foot">“—” means we couldn&#39;t confirm it from the vendor&#39;s own materials as of October 2026. More detail: <a href="/alternatives/">every comparison</a>.</p>
       </div>
     </section>
 
-    <section id="free" class="tint">
-      <div class="wrap">
-        <div class="head">
-          <div class="eyebrow">Free</div>
-          <h2>Free. Really.</h2>
-          <p>No account, no trial, no subscription, no ads. Use it at home or at work, and read every line of how it counts.</p>
-        </div>
-        <div class="proof">
-          <div><b>$0</b><span>At home or at work. Nothing to sign up for, nothing to cancel.</span></div>
-          <div><b>Source</b><span>Every line is on GitHub. Read it, audit it, build it yourself. <a href="https://github.com/coreyhaines31/diskforecast">View source</a></span></div>
-          <div><b>Notarized</b><span>Signed with Developer ID and checked by Apple, every release.</span></div>
-          <div><b>0</b><span>Trackers or analytics. The only network call is the update check.</span></div>
-          <div><b>Trash</b><span>Where every cleared file goes. Nothing is deleted outright.</span></div>
-          <div><b>14+</b><span>macOS Sonoma or later, on Apple Silicon and Intel.</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="faq">
+    <section id="faq" class="lit">
       <div class="wrap">
         <div class="head center"><h2>Questions</h2></div>
-        <div class="faq">
-          <details><summary>Is it safe?</summary><p>Yes. Files it clears go to the Trash, where you can put them back. The Safe to clear group only holds things that rebuild themselves, like caches and build folders. System Data fixes run Apple's own tools, like <code>tmutil</code> and <code>mdutil</code>, and every one asks you first.</p></details>
-          <details><summary>Does it delete anything?</summary><p>Not on its own. Files move to the Trash, and the space comes back when you empty it yourself. The exceptions are System Data fixes, like removing local Time Machine snapshots: there, Apple's own tool does the work, and only after you confirm.</p></details>
-          <details><summary>Why does it want Full Disk Access?</summary><p>It doesn't need it. Everything works with access to your home folder. Full Disk Access lets it measure the folders macOS guards, like Mail, Messages, iCloud Drive, and other apps' containers. Without it, those folders are skipped and their space shows up as unexplained. You can change your mind any time.</p></details>
-          <details><summary>Does it scan Dropbox or Google Drive?</summary><p>No. Cloud drives like Google Drive, Dropbox, and OneDrive are never scanned. Each one asks for its own permission, and their files mostly live online anyway.</p></details>
-          <details><summary>What is System Data?</summary><p>It's the catch-all bar in System Settings › General › Storage for everything macOS doesn't file under a named category. The big pieces are usually local Time Machine snapshots, purgeable space, simulator runtimes, caches, Apple Intelligence models, and the Spotlight index. <a href="/system-data">Our guide</a> walks through each one.</p></details>
-          <details><summary>Why not the App Store?</summary><p>App Store apps run in a sandbox that can't see most of your disk, so a disk tool there can't measure System Data or run Apple's fixes. Even DaisyDisk ships a separate direct download for that reason. Disk Forecast is signed and notarized by Apple, and installs from GitHub or Homebrew.</p></details>
+        <div class="faq glass">
+          <details><summary>Is it safe?</summary><p>Yes. Files it clears go to the Trash, where you can put them back. Safe to clear only holds things that rebuild themselves, like caches and build folders. System Data fixes run Apple&#39;s own tools, and every one asks you first.</p></details>
+          <details><summary>Does it delete anything?</summary><p>Not on its own. Files move to the Trash, and the space comes back when you empty it. The exceptions are System Data fixes, like removing local Time Machine snapshots: Apple&#39;s own tool does the work, and only after you confirm.</p></details>
+          <details><summary>Why does it want Full Disk Access?</summary><p>It doesn&#39;t need it. Everything works with your home folder. Full Disk Access lets it measure the folders macOS guards, like Mail, Messages, iCloud Drive, and other apps&#39; containers. Without it, their space shows up as unexplained.</p></details>
+          <details><summary>What is System Data?</summary><p>The catch-all bar in Storage settings for everything macOS doesn&#39;t file under a named category: local Time Machine snapshots, purgeable space, simulator runtimes, caches, Apple Intelligence models, the Spotlight index. <a href="/system-data">The guide</a> walks through each one.</p></details>
+          <details><summary>How accurate is the forecast?</summary><p>It&#39;s a trend, not a promise, which is why it says “~”. It draws a straight line through your last 30 days of free space. It appears after 3 days of history, and if your disk fills by less than 100 MB a day, it says “Not filling up.”</p></details>
+          <details><summary>Why not the App Store?</summary><p>App Store apps run in a sandbox that can&#39;t see most of your disk, so a disk tool there can&#39;t measure System Data or run Apple&#39;s fixes. Disk Forecast is signed and notarized by Apple, and installs from GitHub or Homebrew.</p></details>
           <details><summary>Is it really free?</summary><p>Yes, at home or at work. No account, no trial, no subscription. The source is on GitHub, so you can read exactly how it counts and what it moves to the Trash.</p></details>
-          <details><summary>Does more free space make a Mac run better?</summary><p>Not much, and we won't pretend otherwise. On a Mac with an SSD, free space doesn't change how it runs until the disk is nearly full, when updates fail and apps can't save. Disk Forecast's job is to keep you well away from that point.</p></details>
-          <details><summary>How accurate is the forecast?</summary><p>It's a trend, not a promise, which is why it says “~”. It draws a straight line through your last 30 days of free space, so a big download or a cleanup moves it. The forecast appears after 3 days of history, and if your disk is filling by less than 100 MB a day, it just says “Not filling up.”</p></details>
-          <details><summary>Which Macs does it run on?</summary><p>Apple Silicon and Intel Macs running macOS 14 Sonoma or later.</p></details>
-          <details><summary>Where do I report a bug?</summary><p><a href="https://github.com/coreyhaines31/diskforecast/issues">GitHub Issues</a>. Pull requests are welcome too.</p></details>
         </div>
       </div>
     </section>
 
-    <section class="cta">
+    <section class="cta lit">
       <div class="wrap">
-        <div class="cta-card">
-          <img src="/images/icon.svg" alt="" width="88" height="88">
-          <h2>Know before it's full.</h2>
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96">
+          <h2>Know before it&#39;s full.</h2>
           <p>Free. No account, no subscription.</p>
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg aria-hidden="true"><use href="#i-download"/></svg>Download free</a>
             <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg aria-hidden="true"><use href="#i-github"/></svg>View source code</a>
           </div>
-          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel<br><code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
         </div>
       </div>
     </section>
@@ -318,11 +272,6 @@
     </div>
   </footer>
   <script>
-    // The nav gets a hairline once the page scrolls under it.
-    const nav = document.querySelector(".nav");
-    const edge = () => nav.classList.toggle("scrolled", window.scrollY > 8);
-    edge(); window.addEventListener("scroll", edge, { passive: true });
-
     // Live GitHub star count. Fails quietly: the page never depends on it.
     (async () => {
       try {

@@ -29,8 +29,7 @@ GITHUB_ICON = ('<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
 # The two main calls to action, everywhere a page offers the download.
 CTAS = (f'<a class="btn" href="{DOWNLOAD}">{DOWNLOAD_ICON}Download free</a>\n'
         f'        <a class="btn-quiet" href="{REPO}">{GITHUB_ICON}View source code</a>')
-FONTS = ("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500"
-         "&family=Instrument+Serif:ital@0;1&display=swap")
+FONTS = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
 
 
 def esc(t):
@@ -58,13 +57,14 @@ def head(title, description, path):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="{FONTS}">
   <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
 </head>
 <body>
 '''
 
 
 def nav():
-    return f'''  <div class="sky" aria-hidden="true"></div>
+    return f'''  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="nav">
     <div class="wrap">
       <a class="brand" href="/"><img src="/images/icon.svg" alt=""> Disk Forecast</a>
@@ -93,11 +93,6 @@ def footer():
       <div class="footer-links"><a href="{REPO}">GitHub</a><a href="{REPO}/releases">Releases</a><a href="{REPO}/issues">Issues</a><a href="/system-data">Clear System Data</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-  <script>
-    const nav = document.querySelector(".nav");
-    const edge = () => nav.classList.toggle("scrolled", window.scrollY > 8);
-    edge(); window.addEventListener("scroll", edge, {{ passive: true }});
-  </script>
 '''
 
 
@@ -124,12 +119,12 @@ def mockup(name):
 
 
 def table(rows, competitor):
-    out = ['        <div class="table-scroll"><table class="compare">',
+    out = ['        <div class="table-card glass"><div class="table-scroll"><table class="compare">',
            f'          <thead><tr><th></th><th class="us">Disk Forecast</th><th>{esc(competitor)}</th></tr></thead><tbody>']
     for label, us, them in rows:
         cls = ' class="n"' if them == "—" else ""
         out.append(f'            <tr><td>{label}</td><td class="us">{us}</td><td{cls}>{them}</td></tr>')
-    out.append('          </tbody></table></div>')
+    out.append('          </tbody></table></div></div>')
     out.append('        <p class="table-foot">“—” means we couldn\'t confirm it from the vendor\'s own materials as of October 2026.</p>')
     return "\n".join(out)
 
@@ -142,10 +137,10 @@ def faq_schema(faqs):
 
 def faq_block(faqs):
     items = "".join(f'          <details><summary>{esc(q)}</summary><p>{esc(a)}</p></details>\n' for q, a in faqs)
-    return f'''    <section class="tight">
+    return f'''    <section class="tight lit">
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
-        <div class="faq">
+        <div class="faq glass">
 {items}        </div>
       </div>
     </section>
@@ -153,16 +148,16 @@ def faq_block(faqs):
 
 
 def cta(text):
-    return f'''    <section class="cta">
+    return f'''    <section class="cta lit">
       <div class="wrap">
-        <div class="cta-card">
-          <img src="/images/icon.svg" alt="" width="88" height="88">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96">
           <h2>{text}</h2>
           <p>Free. No account, no subscription.</p>
           <div class="actions">
             {CTAS}
           </div>
-          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel<br><code>{BREW}</code></p>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>{BREW}</code></p>
         </div>
       </div>
     </section>
@@ -180,32 +175,32 @@ def render_page(p):
     path = f"/alternatives/{p['slug']}"
     parts = [head(p["title"], p["description"], path), nav(), "  <main>\n"]
     parts.append(f'''    <div class="sub-hero">
-      <div class="wrap">
+      <div class="wrap narrow">
         <div class="eyebrow">{esc(p["eyebrow"])}</div>
         <h1>{p["h1"]}</h1>
         <p class="lede">{p["lede"]}</p>
         <div class="actions">
           {CTAS}
         </div>
-        <div class="tldr"><h2>The short version</h2><p>{p["tldr"]}</p></div>
+        <div class="tldr glass"><h2>The short version</h2><p>{p["tldr"]}</p></div>
       </div>
     </div>
 ''')
     for sec in p["sections"]:
-        cls = "tight" + (" tint" if sec.get("tint") else "")
+        cls = "tight" + (" lit" if sec.get("lit") else "")
         sid = f' id="{sec["id"]}"' if sec.get("id") else ""
         body = sec["html"]
         if sec.get("table"):
             body = body.replace("{{TABLE}}", table(sec["table"], p["competitor"]))
-        parts.append(f'    <section class="{cls}"{sid}>\n      <div class="wrap"><div class="prose">\n{body}\n      </div></div>\n    </section>\n')
+        parts.append(f'    <section class="{cls}"{sid}>\n      <div class="wrap narrow"><div class="prose">\n{body}\n      </div></div>\n    </section>\n')
     parts.append(faq_block(p["faqs"]))
     others = [q for q in PAGES if q["slug"] != p["slug"]]
-    rel = "".join(f'          <a href="/alternatives/{q["slug"]}"><b>{esc(q["card_title"])}</b><span>{esc(q["card_blurb"])}</span></a>\n' for q in others)
-    parts.append(f'''    <section class="tight">
+    rel = "".join(f'          <a class="glass" href="/alternatives/{q["slug"]}"><b>{esc(q["card_title"])}</b><span>{esc(q["card_blurb"])}</span></a>\n' for q in others)
+    parts.append(f'''    <section class="tight lit">
       <div class="wrap">
-        <div class="head head-sm"><h2>Other Mac storage apps, compared</h2></div>
+        <div class="head center head-sm"><h2>Other Mac storage apps, compared</h2></div>
         <div class="related">
-{rel}          <a href="/system-data"><b>Clearing System Data</b><span>The step-by-step guide, using only Apple's own tools.</span></a>
+{rel}          <a class="glass" href="/system-data"><b>Clearing System Data</b><span>The step-by-step guide, using only Apple's own tools.</span></a>
         </div>
       </div>
     </section>
@@ -219,19 +214,19 @@ def render_page(p):
 
 def render_hub():
     path = "/alternatives/"
-    cards = "".join(f'          <a href="/alternatives/{q["slug"]}"><b>{esc(q["card_title"])}</b><span>{esc(q["card_blurb"])}</span></a>\n' for q in PAGES)
+    cards = "".join(f'          <a class="glass" href="/alternatives/{q["slug"]}"><b>{esc(q["card_title"])}</b><span>{esc(q["card_blurb"])}</span></a>\n' for q in PAGES)
     rows = "".join(f'<tr><td>{esc(a)}</td><td class="{"us" if b == "Disk Forecast" else ""}">{esc(b)}</td></tr>' for a, b in HUB["glance"][1:])
     body = f'''{head(HUB["title"], HUB["description"], path)}{nav()}  <main>
     <div class="sub-hero">
-      <div class="wrap">
+      <div class="wrap narrow">
         <div class="eyebrow">Alternatives</div>
         <h1>{HUB["h1"]}</h1>
         <p class="lede">{HUB["lede"]}</p>
       </div>
     </div>
-    <section class="tight" style="padding-top:0">
-      <div class="wrap">
-        <div class="glance"><table class="compare">
+    <section class="tight lit" style="padding-top:0">
+      <div class="wrap narrow">
+        <div class="table-card glass glance"><table class="compare">
           <thead><tr><th>{esc(HUB["glance"][0][0])}</th><th>{esc(HUB["glance"][0][1])}</th></tr></thead>
           <tbody>{rows}</tbody>
         </table></div>
@@ -239,8 +234,8 @@ def render_hub():
 {cards}        </div>
       </div>
     </section>
-    <section class="tight tint">
-      <div class="wrap"><div class="prose">
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
 {HUB["html"]}
       </div></div>
     </section>
@@ -256,27 +251,27 @@ def render_guide():
     g = GUIDE
     body = f'''{head(g["title"], g["description"], g["path"])}{nav()}  <main>
     <div class="sub-hero">
-      <div class="wrap">
+      <div class="wrap narrow">
         <div class="eyebrow">{esc(g["eyebrow"])}</div>
         <h1>{g["h1"]}</h1>
         <p class="lede">{g["lede"]}</p>
-        <div class="tldr"><h2>The short version</h2><p>{g["tldr"]}</p></div>
+        <div class="tldr glass"><h2>The short version</h2><p>{g["tldr"]}</p></div>
       </div>
     </div>
     <section class="tight">
-      <div class="wrap"><div class="prose">
+      <div class="wrap narrow"><div class="prose">
 {g["html"]}
       </div></div>
     </section>
-    <section class="tight tint" id="shortcut">
-      <div class="wrap feature flip">
-        <div class="copy prose">
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
 {g["shortcut"]}
           <div class="actions">
             {CTAS}
           </div>
         </div>
-        <div class="backdrop">
+        <div class="stage glass">
           {mockup("system-data")}
         </div>
       </div>
@@ -293,10 +288,10 @@ def render_privacy():
     d = PRIVACY
     body = f'''{head(d["title"], d["description"], d["path"])}{nav()}  <main>
     <div class="sub-hero">
-      <div class="wrap"><h1>{esc(d["h1"])}</h1></div>
+      <div class="wrap narrow"><h1>{esc(d["h1"])}</h1></div>
     </div>
     <section class="tight" style="padding-top:0">
-      <div class="wrap"><div class="prose">
+      <div class="wrap narrow"><div class="prose">
 {d["html"]}
       </div></div>
     </section>
