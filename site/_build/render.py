@@ -75,7 +75,7 @@ def nav():
     return f'''  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="nav">
     <div class="wrap">
-      <a class="brand" href="/"><img src="/images/icon.svg" alt=""> Disk Forecast</a>
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
       <nav>
         <a href="/#forecast">Features</a>
         <a href="/system-data">System Data</a>
@@ -182,7 +182,7 @@ def cta(text):
     return f'''    <section class="cta lit">
       <div class="wrap">
         <div class="cta-card glass">
-          <img src="/images/icon.svg" alt="" width="96" height="96">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
           <h2>{text}</h2>
           <p>Free. No account, no subscription.</p>
           <div class="actions">
