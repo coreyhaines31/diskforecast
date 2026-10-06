@@ -18,6 +18,11 @@ struct SystemDataParserTests {
         #expect(LocalSnapshots.parse("Snapshots for disk /:\n").isEmpty)
     }
 
+    @Test func ignoresSnapshotNamesThatArentDates() {
+        let output = "com.apple.TimeMachine.2026-10-05-101530; rm -rf ~.local\ncom.apple.TimeMachine..local"
+        #expect(LocalSnapshots.parse(output).isEmpty)
+    }
+
     @Test func parsesSimulatorDevices() throws {
         let devices = Simulators.parseDevices(try sample("simctl-devices.json"))
         #expect(devices.count == 22)

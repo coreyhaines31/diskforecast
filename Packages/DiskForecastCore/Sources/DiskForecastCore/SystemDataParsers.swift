@@ -7,7 +7,9 @@ public enum LocalSnapshots {
         output.split(whereSeparator: \.isNewline).compactMap { line in
             let name = line.trimmingCharacters(in: .whitespaces)
             guard name.hasPrefix("com.apple.TimeMachine."), name.hasSuffix(".local") else { return nil }
-            return String(name.dropFirst("com.apple.TimeMachine.".count).dropLast(".local".count))
+            let date = String(name.dropFirst("com.apple.TimeMachine.".count).dropLast(".local".count))
+            // The dates end up in an administrator shell command, so only the expected shape passes.
+            return date.wholeMatch(of: /\d{4}-\d{2}-\d{2}-\d{6}/) == nil ? nil : date
         }
     }
 }
