@@ -79,9 +79,11 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         for node in result.tree.topConsumers(limit: 5) {
             let path = result.tree.path(of: node)
             let shown = path.hasPrefix(home + "/") ? "~/" + path.dropFirst(home.count + 1) : path
-            let item = ClosureMenuItem("\(shown)\t\(Bytes.format(result.tree.size(ofNode: node)))") {
+            let size = Bytes.format(result.tree.size(ofNode: node))
+            let item = ClosureMenuItem("\(shown)\t\(size)") {
                 NSWorkspace.shared.activateFileViewerSelecting([URL(filePath: path)])
             }
+            item.attributedTitle = Self.columns(String(shown), size)
             item.toolTip = "Show in Finder"
             menu.addItem(item)
         }
@@ -109,6 +111,17 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         menu.addItem(ClosureMenuItem("Open Cleanup…") { [weak self] in self?.openCleanup() })
         menu.addItem(ClosureMenuItem("System Data…") { [weak self] in self?.openSystemData() })
         menu.addItem(ClosureMenuItem("Rescan") { [scan] in scan.scan() })
+    }
+
+    /// A name on the left and a size against a right-aligned tab stop, so sizes line up.
+    private static func columns(_ name: String, _ size: String) -> NSAttributedString {
+        let style = NSMutableParagraphStyle()
+        style.tabStops = [NSTextTab(textAlignment: .right, location: 340)]
+        style.lineBreakMode = .byTruncatingMiddle
+        let shortened = name.count > 42 ? String(name.prefix(20)) + "…" + String(name.suffix(20)) : name
+        return NSAttributedString(string: "\(shortened)\t\(size)", attributes: [
+            .paragraphStyle: style, .font: NSFont.menuFont(ofSize: 0)
+        ])
     }
 
     private func label(_ title: String) -> NSMenuItem {
