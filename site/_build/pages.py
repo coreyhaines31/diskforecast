@@ -332,8 +332,8 @@ pip cache purge</code></pre>
         </ul>
     """,
     "shortcut": """
-        <h2>Or do it in one window</h2>
-        <p>Disk Forecast breaks System Data into the parts above, explains each in plain English, and runs Apple's own tool for each fix after you confirm. It's free, it lives in your menu bar, and it tells you weeks ahead when your disk will fill.</p>
+          <h2>Or do it in one window.</h2>
+          <p>Disk Forecast breaks System Data into the parts above, explains each one, and runs Apple&#39;s own tool for each fix after you confirm. It&#39;s free.</p>
     """,
 }
 

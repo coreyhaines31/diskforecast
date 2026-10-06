@@ -158,9 +158,9 @@ section { padding: var(--section) 0 0; position: relative; }
 .head.center { margin-left: auto; margin-right: auto; text-align: center; }
 .head.center p { margin-left: auto; margin-right: auto; max-width: 34em; }
 /* A soft wash of the color field behind sections whose content sits on glass */
-section.lit::before { content: ""; position: absolute; inset: 22% 0 -12%; z-index: -1; pointer-events: none; opacity: 0.7;
-  background: radial-gradient(34% 42% at 18% 50%, var(--f-sky), transparent 70%), radial-gradient(30% 40% at 84% 64%, var(--f-sun), transparent 70%),
-    radial-gradient(28% 36% at 52% 96%, var(--f-mint), transparent 70%), radial-gradient(26% 34% at 66% 28%, var(--f-lilac), transparent 70%); }
+section.lit::before { content: ""; position: absolute; inset: 8% 0 0; z-index: -1; pointer-events: none; opacity: 0.7;
+  background: radial-gradient(32% 32% at 15% 55%, var(--f-sky), transparent 70%), radial-gradient(30% 32% at 85% 60%, var(--f-sun), transparent 70%),
+    radial-gradient(26% 18% at 50% 78%, var(--f-mint), transparent 70%), radial-gradient(24% 22% at 64% 30%, var(--f-lilac), transparent 70%); }
 
 /* Forecast chart on a glass card */
 .chart-card { max-width: 900px; margin: 0 auto; border-radius: 32px; padding: clamp(20px, 3.5vw, 36px) clamp(18px, 3.5vw, 40px) clamp(18px, 3vw, 28px); }
@@ -182,17 +182,11 @@ section.lit::before { content: ""; position: absolute; inset: 22% 0 -12%; z-inde
 .axis { font-size: 13px; color: var(--ink-3); margin-top: 12px; position: relative; height: 18px; }
 .axis span { position: absolute; transform: translateX(-50%); }
 
-/* Feature with a window mockup */
-.feature { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr); gap: clamp(32px, 5vw, 64px); align-items: center; }
-.feature.flip { grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); }
-.feature.flip > .copy { order: 2; }
-.feature .copy h2 { font-size: clamp(38px, 4.6vw, 58px); }
-.feature .copy > p { color: var(--ink-2); margin-top: 20px; }
-.backdrop { border-radius: 28px; padding: clamp(14px, 3vw, 40px); background: linear-gradient(160deg, var(--sky-100), color-mix(in srgb, var(--sky-300) 45%, var(--bg)) 120%); }
-.trust { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: clamp(40px, 5vw, 64px); }
-.trust > div { background: var(--surface); border-radius: 18px; padding: 22px; box-shadow: var(--shadow-card); }
-.trust svg { width: 26px; height: 26px; color: var(--sky-500); margin-bottom: 14px; }
-.trust p { color: var(--ink-2); font-size: 15.5px; margin: 8px 0 0; line-height: 1.55; }
+/* App windows sit on a pane of glass */
+.stage { max-width: 840px; margin: 0 auto; padding: clamp(10px, 2.4vw, 28px); border-radius: clamp(28px, 4vw, 44px); }
+.head .more { margin-top: 16px; font-size: 17px; }
+.head .actions { justify-content: center; margin-top: 28px; }
+.head .more a::after { content: " ›"; }
 
 /* Under the hood: a quiet list, not cards */
 .details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px 48px; }

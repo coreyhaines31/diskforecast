@@ -122,16 +122,14 @@
       </div>
     </section>
 
-    <section id="explain" class="tint">
-      <div class="wrap feature flip">
-        <div class="copy">
-          <div class="eyebrow">Explain</div>
-          <h2>System Data, finally explained.</h2>
-          <p>Storage settings shows a gray bar called System Data and stops there. Disk Forecast opens it up and gives every part a plain-English line: what it is, whether it's safe to touch, and the fix Apple's own tools offer.</p>
-          <p>Local Time Machine snapshots, simulator runtimes, purgeable space, Apple Intelligence models, the Spotlight index, Docker. Nothing runs until you confirm.</p>
-          <p><a href="/system-data">Read the guide to clearing System Data →</a></p>
+    <section id="explain" class="lit">
+      <div class="wrap">
+        <div class="head center">
+          <h2>System Data, explained.</h2>
+          <p>Storage settings shows a gray bar and stops there. Disk Forecast names every part, says what it is, and fixes it with Apple&#39;s own tools when you ask.</p>
+          <p class="more"><a href="/system-data">Read the System Data guide</a></p>
         </div>
-        <div class="backdrop">
+        <div class="stage glass">
           <!-- mockup:system-data -->
           <div class="mk mk-win" role="img" aria-label="The Disk Forecast System Data window, titled System Data, explained. It lists purgeable space, three local Time Machine snapshots, the Spotlight index, simulators with two iOS runtimes, Apple Intelligence and Siri models, and Docker, each with a plain explanation and, except purgeable space, a button that runs the owning tool's own fix.">
             <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">System Data</div></div>
@@ -150,17 +148,14 @@
       </div>
     </section>
 
-    <section id="reclaim">
+    <section id="reclaim" class="lit">
       <div class="wrap">
-        <div class="feature">
-          <div class="copy">
-            <div class="eyebrow">Reclaim</div>
-            <h2>Reclaim space you can actually spare.</h2>
-            <p>The Cleanup window sorts what it finds by risk. <strong>Safe to clear</strong> is what rebuilds itself: package manager caches, app caches (never macOS's own), logs, Xcode build data, and build folders like node_modules in old projects. A project counts as old when nothing directly inside its folder has changed in 30 days, and you can change that in Settings.</p>
-            <p><strong>Worth a look</strong> is what only you can judge: local AI models from Ollama, LM Studio, and Hugging Face, build folders in projects you're still working on, virtual machines, installers, big downloads. Every line says in plain English what you're looking at.</p>
-          </div>
-          <div class="backdrop">
-            <!-- mockup:cleanup -->
+        <div class="head center">
+          <h2>Reclaim space you can spare.</h2>
+          <p>Caches, logs, and build folders from old projects rebuild themselves, so they come checked. Everything else waits for your call, and all of it goes to the Trash.</p>
+        </div>
+        <div class="stage glass">
+          <!-- mockup:cleanup -->
             <div class="mk mk-win" role="img" aria-label="The Disk Forecast Cleanup window, headed Reclaim space. Safe to clear, 12.4 GB, all checked: build folders in old projects, package manager caches, app caches, Xcode device support, Xcode DerivedData, and logs. Worth a look, 47 GB, unchecked: Ollama models, build folders in active projects, the Docker disk image, big downloads, and disk images and installers. The footer reads 12.4 GB selected, with Open Trash and Move to Trash buttons.">
               <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">Cleanup</div></div>
               <div class="mk-hdr"><div><b>Reclaim space</b><span>1,284,906 files measured in 9 s. Everything goes to the Trash first.</span></div><div class="mk-pill">Rescan</div></div>
@@ -182,12 +177,6 @@
               <div class="mk-foot"><span>12.4 GB selected</span><div class="mk-pill">Open Trash</div><div class="mk-pill blue">Move to Trash…</div></div>
             </div>
             <!-- /mockup:cleanup -->
-          </div>
-        </div>
-        <div class="trust">
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 12.5h9l1-12.5"/><path d="M10 11v5M14 11v5"/></svg><h3>Trash, never delete</h3><p>Every file it clears goes to the Trash. Change your mind and put it back.</p></div>
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17l6-6 4 4 6-6"/><path d="M4 5h16v14H4z"/></svg><h3>Apple's own tools</h3><p>System fixes run <code>tmutil</code>, <code>mdutil</code>, and <code>xcrun simctl</code>, the commands Apple ships. Never a mystery script.</p></div>
-          <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg><h3>Nothing without a yes</h3><p>Every action shows what it will do, and the exact command it runs, then waits for you to confirm.</p></div>
         </div>
       </div>
     </section>

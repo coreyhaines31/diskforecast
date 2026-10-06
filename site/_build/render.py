@@ -267,15 +267,15 @@ def render_guide():
 {g["html"]}
       </div></div>
     </section>
-    <section class="tight tint" id="shortcut">
-      <div class="wrap feature flip">
-        <div class="copy prose">
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
 {g["shortcut"]}
           <div class="actions">
             {CTAS}
           </div>
         </div>
-        <div class="backdrop">
+        <div class="stage glass">
           {mockup("system-data")}
         </div>
       </div>
