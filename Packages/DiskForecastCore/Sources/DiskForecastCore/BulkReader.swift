@@ -117,6 +117,8 @@ final class BulkReader {
 
     /// Fills in the common attributes; false when the entry reported an error.
     private func parseCommon(_ common: UInt32, _ cursor: inout Cursor, into entry: inout Entry) -> Bool {
+        // The error comes right after the returned set, ahead of the name, out of bit order.
+        if common & Self.cmnError != 0, cursor.take(UInt32.self) != 0 { return false }
         if common & Self.cmnName != 0 {
             let reference = cursor.position
             let offset = Int(cursor.take(Int32.self, size: 8))
@@ -130,7 +132,6 @@ final class BulkReader {
             entry.modified = TimeInterval(seconds) + TimeInterval(nanoseconds) / 1e9
         }
         if common & Self.cmnFileID != 0 { entry.fileID = cursor.take(UInt64.self) }
-        if common & Self.cmnError != 0, cursor.take(UInt32.self) != 0 { return false }
         return true
     }
 
