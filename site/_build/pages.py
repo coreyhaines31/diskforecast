@@ -187,7 +187,7 @@ PAGES = [
     {
         "slug": "grandperspective",
         "competitor": "GrandPerspective",
-        "title": "GrandPerspective for Mac, compared with a free menu bar alternative",
+        "title": "GrandPerspective for Mac, compared with a free alternative",
         "description": "GrandPerspective draws a free treemap of your disk. Disk Forecast is the free GrandPerspective alternative that says when your Mac fills up and what to clear.",
         "eyebrow": "GrandPerspective alternative",
         "h1": "GrandPerspective shows the blocks. Disk Forecast <em>says what they are.</em>",
@@ -240,7 +240,7 @@ PAGES = [
 ]
 
 HUB = {
-    "title": "Mac storage apps compared: DiskBuddy, DaisyDisk, CleanMyMac, GrandPerspective",
+    "title": "Mac disk space apps compared: DiskBuddy, DaisyDisk and more",
     "description": "Honest comparisons of DiskBuddy, DaisyDisk, CleanMyMac and GrandPerspective, and where Disk Forecast fits: the free Mac app that warns before your disk fills.",
     "h1": "Every way to see what's filling your Mac, <em>compared.</em>",
     "lede": "Four popular storage apps, what each does well, and where it stops. Sometimes the other app is the right one, and we say so.",
