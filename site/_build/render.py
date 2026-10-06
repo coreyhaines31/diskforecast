@@ -92,11 +92,6 @@ def footer():
       <div class="footer-links"><a href="{REPO}">GitHub</a><a href="{REPO}/releases">Releases</a><a href="{REPO}/issues">Issues</a><a href="/system-data">Clear System Data</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-  <script>
-    const nav = document.querySelector(".nav");
-    const edge = () => nav.classList.toggle("scrolled", window.scrollY > 8);
-    edge(); window.addEventListener("scroll", edge, {{ passive: true }});
-  </script>
 '''
 
 

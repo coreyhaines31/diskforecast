@@ -271,11 +271,6 @@
     </div>
   </footer>
   <script>
-    // The nav gets a hairline once the page scrolls under it.
-    const nav = document.querySelector(".nav");
-    const edge = () => nav.classList.toggle("scrolled", window.scrollY > 8);
-    edge(); window.addEventListener("scroll", edge, { passive: true });
-
     // Live GitHub star count. Fails quietly: the page never depends on it.
     (async () => {
       try {
