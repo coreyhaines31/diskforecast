@@ -23,8 +23,8 @@ extension CleanupCatalog {
             ) { catalog, scan in catalog.artifacts(scan, stale: true) },
             CleanupRule(
                 id: "ollama", title: "Ollama models",
-                explanation: "Local AI models downloaded by Ollama. `ollama pull` downloads one again; "
-                    + "`ollama rm` removes a single model.",
+                explanation: "Local AI models downloaded by Ollama. Running ollama pull downloads one again, "
+                    + "and ollama rm removes a single model.",
                 group: .worthALook
             ) { catalog, _ in catalog.fixed([".ollama/models"]) },
             CleanupRule(
