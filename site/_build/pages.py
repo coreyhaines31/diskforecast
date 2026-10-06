@@ -11,7 +11,7 @@ PAGES = [
         "slug": "diskbuddy",
         "competitor": "DiskBuddy",
         "title": "DiskBuddy for Mac, compared with a free alternative",
-        "description": "DiskBuddy is a capable paid disk app for Mac and Windows. Disk Forecast is the free, source-available alternative that tells you when your disk will be full and explains System Data in plain English.",
+        "description": "DiskBuddy is a capable paid disk app for Mac. Disk Forecast is the free, source-available DiskBuddy alternative that tells you when your disk will be full.",
         "eyebrow": "DiskBuddy alternative",
         "h1": "DiskBuddy shows where the space went. Disk Forecast shows <em>when it runs out.</em>",
         "lede": "DiskBuddy launched in September 2026 and has shipped fast since, adding a finder for local AI models in its 3.0 release. It's a strong paid app. Disk Forecast is the free one that warns you weeks before your disk fills.",
@@ -71,7 +71,7 @@ PAGES = [
         "slug": "daisydisk",
         "competitor": "DaisyDisk",
         "title": "DaisyDisk for Mac, compared with a free alternative",
-        "description": "DaisyDisk is the $9.99 disk visualizer for Mac. Disk Forecast is a free, source-available menu bar alternative that tells you when your disk will be full and explains System Data in plain English.",
+        "description": "DaisyDisk is the $9.99 disk visualizer for Mac. Disk Forecast is a free, source-available DaisyDisk alternative that tells you when your disk will be full.",
         "eyebrow": "DaisyDisk alternative",
         "h1": "DaisyDisk draws the map. Disk Forecast <em>reads the weather.</em>",
         "lede": "DaisyDisk is the visual standard for seeing what's on a Mac's disk, and $9.99 once is a fair price. It answers “what's using my space?” Disk Forecast answers the question that comes first: “when will I run out?”",
@@ -131,9 +131,9 @@ PAGES = [
         "slug": "cleanmymac",
         "competitor": "CleanMyMac",
         "title": "CleanMyMac, compared with a free storage app for Mac",
-        "description": "CleanMyMac costs $47.50 a year and up. If disk space is what you're after, Disk Forecast is a free, source-available menu bar app that tells you when your disk will be full and reclaims space to the Trash.",
+        "description": "CleanMyMac starts at $47.50 a year. Disk Forecast is a free, source-available CleanMyMac alternative that warns before your disk fills and reclaims space.",
         "eyebrow": "CleanMyMac alternative",
-        "h1": "Getting your disk space back shouldn't be <em>a subscription.</em>",
+        "h1": "CleanMyMac bills you every year. Disk Forecast <em>reclaims space for free.</em>",
         "lede": "CleanMyMac is a big suite, and since July 2025 it starts at $47.50 a year. If what you actually need is room on your disk, you don't need to pay every year for it.",
         "tldr": "Stay with CleanMyMac if you use the whole suite and the yearly price is worth it to you. If you mostly opened it to get disk space back, Disk Forecast does that part for free: it tells you when you'll run out, explains System Data, and sends what it clears to the Trash.",
         "card_title": "CleanMyMac",
@@ -187,8 +187,8 @@ PAGES = [
     {
         "slug": "grandperspective",
         "competitor": "GrandPerspective",
-        "title": "GrandPerspective for Mac, compared with a free menu bar alternative",
-        "description": "GrandPerspective is a free treemap of your Mac's disk. Disk Forecast is a free, source-available menu bar app that tells you when your disk will be full and explains what's safe to clear.",
+        "title": "GrandPerspective for Mac, compared with a free alternative",
+        "description": "GrandPerspective draws a free treemap of your disk. Disk Forecast is the free GrandPerspective alternative that says when your Mac fills up and what to clear.",
         "eyebrow": "GrandPerspective alternative",
         "h1": "GrandPerspective shows the blocks. Disk Forecast <em>says what they are.</em>",
         "lede": "GrandPerspective is a free treemap: every file a rectangle, sized by the space it takes. It's a great way to spot one giant file. It won't tell you what that file is, whether it's safe to remove, or when your disk will fill.",
@@ -240,8 +240,8 @@ PAGES = [
 ]
 
 HUB = {
-    "title": "Mac storage apps compared: DiskBuddy, DaisyDisk, CleanMyMac, GrandPerspective",
-    "description": "Honest comparisons of the popular Mac storage apps, and where Disk Forecast fits: the free, source-available menu bar app that tells you when your disk will be full.",
+    "title": "Mac disk space apps compared: DiskBuddy, DaisyDisk and more",
+    "description": "Honest comparisons of DiskBuddy, DaisyDisk, CleanMyMac and GrandPerspective, and where Disk Forecast fits: the free Mac app that warns before your disk fills.",
     "h1": "Every way to see what's filling your Mac, <em>compared.</em>",
     "lede": "Four popular storage apps, what each does well, and where it stops. Sometimes the other app is the right one, and we say so.",
     "glance": [
@@ -266,7 +266,7 @@ HUB = {
 GUIDE = {
     "path": "/system-data",
     "title": "How to clear System Data on Mac, safely",
-    "description": "What's inside System Data on your Mac, which parts you can safely reclaim, and step-by-step commands using Apple's own tools: Time Machine snapshots, simulators, caches, Spotlight, and more.",
+    "description": "What's inside System Data on your Mac, which parts you can safely reclaim, and how to clear System Data step by step using only Apple's own tools.",
     "eyebrow": "Guide",
     "h1": "How to clear System Data on your Mac.",
     "lede": "System Data is the gray bar in Storage settings that keeps growing and won't say why. Here's what's inside it, which parts you can reclaim, and the exact steps, using only Apple's own tools.",
