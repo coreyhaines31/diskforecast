@@ -151,10 +151,10 @@ def mockup(name):
 
 def table(rows, competitor):
     out = ['        <div class="table-card glass"><div class="table-scroll"><table class="compare">',
-           f'          <thead><tr><th></th><th class="us">Disk Forecast</th><th>{esc(competitor)}</th></tr></thead><tbody>']
+           f'          <thead><tr><td></td><th scope="col" class="us">Disk Forecast</th><th scope="col">{esc(competitor)}</th></tr></thead><tbody>']
     for label, us, them in rows:
         cls = ' class="n"' if them == "—" else ""
-        out.append(f'            <tr><td>{label}</td><td class="us">{us}</td><td{cls}>{them}</td></tr>')
+        out.append(f'            <tr><th scope="row">{label}</th><td class="us">{us}</td><td{cls}>{them}</td></tr>')
     out.append('          </tbody></table></div></div>')
     out.append('        <p class="table-foot">“—” means we couldn\'t confirm it from the vendor\'s own materials as of October 2026.</p>')
     return "\n".join(out)
@@ -246,7 +246,7 @@ def render_page(p):
 def render_hub():
     path = "/alternatives"
     cards = "".join(f'          <a class="glass" href="/alternatives/{q["slug"]}"><b>{esc(q["card_title"])}</b><span>{esc(q["card_blurb"])}</span></a>\n' for q in PAGES)
-    rows = "".join(f'<tr><td>{esc(a)}</td><td class="{"us" if b == "Disk Forecast" else ""}">{esc(b)}</td></tr>' for a, b in HUB["glance"][1:])
+    rows = "".join(f'<tr><th scope="row">{esc(a)}</th><td class="{"us" if b == "Disk Forecast" else ""}">{esc(b)}</td></tr>' for a, b in HUB["glance"][1:])
     body = f'''{head(HUB["title"], HUB["description"], path)}{nav()}  <main>
     <div class="sub-hero">
       <div class="wrap narrow">
@@ -258,7 +258,7 @@ def render_hub():
     <section class="tight lit" style="padding-top:0">
       <div class="wrap narrow">
         <div class="table-card glass glance"><table class="compare">
-          <thead><tr><th>{esc(HUB["glance"][0][0])}</th><th>{esc(HUB["glance"][0][1])}</th></tr></thead>
+          <thead><tr><th scope="col">{esc(HUB["glance"][0][0])}</th><th scope="col">{esc(HUB["glance"][0][1])}</th></tr></thead>
           <tbody>{rows}</tbody>
         </table></div>
         <div class="related">

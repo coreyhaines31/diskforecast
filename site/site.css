@@ -204,7 +204,7 @@ section.lit::before { content: ""; position: absolute; inset: 8% 0 0; z-index: -
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .compare { width: 100%; min-width: 640px; border-collapse: separate; border-spacing: 0; font-size: 15px; }
 .compare th, .compare td { text-align: left; padding: 15px 14px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.45; }
-.compare tbody tr:last-child td { border-bottom: 0; }
+.compare tbody tr:last-child > * { border-bottom: 0; }
 .compare thead th { font-weight: 600; font-size: 14px; color: var(--ink-2); }
 .compare thead th a { color: inherit; }
 .compare th:first-child, .compare td:first-child { color: var(--ink); font-weight: 500; width: 28%; }
@@ -277,7 +277,7 @@ section.tight { padding: clamp(56px, 8vw, 96px) 0 0; }
 .related span { color: var(--ink-2); font-size: 15px; line-height: 1.5; display: block; }
 .glance { margin-bottom: 40px; }
 .glance .compare { min-width: 0; }
-.glance .compare td:first-child { width: 60%; font-weight: 400; }
+.glance .compare tbody th { width: 60%; font-weight: 400; }
 .head-sm { margin-bottom: 32px; }
 .head-sm h2 { font-size: clamp(30px, 4vw, 44px); }
 
