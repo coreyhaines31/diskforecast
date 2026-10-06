@@ -71,7 +71,7 @@ def nav():
       <nav>
         <a href="/#forecast">Features</a>
         <a href="/system-data">System Data</a>
-        <a href="/alternatives/">Compare</a>
+        <a href="/alternatives">Compare</a>
         <a href="/#faq">FAQ</a>
         <a class="btn" href="{DOWNLOAD}">Download</a>
       </nav>
@@ -83,7 +83,7 @@ def nav():
 def footer_alternatives():
     """Every alternative page, linked from every footer for internal linking."""
     links = "".join(f'<a href="/alternatives/{p["slug"]}">{esc(p["competitor"])} alternative</a>' for p in PAGES)
-    return f'      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives/">Alternatives</a>{links}</nav>\n'
+    return f'      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a>{links}</nav>\n'
 
 
 def footer():
@@ -213,7 +213,7 @@ def render_page(p):
 
 
 def render_hub():
-    path = "/alternatives/"
+    path = "/alternatives"
     cards = "".join(f'          <a class="glass" href="/alternatives/{q["slug"]}"><b>{esc(q["card_title"])}</b><span>{esc(q["card_blurb"])}</span></a>\n' for q in PAGES)
     rows = "".join(f'<tr><td>{esc(a)}</td><td class="{"us" if b == "Disk Forecast" else ""}">{esc(b)}</td></tr>' for a, b in HUB["glance"][1:])
     body = f'''{head(HUB["title"], HUB["description"], path)}{nav()}  <main>
