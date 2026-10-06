@@ -150,47 +150,37 @@ p { margin: 0 0 1em; }
 .badge i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
 .hero .desk { margin: clamp(56px, 8vw, 96px) auto 0; max-width: 860px; }
 
-/* Section rhythm */
-section { padding: var(--section) 0; position: relative; }
-.head { max-width: 760px; margin-bottom: clamp(36px, 5vw, 56px); }
-.head h2 { font-size: clamp(38px, 5vw, 62px); }
-.head p { margin: 20px 0 0; font-size: clamp(17px, 1.6vw, 19px); color: var(--ink-2); max-width: 40em; }
+/* Section rhythm: one idea per section, lots of air */
+section { padding: var(--section) 0 0; position: relative; }
+.head { max-width: 780px; margin-bottom: clamp(40px, 6vw, 64px); }
+.head h2 { font-size: clamp(38px, 6vw, 72px); }
+.head p { margin: 20px 0 0; font-size: clamp(18px, 1.9vw, 21px); line-height: 1.45; color: var(--ink-2); }
 .head.center { margin-left: auto; margin-right: auto; text-align: center; }
-.head.center .eyebrow { justify-content: center; }
-.head.center .eyebrow::before { display: none; }
+.head.center p { margin-left: auto; margin-right: auto; max-width: 34em; }
+/* A soft wash of the color field behind sections whose content sits on glass */
+section.lit::before { content: ""; position: absolute; inset: 22% 0 -12%; z-index: -1; pointer-events: none; opacity: 0.7;
+  background: radial-gradient(34% 42% at 18% 50%, var(--f-sky), transparent 70%), radial-gradient(30% 40% at 84% 64%, var(--f-sun), transparent 70%),
+    radial-gradient(28% 36% at 52% 96%, var(--f-mint), transparent 70%), radial-gradient(26% 34% at 66% 28%, var(--f-lilac), transparent 70%); }
 
-/* Forecast chart */
-.forecast { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(32px, 5vw, 64px); align-items: start; }
-.chart-card { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 24px 24px 18px; }
-.chart-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
-.chart-top b { font-weight: 600; font-size: 15px; }
-.chart-top span { font: 12.5px var(--mono); color: var(--ink-3); }
+/* Forecast chart on a glass card */
+.chart-card { max-width: 900px; margin: 0 auto; border-radius: 32px; padding: clamp(20px, 3.5vw, 36px) clamp(18px, 3.5vw, 40px) clamp(18px, 3vw, 28px); }
+.chart-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 22px; }
+.chart-top b { font-weight: 600; font-size: 17px; }
+.chart-top span { font-size: 14px; color: var(--ink-2); }
 .chart { position: relative; }
 .chart svg { width: 100%; height: auto; overflow: visible; }
 .chart .grid line { stroke: var(--line); stroke-width: 1; }
-.chart .hist { fill: none; stroke: var(--sky-500); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
-.chart .area { fill: var(--sky-500); opacity: 0.1; }
-.chart .proj { fill: none; stroke: var(--sky-500); stroke-width: 2.5; stroke-dasharray: 2 7; stroke-linecap: round; }
-.chart .cone { fill: var(--sky-300); opacity: 0.32; }
-.chart .zero { stroke: var(--storm); stroke-width: 1.5; stroke-dasharray: 5 5; }
-.chart .dot { fill: var(--surface); stroke: var(--sky-500); stroke-width: 3; }
-.chart .end { fill: var(--storm); }
-.chip { position: absolute; transform: translate(-50%, -100%); margin-top: -12px; font: 500 12px/1 var(--mono); white-space: nowrap; background: var(--ink); color: var(--bg); padding: 6px 9px; border-radius: 7px; }
-.chip.warn { background: var(--storm); color: #fff; transform: translate(-88%, -100%); }
-.axis { display: flex; justify-content: space-between; font: 12px var(--mono); color: var(--ink-3); margin-top: 10px; position: relative; height: 16px; }
+.chart .hist { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.chart .area { fill: var(--accent); opacity: 0.09; }
+.chart .proj { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 2 7; stroke-linecap: round; }
+.chart .cone { fill: var(--accent); opacity: 0.08; }
+.chart .zero { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 4 5; }
+.chip { position: absolute; transform: translate(-50%, -100%); margin-top: -14px; font-size: 13px; font-weight: 600; line-height: 1; white-space: nowrap; background: var(--ink); color: var(--bg); padding: 7px 11px; border-radius: 999px; font-variant-numeric: tabular-nums; }
+.chip.warn { transform: translate(-88%, -100%); }
+.dotmark { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--surface); border: 3px solid var(--accent); }
+.dotmark.end { background: var(--ink); border-color: var(--surface); width: 12px; height: 12px; margin: -6px 0 0 -6px; }
+.axis { font-size: 13px; color: var(--ink-3); margin-top: 12px; position: relative; height: 18px; }
 .axis span { position: absolute; transform: translateX(-50%); }
-.axis .y { position: static; transform: none; }
-.outlook { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 18px; border-top: 1px solid var(--line); }
-.outlook > div { padding: 16px 8px 4px; text-align: center; }
-.outlook > div + div { border-left: 1px solid var(--line); }
-.outlook small { display: block; font: 12px var(--mono); color: var(--ink-3); letter-spacing: 0.02em; }
-.outlook svg { width: 40px; height: 40px; margin: 8px auto; }
-.outlook b { display: block; font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; }
-.outlook .bad b { color: var(--storm); }
-.facts { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 18px; }
-.facts li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; color: var(--ink-2); font-size: 16px; line-height: 1.55; }
-.facts li svg { width: 22px; height: 22px; margin-top: 2px; color: var(--sky-500); }
-.facts b { color: var(--ink); font-weight: 600; }
 
 /* Feature with a window mockup */
 .feature { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr); gap: clamp(32px, 5vw, 64px); align-items: center; }
@@ -405,10 +395,7 @@ section.tint { background: linear-gradient(180deg, transparent, var(--sky-100) 1
   .trust, .proof, .two { grid-template-columns: 1fr; }
   .proof > div, .proof > div:not(:nth-child(3n+1)) { padding: 22px 0; border-left: 0; }
   .details { grid-template-columns: 1fr; gap: 28px; }
-  .outlook { grid-template-columns: repeat(2, 1fr); }
-  .outlook > div:nth-child(3) { border-left: 0; }
-  .outlook > div:nth-child(n+3) { border-top: 1px solid var(--line); }
-  .chart-card { padding: 18px 16px 14px; border-radius: 18px; }
+  .chart-card { border-radius: 24px; }
   .chip { font-size: 10.5px; padding: 5px 7px; }
   .chart-top span { display: none; }
   .faq summary { font-size: 17px; }
@@ -427,8 +414,6 @@ section.tint { background: linear-gradient(180deg, transparent, var(--sky-100) 1
   .compare { font-size: 14px; }
   .compare th, .compare td { padding: 12px 10px; }
 }
-.dotmark { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--surface); border: 3px solid var(--sky-500); }
-.dotmark.end { background: var(--storm); border-color: var(--surface); width: 12px; height: 12px; margin: -6px 0 0 -6px; }
 .prose :not(pre) > code { overflow-wrap: anywhere; }
 section.tint .compare .us { background: var(--surface); }
 .mk-foot > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
