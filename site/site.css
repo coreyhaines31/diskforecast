@@ -22,9 +22,9 @@
   --code-ink: #dbe6f0;
   --shadow-card: 0 1px 1px rgba(19,32,45,0.04), 0 2px 4px rgba(19,32,45,0.04), 0 8px 16px rgba(19,32,45,0.05), 0 24px 48px rgba(19,32,45,0.06);
   --shadow-win: 0 0 0 0.5px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06), 0 12px 28px rgba(0,0,0,0.12), 0 40px 80px rgba(21,54,82,0.16);
-  --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
-  --sans: "Geist", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, "Helvetica Neue", Arial, sans-serif;
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --max: 1120px;
   --gutter: clamp(16px, 5vw, 40px);
   --section: clamp(64px, 8vw, 104px);
@@ -64,8 +64,8 @@ a { color: inherit; text-underline-offset: 0.18em; text-decoration-thickness: 1p
 img, svg { display: block; max-width: 100%; }
 code { font: 0.88em var(--mono); background: var(--surface-2); padding: 0.12em 0.4em; border-radius: 6px; }
 h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
-h1, h2 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01em; line-height: 1.04; }
-h1 em, h2 em { font-style: italic; color: var(--sky-700); }
+h1, h2 { font-family: var(--display); font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; }
+h1 em, h2 em { font-style: normal; color: var(--sky-700); }
 h3 { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
 p { margin: 0 0 1em; }
 .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
@@ -134,7 +134,7 @@ section { padding: var(--section) 0; position: relative; }
 .promises > a { padding: 30px 28px 30px 0; text-decoration: none; display: block; }
 .promises > a + a { padding-left: 28px; border-left: 1px solid var(--line); }
 .promises .k { font: 500 12px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); display: block; margin-bottom: 12px; }
-.promises b { font-family: var(--serif); font-weight: 400; font-size: 32px; line-height: 1.1; display: block; margin-bottom: 8px; }
+.promises b { font-family: var(--display); font-weight: 700; letter-spacing: -0.03em; font-size: 32px; line-height: 1.1; display: block; margin-bottom: 8px; }
 .promises span:last-child { color: var(--ink-2); font-size: 16px; }
 .promises a:hover b { color: var(--sky-700); }
 
@@ -209,7 +209,7 @@ section { padding: var(--section) 0; position: relative; }
 .proof { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--line); }
 .proof > div { padding: 28px 24px 28px 0; border-bottom: 1px solid var(--line); }
 .proof > div:not(:nth-child(3n+1)) { padding-left: 24px; border-left: 1px solid var(--line); }
-.proof b { display: block; font-family: var(--serif); font-weight: 400; font-size: 44px; line-height: 1; margin-bottom: 10px; font-variant-numeric: tabular-nums; }
+.proof b { display: block; font-family: var(--display); font-weight: 700; letter-spacing: -0.03em; font-size: 44px; line-height: 1; margin-bottom: 10px; font-variant-numeric: tabular-nums; }
 .proof span { color: var(--ink-2); font-size: 15.5px; }
 
 /* FAQ */
