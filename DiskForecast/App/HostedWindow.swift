@@ -19,7 +19,10 @@ final class HostedWindow {
 
     func show() {
         if window == nil {
-            let window = NSWindow(contentViewController: NSHostingController(rootView: makeView()))
+            let controller = NSHostingController(rootView: makeView())
+            // Keep the size set here; a List's ideal height would otherwise stretch the window.
+            controller.sizingOptions = []
+            let window = NSWindow(contentViewController: controller)
             window.title = title
             window.styleMask = resizable ? [.titled, .closable, .resizable, .miniaturizable] : [.titled, .closable]
             window.setContentSize(size)
