@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Disk Forecast privacy policy</title>
+  <meta name="description" content="Disk Forecast collects nothing. The app&#x27;s only network request is checking GitHub for updates.">
+  <link rel="canonical" href="https://diskforecast.com/privacy">
+  <meta property="og:title" content="Disk Forecast privacy policy">
+  <meta property="og:description" content="Disk Forecast collects nothing. The app&#x27;s only network request is checking GitHub for updates.">
+  <meta property="og:image" content="https://diskforecast.com/images/icon.png">
+  <meta property="og:url" content="https://diskforecast.com/privacy">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="/site.css">
+</head>
+<body>
+  <div class="sky" aria-hidden="true"></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt=""> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives/">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap"><h1>Privacy policy</h1></div>
+    </div>
+    <section class="tight" style="padding-top:0">
+      <div class="wrap"><div class="prose">
+
+        <p><strong>Last updated October 2026.</strong></p>
+        <h2>The Disk Forecast app</h2>
+        <p>The app collects nothing about you. There's no account, no analytics, and no telemetry.</p>
+        <p>To do its job it reads file and folder names and sizes on your Mac, and keeps a small daily history of free space for the forecast. It doesn't read what's inside your files, and it never scans cloud drives like Google Drive, Dropbox, or OneDrive. All of that stays on your Mac. Nothing about your files, folders, or disk is ever sent anywhere.</p>
+        <p>The app's only network request is Sparkle's check for updates, which fetches a small update feed from the latest GitHub release. GitHub sees that request like any other web request, including your IP address. You can turn automatic checks off in Settings › General.</p>
+        <h2>diskforecast.com</h2>
+        <p>This website runs no analytics and sets no cookies. It's static pages hosted on Vercel, which keeps standard server logs. The homepage asks GitHub's public API for the repository's star count from your browser.</p>
+        <h2>Downloads</h2>
+        <p>The app is downloaded from GitHub Releases, or through Homebrew, which downloads it from GitHub. Their privacy policies cover those downloads.</p>
+        <h2>Questions</h2>
+        <p>Open an issue on <a href="https://github.com/coreyhaines31/diskforecast/issues">GitHub</a>. The source is public, so you can check every claim on this page yourself.</p>
+    
+      </div></div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives/">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/system-data">Clear System Data</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+  <script>
+    const nav = document.querySelector(".nav");
+    const edge = () => nav.classList.toggle("scrolled", window.scrollY > 8);
+    edge(); window.addEventListener("scroll", edge, { passive: true });
+  </script>
+</body>
+</html>
