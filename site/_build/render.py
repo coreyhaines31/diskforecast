@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Renders site/alternatives/*.html, the alternatives hub, /system-data, and /privacy from pages.py,
-and rewrites the homepage footer list between its <!-- alternatives --> markers.
+and rewrites the homepage footer list and JSON-LD between their <!-- alternatives --> and <!-- schema --> markers.
 
     python3 site/_build/render.py
 """
 import html
 import json
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -109,6 +110,29 @@ def render_homepage_footer():
     i, j = page.index(start) + len(start), page.index(end)
     with open(path, "w") as f:
         f.write(page[:i] + footer_alternatives() + "      " + page[j:])
+
+
+def homepage_schema():
+    """SoftwareApplication plus a FAQPage built from the homepage's own FAQ, so the two never drift."""
+    page = homepage()
+    faqs = [(html.unescape(q), html.unescape(re.sub(r"<[^>]+>", "", a)))
+            for q, a in re.findall(r"<details><summary>(.*?)</summary><p>(.*?)</p></details>", page)]
+    app = {"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Disk Forecast",
+           "operatingSystem": "macOS 14 or later", "applicationCategory": "UtilitiesApplication",
+           "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+           "downloadUrl": DOWNLOAD, "url": f"{SITE}/", "image": f"{SITE}/images/icon.png",
+           "author": {"@type": "Person", "name": "Corey Haines"}, "softwareVersion": "1.0.0"}
+    return f'  <script type="application/ld+json">{json.dumps(app)}</script>\n  {faq_schema(faqs)}\n'
+
+
+def render_homepage_schema():
+    path = os.path.join(ROOT, "index.html")
+    page = homepage()
+    start, end = "<!-- schema -->\n", "  <!-- /schema -->"
+    i, j = page.index(start) + len(start), page.index(end)
+    schema = homepage_schema()
+    with open(path, "w") as f:
+        f.write(page[:i] + schema + page[j:])
 
 
 def mockup(name):
@@ -307,6 +331,7 @@ if __name__ == "__main__":
         render_page(p)
     render_hub()
     render_homepage_footer()
+    render_homepage_schema()
     render_guide()
     render_privacy()
-    print(f"rendered {len(PAGES)} pages + hub + homepage footer + system-data guide + privacy")
+    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + system-data guide + privacy")
