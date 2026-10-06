@@ -133,7 +133,7 @@ PAGES = [
         "title": "CleanMyMac, compared with a free storage app for Mac",
         "description": "CleanMyMac starts at $47.50 a year. Disk Forecast is a free, source-available CleanMyMac alternative that warns before your disk fills and reclaims space.",
         "eyebrow": "CleanMyMac alternative",
-        "h1": "Getting your disk space back shouldn't be <em>a subscription.</em>",
+        "h1": "CleanMyMac bills you every year. Disk Forecast <em>reclaims space for free.</em>",
         "lede": "CleanMyMac is a big suite, and since July 2025 it starts at $47.50 a year. If what you actually need is room on your disk, you don't need to pay every year for it.",
         "tldr": "Stay with CleanMyMac if you use the whole suite and the yearly price is worth it to you. If you mostly opened it to get disk space back, Disk Forecast does that part for free: it tells you when you'll run out, explains System Data, and sends what it clears to the Trash.",
         "card_title": "CleanMyMac",
