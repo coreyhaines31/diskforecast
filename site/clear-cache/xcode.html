@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>brew cleanup: how to clear Homebrew cache on Mac</title>
-  <meta name="description" content="How to clear Homebrew cache on Mac with brew cleanup: where brew --cache points, what --prune=all and -s remove, and how to reclaim old versions too.">
-  <link rel="canonical" href="https://diskforecast.com/clear-cache/homebrew">
-  <meta property="og:title" content="brew cleanup: how to clear Homebrew cache on Mac">
-  <meta property="og:description" content="How to clear Homebrew cache on Mac with brew cleanup: where brew --cache points, what --prune=all and -s remove, and how to reclaim old versions too.">
+  <title>Clear Xcode cache on Mac: DerivedData, simulators, and more</title>
+  <meta name="description" content="How to clear Xcode cache on Mac: delete DerivedData, old device support, and simulator runtimes, what each rebuilds, and the archives you may want to keep.">
+  <link rel="canonical" href="https://diskforecast.com/clear-cache/xcode">
+  <meta property="og:title" content="Clear Xcode cache on Mac: DerivedData, simulators, and more">
+  <meta property="og:description" content="How to clear Xcode cache on Mac: delete DerivedData, old device support, and simulator runtimes, what each rebuilds, and the archives you may want to keep.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Disk Forecast">
   <meta property="og:image" content="https://diskforecast.com/images/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://diskforecast.com/clear-cache/homebrew">
+  <meta property="og:url" content="https://diskforecast.com/clear-cache/xcode">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="brew cleanup: how to clear Homebrew cache on Mac">
-  <meta name="twitter:description" content="How to clear Homebrew cache on Mac with brew cleanup: where brew --cache points, what --prune=all and -s remove, and how to reclaim old versions too.">
+  <meta name="twitter:title" content="Clear Xcode cache on Mac: DerivedData, simulators, and more">
+  <meta name="twitter:description" content="How to clear Xcode cache on Mac: delete DerivedData, old device support, and simulator runtimes, what each rebuilds, and the archives you may want to keep.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -46,47 +46,52 @@
     <div class="sub-hero">
       <div class="wrap narrow">
         <div class="eyebrow">Guide</div>
-        <h1>brew cleanup on Mac, <em>flag by flag.</em></h1>
-        <p class="lede">Homebrew keeps every bottle and installer it downloads, and old versions of formulae you've upgraded. One command handles both, and a few flags decide how far it goes.</p>
-        <div class="tldr glass"><h2>The short version</h2><p>Run <code>brew cleanup</code>. It removes old versions of upgraded formulae and downloads more than 120 days old from <code>~/Library/Caches/Homebrew</code>. To empty the download cache completely, run <code>brew cleanup --prune=all</code>. Add <code>-n</code> first to see what would go. Installed formulae and casks keep working.</p></div>
+        <h1>How to clear Xcode cache on Mac, <em>folder by folder.</em></h1>
+        <p class="lede">Xcode spreads its storage across several folders, and DerivedData usually isn't the biggest. Here's each one, what it holds, and what happens when you delete it.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Quit Xcode, then move the folders inside <code>~/Library/Developer/Xcode/DerivedData</code> to the Trash; Xcode rebuilds them on the next build. The bigger wins are usually simulator runtimes, which you delete in <strong>Xcode › Settings › Components</strong> or with <code>xcrun simctl runtime delete</code>, and folders in <code>iOS DeviceSupport</code> for devices you no longer plug in.</p></div>
       </div>
     </div>
     <section class="tight">
       <div class="wrap narrow"><div class="prose">
 
-        <h2>Where the Homebrew cache is on a Mac</h2>
-<pre><code>brew --cache</code></pre>
-        <p>That prints <code>~/Library/Caches/Homebrew</code> unless you've set <code>HOMEBREW_CACHE</code>.</p>
+        <h2>Xcode storage: where it goes</h2>
+        <p>Here's every folder that grows as you use Xcode, measured on one developer Mac running Xcode 27 in October 2026:</p>
                 <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
           <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
-            <tr><th scope="row">Downloads (bottles, casks)</th><td><code>~/Library/Caches/Homebrew</code></td><td>813 MB</td></tr>
-            <tr><th scope="row">Installed formulae, all versions</th><td><code>/opt/homebrew/Cellar (Apple silicon), /usr/local/Cellar (Intel)</code></td><td>Not measured</td></tr>
+            <tr><th scope="row">DerivedData</th><td><code>~/Library/Developer/Xcode/DerivedData</code></td><td>1.7 GB</td></tr>
+            <tr><th scope="row">Device support</th><td><code>~/Library/Developer/Xcode/iOS DeviceSupport</code></td><td>4.3 GB</td></tr>
+            <tr><th scope="row">Simulators and their apps</th><td><code>~/Library/Developer/CoreSimulator/Devices</code></td><td>10 GB, 22 simulators</td></tr>
+            <tr><th scope="row">Simulator runtimes</th><td>Managed by macOS; <code>xcrun simctl runtime list</code></td><td>15.7 GB, 2 iOS runtimes</td></tr>
+            <tr><th scope="row">Archives</th><td><code>~/Library/Developer/Xcode/Archives</code></td><td>None</td></tr>
           </tbody></table></div></div>
-        <p>The cache size is from one developer Mac running Homebrew 7 in October 2026. The cache holds the bottle (prebuilt package) for each formula version you've installed, and the <code>.dmg</code> or <code>.zip</code> for each cask. The other place space builds up is the Cellar, where old versions of a formula can stay after an upgrade.</p>
+        <p>DerivedData was the smallest of the big ones. That's typical: it gets the attention, but simulators and device support usually take more. Check yours with <code>du -sh ~/Library/Developer/Xcode/* ~/Library/Developer/CoreSimulator</code>.</p>
 
-        <h2 style="margin-top:56px">What brew cleanup removes</h2>
-<pre><code>brew cleanup -n                # show what would be removed, remove nothing
-brew cleanup                   # old versions, plus downloads over 120 days old
-brew cleanup --prune=all       # every download in the cache
-brew cleanup -s                # scrub: downloads even for the latest versions
-brew cleanup node              # only one formula</code></pre>
+        <h2 style="margin-top:56px">How to delete DerivedData in Xcode</h2>
+        <p>DerivedData holds build products, intermediate files, and the index Xcode uses for code completion and search, one folder per project. It's always safe to delete. Xcode rebuilds it, and the cost is one slow build and a few minutes of indexing.</p>
+        <ol class="steps">
+          <li><b>For one project:</b> choose <strong>Product › Clean Build Folder</strong>, or press Shift-Command-K. That removes the project's build products, not its index.</li>
+          <li><b>For everything:</b> quit Xcode, open <code>~/Library/Developer/Xcode/DerivedData</code> in Finder with <strong>Go › Go to Folder</strong>, and move the folders inside it to the Trash.</li>
+          <li><b>To find the folder from Xcode:</b> <strong>Xcode › Settings › Locations</strong> shows the DerivedData path, with an arrow that opens it in Finder.</li>
+        </ol>
+
+        <h2 style="margin-top:56px">Device support, simulators, and archives</h2>
         <ul>
-          <li><strong>Plain <code>brew cleanup</code></strong> removes old versions of installed formulae, stale lock files, and downloads more than 120 days old. Change that age with <code>HOMEBREW_CLEANUP_MAX_AGE_DAYS</code>.</li>
-          <li><strong><code>--prune=all</code></strong> removes every cache file regardless of age. <code>--prune=30</code> keeps the last 30 days.</li>
-          <li><strong><code>-s</code></strong> scrubs the cache, including downloads for the latest versions. Downloads for anything currently installed still stay; Homebrew's help says to delete <code>"$(brew --cache)"</code> yourself if you want those gone too.</li>
+          <li><strong>Device support.</strong> When you plug in an iPhone, Apple Watch, or Apple TV, Xcode copies debug symbols for its OS version into <code>iOS DeviceSupport</code> (and <code>watchOS</code>, <code>tvOS</code>, or <code>visionOS DeviceSupport</code>). Each version is a few gigabytes, and old ones never leave. Delete folders for OS versions you no longer debug on; Xcode copies them again the next time that device connects.</li>
+          <li><strong>Simulator runtimes.</strong> Each iOS runtime is several gigabytes, and Xcode keeps old ones after updates. Delete them in <strong>Xcode › Settings › Components</strong>, or in Terminal:
+<pre><code>xcrun simctl runtime list
+xcrun simctl runtime delete &lt;identifier&gt;
+xcrun simctl delete unavailable</code></pre>
+          The last command removes simulators whose runtime is gone, which can't run anyway. Runtimes count toward System Data, not toward any folder you can see.</li>
+          <li><strong>Archives.</strong> Builds you archived for App Store or TestFlight, in <strong>Window › Organizer</strong>. They hold the symbols for reading crash reports from that release, so keep the ones for versions people still run.</li>
         </ul>
-        <p>Is it safe? Yes. Everything in the cache can be downloaded again, and installed packages don't need their bottles to run. The only thing you give up is reinstalling an old version offline. If you pinned a formula with <code>brew pin</code>, cleanup leaves its versions alone.</p>
+        <p>Simulators also keep caches in <code>~/Library/Developer/CoreSimulator/Caches</code>, which the Simulator rebuilds on its own. The simulators themselves, with every app you've installed on them, are in <code>CoreSimulator/Devices</code>; erase or delete ones you don't use from Xcode's <strong>Window › Devices and Simulators</strong>.</p>
 
-        <h2 style="margin-top:56px">Homebrew already cleans up, mostly</h2>
-        <p>Homebrew runs a cleanup for each formula you upgrade or reinstall, and a full cleanup every 30 days. So on most Macs, running it by hand reclaims hundreds of megabytes, not tens of gigabytes. On the Mac above, the cache was 813 MB. If you've set <code>HOMEBREW_NO_INSTALL_CLEANUP</code>, none of that happens, and the cache and Cellar keep growing until you run <code>brew cleanup</code> yourself.</p>
+        <h2 style="margin-top:56px">How big Xcode gets</h2>
+        <p>Xcode itself is several gigabytes, and everything above comes on top. On the developer Mac measured here, the folders in the table added up to about 32 GB. A Mac that has followed iOS betas for a few years, with several devices plugged in, can easily pass 100 GB.</p>
 
-        <h2 style="margin-top:56px">The bigger wins in Homebrew</h2>
-        <p>The cache is rarely the problem. What's installed is:</p>
-<pre><code>brew leaves                    # formulae you installed on purpose
-brew autoremove -n             # dependencies nothing needs anymore
-du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
-        <p>Uninstall what you don't use with <code>brew uninstall</code>, then run <code>brew autoremove</code> to remove the dependencies it left behind. Big ones are usually language runtimes and databases: several Python, Node, or PostgreSQL versions installed side by side.</p>
-        <p>Next: <a href="/clear-cache/pip">pip's cache</a> sits beside Homebrew's, and <a href="/clear-cache/npm">npm's</a> is often the biggest. Or see <a href="/clear-cache">every tool's cache</a>.</p>
+        <h2 style="margin-top:56px">Build folders outside Xcode</h2>
+        <p>Swift packages built from the command line keep their output in a <code>.build</code> folder beside <code>Package.swift</code>; <code>swift package clean</code> empties it, or delete the folder. Projects using CocoaPods have a <code>Pods</code> folder that <code>pod install</code> rebuilds. Packages Xcode resolves for an app project live in DerivedData, so clearing it clears them too.</p>
+        <p>For simulators in System Data, see <a href="/system-data">how to clear System Data</a>. Or browse <a href="/clear-cache">every tool's cache</a>, like <a href="/clear-cache/docker">Docker</a> and <a href="/clear-cache/homebrew">Homebrew</a>.</p>
     
       </div></div>
     </section>
@@ -95,7 +100,7 @@ du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
         <div class="head center">
           <h2>Disk Forecast finds this for you</h2>
 
-          <p>Homebrew&#39;s cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>Homebrew</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, checked by default, and moves it to the Trash. Old versions in the Cellar aren&#39;t listed; <code>brew cleanup</code> is the right tool for those. It&#39;s free.</p>
+          <p>Disk Forecast lists each Xcode folder on its own row. Under <strong>Cleanup › Safe to clear</strong>: <strong>Xcode DerivedData</strong>, <strong>Xcode device support</strong> (iOS, watchOS, tvOS, and visionOS), and <strong>Simulator caches</strong>. Under <strong>Worth a look</strong>: <strong>Xcode archives</strong>, unchecked. Swift <code>.build</code> folders and CocoaPods show up under the build folder rows. Simulators are in <strong>System Data › Simulators</strong>, with each runtime&#39;s size and a button that runs <code>xcrun simctl runtime delete</code> after you confirm. It&#39;s free.</p>
     
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
@@ -130,10 +135,11 @@ du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
         <div class="faq glass">
-          <details><summary>What does brew cleanup do?</summary><p>It removes old versions of installed formulae, stale lock files, and downloads more than 120 days old from Homebrew&#x27;s cache. Add -n to see what it would remove first.</p></details>
-          <details><summary>How do I clear the Homebrew cache completely?</summary><p>Run brew cleanup --prune=all. It removes every file in the cache regardless of age. Downloads for installed packages can stay; delete the folder brew --cache prints to remove those too.</p></details>
-          <details><summary>Where is the Homebrew cache on a Mac?</summary><p>In ~/Library/Caches/Homebrew. Run brew --cache to confirm, or set HOMEBREW_CACHE to move it.</p></details>
-          <details><summary>Is it safe to delete the Homebrew cache?</summary><p>Yes. Installed formulae and casks don&#x27;t need their downloads to run, and Homebrew downloads them again if you reinstall. You only lose the ability to reinstall an old version offline.</p></details>
+          <details><summary>How do I clear the Xcode cache?</summary><p>Quit Xcode and move the folders inside ~/Library/Developer/Xcode/DerivedData to the Trash. For one project, choose Product › Clean Build Folder. To reclaim more, delete old simulator runtimes in Xcode › Settings › Components and old folders in iOS DeviceSupport.</p></details>
+          <details><summary>Is it safe to delete DerivedData?</summary><p>Yes. It holds build products and the index, and Xcode rebuilds both. The next build is slower and indexing runs again, but no source code or settings are affected.</p></details>
+          <details><summary>Where is DerivedData on a Mac?</summary><p>In ~/Library/Developer/Xcode/DerivedData by default. Xcode › Settings › Locations shows the current path and can open it in Finder.</p></details>
+          <details><summary>Why does Xcode take so much storage?</summary><p>Simulator runtimes and device support files add up: each iOS runtime and each device OS version is several gigabytes, and Xcode keeps old ones after updates. DerivedData and archives add more.</p></details>
+          <details><summary>Can I delete iOS DeviceSupport folders?</summary><p>Yes. They&#x27;re debug symbols copied from devices you&#x27;ve connected. Xcode copies them again the next time you connect a device running that OS version.</p></details>
         </div>
       </div>
     </section>
@@ -141,9 +147,9 @@ du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
       <div class="wrap">
         <div class="head center head-sm"><h2>Related guides</h2></div>
         <div class="related">
-          <a class="glass" href="/clear-cache/pip"><b>pip</b><span>pip cache purge, uv, conda, and virtual environments.</span></a>
-          <a class="glass" href="/clear-cache/npm"><b>npm</b><span>npm cache clean --force, the npx folder, and node_modules.</span></a>
-          <a class="glass" href="/clear-cache/xcode"><b>Xcode</b><span>DerivedData, device support, simulators, and archives.</span></a>
+          <a class="glass" href="/clear-cache/docker"><b>Docker</b><span>docker system prune, build cache, and the Docker.raw file.</span></a>
+          <a class="glass" href="/clear-cache/homebrew"><b>Homebrew</b><span>brew cleanup, --prune=all, and brew --cache.</span></a>
+          <a class="glass" href="/system-data"><b>How to clear System Data</b><span>The step-by-step guide, using only Apple&#x27;s own tools.</span></a>
         </div>
       </div>
     </section>
@@ -170,6 +176,6 @@ du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does brew cleanup do?", "acceptedAnswer": {"@type": "Answer", "text": "It removes old versions of installed formulae, stale lock files, and downloads more than 120 days old from Homebrew's cache. Add -n to see what it would remove first."}}, {"@type": "Question", "name": "How do I clear the Homebrew cache completely?", "acceptedAnswer": {"@type": "Answer", "text": "Run brew cleanup --prune=all. It removes every file in the cache regardless of age. Downloads for installed packages can stay; delete the folder brew --cache prints to remove those too."}}, {"@type": "Question", "name": "Where is the Homebrew cache on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Caches/Homebrew. Run brew --cache to confirm, or set HOMEBREW_CACHE to move it."}}, {"@type": "Question", "name": "Is it safe to delete the Homebrew cache?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Installed formulae and casks don't need their downloads to run, and Homebrew downloads them again if you reinstall. You only lose the ability to reinstall an old version offline."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear the Xcode cache?", "acceptedAnswer": {"@type": "Answer", "text": "Quit Xcode and move the folders inside ~/Library/Developer/Xcode/DerivedData to the Trash. For one project, choose Product \u203a Clean Build Folder. To reclaim more, delete old simulator runtimes in Xcode \u203a Settings \u203a Components and old folders in iOS DeviceSupport."}}, {"@type": "Question", "name": "Is it safe to delete DerivedData?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It holds build products and the index, and Xcode rebuilds both. The next build is slower and indexing runs again, but no source code or settings are affected."}}, {"@type": "Question", "name": "Where is DerivedData on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Developer/Xcode/DerivedData by default. Xcode \u203a Settings \u203a Locations shows the current path and can open it in Finder."}}, {"@type": "Question", "name": "Why does Xcode take so much storage?", "acceptedAnswer": {"@type": "Answer", "text": "Simulator runtimes and device support files add up: each iOS runtime and each device OS version is several gigabytes, and Xcode keeps old ones after updates. DerivedData and archives add more."}}, {"@type": "Question", "name": "Can I delete iOS DeviceSupport folders?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. They're debug symbols copied from devices you've connected. Xcode copies them again the next time you connect a device running that OS version."}}]}</script>
 </body>
 </html>

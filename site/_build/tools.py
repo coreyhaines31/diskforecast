@@ -331,6 +331,71 @@ yarn cache clean --all        # both</code></pre>
     ],
 }
 
+# ------------------------------------------------------------------ Xcode
+# "clear xcode cache" 50, "delete derived data xcode" 40, "deriveddata" 10, "xcode deriveddata" 10, "xcode storage" 10.
+XCODE = {
+    "slug": "xcode",
+    "title": "Clear Xcode cache on Mac: DerivedData, simulators, and more",
+    "description": "How to clear Xcode cache on Mac: delete DerivedData, old device support, and simulator runtimes, what each rebuilds, and the archives you may want to keep.",
+    "h1": "How to clear Xcode cache on Mac, <em>folder by folder.</em>",
+    "lede": "Xcode spreads its storage across several folders, and DerivedData usually isn't the biggest. Here's each one, what it holds, and what happens when you delete it.",
+    "tldr": "Quit Xcode, then move the folders inside <code>~/Library/Developer/Xcode/DerivedData</code> to the Trash; Xcode rebuilds them on the next build. The bigger wins are usually simulator runtimes, which you delete in <strong>Xcode › Settings › Components</strong> or with <code>xcrun simctl runtime delete</code>, and folders in <code>iOS DeviceSupport</code> for devices you no longer plug in.",
+    "card_title": "Xcode",
+    "card_blurb": "DerivedData, device support, simulators, and archives.",
+    "paths": [
+        ("DerivedData", "~/Library/Developer/Xcode/DerivedData", "1.7 GB"),
+        ("Device support", "~/Library/Developer/Xcode/iOS DeviceSupport", "4.3 GB"),
+        ("Simulators and their apps", "~/Library/Developer/CoreSimulator/Devices", "10 GB, 22 simulators"),
+        ("Simulator runtimes", "Managed by macOS; <code>xcrun simctl runtime list</code>", "15.7 GB, 2 iOS runtimes"),
+        ("Archives", "~/Library/Developer/Xcode/Archives", "None"),
+    ],
+    "html": """
+        <h2>Xcode storage: where it goes</h2>
+        <p>Here's every folder that grows as you use Xcode, measured on one developer Mac running Xcode 27 in October 2026:</p>
+        {{PATHS}}
+        <p>DerivedData was the smallest of the big ones. That's typical: it gets the attention, but simulators and device support usually take more. Check yours with <code>du -sh ~/Library/Developer/Xcode/* ~/Library/Developer/CoreSimulator</code>.</p>
+
+        <h2 style="margin-top:56px">How to delete DerivedData in Xcode</h2>
+        <p>DerivedData holds build products, intermediate files, and the index Xcode uses for code completion and search, one folder per project. It's always safe to delete. Xcode rebuilds it, and the cost is one slow build and a few minutes of indexing.</p>
+        <ol class="steps">
+          <li><b>For one project:</b> choose <strong>Product › Clean Build Folder</strong>, or press Shift-Command-K. That removes the project's build products, not its index.</li>
+          <li><b>For everything:</b> quit Xcode, open <code>~/Library/Developer/Xcode/DerivedData</code> in Finder with <strong>Go › Go to Folder</strong>, and move the folders inside it to the Trash.</li>
+          <li><b>To find the folder from Xcode:</b> <strong>Xcode › Settings › Locations</strong> shows the DerivedData path, with an arrow that opens it in Finder.</li>
+        </ol>
+
+        <h2 style="margin-top:56px">Device support, simulators, and archives</h2>
+        <ul>
+          <li><strong>Device support.</strong> When you plug in an iPhone, Apple Watch, or Apple TV, Xcode copies debug symbols for its OS version into <code>iOS DeviceSupport</code> (and <code>watchOS</code>, <code>tvOS</code>, or <code>visionOS DeviceSupport</code>). Each version is a few gigabytes, and old ones never leave. Delete folders for OS versions you no longer debug on; Xcode copies them again the next time that device connects.</li>
+          <li><strong>Simulator runtimes.</strong> Each iOS runtime is several gigabytes, and Xcode keeps old ones after updates. Delete them in <strong>Xcode › Settings › Components</strong>, or in Terminal:
+<pre><code>xcrun simctl runtime list
+xcrun simctl runtime delete &lt;identifier&gt;
+xcrun simctl delete unavailable</code></pre>
+          The last command removes simulators whose runtime is gone, which can't run anyway. Runtimes count toward System Data, not toward any folder you can see.</li>
+          <li><strong>Archives.</strong> Builds you archived for App Store or TestFlight, in <strong>Window › Organizer</strong>. They hold the symbols for reading crash reports from that release, so keep the ones for versions people still run.</li>
+        </ul>
+        <p>Simulators also keep caches in <code>~/Library/Developer/CoreSimulator/Caches</code>, which the Simulator rebuilds on its own. The simulators themselves, with every app you've installed on them, are in <code>CoreSimulator/Devices</code>; erase or delete ones you don't use from Xcode's <strong>Window › Devices and Simulators</strong>.</p>
+
+        <h2 style="margin-top:56px">How big Xcode gets</h2>
+        <p>Xcode itself is several gigabytes, and everything above comes on top. On the developer Mac measured here, the folders in the table added up to about 32 GB. A Mac that has followed iOS betas for a few years, with several devices plugged in, can easily pass 100 GB.</p>
+
+        <h2 style="margin-top:56px">Build folders outside Xcode</h2>
+        <p>Swift packages built from the command line keep their output in a <code>.build</code> folder beside <code>Package.swift</code>; <code>swift package clean</code> empties it, or delete the folder. Projects using CocoaPods have a <code>Pods</code> folder that <code>pod install</code> rebuilds. Packages Xcode resolves for an app project live in DerivedData, so clearing it clears them too.</p>
+        <p>For simulators in System Data, see <a href="/system-data">how to clear System Data</a>. Or browse <a href="/clear-cache">every tool's cache</a>, like <a href="/clear-cache/docker">Docker</a> and <a href="/clear-cache/homebrew">Homebrew</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast lists each Xcode folder on its own row. Under <strong>Cleanup › Safe to clear</strong>: <strong>Xcode DerivedData</strong>, <strong>Xcode device support</strong> (iOS, watchOS, tvOS, and visionOS), and <strong>Simulator caches</strong>. Under <strong>Worth a look</strong>: <strong>Xcode archives</strong>, unchecked. Swift <code>.build</code> folders and CocoaPods show up under the build folder rows. Simulators are in <strong>System Data › Simulators</strong>, with each runtime&#39;s size and a button that runs <code>xcrun simctl runtime delete</code> after you confirm. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/clear-cache/docker", "/clear-cache/homebrew", "/system-data"],
+    "faqs": [
+        ("How do I clear the Xcode cache?", "Quit Xcode and move the folders inside ~/Library/Developer/Xcode/DerivedData to the Trash. For one project, choose Product › Clean Build Folder. To reclaim more, delete old simulator runtimes in Xcode › Settings › Components and old folders in iOS DeviceSupport."),
+        ("Is it safe to delete DerivedData?", "Yes. It holds build products and the index, and Xcode rebuilds both. The next build is slower and indexing runs again, but no source code or settings are affected."),
+        ("Where is DerivedData on a Mac?", "In ~/Library/Developer/Xcode/DerivedData by default. Xcode › Settings › Locations shows the current path and can open it in Finder."),
+        ("Why does Xcode take so much storage?", "Simulator runtimes and device support files add up: each iOS runtime and each device OS version is several gigabytes, and Xcode keeps old ones after updates. DerivedData and archives add more."),
+        ("Can I delete iOS DeviceSupport folders?", "Yes. They're debug symbols copied from devices you've connected. Xcode copies them again the next time you connect a device running that OS version."),
+    ],
+}
+
 # ------------------------------------------------------------------ Homebrew
 # "brew cleanup" 50, "clear homebrew cache" 10.
 HOMEBREW = {
@@ -390,7 +455,7 @@ du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
     ],
 }
 
-CACHE_TOOLS = [DOCKER, NPM, PIP, TEAMS, YARN, HOMEBREW]
+CACHE_TOOLS = [DOCKER, NPM, PIP, TEAMS, YARN, XCODE, HOMEBREW]
 
 CLEAR_CACHE_HUB = {
     "path": "/clear-cache",
