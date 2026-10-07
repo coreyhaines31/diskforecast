@@ -131,16 +131,16 @@ PAGES = [
         "slug": "cleanmymac",
         "competitor": "CleanMyMac",
         "title": "CleanMyMac, compared with a free storage app for Mac",
-        "description": "CleanMyMac starts at $47.50 a year. Disk Forecast is a free, source-available CleanMyMac alternative that warns before your disk fills and reclaims space.",
+        "description": "CleanMyMac costs $39.99 a year or $89.99 once. Disk Forecast is a free, source-available CleanMyMac alternative that warns before your disk fills.",
         "eyebrow": "CleanMyMac alternative",
-        "h1": "CleanMyMac bills you every year. Disk Forecast <em>reclaims space for free.</em>",
-        "lede": "CleanMyMac is a big suite, and since July 2025 it starts at $47.50 a year. If what you actually need is room on your disk, you don't need to pay every year for it.",
-        "tldr": "Stay with CleanMyMac if you use the whole suite and the yearly price is worth it to you. If you mostly opened it to get disk space back, Disk Forecast does that part for free: it tells you when you'll run out, explains System Data, and sends what it clears to the Trash.",
+        "h1": "CleanMyMac is a whole suite. Disk Forecast <em>reclaims space for free.</em>",
+        "lede": "CleanMyMac is a big suite that costs $39.99 a year, or $89.99 once, on the Mac App Store. If what you actually need is room on your disk, you don't need to pay for it.",
+        "tldr": "Stay with CleanMyMac if you use the whole suite and the price is worth it to you. If you mostly opened it to get disk space back, Disk Forecast does that part for free: it tells you when you'll run out, explains System Data, and sends what it clears to the Trash.",
         "card_title": "CleanMyMac",
-        "card_blurb": "The big suite. Now a subscription from $47.50 a year.",
+        "card_blurb": "The big suite. From $39.99 a year, or $89.99 once.",
         "cta": "Reclaim space, free.",
         "faqs": [
-            ("How much does CleanMyMac cost?", "MacPaw raised CleanMyMac's price in July 2025, and it now starts at $47.50 a year. Check MacPaw's store for current plans."),
+            ("How much does CleanMyMac cost?", "On the Mac App Store (October 2026), CleanMyMac costs $9.99 a month or $39.99 a year, Plus costs $65.99 a year, and CleanMyMac X is a one-time $89.99. MacPaw's own store may differ, so check it for current plans."),
             ("Do I need a Mac cleaner app?", "For disk space, a careful tool helps when you're running low. Beyond that, usually not. macOS manages its own caches and memory, and on an SSD, free space doesn't change how a Mac runs until the disk is nearly full."),
             ("Can I use Disk Forecast and CleanMyMac together?", "Yes. They don't conflict. Disk Forecast only moves files to the Trash when you ask it to."),
             ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
@@ -148,7 +148,7 @@ PAGES = [
         "sections": [
             {"id": "why", "html": """
         <h2>What CleanMyMac is</h2>
-        <p>CleanMyMac is MacPaw's long-running Mac suite, with storage cleanup as one part of a larger set of tools. In July 2025 its pricing moved to a subscription that starts at $47.50 a year, and some users have pushed back on the billing.</p>
+        <p>CleanMyMac is MacPaw's long-running Mac suite, with storage cleanup as one part of a larger set of tools. On the Mac App Store it costs $39.99 a year, $65.99 a year for Plus, or $89.99 once for CleanMyMac X (October 2026). Macworld reported a direct price of $47.50 a year for the Basic plan in July 2025, and some users pushed back on that change.</p>
         <p>If you use everything in it, that may be fine. Many people open it for one reason: the disk is full.</p>
         <h3>Do you need a cleaner at all?</h3>
         <p>Regulars on Apple's own support forums have warned against Mac cleaner apps for years, and they have a point. On a modern Mac with APFS and an SSD, there's nothing to tune. A Mac with 100 GB free runs the same as one with 300 GB free.</p>
@@ -156,14 +156,14 @@ PAGES = [
             """},
             {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs CleanMyMac</h2>
-        <p>CleanMyMac facts come from MacPaw's store and coverage of the 2025 price change.</p>
+        <p>CleanMyMac prices come from its Mac App Store listing on October 6, 2026.</p>
         {{TABLE}}
         <h3>What CleanMyMac does better</h3>
         <p>Scope. It's a suite with many tools beyond storage, a polished interface, and a company behind it with a support team.</p>
         <h3>What Disk Forecast does better</h3>
         <p>It costs nothing, warns you before the disk fills, explains System Data in plain English, and uses Apple's own tools for system fixes. The source is on GitHub, so you can see exactly what it moves to the Trash.</p>
             """, "table": [
-                ("Price", "Free", "From $47.50 a year"),
+                ("Price", "Free", "$39.99 a year, or $89.99 once"),
                 ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
                 ("System Data broken down", "Every part, in plain English, with Apple's fixes", "—"),
                 ("Deletes go to the Trash", "Yes", "—"),
