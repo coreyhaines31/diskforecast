@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>npm cache clean: how to clear npm cache on Mac</title>
-  <meta name="description" content="How to clear npm cache on Mac with npm cache clean --force, where the npm cache is located, why it never shrinks, and the npx folder it doesn&#x27;t clear.">
-  <link rel="canonical" href="https://diskforecast.com/clear-cache/npm">
-  <meta property="og:title" content="npm cache clean: how to clear npm cache on Mac">
-  <meta property="og:description" content="How to clear npm cache on Mac with npm cache clean --force, where the npm cache is located, why it never shrinks, and the npx folder it doesn&#x27;t clear.">
+  <title>Clear pip cache on Mac with pip cache purge</title>
+  <meta name="description" content="How to clear pip cache on Mac with pip cache purge, where pip keeps its cache, what&#x27;s inside it, and how to clear uv, conda, and virtual environments too.">
+  <link rel="canonical" href="https://diskforecast.com/clear-cache/pip">
+  <meta property="og:title" content="Clear pip cache on Mac with pip cache purge">
+  <meta property="og:description" content="How to clear pip cache on Mac with pip cache purge, where pip keeps its cache, what&#x27;s inside it, and how to clear uv, conda, and virtual environments too.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Disk Forecast">
   <meta property="og:image" content="https://diskforecast.com/images/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://diskforecast.com/clear-cache/npm">
+  <meta property="og:url" content="https://diskforecast.com/clear-cache/pip">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="npm cache clean: how to clear npm cache on Mac">
-  <meta name="twitter:description" content="How to clear npm cache on Mac with npm cache clean --force, where the npm cache is located, why it never shrinks, and the npx folder it doesn&#x27;t clear.">
+  <meta name="twitter:title" content="Clear pip cache on Mac with pip cache purge">
+  <meta name="twitter:description" content="How to clear pip cache on Mac with pip cache purge, where pip keeps its cache, what&#x27;s inside it, and how to clear uv, conda, and virtual environments too.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -46,53 +46,55 @@
     <div class="sub-hero">
       <div class="wrap narrow">
         <div class="eyebrow">Guide</div>
-        <h1>How to clear npm cache on Mac, <em>and what it keeps.</em></h1>
-        <p class="lede">npm keeps a copy of every package version it has ever downloaded, and it never deletes any of them on its own. Here's where that lives on a Mac and how to reclaim it.</p>
-        <div class="tldr glass"><h2>The short version</h2><p>Run <code>npm cache clean --force</code>. It empties <code>~/.npm/_cacache</code>, where npm keeps every package it has downloaded. Your projects and their <code>node_modules</code> folders aren't touched, and npm downloads packages again as you install them. It doesn't clear the npx cache: move <code>~/.npm/_npx</code> to the Trash for that.</p></div>
+        <h1>How to clear pip cache on Mac, <em>with pip itself.</em></h1>
+        <p class="lede">pip keeps the packages it downloads and the wheels it builds, so installing them again is fast. On a Mac that cache lives in your Library folder, and pip has its own command to empty it.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Run <code>pip cache purge</code>. It empties pip's cache, which on a Mac is <code>~/Library/Caches/pip</code>. Installed packages and your virtual environments aren't touched; pip downloads what it needs again on the next install. With more than one Python, run <code>python3 -m pip cache purge</code> so you clear the cache of the pip you actually use.</p></div>
       </div>
     </div>
     <section class="tight">
       <div class="wrap narrow"><div class="prose">
 
-        <h2>npm cache location on Mac</h2>
-        <p>On a Mac, npm's cache folder is <code>~/.npm</code>, a hidden folder in your home folder. To confirm where yours is:</p>
-<pre><code>npm config get cache</code></pre>
+        <h2>Where pip keeps its cache on a Mac</h2>
+        <p>pip follows the Mac convention and keeps its cache in <code>~/Library/Caches/pip</code>, not in the <code>~/.cache</code> folder it uses on Linux. Ask pip directly:</p>
+<pre><code>pip cache dir
+pip cache info</code></pre>
                 <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
           <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
-            <tr><th scope="row">Package cache</th><td><code>~/.npm/_cacache</code></td><td>19 GB</td></tr>
-            <tr><th scope="row">Packages run with npx</th><td><code>~/.npm/_npx</code></td><td>4.8 GB</td></tr>
-            <tr><th scope="row">Debug logs</th><td><code>~/.npm/_logs</code></td><td>Small</td></tr>
+            <tr><th scope="row">Downloaded packages and index pages</th><td><code>~/Library/Caches/pip/http-v2</code></td><td>612 MB in 1,502 files</td></tr>
+            <tr><th scope="row">Wheels pip built from source</th><td><code>~/Library/Caches/pip/wheels</code></td><td>19 MB, 4 wheels</td></tr>
           </tbody></table></div></div>
-        <p>Sizes are from one developer Mac in October 2026: 23 GB in all. It's one folder per user, so every Node version you install with nvm, fnm, or Homebrew shares it. To move it, run <code>npm config set cache /path/to/folder</code>, or set the <code>npm_config_cache</code> environment variable.</p>
+        <p>Sizes are from <code>pip cache info</code> on one developer Mac in October 2026. pip 23.3 and later use <code>http-v2</code>; older versions used <code>http</code>, and both can be there if you've upgraded. If you set <code>PIP_CACHE_DIR</code> or <code>XDG_CACHE_HOME</code>, the cache moves with it.</p>
 
-        <h2 style="margin-top:56px">What npm cache clean deletes</h2>
-        <p><code>_cacache</code> is a content-addressable store: the tarball and metadata for every package version npm has fetched, checked against its hash every time it's read. Clearing it is safe. Nothing in your projects depends on it; it only saves downloads.</p>
+        <h2 style="margin-top:56px">Is it safe to clear pip cache?</h2>
+        <p>Yes. The cache is only a shortcut. It holds package files pip downloaded and wheels it compiled from source, so the next install of the same version skips the download or the build.</p>
         <ul>
-          <li><strong>What rebuilds:</strong> the next <code>npm install</code> downloads what it needs and puts it back in the cache.</li>
-          <li><strong>What you lose:</strong> offline installs. <code>--offline</code> and <code>--prefer-offline</code> only work for packages that are cached.</li>
-          <li><strong>What stays:</strong> <code>_npx</code>, <code>_logs</code>, your <code>~/.npmrc</code> settings, and every <code>node_modules</code> folder.</li>
-        </ul>
-        <p>npm's own documentation says the cache is self-healing: corrupted data is detected and fetched again. So clearing it rarely fixes an install error. Its real use is reclaiming disk space, which is why npm makes you add <code>--force</code>.</p>
-
-        <h2 style="margin-top:56px">npm cache commands</h2>
-<pre><code>npm config get cache                   # where the cache is
-du -sh ~/.npm/_cacache ~/.npm/_npx     # how big it is
-npm cache verify                       # check it and garbage-collect unneeded data
-npm cache clean --force                # empty _cacache</code></pre>
-        <ul>
-          <li><strong><code>npm cache verify</code></strong> is the gentle option. It checks every entry and removes data nothing points to anymore. It reclaims some space, not most.</li>
-          <li><strong><code>npm cache clean --force</code></strong> deletes everything in <code>_cacache</code>. Without <code>--force</code>, npm refuses and explains why.</li>
-          <li><strong>The npx cache</strong> holds whole installs of every package you've run with <code>npx</code>, one folder per package. Quit anything running through npx, then move <code>~/.npm/_npx</code> to the Trash. npx downloads a package again the next time you run it.</li>
+          <li><strong>What stays:</strong> every package you've installed, in every Python and every virtual environment. Purging the cache uninstalls nothing.</li>
+          <li><strong>What rebuilds:</strong> the next install downloads again. Packages without a wheel for your Mac compile again, which can take minutes for some scientific packages.</li>
+          <li><strong>When it helps:</strong> reclaiming space, or forcing pip to fetch a fresh copy of a package that installed wrong.</li>
         </ul>
 
-        <h2 style="margin-top:56px">How big the npm cache gets</h2>
-        <p>npm never deletes cached data on its own, so the cache only grows. Every new version of every dependency, across every project, adds to it. A few gigabytes is normal after a year; on the developer Mac above, it reached 19 GB, plus 4.8 GB of npx installs. If you've never cleared it, it's likely one of the biggest folders in your home folder.</p>
+        <h2 style="margin-top:56px">pip cache commands</h2>
+<pre><code>pip cache list                    # wheels in the cache
+pip cache remove numpy            # one package's wheels
+pip cache purge                   # everything
+pip install --no-cache-dir torch  # install without reading or writing the cache</code></pre>
+        <ul>
+          <li><strong><code>pip cache purge</code></strong> removes all items from both the HTTP cache and the wheels folder.</li>
+          <li><strong><code>pip cache remove</code></strong> takes a package name or a glob, like <code>"torch*"</code>, and removes matching wheels. Use it when one big package is the problem.</li>
+          <li><strong><code>--no-cache-dir</code></strong> is useful for a one-off install of something huge, so it never lands in the cache.</li>
+        </ul>
+        <p>If pip says the cache is disabled or empty when you know it isn't, you're probably running a different pip than you think. <code>which -a pip pip3</code> lists them; <code>python3 -m pip</code> always uses the pip of that Python.</p>
 
-        <h2 style="margin-top:56px">node_modules: usually the bigger folder</h2>
-        <p>The cache is one folder. <code>node_modules</code> is one per project, and a single Next.js app can have hundreds of megabytes in it. To list them by size:</p>
-<pre><code>find ~ -name node_modules -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
-        <p>Delete the ones in projects you haven't worked on in a while. <code>npm install</code> brings them back from the lockfile, and <code>npm ci</code> deletes and reinstalls them from scratch. If you use pnpm, its shared store at <code>~/Library/pnpm/store</code> is the equivalent of the npm cache: <code>pnpm store prune</code> removes packages no project uses. On the same Mac, it held 12 GB.</p>
-        <p>Using Yarn instead? See <a href="/clear-cache/yarn">how to clear Yarn cache</a>. All the others: <a href="/clear-cache">clear cache by tool</a>.</p>
+        <h2 style="margin-top:56px">How big the pip cache gets</h2>
+        <p>Usually hundreds of megabytes. On the developer Mac above, it was 605 MB. It gets bigger if you work with machine learning packages, since each version of a framework like PyTorch is a large download, and pip keeps every version you've installed.</p>
+
+        <h2 style="margin-top:56px">Other Python caches</h2>
+        <ul>
+          <li><strong>uv:</strong> keeps its cache in <code>~/.cache/uv</code>. <code>uv cache clean</code> empties it; <code>uv cache prune</code> removes only entries nothing uses.</li>
+          <li><strong>conda:</strong> keeps downloaded packages in the <code>pkgs</code> folder of your conda install. <code>conda clean --all</code> removes unused packages, tarballs, and index caches.</li>
+          <li><strong>Virtual environments:</strong> a <code>.venv</code> folder holds a full copy of every package a project uses. Delete the ones in old projects; <code>pip install -r requirements.txt</code> or <code>uv sync</code> rebuilds them.</li>
+        </ul>
+        <p>Next, <a href="/clear-cache/homebrew">Homebrew's cache</a> sits right beside pip's in <code>~/Library/Caches</code>. Or see <a href="/clear-cache">every tool's cache</a>.</p>
     
       </div></div>
     </section>
@@ -101,7 +103,7 @@ npm cache clean --force                # empty _cacache</code></pre>
         <div class="head center">
           <h2>Disk Forecast finds this for you</h2>
 
-          <p>Disk Forecast lists <code>~/.npm/_cacache</code> and <code>~/.npm/_npx</code> as separate entries under <strong>Cleanup › Safe to clear › Package manager caches</strong>, next to the pnpm store and Bun&#39;s cache. Your <code>node_modules</code> folders show up too, only where a <code>package.json</code> sits beside them: under <strong>Build folders in old projects</strong> if the project hasn&#39;t changed in 30 days, or <strong>Build folders in active projects</strong> if it has. Everything goes to the Trash. It&#39;s free.</p>
+          <p>pip&#39;s cache sits in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>pip</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>. If you&#39;ve moved it to <code>~/.cache/pip</code>, it shows under <strong>Package manager caches</strong> instead, alongside uv. Virtual environments show up under the build folder rows, as long as a <code>pyproject.toml</code>, <code>requirements.txt</code>, <code>setup.py</code>, or <code>Pipfile</code> sits beside the <code>.venv</code>. Everything goes to the Trash. It&#39;s free.</p>
     
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
@@ -136,11 +138,11 @@ npm cache clean --force                # empty _cacache</code></pre>
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
         <div class="faq glass">
-          <details><summary>How do I clear the npm cache?</summary><p>Run npm cache clean --force. It empties ~/.npm/_cacache, and npm downloads packages again as you install them. npm requires --force because its cache is self-healing and rarely needs clearing for any reason other than disk space.</p></details>
-          <details><summary>Where is the npm cache located on a Mac?</summary><p>In ~/.npm, a hidden folder in your home folder. The package cache is ~/.npm/_cacache and npx installs are in ~/.npm/_npx. Run npm config get cache to confirm the location on your Mac.</p></details>
-          <details><summary>Is it safe to delete the npm cache?</summary><p>Yes. It&#x27;s only a store of downloaded packages; no project depends on it. The next npm install downloads what it needs, so it takes longer once and offline installs stop working until the cache refills.</p></details>
-          <details><summary>Does npm cache clean delete node_modules?</summary><p>No. It only empties ~/.npm/_cacache. Each project&#x27;s node_modules folder stays until you delete it yourself. They&#x27;re often bigger in total than the cache, and npm install brings them back.</p></details>
-          <details><summary>Why is my npm cache so big?</summary><p>npm never deletes cached data on its own. Every version of every package you&#x27;ve installed, across every project and Node version, stays in it. npx adds a full install for each package you run in ~/.npm/_npx.</p></details>
+          <details><summary>How do I clear pip cache?</summary><p>Run pip cache purge, or python3 -m pip cache purge to target a specific Python. It removes everything in pip&#x27;s cache. To remove one package instead, run pip cache remove followed by its name.</p></details>
+          <details><summary>Where is the pip cache on a Mac?</summary><p>In ~/Library/Caches/pip. Run pip cache dir to confirm. It holds downloaded files in http-v2 (http on older pip) and wheels pip built from source in wheels.</p></details>
+          <details><summary>Does pip cache purge uninstall packages?</summary><p>No. It only empties the cache of downloaded files and built wheels. Every installed package, in every environment, stays. pip downloads again the next time you install.</p></details>
+          <details><summary>Is it safe to delete the pip cache folder?</summary><p>Yes. You can also move ~/Library/Caches/pip to the Trash yourself; pip recreates it. pip cache purge does the same thing without leaving Terminal.</p></details>
+          <details><summary>How do I install a package without using the cache?</summary><p>Add --no-cache-dir: pip install --no-cache-dir package-name. pip neither reads from nor writes to the cache for that install.</p></details>
         </div>
       </div>
     </section>
@@ -148,8 +150,7 @@ npm cache clean --force                # empty _cacache</code></pre>
       <div class="wrap">
         <div class="head center head-sm"><h2>Related guides</h2></div>
         <div class="related">
-          <a class="glass" href="/clear-cache/yarn"><b>Yarn</b><span>yarn cache clean for Yarn 1 and Berry, and where each cache lives.</span></a>
-          <a class="glass" href="/clear-cache/docker"><b>Docker</b><span>docker system prune, build cache, and the Docker.raw file.</span></a>
+          <a class="glass" href="/clear-cache/npm"><b>npm</b><span>npm cache clean --force, the npx folder, and node_modules.</span></a>
           <a class="glass" href="/clear-cache/homebrew"><b>Homebrew</b><span>brew cleanup, --prune=all, and brew --cache.</span></a>
         </div>
       </div>
@@ -177,6 +178,6 @@ npm cache clean --force                # empty _cacache</code></pre>
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear the npm cache?", "acceptedAnswer": {"@type": "Answer", "text": "Run npm cache clean --force. It empties ~/.npm/_cacache, and npm downloads packages again as you install them. npm requires --force because its cache is self-healing and rarely needs clearing for any reason other than disk space."}}, {"@type": "Question", "name": "Where is the npm cache located on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/.npm, a hidden folder in your home folder. The package cache is ~/.npm/_cacache and npx installs are in ~/.npm/_npx. Run npm config get cache to confirm the location on your Mac."}}, {"@type": "Question", "name": "Is it safe to delete the npm cache?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It's only a store of downloaded packages; no project depends on it. The next npm install downloads what it needs, so it takes longer once and offline installs stop working until the cache refills."}}, {"@type": "Question", "name": "Does npm cache clean delete node_modules?", "acceptedAnswer": {"@type": "Answer", "text": "No. It only empties ~/.npm/_cacache. Each project's node_modules folder stays until you delete it yourself. They're often bigger in total than the cache, and npm install brings them back."}}, {"@type": "Question", "name": "Why is my npm cache so big?", "acceptedAnswer": {"@type": "Answer", "text": "npm never deletes cached data on its own. Every version of every package you've installed, across every project and Node version, stays in it. npx adds a full install for each package you run in ~/.npm/_npx."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear pip cache?", "acceptedAnswer": {"@type": "Answer", "text": "Run pip cache purge, or python3 -m pip cache purge to target a specific Python. It removes everything in pip's cache. To remove one package instead, run pip cache remove followed by its name."}}, {"@type": "Question", "name": "Where is the pip cache on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Caches/pip. Run pip cache dir to confirm. It holds downloaded files in http-v2 (http on older pip) and wheels pip built from source in wheels."}}, {"@type": "Question", "name": "Does pip cache purge uninstall packages?", "acceptedAnswer": {"@type": "Answer", "text": "No. It only empties the cache of downloaded files and built wheels. Every installed package, in every environment, stays. pip downloads again the next time you install."}}, {"@type": "Question", "name": "Is it safe to delete the pip cache folder?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. You can also move ~/Library/Caches/pip to the Trash yourself; pip recreates it. pip cache purge does the same thing without leaving Terminal."}}, {"@type": "Question", "name": "How do I install a package without using the cache?", "acceptedAnswer": {"@type": "Answer", "text": "Add --no-cache-dir: pip install --no-cache-dir package-name. pip neither reads from nor writes to the cache for that install."}}]}</script>
 </body>
 </html>

@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>npm cache clean: how to clear npm cache on Mac</title>
-  <meta name="description" content="How to clear npm cache on Mac with npm cache clean --force, where the npm cache is located, why it never shrinks, and the npx folder it doesn&#x27;t clear.">
-  <link rel="canonical" href="https://diskforecast.com/clear-cache/npm">
-  <meta property="og:title" content="npm cache clean: how to clear npm cache on Mac">
-  <meta property="og:description" content="How to clear npm cache on Mac with npm cache clean --force, where the npm cache is located, why it never shrinks, and the npx folder it doesn&#x27;t clear.">
+  <title>brew cleanup: how to clear Homebrew cache on Mac</title>
+  <meta name="description" content="How to clear Homebrew cache on Mac with brew cleanup: where brew --cache points, what --prune=all and -s remove, and how to reclaim old versions too.">
+  <link rel="canonical" href="https://diskforecast.com/clear-cache/homebrew">
+  <meta property="og:title" content="brew cleanup: how to clear Homebrew cache on Mac">
+  <meta property="og:description" content="How to clear Homebrew cache on Mac with brew cleanup: where brew --cache points, what --prune=all and -s remove, and how to reclaim old versions too.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Disk Forecast">
   <meta property="og:image" content="https://diskforecast.com/images/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://diskforecast.com/clear-cache/npm">
+  <meta property="og:url" content="https://diskforecast.com/clear-cache/homebrew">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="npm cache clean: how to clear npm cache on Mac">
-  <meta name="twitter:description" content="How to clear npm cache on Mac with npm cache clean --force, where the npm cache is located, why it never shrinks, and the npx folder it doesn&#x27;t clear.">
+  <meta name="twitter:title" content="brew cleanup: how to clear Homebrew cache on Mac">
+  <meta name="twitter:description" content="How to clear Homebrew cache on Mac with brew cleanup: where brew --cache points, what --prune=all and -s remove, and how to reclaim old versions too.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -46,53 +46,47 @@
     <div class="sub-hero">
       <div class="wrap narrow">
         <div class="eyebrow">Guide</div>
-        <h1>How to clear npm cache on Mac, <em>and what it keeps.</em></h1>
-        <p class="lede">npm keeps a copy of every package version it has ever downloaded, and it never deletes any of them on its own. Here's where that lives on a Mac and how to reclaim it.</p>
-        <div class="tldr glass"><h2>The short version</h2><p>Run <code>npm cache clean --force</code>. It empties <code>~/.npm/_cacache</code>, where npm keeps every package it has downloaded. Your projects and their <code>node_modules</code> folders aren't touched, and npm downloads packages again as you install them. It doesn't clear the npx cache: move <code>~/.npm/_npx</code> to the Trash for that.</p></div>
+        <h1>brew cleanup on Mac, <em>flag by flag.</em></h1>
+        <p class="lede">Homebrew keeps every bottle and installer it downloads, and old versions of formulae you've upgraded. One command handles both, and a few flags decide how far it goes.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Run <code>brew cleanup</code>. It removes old versions of upgraded formulae and downloads more than 120 days old from <code>~/Library/Caches/Homebrew</code>. To empty the download cache completely, run <code>brew cleanup --prune=all</code>. Add <code>-n</code> first to see what would go. Installed formulae and casks keep working.</p></div>
       </div>
     </div>
     <section class="tight">
       <div class="wrap narrow"><div class="prose">
 
-        <h2>npm cache location on Mac</h2>
-        <p>On a Mac, npm's cache folder is <code>~/.npm</code>, a hidden folder in your home folder. To confirm where yours is:</p>
-<pre><code>npm config get cache</code></pre>
+        <h2>Where the Homebrew cache is on a Mac</h2>
+<pre><code>brew --cache</code></pre>
+        <p>That prints <code>~/Library/Caches/Homebrew</code> unless you've set <code>HOMEBREW_CACHE</code>.</p>
                 <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
           <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
-            <tr><th scope="row">Package cache</th><td><code>~/.npm/_cacache</code></td><td>19 GB</td></tr>
-            <tr><th scope="row">Packages run with npx</th><td><code>~/.npm/_npx</code></td><td>4.8 GB</td></tr>
-            <tr><th scope="row">Debug logs</th><td><code>~/.npm/_logs</code></td><td>Small</td></tr>
+            <tr><th scope="row">Downloads (bottles, casks)</th><td><code>~/Library/Caches/Homebrew</code></td><td>813 MB</td></tr>
+            <tr><th scope="row">Installed formulae, all versions</th><td><code>/opt/homebrew/Cellar (Apple silicon), /usr/local/Cellar (Intel)</code></td><td>Not measured</td></tr>
           </tbody></table></div></div>
-        <p>Sizes are from one developer Mac in October 2026: 23 GB in all. It's one folder per user, so every Node version you install with nvm, fnm, or Homebrew shares it. To move it, run <code>npm config set cache /path/to/folder</code>, or set the <code>npm_config_cache</code> environment variable.</p>
+        <p>The cache size is from one developer Mac running Homebrew 7 in October 2026. The cache holds the bottle (prebuilt package) for each formula version you've installed, and the <code>.dmg</code> or <code>.zip</code> for each cask. The other place space builds up is the Cellar, where old versions of a formula can stay after an upgrade.</p>
 
-        <h2 style="margin-top:56px">What npm cache clean deletes</h2>
-        <p><code>_cacache</code> is a content-addressable store: the tarball and metadata for every package version npm has fetched, checked against its hash every time it's read. Clearing it is safe. Nothing in your projects depends on it; it only saves downloads.</p>
+        <h2 style="margin-top:56px">What brew cleanup removes</h2>
+<pre><code>brew cleanup -n                # show what would be removed, remove nothing
+brew cleanup                   # old versions, plus downloads over 120 days old
+brew cleanup --prune=all       # every download in the cache
+brew cleanup -s                # scrub: downloads even for the latest versions
+brew cleanup node              # only one formula</code></pre>
         <ul>
-          <li><strong>What rebuilds:</strong> the next <code>npm install</code> downloads what it needs and puts it back in the cache.</li>
-          <li><strong>What you lose:</strong> offline installs. <code>--offline</code> and <code>--prefer-offline</code> only work for packages that are cached.</li>
-          <li><strong>What stays:</strong> <code>_npx</code>, <code>_logs</code>, your <code>~/.npmrc</code> settings, and every <code>node_modules</code> folder.</li>
+          <li><strong>Plain <code>brew cleanup</code></strong> removes old versions of installed formulae, stale lock files, and downloads more than 120 days old. Change that age with <code>HOMEBREW_CLEANUP_MAX_AGE_DAYS</code>.</li>
+          <li><strong><code>--prune=all</code></strong> removes every cache file regardless of age. <code>--prune=30</code> keeps the last 30 days.</li>
+          <li><strong><code>-s</code></strong> scrubs the cache, including downloads for the latest versions. Downloads for anything currently installed still stay; Homebrew's help says to delete <code>"$(brew --cache)"</code> yourself if you want those gone too.</li>
         </ul>
-        <p>npm's own documentation says the cache is self-healing: corrupted data is detected and fetched again. So clearing it rarely fixes an install error. Its real use is reclaiming disk space, which is why npm makes you add <code>--force</code>.</p>
+        <p>Is it safe? Yes. Everything in the cache can be downloaded again, and installed packages don't need their bottles to run. The only thing you give up is reinstalling an old version offline. If you pinned a formula with <code>brew pin</code>, cleanup leaves its versions alone.</p>
 
-        <h2 style="margin-top:56px">npm cache commands</h2>
-<pre><code>npm config get cache                   # where the cache is
-du -sh ~/.npm/_cacache ~/.npm/_npx     # how big it is
-npm cache verify                       # check it and garbage-collect unneeded data
-npm cache clean --force                # empty _cacache</code></pre>
-        <ul>
-          <li><strong><code>npm cache verify</code></strong> is the gentle option. It checks every entry and removes data nothing points to anymore. It reclaims some space, not most.</li>
-          <li><strong><code>npm cache clean --force</code></strong> deletes everything in <code>_cacache</code>. Without <code>--force</code>, npm refuses and explains why.</li>
-          <li><strong>The npx cache</strong> holds whole installs of every package you've run with <code>npx</code>, one folder per package. Quit anything running through npx, then move <code>~/.npm/_npx</code> to the Trash. npx downloads a package again the next time you run it.</li>
-        </ul>
+        <h2 style="margin-top:56px">Homebrew already cleans up, mostly</h2>
+        <p>Homebrew runs a cleanup for each formula you upgrade or reinstall, and a full cleanup every 30 days. So on most Macs, running it by hand reclaims hundreds of megabytes, not tens of gigabytes. On the Mac above, the cache was 813 MB. If you've set <code>HOMEBREW_NO_INSTALL_CLEANUP</code>, none of that happens, and the cache and Cellar keep growing until you run <code>brew cleanup</code> yourself.</p>
 
-        <h2 style="margin-top:56px">How big the npm cache gets</h2>
-        <p>npm never deletes cached data on its own, so the cache only grows. Every new version of every dependency, across every project, adds to it. A few gigabytes is normal after a year; on the developer Mac above, it reached 19 GB, plus 4.8 GB of npx installs. If you've never cleared it, it's likely one of the biggest folders in your home folder.</p>
-
-        <h2 style="margin-top:56px">node_modules: usually the bigger folder</h2>
-        <p>The cache is one folder. <code>node_modules</code> is one per project, and a single Next.js app can have hundreds of megabytes in it. To list them by size:</p>
-<pre><code>find ~ -name node_modules -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
-        <p>Delete the ones in projects you haven't worked on in a while. <code>npm install</code> brings them back from the lockfile, and <code>npm ci</code> deletes and reinstalls them from scratch. If you use pnpm, its shared store at <code>~/Library/pnpm/store</code> is the equivalent of the npm cache: <code>pnpm store prune</code> removes packages no project uses. On the same Mac, it held 12 GB.</p>
-        <p>Using Yarn instead? See <a href="/clear-cache/yarn">how to clear Yarn cache</a>. All the others: <a href="/clear-cache">clear cache by tool</a>.</p>
+        <h2 style="margin-top:56px">The bigger wins in Homebrew</h2>
+        <p>The cache is rarely the problem. What's installed is:</p>
+<pre><code>brew leaves                    # formulae you installed on purpose
+brew autoremove -n             # dependencies nothing needs anymore
+du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
+        <p>Uninstall what you don't use with <code>brew uninstall</code>, then run <code>brew autoremove</code> to remove the dependencies it left behind. Big ones are usually language runtimes and databases: several Python, Node, or PostgreSQL versions installed side by side.</p>
+        <p>Next: <a href="/clear-cache/pip">pip's cache</a> sits beside Homebrew's, and <a href="/clear-cache/npm">npm's</a> is often the biggest. Or see <a href="/clear-cache">every tool's cache</a>.</p>
     
       </div></div>
     </section>
@@ -101,7 +95,7 @@ npm cache clean --force                # empty _cacache</code></pre>
         <div class="head center">
           <h2>Disk Forecast finds this for you</h2>
 
-          <p>Disk Forecast lists <code>~/.npm/_cacache</code> and <code>~/.npm/_npx</code> as separate entries under <strong>Cleanup › Safe to clear › Package manager caches</strong>, next to the pnpm store and Bun&#39;s cache. Your <code>node_modules</code> folders show up too, only where a <code>package.json</code> sits beside them: under <strong>Build folders in old projects</strong> if the project hasn&#39;t changed in 30 days, or <strong>Build folders in active projects</strong> if it has. Everything goes to the Trash. It&#39;s free.</p>
+          <p>Homebrew&#39;s cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>Homebrew</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, checked by default, and moves it to the Trash. Old versions in the Cellar aren&#39;t listed; <code>brew cleanup</code> is the right tool for those. It&#39;s free.</p>
     
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
@@ -136,11 +130,10 @@ npm cache clean --force                # empty _cacache</code></pre>
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
         <div class="faq glass">
-          <details><summary>How do I clear the npm cache?</summary><p>Run npm cache clean --force. It empties ~/.npm/_cacache, and npm downloads packages again as you install them. npm requires --force because its cache is self-healing and rarely needs clearing for any reason other than disk space.</p></details>
-          <details><summary>Where is the npm cache located on a Mac?</summary><p>In ~/.npm, a hidden folder in your home folder. The package cache is ~/.npm/_cacache and npx installs are in ~/.npm/_npx. Run npm config get cache to confirm the location on your Mac.</p></details>
-          <details><summary>Is it safe to delete the npm cache?</summary><p>Yes. It&#x27;s only a store of downloaded packages; no project depends on it. The next npm install downloads what it needs, so it takes longer once and offline installs stop working until the cache refills.</p></details>
-          <details><summary>Does npm cache clean delete node_modules?</summary><p>No. It only empties ~/.npm/_cacache. Each project&#x27;s node_modules folder stays until you delete it yourself. They&#x27;re often bigger in total than the cache, and npm install brings them back.</p></details>
-          <details><summary>Why is my npm cache so big?</summary><p>npm never deletes cached data on its own. Every version of every package you&#x27;ve installed, across every project and Node version, stays in it. npx adds a full install for each package you run in ~/.npm/_npx.</p></details>
+          <details><summary>What does brew cleanup do?</summary><p>It removes old versions of installed formulae, stale lock files, and downloads more than 120 days old from Homebrew&#x27;s cache. Add -n to see what it would remove first.</p></details>
+          <details><summary>How do I clear the Homebrew cache completely?</summary><p>Run brew cleanup --prune=all. It removes every file in the cache regardless of age. Downloads for installed packages can stay; delete the folder brew --cache prints to remove those too.</p></details>
+          <details><summary>Where is the Homebrew cache on a Mac?</summary><p>In ~/Library/Caches/Homebrew. Run brew --cache to confirm, or set HOMEBREW_CACHE to move it.</p></details>
+          <details><summary>Is it safe to delete the Homebrew cache?</summary><p>Yes. Installed formulae and casks don&#x27;t need their downloads to run, and Homebrew downloads them again if you reinstall. You only lose the ability to reinstall an old version offline.</p></details>
         </div>
       </div>
     </section>
@@ -148,9 +141,8 @@ npm cache clean --force                # empty _cacache</code></pre>
       <div class="wrap">
         <div class="head center head-sm"><h2>Related guides</h2></div>
         <div class="related">
-          <a class="glass" href="/clear-cache/yarn"><b>Yarn</b><span>yarn cache clean for Yarn 1 and Berry, and where each cache lives.</span></a>
-          <a class="glass" href="/clear-cache/docker"><b>Docker</b><span>docker system prune, build cache, and the Docker.raw file.</span></a>
-          <a class="glass" href="/clear-cache/homebrew"><b>Homebrew</b><span>brew cleanup, --prune=all, and brew --cache.</span></a>
+          <a class="glass" href="/clear-cache/pip"><b>pip</b><span>pip cache purge, uv, conda, and virtual environments.</span></a>
+          <a class="glass" href="/clear-cache/npm"><b>npm</b><span>npm cache clean --force, the npx folder, and node_modules.</span></a>
         </div>
       </div>
     </section>
@@ -177,6 +169,6 @@ npm cache clean --force                # empty _cacache</code></pre>
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear the npm cache?", "acceptedAnswer": {"@type": "Answer", "text": "Run npm cache clean --force. It empties ~/.npm/_cacache, and npm downloads packages again as you install them. npm requires --force because its cache is self-healing and rarely needs clearing for any reason other than disk space."}}, {"@type": "Question", "name": "Where is the npm cache located on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/.npm, a hidden folder in your home folder. The package cache is ~/.npm/_cacache and npx installs are in ~/.npm/_npx. Run npm config get cache to confirm the location on your Mac."}}, {"@type": "Question", "name": "Is it safe to delete the npm cache?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It's only a store of downloaded packages; no project depends on it. The next npm install downloads what it needs, so it takes longer once and offline installs stop working until the cache refills."}}, {"@type": "Question", "name": "Does npm cache clean delete node_modules?", "acceptedAnswer": {"@type": "Answer", "text": "No. It only empties ~/.npm/_cacache. Each project's node_modules folder stays until you delete it yourself. They're often bigger in total than the cache, and npm install brings them back."}}, {"@type": "Question", "name": "Why is my npm cache so big?", "acceptedAnswer": {"@type": "Answer", "text": "npm never deletes cached data on its own. Every version of every package you've installed, across every project and Node version, stays in it. npx adds a full install for each package you run in ~/.npm/_npx."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does brew cleanup do?", "acceptedAnswer": {"@type": "Answer", "text": "It removes old versions of installed formulae, stale lock files, and downloads more than 120 days old from Homebrew's cache. Add -n to see what it would remove first."}}, {"@type": "Question", "name": "How do I clear the Homebrew cache completely?", "acceptedAnswer": {"@type": "Answer", "text": "Run brew cleanup --prune=all. It removes every file in the cache regardless of age. Downloads for installed packages can stay; delete the folder brew --cache prints to remove those too."}}, {"@type": "Question", "name": "Where is the Homebrew cache on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Caches/Homebrew. Run brew --cache to confirm, or set HOMEBREW_CACHE to move it."}}, {"@type": "Question", "name": "Is it safe to delete the Homebrew cache?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Installed formulae and casks don't need their downloads to run, and Homebrew downloads them again if you reinstall. You only lose the ability to reinstall an old version offline."}}]}</script>
 </body>
 </html>

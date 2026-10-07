@@ -148,6 +148,74 @@ npm cache clean --force                # empty _cacache</code></pre>
     ],
 }
 
+# ------------------------------------------------------------------ pip
+# "clear pip cache" 300, "pip cache purge" 200.
+PIP = {
+    "slug": "pip",
+    "title": "Clear pip cache on Mac with pip cache purge",
+    "description": "How to clear pip cache on Mac with pip cache purge, where pip keeps its cache, what's inside it, and how to clear uv, conda, and virtual environments too.",
+    "h1": "How to clear pip cache on Mac, <em>with pip itself.</em>",
+    "lede": "pip keeps the packages it downloads and the wheels it builds, so installing them again is fast. On a Mac that cache lives in your Library folder, and pip has its own command to empty it.",
+    "tldr": "Run <code>pip cache purge</code>. It empties pip's cache, which on a Mac is <code>~/Library/Caches/pip</code>. Installed packages and your virtual environments aren't touched; pip downloads what it needs again on the next install. With more than one Python, run <code>python3 -m pip cache purge</code> so you clear the cache of the pip you actually use.",
+    "card_title": "pip",
+    "card_blurb": "pip cache purge, uv, conda, and virtual environments.",
+    "paths": [
+        ("Downloaded packages and index pages", "~/Library/Caches/pip/http-v2", "612 MB in 1,502 files"),
+        ("Wheels pip built from source", "~/Library/Caches/pip/wheels", "19 MB, 4 wheels"),
+    ],
+    "html": """
+        <h2>Where pip keeps its cache on a Mac</h2>
+        <p>pip follows the Mac convention and keeps its cache in <code>~/Library/Caches/pip</code>, not in the <code>~/.cache</code> folder it uses on Linux. Ask pip directly:</p>
+<pre><code>pip cache dir
+pip cache info</code></pre>
+        {{PATHS}}
+        <p>Sizes are from <code>pip cache info</code> on one developer Mac in October 2026. pip 23.3 and later use <code>http-v2</code>; older versions used <code>http</code>, and both can be there if you've upgraded. If you set <code>PIP_CACHE_DIR</code> or <code>XDG_CACHE_HOME</code>, the cache moves with it.</p>
+
+        <h2 style="margin-top:56px">Is it safe to clear pip cache?</h2>
+        <p>Yes. The cache is only a shortcut. It holds package files pip downloaded and wheels it compiled from source, so the next install of the same version skips the download or the build.</p>
+        <ul>
+          <li><strong>What stays:</strong> every package you've installed, in every Python and every virtual environment. Purging the cache uninstalls nothing.</li>
+          <li><strong>What rebuilds:</strong> the next install downloads again. Packages without a wheel for your Mac compile again, which can take minutes for some scientific packages.</li>
+          <li><strong>When it helps:</strong> reclaiming space, or forcing pip to fetch a fresh copy of a package that installed wrong.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">pip cache commands</h2>
+<pre><code>pip cache list                    # wheels in the cache
+pip cache remove numpy            # one package's wheels
+pip cache purge                   # everything
+pip install --no-cache-dir torch  # install without reading or writing the cache</code></pre>
+        <ul>
+          <li><strong><code>pip cache purge</code></strong> removes all items from both the HTTP cache and the wheels folder.</li>
+          <li><strong><code>pip cache remove</code></strong> takes a package name or a glob, like <code>"torch*"</code>, and removes matching wheels. Use it when one big package is the problem.</li>
+          <li><strong><code>--no-cache-dir</code></strong> is useful for a one-off install of something huge, so it never lands in the cache.</li>
+        </ul>
+        <p>If pip says the cache is disabled or empty when you know it isn't, you're probably running a different pip than you think. <code>which -a pip pip3</code> lists them; <code>python3 -m pip</code> always uses the pip of that Python.</p>
+
+        <h2 style="margin-top:56px">How big the pip cache gets</h2>
+        <p>Usually hundreds of megabytes. On the developer Mac above, it was 605 MB. It gets bigger if you work with machine learning packages, since each version of a framework like PyTorch is a large download, and pip keeps every version you've installed.</p>
+
+        <h2 style="margin-top:56px">Other Python caches</h2>
+        <ul>
+          <li><strong>uv:</strong> keeps its cache in <code>~/.cache/uv</code>. <code>uv cache clean</code> empties it; <code>uv cache prune</code> removes only entries nothing uses.</li>
+          <li><strong>conda:</strong> keeps downloaded packages in the <code>pkgs</code> folder of your conda install. <code>conda clean --all</code> removes unused packages, tarballs, and index caches.</li>
+          <li><strong>Virtual environments:</strong> a <code>.venv</code> folder holds a full copy of every package a project uses. Delete the ones in old projects; <code>pip install -r requirements.txt</code> or <code>uv sync</code> rebuilds them.</li>
+        </ul>
+        <p>Next, <a href="/clear-cache/homebrew">Homebrew's cache</a> sits right beside pip's in <code>~/Library/Caches</code>. Or see <a href="/clear-cache">every tool's cache</a>.</p>
+    """,
+    "finds": """
+          <p>pip&#39;s cache sits in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>pip</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>. If you&#39;ve moved it to <code>~/.cache/pip</code>, it shows under <strong>Package manager caches</strong> instead, alongside uv. Virtual environments show up under the build folder rows, as long as a <code>pyproject.toml</code>, <code>requirements.txt</code>, <code>setup.py</code>, or <code>Pipfile</code> sits beside the <code>.venv</code>. Everything goes to the Trash. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/clear-cache/npm", "/clear-cache/homebrew", "/clear-cache/go"],
+    "faqs": [
+        ("How do I clear pip cache?", "Run pip cache purge, or python3 -m pip cache purge to target a specific Python. It removes everything in pip's cache. To remove one package instead, run pip cache remove followed by its name."),
+        ("Where is the pip cache on a Mac?", "In ~/Library/Caches/pip. Run pip cache dir to confirm. It holds downloaded files in http-v2 (http on older pip) and wheels pip built from source in wheels."),
+        ("Does pip cache purge uninstall packages?", "No. It only empties the cache of downloaded files and built wheels. Every installed package, in every environment, stays. pip downloads again the next time you install."),
+        ("Is it safe to delete the pip cache folder?", "Yes. You can also move ~/Library/Caches/pip to the Trash yourself; pip recreates it. pip cache purge does the same thing without leaving Terminal."),
+        ("How do I install a package without using the cache?", "Add --no-cache-dir: pip install --no-cache-dir package-name. pip neither reads from nor writes to the cache for that install."),
+    ],
+}
+
 # ------------------------------------------------------------------ Yarn
 # "yarn cache clean" 100, "clear yarn cache" 70, "yarn cache location".
 YARN = {
@@ -207,7 +275,66 @@ yarn cache clean --all        # both</code></pre>
     ],
 }
 
-CACHE_TOOLS = [DOCKER, NPM, YARN]
+# ------------------------------------------------------------------ Homebrew
+# "brew cleanup" 50, "clear homebrew cache" 10.
+HOMEBREW = {
+    "slug": "homebrew",
+    "title": "brew cleanup: how to clear Homebrew cache on Mac",
+    "description": "How to clear Homebrew cache on Mac with brew cleanup: where brew --cache points, what --prune=all and -s remove, and how to reclaim old versions too.",
+    "h1": "brew cleanup on Mac, <em>flag by flag.</em>",
+    "lede": "Homebrew keeps every bottle and installer it downloads, and old versions of formulae you've upgraded. One command handles both, and a few flags decide how far it goes.",
+    "tldr": "Run <code>brew cleanup</code>. It removes old versions of upgraded formulae and downloads more than 120 days old from <code>~/Library/Caches/Homebrew</code>. To empty the download cache completely, run <code>brew cleanup --prune=all</code>. Add <code>-n</code> first to see what would go. Installed formulae and casks keep working.",
+    "card_title": "Homebrew",
+    "card_blurb": "brew cleanup, --prune=all, and brew --cache.",
+    "paths": [
+        ("Downloads (bottles, casks)", "~/Library/Caches/Homebrew", "813 MB"),
+        ("Installed formulae, all versions", "/opt/homebrew/Cellar (Apple silicon), /usr/local/Cellar (Intel)", "Not measured"),
+    ],
+    "html": """
+        <h2>Where the Homebrew cache is on a Mac</h2>
+<pre><code>brew --cache</code></pre>
+        <p>That prints <code>~/Library/Caches/Homebrew</code> unless you've set <code>HOMEBREW_CACHE</code>.</p>
+        {{PATHS}}
+        <p>The cache size is from one developer Mac running Homebrew 7 in October 2026. The cache holds the bottle (prebuilt package) for each formula version you've installed, and the <code>.dmg</code> or <code>.zip</code> for each cask. The other place space builds up is the Cellar, where old versions of a formula can stay after an upgrade.</p>
+
+        <h2 style="margin-top:56px">What brew cleanup removes</h2>
+<pre><code>brew cleanup -n                # show what would be removed, remove nothing
+brew cleanup                   # old versions, plus downloads over 120 days old
+brew cleanup --prune=all       # every download in the cache
+brew cleanup -s                # scrub: downloads even for the latest versions
+brew cleanup node              # only one formula</code></pre>
+        <ul>
+          <li><strong>Plain <code>brew cleanup</code></strong> removes old versions of installed formulae, stale lock files, and downloads more than 120 days old. Change that age with <code>HOMEBREW_CLEANUP_MAX_AGE_DAYS</code>.</li>
+          <li><strong><code>--prune=all</code></strong> removes every cache file regardless of age. <code>--prune=30</code> keeps the last 30 days.</li>
+          <li><strong><code>-s</code></strong> scrubs the cache, including downloads for the latest versions. Downloads for anything currently installed still stay; Homebrew's help says to delete <code>"$(brew --cache)"</code> yourself if you want those gone too.</li>
+        </ul>
+        <p>Is it safe? Yes. Everything in the cache can be downloaded again, and installed packages don't need their bottles to run. The only thing you give up is reinstalling an old version offline. If you pinned a formula with <code>brew pin</code>, cleanup leaves its versions alone.</p>
+
+        <h2 style="margin-top:56px">Homebrew already cleans up, mostly</h2>
+        <p>Homebrew runs a cleanup for each formula you upgrade or reinstall, and a full cleanup every 30 days. So on most Macs, running it by hand reclaims hundreds of megabytes, not tens of gigabytes. On the Mac above, the cache was 813 MB. If you've set <code>HOMEBREW_NO_INSTALL_CLEANUP</code>, none of that happens, and the cache and Cellar keep growing until you run <code>brew cleanup</code> yourself.</p>
+
+        <h2 style="margin-top:56px">The bigger wins in Homebrew</h2>
+        <p>The cache is rarely the problem. What's installed is:</p>
+<pre><code>brew leaves                    # formulae you installed on purpose
+brew autoremove -n             # dependencies nothing needs anymore
+du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
+        <p>Uninstall what you don't use with <code>brew uninstall</code>, then run <code>brew autoremove</code> to remove the dependencies it left behind. Big ones are usually language runtimes and databases: several Python, Node, or PostgreSQL versions installed side by side.</p>
+        <p>Next: <a href="/clear-cache/pip">pip's cache</a> sits beside Homebrew's, and <a href="/clear-cache/npm">npm's</a> is often the biggest. Or see <a href="/clear-cache">every tool's cache</a>.</p>
+    """,
+    "finds": """
+          <p>Homebrew&#39;s cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>Homebrew</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, checked by default, and moves it to the Trash. Old versions in the Cellar aren&#39;t listed; <code>brew cleanup</code> is the right tool for those. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/clear-cache/pip", "/clear-cache/npm", "/clear-cache/xcode"],
+    "faqs": [
+        ("What does brew cleanup do?", "It removes old versions of installed formulae, stale lock files, and downloads more than 120 days old from Homebrew's cache. Add -n to see what it would remove first."),
+        ("How do I clear the Homebrew cache completely?", "Run brew cleanup --prune=all. It removes every file in the cache regardless of age. Downloads for installed packages can stay; delete the folder brew --cache prints to remove those too."),
+        ("Where is the Homebrew cache on a Mac?", "In ~/Library/Caches/Homebrew. Run brew --cache to confirm, or set HOMEBREW_CACHE to move it."),
+        ("Is it safe to delete the Homebrew cache?", "Yes. Installed formulae and casks don't need their downloads to run, and Homebrew downloads them again if you reinstall. You only lose the ability to reinstall an old version offline."),
+    ],
+}
+
+CACHE_TOOLS = [DOCKER, NPM, PIP, YARN, HOMEBREW]
 
 CLEAR_CACHE_HUB = {
     "path": "/clear-cache",

@@ -10,7 +10,9 @@
   <url><loc>https://diskforecast.com/clear-cache</loc></url>
   <url><loc>https://diskforecast.com/clear-cache/docker</loc></url>
   <url><loc>https://diskforecast.com/clear-cache/npm</loc></url>
+  <url><loc>https://diskforecast.com/clear-cache/pip</loc></url>
   <url><loc>https://diskforecast.com/clear-cache/yarn</loc></url>
+  <url><loc>https://diskforecast.com/clear-cache/homebrew</loc></url>
   <url><loc>https://diskforecast.com/alternatives</loc></url>
   <url><loc>https://diskforecast.com/alternatives/diskbuddy</loc></url>
   <url><loc>https://diskforecast.com/alternatives/daisydisk</loc></url>
