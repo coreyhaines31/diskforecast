@@ -150,6 +150,13 @@ def mockup(name):
     return page[page.index(start) + len(start):page.index(end)].strip()
 
 
+def staged(name):
+    """App windows sit on a glass stage, like on the homepage; the menu bar and chart bring their own frame."""
+    if name in ("system-data", "cleanup"):
+        return f'<div class="stage glass">\n          {mockup(name)}\n        </div>'
+    return mockup(name)
+
+
 def table(rows, competitor):
     out = ['        <div class="table-card glass"><div class="table-scroll"><table class="compare">',
            f'          <thead><tr><td></td><th scope="col" class="us">Disk Forecast</th><th scope="col">{esc(competitor)}</th></tr></thead><tbody>']
@@ -319,9 +326,7 @@ def render_guide(g):
             {CTAS}
           </div>
         </div>
-        <div class="stage glass">
-          {mockup(g["mockup"])}
-        </div>
+        {staged(g["mockup"])}
       </div>
     </section>
 {faq_block(g["faqs"])}{related_guides(g)}{cta(g["cta"])}  </main>
