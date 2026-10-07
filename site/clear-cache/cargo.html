@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Clear pip cache on Mac with pip cache purge</title>
-  <meta name="description" content="How to clear pip cache on Mac with pip cache purge, where pip keeps its cache, what&#x27;s inside it, and how to clear uv, conda, and virtual environments too.">
-  <link rel="canonical" href="https://diskforecast.com/clear-cache/pip">
-  <meta property="og:title" content="Clear pip cache on Mac with pip cache purge">
-  <meta property="og:description" content="How to clear pip cache on Mac with pip cache purge, where pip keeps its cache, what&#x27;s inside it, and how to clear uv, conda, and virtual environments too.">
+  <title>cargo clean: how to clear Cargo cache on Mac</title>
+  <meta name="description" content="How to clear Cargo cache on Mac: cargo clean for a project&#x27;s target folder, what ~/.cargo/registry holds, and the cleanup Cargo does on its own since 1.88.">
+  <link rel="canonical" href="https://diskforecast.com/clear-cache/cargo">
+  <meta property="og:title" content="cargo clean: how to clear Cargo cache on Mac">
+  <meta property="og:description" content="How to clear Cargo cache on Mac: cargo clean for a project&#x27;s target folder, what ~/.cargo/registry holds, and the cleanup Cargo does on its own since 1.88.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Disk Forecast">
   <meta property="og:image" content="https://diskforecast.com/images/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://diskforecast.com/clear-cache/pip">
+  <meta property="og:url" content="https://diskforecast.com/clear-cache/cargo">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Clear pip cache on Mac with pip cache purge">
-  <meta name="twitter:description" content="How to clear pip cache on Mac with pip cache purge, where pip keeps its cache, what&#x27;s inside it, and how to clear uv, conda, and virtual environments too.">
+  <meta name="twitter:title" content="cargo clean: how to clear Cargo cache on Mac">
+  <meta name="twitter:description" content="How to clear Cargo cache on Mac: cargo clean for a project&#x27;s target folder, what ~/.cargo/registry holds, and the cleanup Cargo does on its own since 1.88.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -46,55 +46,48 @@
     <div class="sub-hero">
       <div class="wrap narrow">
         <div class="eyebrow">Guide</div>
-        <h1>How to clear pip cache on Mac, <em>with pip itself.</em></h1>
-        <p class="lede">pip keeps the packages it downloads and the wheels it builds, so installing them again is fast. On a Mac that cache lives in your Library folder, and pip has its own command to empty it.</p>
-        <div class="tldr glass"><h2>The short version</h2><p>Run <code>pip cache purge</code>. It empties pip's cache, which on a Mac is <code>~/Library/Caches/pip</code>. Installed packages and your virtual environments aren't touched; pip downloads what it needs again on the next install. With more than one Python, run <code>python3 -m pip cache purge</code> so you clear the cache of the pip you actually use.</p></div>
+        <h1>cargo clean on Mac, <em>and what it misses.</em></h1>
+        <p class="lede">In Rust, the big folder is almost never the shared cache. It's the target folder in every project you've built. Here's how to clear each, and what Cargo now clears on its own.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Run <code>cargo clean</code> in a project to delete its <code>target</code> folder, which is usually the biggest thing Rust leaves on your disk. For the shared cache of downloaded crates, move <code>~/.cargo/registry/cache</code> and <code>~/.cargo/registry/src</code> to the Trash; Cargo downloads what it needs again. Leave <code>~/.cargo/bin</code> alone: that's where <code>cargo</code> and your installed tools live.</p></div>
       </div>
     </div>
     <section class="tight">
       <div class="wrap narrow"><div class="prose">
 
-        <h2>Where pip keeps its cache on a Mac</h2>
-        <p>pip follows the Mac convention and keeps its cache in <code>~/Library/Caches/pip</code>, not in the <code>~/.cache</code> folder it uses on Linux. Ask pip directly:</p>
-<pre><code>pip cache dir
-pip cache info</code></pre>
+        <h2>Where Cargo keeps its cache on a Mac</h2>
+        <p>Cargo's home is <code>~/.cargo</code>, or wherever <code>CARGO_HOME</code> points. Build output doesn't go there: it goes in a <code>target</code> folder inside each project.</p>
                 <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
           <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
-            <tr><th scope="row">Downloaded packages and index pages</th><td><code>~/Library/Caches/pip/http-v2</code></td><td>612 MB in 1,502 files</td></tr>
-            <tr><th scope="row">Wheels pip built from source</th><td><code>~/Library/Caches/pip/wheels</code></td><td>19 MB, 4 wheels</td></tr>
+            <tr><th scope="row">Each project&#x27;s build output</th><td><code>your-project/target</code></td><td>Per project</td></tr>
+            <tr><th scope="row">Downloaded crates</th><td><code>~/.cargo/registry/cache</code></td><td>Not installed on the Mac we measured</td></tr>
+            <tr><th scope="row">Unpacked crate source</th><td><code>~/.cargo/registry/src</code></td><td>Not installed on the Mac we measured</td></tr>
+            <tr><th scope="row">Git dependencies</th><td><code>~/.cargo/git</code></td><td>Not installed on the Mac we measured</td></tr>
           </tbody></table></div></div>
-        <p>Sizes are from <code>pip cache info</code> on one developer Mac in October 2026. pip 23.3 and later use <code>http-v2</code>; older versions used <code>http</code>, and both can be there if you've upgraded. If you set <code>PIP_CACHE_DIR</code> or <code>XDG_CACHE_HOME</code>, the cache moves with it.</p>
+        <p>Rust isn't installed on the Mac this page was written on, so there are no measured sizes here. Check yours with:</p>
+<pre><code>du -sh ~/.cargo/registry ~/.cargo/git 2>/dev/null
+find ~ -name target -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
+        <p>Not every folder named <code>target</code> is Rust's: check for a <code>Cargo.toml</code> beside it before you delete one.</p>
 
-        <h2 style="margin-top:56px">Is it safe to clear pip cache?</h2>
-        <p>Yes. The cache is only a shortcut. It holds package files pip downloaded and wheels it compiled from source, so the next install of the same version skips the download or the build.</p>
+        <h2 style="margin-top:56px">What cargo clean deletes</h2>
+<pre><code>cargo clean                  # the whole target folder
+cargo clean --release        # only target/release
+cargo clean --doc            # only target/doc
+cargo clean -p some-crate    # one package's artifacts</code></pre>
+        <p><code>cargo clean</code> removes compiled dependencies, incremental compilation data, and your binaries for that one project. It's safe: <code>cargo build</code> makes it all again, which can take minutes for a project with many dependencies. It doesn't touch <code>~/.cargo</code>.</p>
+        <p>Why <code>target</code> gets so big: it keeps separate builds for debug and release, for every target triple you build, and incremental data for every crate. Changing compiler versions or features adds more rather than replacing. A medium project's <code>target</code> folder is often several gigabytes, and tens of gigabytes isn't unusual.</p>
+
+        <h2 style="margin-top:56px">How to clear Cargo cache in ~/.cargo</h2>
         <ul>
-          <li><strong>What stays:</strong> every package you've installed, in every Python and every virtual environment. Purging the cache uninstalls nothing.</li>
-          <li><strong>What rebuilds:</strong> the next install downloads again. Packages without a wheel for your Mac compile again, which can take minutes for some scientific packages.</li>
-          <li><strong>When it helps:</strong> reclaiming space, or forcing pip to fetch a fresh copy of a package that installed wrong.</li>
+          <li><strong><code>registry/cache</code>: safe.</strong> The compressed <code>.crate</code> file for every crate version you've downloaded.</li>
+          <li><strong><code>registry/src</code>: safe.</strong> Those crates unpacked. Cargo unpacks them again from the cache, or downloads them.</li>
+          <li><strong><code>git</code>: safe.</strong> Clones of dependencies that point at a git repository. Cargo clones them again.</li>
+          <li><strong><code>bin</code>: keep.</strong> <code>cargo</code>, <code>rustc</code> shims from rustup, and everything you installed with <code>cargo install</code>.</li>
         </ul>
+        <p>Cargo has no stable command to clear its home folder, so moving those folders to the Trash is the usual way. Do it with no build running. Toolchains themselves live in <code>~/.rustup/toolchains</code>; remove old ones with <code>rustup toolchain uninstall</code>.</p>
 
-        <h2 style="margin-top:56px">pip cache commands</h2>
-<pre><code>pip cache list                    # wheels in the cache
-pip cache remove numpy            # one package's wheels
-pip cache purge                   # everything
-pip install --no-cache-dir torch  # install without reading or writing the cache</code></pre>
-        <ul>
-          <li><strong><code>pip cache purge</code></strong> removes all items from both the HTTP cache and the wheels folder.</li>
-          <li><strong><code>pip cache remove</code></strong> takes a package name or a glob, like <code>"torch*"</code>, and removes matching wheels. Use it when one big package is the problem.</li>
-          <li><strong><code>--no-cache-dir</code></strong> is useful for a one-off install of something huge, so it never lands in the cache.</li>
-        </ul>
-        <p>If pip says the cache is disabled or empty when you know it isn't, you're probably running a different pip than you think. <code>which -a pip pip3</code> lists them; <code>python3 -m pip</code> always uses the pip of that Python.</p>
-
-        <h2 style="margin-top:56px">How big the pip cache gets</h2>
-        <p>Usually hundreds of megabytes. On the developer Mac above, it was 605 MB. It gets bigger if you work with machine learning packages, since each version of a framework like PyTorch is a large download, and pip keeps every version you've installed.</p>
-
-        <h2 style="margin-top:56px">Other Python caches</h2>
-        <ul>
-          <li><strong>uv:</strong> keeps its cache in <code>~/.cache/uv</code>. <code>uv cache clean</code> empties it; <code>uv cache prune</code> removes only entries nothing uses.</li>
-          <li><strong>conda:</strong> keeps downloaded packages in the <code>pkgs</code> folder of your conda install. <code>conda clean --all</code> removes unused packages, tarballs, and index caches.</li>
-          <li><strong>Virtual environments:</strong> a <code>.venv</code> folder holds a full copy of every package a project uses. Delete the ones in old projects; <code>pip install -r requirements.txt</code> or <code>uv sync</code> rebuilds them.</li>
-        </ul>
-        <p>Next, <a href="/clear-cache/homebrew">Homebrew's cache</a> sits right beside pip's in <code>~/Library/Caches</code>. Or see <a href="/clear-cache">every tool's cache</a>.</p>
+        <h2 style="margin-top:56px">How big the Cargo cache gets</h2>
+        <p>Less than it used to. Since Rust 1.88, Cargo cleans its own cache automatically: it removes downloaded files it hasn't used in three months, and unpacked files it hasn't used in one month. So <code>~/.cargo/registry</code> usually holds a gigabyte or two. The <code>target</code> folders are another story: nothing cleans those, so ten old projects can mean tens of gigabytes. <code>cargo-sweep</code>, a third-party tool, can remove only the stale parts of a <code>target</code> folder if you'd rather not rebuild from scratch.</p>
+        <p>Also writing Go? See <a href="/clear-cache/go">go clean -cache</a>. Or <a href="/clear-cache/gradle">Gradle</a>, and <a href="/clear-cache">every tool's cache</a>.</p>
     
       </div></div>
     </section>
@@ -103,7 +96,7 @@ pip install --no-cache-dir torch  # install without reading or writing the cache
         <div class="head center">
           <h2>Disk Forecast finds this for you</h2>
 
-          <p>pip&#39;s cache sits in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>pip</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>. If you&#39;ve moved it to <code>~/.cache/pip</code>, it shows under <strong>Package manager caches</strong> instead, alongside uv. Virtual environments show up under the build folder rows, as long as a <code>pyproject.toml</code>, <code>requirements.txt</code>, <code>setup.py</code>, or <code>Pipfile</code> sits beside the <code>.venv</code>. Everything goes to the Trash. It&#39;s free.</p>
+          <p>Disk Forecast finds <code>target</code> folders only where a <code>Cargo.toml</code> sits beside them, so a folder that just happens to be called target is never listed. They appear as Rust build folders under <strong>Cleanup › Safe to clear › Build folders in old projects</strong> after 30 days without changes, or under <strong>Build folders in active projects</strong> before that. <code>~/.cargo/registry</code> is under <strong>Package manager caches</strong>. Everything goes to the Trash. It&#39;s free.</p>
     
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
@@ -138,11 +131,10 @@ pip install --no-cache-dir torch  # install without reading or writing the cache
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
         <div class="faq glass">
-          <details><summary>How do I clear pip cache?</summary><p>Run pip cache purge, or python3 -m pip cache purge to target a specific Python. It removes everything in pip&#x27;s cache. To remove one package instead, run pip cache remove followed by its name.</p></details>
-          <details><summary>Where is the pip cache on a Mac?</summary><p>In ~/Library/Caches/pip. Run pip cache dir to confirm. It holds downloaded files in http-v2 (http on older pip) and wheels pip built from source in wheels.</p></details>
-          <details><summary>Does pip cache purge uninstall packages?</summary><p>No. It only empties the cache of downloaded files and built wheels. Every installed package, in every environment, stays. pip downloads again the next time you install.</p></details>
-          <details><summary>Is it safe to delete the pip cache folder?</summary><p>Yes. You can also move ~/Library/Caches/pip to the Trash yourself; pip recreates it. pip cache purge does the same thing without leaving Terminal.</p></details>
-          <details><summary>How do I install a package without using the cache?</summary><p>Add --no-cache-dir: pip install --no-cache-dir package-name. pip neither reads from nor writes to the cache for that install.</p></details>
+          <details><summary>What does cargo clean do?</summary><p>It deletes the target folder of the current project: compiled dependencies, incremental data, and binaries. cargo build recreates it. It doesn&#x27;t touch ~/.cargo or other projects.</p></details>
+          <details><summary>How do I clear the Cargo cache?</summary><p>Move ~/.cargo/registry/cache, ~/.cargo/registry/src, and ~/.cargo/git to the Trash with no build running. Cargo downloads crates again as needed. Keep ~/.cargo/bin, which holds cargo and installed tools.</p></details>
+          <details><summary>Is it safe to delete the Rust target folder?</summary><p>Yes. It only holds build output, and cargo build makes it again. The next build of that project takes as long as a first build.</p></details>
+          <details><summary>Does Cargo clean its cache automatically?</summary><p>Since Rust 1.88, yes: Cargo removes downloaded files unused for three months and unpacked files unused for one month from its home folder. It never cleans target folders.</p></details>
         </div>
       </div>
     </section>
@@ -150,9 +142,9 @@ pip install --no-cache-dir torch  # install without reading or writing the cache
       <div class="wrap">
         <div class="head center head-sm"><h2>Related guides</h2></div>
         <div class="related">
-          <a class="glass" href="/clear-cache/npm"><b>npm</b><span>npm cache clean --force, the npx folder, and node_modules.</span></a>
-          <a class="glass" href="/clear-cache/homebrew"><b>Homebrew</b><span>brew cleanup, --prune=all, and brew --cache.</span></a>
           <a class="glass" href="/clear-cache/go"><b>Go</b><span>go clean -cache, -modcache, and where GOCACHE lives.</span></a>
+          <a class="glass" href="/clear-cache/gradle"><b>Gradle</b><span>~/.gradle caches, wrapper downloads, and build folders.</span></a>
+          <a class="glass" href="/clear-cache/homebrew"><b>Homebrew</b><span>brew cleanup, --prune=all, and brew --cache.</span></a>
         </div>
       </div>
     </section>
@@ -179,6 +171,6 @@ pip install --no-cache-dir torch  # install without reading or writing the cache
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear pip cache?", "acceptedAnswer": {"@type": "Answer", "text": "Run pip cache purge, or python3 -m pip cache purge to target a specific Python. It removes everything in pip's cache. To remove one package instead, run pip cache remove followed by its name."}}, {"@type": "Question", "name": "Where is the pip cache on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Caches/pip. Run pip cache dir to confirm. It holds downloaded files in http-v2 (http on older pip) and wheels pip built from source in wheels."}}, {"@type": "Question", "name": "Does pip cache purge uninstall packages?", "acceptedAnswer": {"@type": "Answer", "text": "No. It only empties the cache of downloaded files and built wheels. Every installed package, in every environment, stays. pip downloads again the next time you install."}}, {"@type": "Question", "name": "Is it safe to delete the pip cache folder?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. You can also move ~/Library/Caches/pip to the Trash yourself; pip recreates it. pip cache purge does the same thing without leaving Terminal."}}, {"@type": "Question", "name": "How do I install a package without using the cache?", "acceptedAnswer": {"@type": "Answer", "text": "Add --no-cache-dir: pip install --no-cache-dir package-name. pip neither reads from nor writes to the cache for that install."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does cargo clean do?", "acceptedAnswer": {"@type": "Answer", "text": "It deletes the target folder of the current project: compiled dependencies, incremental data, and binaries. cargo build recreates it. It doesn't touch ~/.cargo or other projects."}}, {"@type": "Question", "name": "How do I clear the Cargo cache?", "acceptedAnswer": {"@type": "Answer", "text": "Move ~/.cargo/registry/cache, ~/.cargo/registry/src, and ~/.cargo/git to the Trash with no build running. Cargo downloads crates again as needed. Keep ~/.cargo/bin, which holds cargo and installed tools."}}, {"@type": "Question", "name": "Is it safe to delete the Rust target folder?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It only holds build output, and cargo build makes it again. The next build of that project takes as long as a first build."}}, {"@type": "Question", "name": "Does Cargo clean its cache automatically?", "acceptedAnswer": {"@type": "Answer", "text": "Since Rust 1.88, yes: Cargo removes downloaded files unused for three months and unpacked files unused for one month from its home folder. It never cleans target folders."}}]}</script>
 </body>
 </html>

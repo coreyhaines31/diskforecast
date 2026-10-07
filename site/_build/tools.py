@@ -396,6 +396,179 @@ xcrun simctl delete unavailable</code></pre>
     ],
 }
 
+# ------------------------------------------------------------------ Gradle
+# "clear gradle cache" 80, "gradle cache location" 10. Gradle isn't installed on the measuring Mac.
+GRADLE = {
+    "slug": "gradle",
+    "title": "Clear Gradle cache on Mac: what to delete in ~/.gradle",
+    "description": "How to clear Gradle cache on Mac: where ~/.gradle keeps dependencies and wrapper downloads, why to stop the daemon first, and what Gradle cleans on its own.",
+    "h1": "How to clear Gradle cache on Mac, <em>without breaking builds.</em>",
+    "lede": "Gradle keeps downloaded dependencies, transformed jars, and a full copy of every Gradle version your projects' wrappers ask for. All of it lives in one folder, and most of it is safe to clear.",
+    "tldr": "Stop the Gradle daemon with <code>./gradlew --stop</code>, then move <code>~/.gradle/caches</code> to the Trash. Gradle downloads dependencies again on the next build. For old Gradle versions, move folders you don't need out of <code>~/.gradle/wrapper/dists</code>. Leave <code>~/.gradle/gradle.properties</code> and <code>init.d</code> alone: those are your settings. Each project's own <code>build</code> folder clears with <code>./gradlew clean</code>.",
+    "card_title": "Gradle",
+    "card_blurb": "~/.gradle caches, wrapper downloads, and build folders.",
+    "paths": [
+        ("Dependencies and transforms", "~/.gradle/caches", "Not installed on the Mac we measured"),
+        ("Gradle versions for the wrapper", "~/.gradle/wrapper/dists", "Not installed on the Mac we measured"),
+        ("Daemon logs", "~/.gradle/daemon", "Not installed on the Mac we measured"),
+        ("Each project's build output", "your-project/build", "Per project"),
+    ],
+    "html": """
+        <h2>Gradle cache location on Mac</h2>
+        <p>Gradle keeps everything in its user home, <code>~/.gradle</code>, unless <code>GRADLE_USER_HOME</code> points somewhere else. The same folder serves the command line, Android Studio, and IntelliJ IDEA.</p>
+        {{PATHS}}
+        <p>Gradle isn't installed on the Mac this page was written on, so there are no measured sizes here. Check yours with:</p>
+<pre><code>du -sh ~/.gradle/* 2>/dev/null | sort -h</code></pre>
+
+        <h2 style="margin-top:56px">What's safe to delete in ~/.gradle</h2>
+        <ul>
+          <li><strong><code>caches</code>: safe.</strong> Downloaded dependencies in <code>modules-2</code>, transformed jars, the local build cache, and per-version script caches. Gradle downloads or rebuilds what it needs. The first build afterward is slow, and it needs a network connection.</li>
+          <li><strong><code>wrapper/dists</code>: safe, folder by folder.</strong> One full Gradle distribution for each version a project's wrapper asked for, each a hundred megabytes or more. Delete versions no current project uses; <code>./gradlew</code> downloads its version again if needed.</li>
+          <li><strong><code>daemon</code>: safe.</strong> Logs from background Gradle processes.</li>
+        </ul>
+        <p>Keep <code>gradle.properties</code> (often with signing keys or repository credentials) and <code>init.d</code> (init scripts). They aren't cache.</p>
+
+        <h2 style="margin-top:56px">How to clear Gradle cache, step by step</h2>
+        <ol class="steps">
+          <li><b>Stop the daemon.</b> Run <code>./gradlew --stop</code> in a project, or <code>gradle --stop</code>. Quit Android Studio too. A running daemon keeps files in the cache open.</li>
+          <li><b>Clear project build folders, if you want.</b> <code>./gradlew clean</code> deletes the current project's <code>build</code> folder.</li>
+          <li><b>Move the cache to the Trash.</b> In Terminal, <code>mv ~/.gradle/caches ~/.Trash/gradle-caches</code>, or open <code>~/.gradle</code> in Finder with <strong>Go › Go to Folder</strong>. It's hidden, so type the path.</li>
+          <li><b>Build once.</b> Run your usual build while online. If it succeeds, empty the Trash.</li>
+        </ol>
+        <p>To force fresh dependencies without deleting anything, <code>./gradlew build --refresh-dependencies</code> checks every dependency against its repository again. It's the better fix when one library looks stale.</p>
+
+        <h2 style="margin-top:56px">How big the Gradle cache gets</h2>
+        <p>On an Android developer's Mac, several gigabytes is normal, and 10 GB or more is common after a few years, because each Android Gradle Plugin and Gradle upgrade brings a new set of transformed files. Gradle cleans the cache on a schedule by default, removing downloaded files unused for 30 days and files it created itself after 7 days; since Gradle 8 you can change those limits in an init script. Old Gradle versions' folders still pile up when no project uses them anymore.</p>
+        <p>Android projects have more: the Android SDK in <code>~/Library/Android/sdk</code>, with system images for every emulator you've made, and the emulators themselves in <code>~/.android/avd</code>. Delete those from Android Studio's SDK Manager and Device Manager rather than Finder.</p>
+        <p>Also on the JVM? Maven keeps its downloads in <code>~/.m2/repository</code>. More caches: <a href="/clear-cache/cargo">Cargo</a>, <a href="/clear-cache/go">Go</a>, or <a href="/clear-cache">every tool</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast lists <code>~/.gradle/caches</code> and <code>~/.gradle/wrapper/dists</code> under <strong>Cleanup › Safe to clear › Package manager caches</strong>. A project&#39;s <code>build</code> folder shows up as a Gradle build only when a <code>build.gradle</code> or <code>build.gradle.kts</code> sits beside it, so a random folder named build is never listed: under <strong>Build folders in old projects</strong> after 30 days without changes, or <strong>Build folders in active projects</strong> before that. Everything goes to the Trash. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/clear-cache/cargo", "/clear-cache/go", "/clear-cache/xcode"],
+    "faqs": [
+        ("How do I clear the Gradle cache?", "Stop the daemon with ./gradlew --stop, quit Android Studio, then delete or move ~/.gradle/caches to the Trash. Gradle downloads dependencies again on the next build, which needs a network connection."),
+        ("Where is the Gradle cache located on a Mac?", "In ~/.gradle/caches, inside Gradle's user home. Set GRADLE_USER_HOME to move it. Wrapper downloads of Gradle itself are in ~/.gradle/wrapper/dists."),
+        ("Is it safe to delete ~/.gradle?", "Mostly. caches, wrapper/dists, and daemon can all go. Keep gradle.properties and init.d if you have them: they're your settings, and gradle.properties may hold credentials."),
+        ("Does ./gradlew clean clear the Gradle cache?", "No. It deletes the current project's build folder. The shared cache in ~/.gradle/caches stays. To refetch dependencies without deleting the cache, use --refresh-dependencies."),
+    ],
+}
+
+# ------------------------------------------------------------------ Go
+# "go clean cache" 70, "go clean -modcache".
+GO = {
+    "slug": "go",
+    "title": "go clean -cache: how to clear Go cache on Mac",
+    "description": "How to clear Go cache on Mac: go clean -cache for builds, go clean -modcache for modules, where GOCACHE and GOMODCACHE are, and why Finder can't trash them.",
+    "h1": "How to clear Go cache on Mac, <em>with go clean.</em>",
+    "lede": "Go keeps two caches in two different places: one for build results, one for downloaded modules. Each has its own flag, and the module cache is read-only on purpose.",
+    "tldr": "Run <code>go clean -cache</code> to empty the build cache, which on a Mac is <code>~/Library/Caches/go-build</code>. Run <code>go clean -modcache</code> to remove every downloaded module from <code>~/go/pkg/mod</code>. Both rebuild on the next <code>go build</code>, which downloads modules again. Use <code>go clean</code> for the module cache: its files are read-only, so the Trash and <code>rm</code> both fail.",
+    "card_title": "Go",
+    "card_blurb": "go clean -cache, -modcache, and where GOCACHE lives.",
+    "paths": [
+        ("Build cache (GOCACHE)", "~/Library/Caches/go-build", "258 MB"),
+        ("Module cache (GOMODCACHE)", "~/go/pkg/mod", "24 MB"),
+    ],
+    "html": """
+        <h2>Where Go keeps its cache on a Mac</h2>
+<pre><code>go env GOCACHE GOMODCACHE</code></pre>
+        {{PATHS}}
+        <p>Sizes are from one developer Mac with Go 1.26 in October 2026. The build cache follows the Mac convention and lives in <code>~/Library/Caches</code>. The module cache lives under <code>GOPATH</code>, which is <code>~/go</code> unless you've changed it. Set <code>GOCACHE</code> or <code>GOMODCACHE</code> with <code>go env -w</code> to move them.</p>
+
+        <h2 style="margin-top:56px">go clean flags for every cache</h2>
+<pre><code>go clean -cache        # the build cache
+go clean -testcache    # only cached test results
+go clean -modcache     # every downloaded module
+go clean -fuzzcache    # inputs saved by go test -fuzz</code></pre>
+        <ul>
+          <li><strong><code>-cache</code></strong> removes compiled packages and cached test results. The next build compiles everything from source, which takes longer for big projects. Safe.</li>
+          <li><strong><code>-testcache</code></strong> keeps compiled code and only forgets test results, so <code>go test</code> runs every test again. Use it when a cached “ok” is hiding a flaky test; it frees almost nothing.</li>
+          <li><strong><code>-modcache</code></strong> removes the source of every module you've downloaded. The next build downloads them again, from the Go module proxy by default. Safe if you're online; vendored projects don't need it at all.</li>
+          <li><strong><code>-fuzzcache</code></strong> removes the inputs that fuzzing found interesting. Only clear it if you don't need to replay them.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Why go clean -modcache, not the Trash</h2>
+        <p>Go makes every file in the module cache read-only, so nothing edits a dependency by accident. That's why moving <code>~/go/pkg/mod</code> to the Trash fails partway, and <code>rm -rf</code> prints “Permission denied” over and over. <code>go clean -modcache</code> fixes the permissions and removes it cleanly. If you'd rather have a cache you can delete normally, build with <code>-modcacherw</code>, or add it to <code>GOFLAGS</code>.</p>
+        <p>The build cache has no such problem. You can move <code>~/Library/Caches/go-build</code> to the Trash, though <code>go clean -cache</code> does the same thing.</p>
+
+        <h2 style="margin-top:56px">How big Go caches get</h2>
+        <p>Go trims its own build cache: entries unused for about five days are removed as you build. So the build cache stays at a few hundred megabytes to a few gigabytes; on the Mac above, it was 258 MB. The module cache is never trimmed. Each version of each module stays until you clear it, so a Mac that has built many projects over a few years can hold several gigabytes. The <code>go</code> toolchains Go downloads for <code>toolchain</code> lines in <code>go.mod</code> live in the module cache too, at a few hundred megabytes each.</p>
+        <p>Also writing Rust? See <a href="/clear-cache/cargo">cargo clean</a>. Or <a href="/clear-cache/homebrew">Homebrew</a>, and <a href="/clear-cache">every tool's cache</a>.</p>
+    """,
+    "finds": """
+          <p>Go&#39;s build cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>go-build</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, and moves it to the Trash. The module cache in <code>~/go/pkg/mod</code> isn&#39;t listed, since its read-only files are a job for <code>go clean -modcache</code>. Disk Forecast also shows where your space goes and forecasts when your disk will be full. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/clear-cache/cargo", "/clear-cache/homebrew", "/clear-cache/gradle"],
+    "faqs": [
+        ("How do I clear the Go cache?", "Run go clean -cache to empty the build cache, and go clean -modcache to remove downloaded modules. Both are safe; the next build compiles from source and downloads modules again."),
+        ("What does go clean -modcache do?", "It removes the entire module download cache, ~/go/pkg/mod by default, including the unpacked source of every module version. Go downloads what a project needs again on the next build."),
+        ("Where is the Go build cache on a Mac?", "In ~/Library/Caches/go-build. Run go env GOCACHE to confirm. The module cache is separate, in ~/go/pkg/mod; go env GOMODCACHE shows it."),
+        ("Why can't I delete ~/go/pkg/mod?", "Go makes module cache files read-only so dependencies can't be edited by accident. Use go clean -modcache, which handles the permissions, instead of the Trash or rm."),
+    ],
+}
+
+# ------------------------------------------------------------------ Cargo
+# "cargo clean" 70, "clear cargo cache". Rust isn't installed on the measuring Mac.
+CARGO = {
+    "slug": "cargo",
+    "title": "cargo clean: how to clear Cargo cache on Mac",
+    "description": "How to clear Cargo cache on Mac: cargo clean for a project's target folder, what ~/.cargo/registry holds, and the cleanup Cargo does on its own since 1.88.",
+    "h1": "cargo clean on Mac, <em>and what it misses.</em>",
+    "lede": "In Rust, the big folder is almost never the shared cache. It's the target folder in every project you've built. Here's how to clear each, and what Cargo now clears on its own.",
+    "tldr": "Run <code>cargo clean</code> in a project to delete its <code>target</code> folder, which is usually the biggest thing Rust leaves on your disk. For the shared cache of downloaded crates, move <code>~/.cargo/registry/cache</code> and <code>~/.cargo/registry/src</code> to the Trash; Cargo downloads what it needs again. Leave <code>~/.cargo/bin</code> alone: that's where <code>cargo</code> and your installed tools live.",
+    "card_title": "Cargo",
+    "card_blurb": "cargo clean, target folders, and ~/.cargo/registry.",
+    "paths": [
+        ("Each project's build output", "your-project/target", "Per project"),
+        ("Downloaded crates", "~/.cargo/registry/cache", "Not installed on the Mac we measured"),
+        ("Unpacked crate source", "~/.cargo/registry/src", "Not installed on the Mac we measured"),
+        ("Git dependencies", "~/.cargo/git", "Not installed on the Mac we measured"),
+    ],
+    "html": """
+        <h2>Where Cargo keeps its cache on a Mac</h2>
+        <p>Cargo's home is <code>~/.cargo</code>, or wherever <code>CARGO_HOME</code> points. Build output doesn't go there: it goes in a <code>target</code> folder inside each project.</p>
+        {{PATHS}}
+        <p>Rust isn't installed on the Mac this page was written on, so there are no measured sizes here. Check yours with:</p>
+<pre><code>du -sh ~/.cargo/registry ~/.cargo/git 2>/dev/null
+find ~ -name target -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
+        <p>Not every folder named <code>target</code> is Rust's: check for a <code>Cargo.toml</code> beside it before you delete one.</p>
+
+        <h2 style="margin-top:56px">What cargo clean deletes</h2>
+<pre><code>cargo clean                  # the whole target folder
+cargo clean --release        # only target/release
+cargo clean --doc            # only target/doc
+cargo clean -p some-crate    # one package's artifacts</code></pre>
+        <p><code>cargo clean</code> removes compiled dependencies, incremental compilation data, and your binaries for that one project. It's safe: <code>cargo build</code> makes it all again, which can take minutes for a project with many dependencies. It doesn't touch <code>~/.cargo</code>.</p>
+        <p>Why <code>target</code> gets so big: it keeps separate builds for debug and release, for every target triple you build, and incremental data for every crate. Changing compiler versions or features adds more rather than replacing. A medium project's <code>target</code> folder is often several gigabytes, and tens of gigabytes isn't unusual.</p>
+
+        <h2 style="margin-top:56px">How to clear Cargo cache in ~/.cargo</h2>
+        <ul>
+          <li><strong><code>registry/cache</code>: safe.</strong> The compressed <code>.crate</code> file for every crate version you've downloaded.</li>
+          <li><strong><code>registry/src</code>: safe.</strong> Those crates unpacked. Cargo unpacks them again from the cache, or downloads them.</li>
+          <li><strong><code>git</code>: safe.</strong> Clones of dependencies that point at a git repository. Cargo clones them again.</li>
+          <li><strong><code>bin</code>: keep.</strong> <code>cargo</code>, <code>rustc</code> shims from rustup, and everything you installed with <code>cargo install</code>.</li>
+        </ul>
+        <p>Cargo has no stable command to clear its home folder, so moving those folders to the Trash is the usual way. Do it with no build running. Toolchains themselves live in <code>~/.rustup/toolchains</code>; remove old ones with <code>rustup toolchain uninstall</code>.</p>
+
+        <h2 style="margin-top:56px">How big the Cargo cache gets</h2>
+        <p>Less than it used to. Since Rust 1.88, Cargo cleans its own cache automatically: it removes downloaded files it hasn't used in three months, and unpacked files it hasn't used in one month. So <code>~/.cargo/registry</code> usually holds a gigabyte or two. The <code>target</code> folders are another story: nothing cleans those, so ten old projects can mean tens of gigabytes. <code>cargo-sweep</code>, a third-party tool, can remove only the stale parts of a <code>target</code> folder if you'd rather not rebuild from scratch.</p>
+        <p>Also writing Go? See <a href="/clear-cache/go">go clean -cache</a>. Or <a href="/clear-cache/gradle">Gradle</a>, and <a href="/clear-cache">every tool's cache</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast finds <code>target</code> folders only where a <code>Cargo.toml</code> sits beside them, so a folder that just happens to be called target is never listed. They appear as Rust build folders under <strong>Cleanup › Safe to clear › Build folders in old projects</strong> after 30 days without changes, or under <strong>Build folders in active projects</strong> before that. <code>~/.cargo/registry</code> is under <strong>Package manager caches</strong>. Everything goes to the Trash. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/clear-cache/go", "/clear-cache/gradle", "/clear-cache/homebrew"],
+    "faqs": [
+        ("What does cargo clean do?", "It deletes the target folder of the current project: compiled dependencies, incremental data, and binaries. cargo build recreates it. It doesn't touch ~/.cargo or other projects."),
+        ("How do I clear the Cargo cache?", "Move ~/.cargo/registry/cache, ~/.cargo/registry/src, and ~/.cargo/git to the Trash with no build running. Cargo downloads crates again as needed. Keep ~/.cargo/bin, which holds cargo and installed tools."),
+        ("Is it safe to delete the Rust target folder?", "Yes. It only holds build output, and cargo build makes it again. The next build of that project takes as long as a first build."),
+        ("Does Cargo clean its cache automatically?", "Since Rust 1.88, yes: Cargo removes downloaded files unused for three months and unpacked files unused for one month from its home folder. It never cleans target folders."),
+    ],
+}
+
 # ------------------------------------------------------------------ Homebrew
 # "brew cleanup" 50, "clear homebrew cache" 10.
 HOMEBREW = {
@@ -455,7 +628,7 @@ du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
     ],
 }
 
-CACHE_TOOLS = [DOCKER, NPM, PIP, TEAMS, YARN, XCODE, HOMEBREW]
+CACHE_TOOLS = [DOCKER, NPM, PIP, TEAMS, YARN, XCODE, GRADLE, GO, CARGO, HOMEBREW]
 
 CLEAR_CACHE_HUB = {
     "path": "/clear-cache",

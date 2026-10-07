@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Clear pip cache on Mac with pip cache purge</title>
-  <meta name="description" content="How to clear pip cache on Mac with pip cache purge, where pip keeps its cache, what&#x27;s inside it, and how to clear uv, conda, and virtual environments too.">
-  <link rel="canonical" href="https://diskforecast.com/clear-cache/pip">
-  <meta property="og:title" content="Clear pip cache on Mac with pip cache purge">
-  <meta property="og:description" content="How to clear pip cache on Mac with pip cache purge, where pip keeps its cache, what&#x27;s inside it, and how to clear uv, conda, and virtual environments too.">
+  <title>go clean -cache: how to clear Go cache on Mac</title>
+  <meta name="description" content="How to clear Go cache on Mac: go clean -cache for builds, go clean -modcache for modules, where GOCACHE and GOMODCACHE are, and why Finder can&#x27;t trash them.">
+  <link rel="canonical" href="https://diskforecast.com/clear-cache/go">
+  <meta property="og:title" content="go clean -cache: how to clear Go cache on Mac">
+  <meta property="og:description" content="How to clear Go cache on Mac: go clean -cache for builds, go clean -modcache for modules, where GOCACHE and GOMODCACHE are, and why Finder can&#x27;t trash them.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Disk Forecast">
   <meta property="og:image" content="https://diskforecast.com/images/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://diskforecast.com/clear-cache/pip">
+  <meta property="og:url" content="https://diskforecast.com/clear-cache/go">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Clear pip cache on Mac with pip cache purge">
-  <meta name="twitter:description" content="How to clear pip cache on Mac with pip cache purge, where pip keeps its cache, what&#x27;s inside it, and how to clear uv, conda, and virtual environments too.">
+  <meta name="twitter:title" content="go clean -cache: how to clear Go cache on Mac">
+  <meta name="twitter:description" content="How to clear Go cache on Mac: go clean -cache for builds, go clean -modcache for modules, where GOCACHE and GOMODCACHE are, and why Finder can&#x27;t trash them.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -46,55 +46,42 @@
     <div class="sub-hero">
       <div class="wrap narrow">
         <div class="eyebrow">Guide</div>
-        <h1>How to clear pip cache on Mac, <em>with pip itself.</em></h1>
-        <p class="lede">pip keeps the packages it downloads and the wheels it builds, so installing them again is fast. On a Mac that cache lives in your Library folder, and pip has its own command to empty it.</p>
-        <div class="tldr glass"><h2>The short version</h2><p>Run <code>pip cache purge</code>. It empties pip's cache, which on a Mac is <code>~/Library/Caches/pip</code>. Installed packages and your virtual environments aren't touched; pip downloads what it needs again on the next install. With more than one Python, run <code>python3 -m pip cache purge</code> so you clear the cache of the pip you actually use.</p></div>
+        <h1>How to clear Go cache on Mac, <em>with go clean.</em></h1>
+        <p class="lede">Go keeps two caches in two different places: one for build results, one for downloaded modules. Each has its own flag, and the module cache is read-only on purpose.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Run <code>go clean -cache</code> to empty the build cache, which on a Mac is <code>~/Library/Caches/go-build</code>. Run <code>go clean -modcache</code> to remove every downloaded module from <code>~/go/pkg/mod</code>. Both rebuild on the next <code>go build</code>, which downloads modules again. Use <code>go clean</code> for the module cache: its files are read-only, so the Trash and <code>rm</code> both fail.</p></div>
       </div>
     </div>
     <section class="tight">
       <div class="wrap narrow"><div class="prose">
 
-        <h2>Where pip keeps its cache on a Mac</h2>
-        <p>pip follows the Mac convention and keeps its cache in <code>~/Library/Caches/pip</code>, not in the <code>~/.cache</code> folder it uses on Linux. Ask pip directly:</p>
-<pre><code>pip cache dir
-pip cache info</code></pre>
+        <h2>Where Go keeps its cache on a Mac</h2>
+<pre><code>go env GOCACHE GOMODCACHE</code></pre>
                 <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
           <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
-            <tr><th scope="row">Downloaded packages and index pages</th><td><code>~/Library/Caches/pip/http-v2</code></td><td>612 MB in 1,502 files</td></tr>
-            <tr><th scope="row">Wheels pip built from source</th><td><code>~/Library/Caches/pip/wheels</code></td><td>19 MB, 4 wheels</td></tr>
+            <tr><th scope="row">Build cache (GOCACHE)</th><td><code>~/Library/Caches/go-build</code></td><td>258 MB</td></tr>
+            <tr><th scope="row">Module cache (GOMODCACHE)</th><td><code>~/go/pkg/mod</code></td><td>24 MB</td></tr>
           </tbody></table></div></div>
-        <p>Sizes are from <code>pip cache info</code> on one developer Mac in October 2026. pip 23.3 and later use <code>http-v2</code>; older versions used <code>http</code>, and both can be there if you've upgraded. If you set <code>PIP_CACHE_DIR</code> or <code>XDG_CACHE_HOME</code>, the cache moves with it.</p>
+        <p>Sizes are from one developer Mac with Go 1.26 in October 2026. The build cache follows the Mac convention and lives in <code>~/Library/Caches</code>. The module cache lives under <code>GOPATH</code>, which is <code>~/go</code> unless you've changed it. Set <code>GOCACHE</code> or <code>GOMODCACHE</code> with <code>go env -w</code> to move them.</p>
 
-        <h2 style="margin-top:56px">Is it safe to clear pip cache?</h2>
-        <p>Yes. The cache is only a shortcut. It holds package files pip downloaded and wheels it compiled from source, so the next install of the same version skips the download or the build.</p>
+        <h2 style="margin-top:56px">go clean flags for every cache</h2>
+<pre><code>go clean -cache        # the build cache
+go clean -testcache    # only cached test results
+go clean -modcache     # every downloaded module
+go clean -fuzzcache    # inputs saved by go test -fuzz</code></pre>
         <ul>
-          <li><strong>What stays:</strong> every package you've installed, in every Python and every virtual environment. Purging the cache uninstalls nothing.</li>
-          <li><strong>What rebuilds:</strong> the next install downloads again. Packages without a wheel for your Mac compile again, which can take minutes for some scientific packages.</li>
-          <li><strong>When it helps:</strong> reclaiming space, or forcing pip to fetch a fresh copy of a package that installed wrong.</li>
+          <li><strong><code>-cache</code></strong> removes compiled packages and cached test results. The next build compiles everything from source, which takes longer for big projects. Safe.</li>
+          <li><strong><code>-testcache</code></strong> keeps compiled code and only forgets test results, so <code>go test</code> runs every test again. Use it when a cached “ok” is hiding a flaky test; it frees almost nothing.</li>
+          <li><strong><code>-modcache</code></strong> removes the source of every module you've downloaded. The next build downloads them again, from the Go module proxy by default. Safe if you're online; vendored projects don't need it at all.</li>
+          <li><strong><code>-fuzzcache</code></strong> removes the inputs that fuzzing found interesting. Only clear it if you don't need to replay them.</li>
         </ul>
 
-        <h2 style="margin-top:56px">pip cache commands</h2>
-<pre><code>pip cache list                    # wheels in the cache
-pip cache remove numpy            # one package's wheels
-pip cache purge                   # everything
-pip install --no-cache-dir torch  # install without reading or writing the cache</code></pre>
-        <ul>
-          <li><strong><code>pip cache purge</code></strong> removes all items from both the HTTP cache and the wheels folder.</li>
-          <li><strong><code>pip cache remove</code></strong> takes a package name or a glob, like <code>"torch*"</code>, and removes matching wheels. Use it when one big package is the problem.</li>
-          <li><strong><code>--no-cache-dir</code></strong> is useful for a one-off install of something huge, so it never lands in the cache.</li>
-        </ul>
-        <p>If pip says the cache is disabled or empty when you know it isn't, you're probably running a different pip than you think. <code>which -a pip pip3</code> lists them; <code>python3 -m pip</code> always uses the pip of that Python.</p>
+        <h2 style="margin-top:56px">Why go clean -modcache, not the Trash</h2>
+        <p>Go makes every file in the module cache read-only, so nothing edits a dependency by accident. That's why moving <code>~/go/pkg/mod</code> to the Trash fails partway, and <code>rm -rf</code> prints “Permission denied” over and over. <code>go clean -modcache</code> fixes the permissions and removes it cleanly. If you'd rather have a cache you can delete normally, build with <code>-modcacherw</code>, or add it to <code>GOFLAGS</code>.</p>
+        <p>The build cache has no such problem. You can move <code>~/Library/Caches/go-build</code> to the Trash, though <code>go clean -cache</code> does the same thing.</p>
 
-        <h2 style="margin-top:56px">How big the pip cache gets</h2>
-        <p>Usually hundreds of megabytes. On the developer Mac above, it was 605 MB. It gets bigger if you work with machine learning packages, since each version of a framework like PyTorch is a large download, and pip keeps every version you've installed.</p>
-
-        <h2 style="margin-top:56px">Other Python caches</h2>
-        <ul>
-          <li><strong>uv:</strong> keeps its cache in <code>~/.cache/uv</code>. <code>uv cache clean</code> empties it; <code>uv cache prune</code> removes only entries nothing uses.</li>
-          <li><strong>conda:</strong> keeps downloaded packages in the <code>pkgs</code> folder of your conda install. <code>conda clean --all</code> removes unused packages, tarballs, and index caches.</li>
-          <li><strong>Virtual environments:</strong> a <code>.venv</code> folder holds a full copy of every package a project uses. Delete the ones in old projects; <code>pip install -r requirements.txt</code> or <code>uv sync</code> rebuilds them.</li>
-        </ul>
-        <p>Next, <a href="/clear-cache/homebrew">Homebrew's cache</a> sits right beside pip's in <code>~/Library/Caches</code>. Or see <a href="/clear-cache">every tool's cache</a>.</p>
+        <h2 style="margin-top:56px">How big Go caches get</h2>
+        <p>Go trims its own build cache: entries unused for about five days are removed as you build. So the build cache stays at a few hundred megabytes to a few gigabytes; on the Mac above, it was 258 MB. The module cache is never trimmed. Each version of each module stays until you clear it, so a Mac that has built many projects over a few years can hold several gigabytes. The <code>go</code> toolchains Go downloads for <code>toolchain</code> lines in <code>go.mod</code> live in the module cache too, at a few hundred megabytes each.</p>
+        <p>Also writing Rust? See <a href="/clear-cache/cargo">cargo clean</a>. Or <a href="/clear-cache/homebrew">Homebrew</a>, and <a href="/clear-cache">every tool's cache</a>.</p>
     
       </div></div>
     </section>
@@ -103,7 +90,7 @@ pip install --no-cache-dir torch  # install without reading or writing the cache
         <div class="head center">
           <h2>Disk Forecast finds this for you</h2>
 
-          <p>pip&#39;s cache sits in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>pip</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>. If you&#39;ve moved it to <code>~/.cache/pip</code>, it shows under <strong>Package manager caches</strong> instead, alongside uv. Virtual environments show up under the build folder rows, as long as a <code>pyproject.toml</code>, <code>requirements.txt</code>, <code>setup.py</code>, or <code>Pipfile</code> sits beside the <code>.venv</code>. Everything goes to the Trash. It&#39;s free.</p>
+          <p>Go&#39;s build cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>go-build</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, and moves it to the Trash. The module cache in <code>~/go/pkg/mod</code> isn&#39;t listed, since its read-only files are a job for <code>go clean -modcache</code>. Disk Forecast also shows where your space goes and forecasts when your disk will be full. It&#39;s free.</p>
     
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
@@ -138,11 +125,10 @@ pip install --no-cache-dir torch  # install without reading or writing the cache
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
         <div class="faq glass">
-          <details><summary>How do I clear pip cache?</summary><p>Run pip cache purge, or python3 -m pip cache purge to target a specific Python. It removes everything in pip&#x27;s cache. To remove one package instead, run pip cache remove followed by its name.</p></details>
-          <details><summary>Where is the pip cache on a Mac?</summary><p>In ~/Library/Caches/pip. Run pip cache dir to confirm. It holds downloaded files in http-v2 (http on older pip) and wheels pip built from source in wheels.</p></details>
-          <details><summary>Does pip cache purge uninstall packages?</summary><p>No. It only empties the cache of downloaded files and built wheels. Every installed package, in every environment, stays. pip downloads again the next time you install.</p></details>
-          <details><summary>Is it safe to delete the pip cache folder?</summary><p>Yes. You can also move ~/Library/Caches/pip to the Trash yourself; pip recreates it. pip cache purge does the same thing without leaving Terminal.</p></details>
-          <details><summary>How do I install a package without using the cache?</summary><p>Add --no-cache-dir: pip install --no-cache-dir package-name. pip neither reads from nor writes to the cache for that install.</p></details>
+          <details><summary>How do I clear the Go cache?</summary><p>Run go clean -cache to empty the build cache, and go clean -modcache to remove downloaded modules. Both are safe; the next build compiles from source and downloads modules again.</p></details>
+          <details><summary>What does go clean -modcache do?</summary><p>It removes the entire module download cache, ~/go/pkg/mod by default, including the unpacked source of every module version. Go downloads what a project needs again on the next build.</p></details>
+          <details><summary>Where is the Go build cache on a Mac?</summary><p>In ~/Library/Caches/go-build. Run go env GOCACHE to confirm. The module cache is separate, in ~/go/pkg/mod; go env GOMODCACHE shows it.</p></details>
+          <details><summary>Why can&#x27;t I delete ~/go/pkg/mod?</summary><p>Go makes module cache files read-only so dependencies can&#x27;t be edited by accident. Use go clean -modcache, which handles the permissions, instead of the Trash or rm.</p></details>
         </div>
       </div>
     </section>
@@ -150,9 +136,9 @@ pip install --no-cache-dir torch  # install without reading or writing the cache
       <div class="wrap">
         <div class="head center head-sm"><h2>Related guides</h2></div>
         <div class="related">
-          <a class="glass" href="/clear-cache/npm"><b>npm</b><span>npm cache clean --force, the npx folder, and node_modules.</span></a>
+          <a class="glass" href="/clear-cache/cargo"><b>Cargo</b><span>cargo clean, target folders, and ~/.cargo/registry.</span></a>
           <a class="glass" href="/clear-cache/homebrew"><b>Homebrew</b><span>brew cleanup, --prune=all, and brew --cache.</span></a>
-          <a class="glass" href="/clear-cache/go"><b>Go</b><span>go clean -cache, -modcache, and where GOCACHE lives.</span></a>
+          <a class="glass" href="/clear-cache/gradle"><b>Gradle</b><span>~/.gradle caches, wrapper downloads, and build folders.</span></a>
         </div>
       </div>
     </section>
@@ -179,6 +165,6 @@ pip install --no-cache-dir torch  # install without reading or writing the cache
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear pip cache?", "acceptedAnswer": {"@type": "Answer", "text": "Run pip cache purge, or python3 -m pip cache purge to target a specific Python. It removes everything in pip's cache. To remove one package instead, run pip cache remove followed by its name."}}, {"@type": "Question", "name": "Where is the pip cache on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Caches/pip. Run pip cache dir to confirm. It holds downloaded files in http-v2 (http on older pip) and wheels pip built from source in wheels."}}, {"@type": "Question", "name": "Does pip cache purge uninstall packages?", "acceptedAnswer": {"@type": "Answer", "text": "No. It only empties the cache of downloaded files and built wheels. Every installed package, in every environment, stays. pip downloads again the next time you install."}}, {"@type": "Question", "name": "Is it safe to delete the pip cache folder?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. You can also move ~/Library/Caches/pip to the Trash yourself; pip recreates it. pip cache purge does the same thing without leaving Terminal."}}, {"@type": "Question", "name": "How do I install a package without using the cache?", "acceptedAnswer": {"@type": "Answer", "text": "Add --no-cache-dir: pip install --no-cache-dir package-name. pip neither reads from nor writes to the cache for that install."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear the Go cache?", "acceptedAnswer": {"@type": "Answer", "text": "Run go clean -cache to empty the build cache, and go clean -modcache to remove downloaded modules. Both are safe; the next build compiles from source and downloads modules again."}}, {"@type": "Question", "name": "What does go clean -modcache do?", "acceptedAnswer": {"@type": "Answer", "text": "It removes the entire module download cache, ~/go/pkg/mod by default, including the unpacked source of every module version. Go downloads what a project needs again on the next build."}}, {"@type": "Question", "name": "Where is the Go build cache on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Caches/go-build. Run go env GOCACHE to confirm. The module cache is separate, in ~/go/pkg/mod; go env GOMODCACHE shows it."}}, {"@type": "Question", "name": "Why can't I delete ~/go/pkg/mod?", "acceptedAnswer": {"@type": "Answer", "text": "Go makes module cache files read-only so dependencies can't be edited by accident. Use go clean -modcache, which handles the permissions, instead of the Trash or rm."}}]}</script>
 </body>
 </html>
