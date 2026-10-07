@@ -524,7 +524,95 @@ FREE_UP = {
     "cta": "Know before it's full.",
 }
 
-GUIDES = [SYSTEM_DATA, CACHE, FREE_UP]
+# Targets "how to check mac storage" (7,600/mo US, KD 0), plus "how to check storage on mac", "how to check disk space on mac",
+# "how to see what's taking up space on mac", "memory vs storage on mac", and "how to find large files on mac".
+CHECK = {
+    "path": "/how-to-check-storage-on-mac",
+    "title": "How to check Mac storage: 5 ways built into macOS",
+    "description": "How to check Mac storage in System Settings, About This Mac, Finder, Disk Utility, and Terminal, then see what's taking up space and find large files.",
+    "eyebrow": "Guide",
+    "h1": "How to check Mac storage, <em>five ways.</em>",
+    "lede": "The fastest way takes three clicks. The others show different numbers, and it helps to know why, especially when your Mac says it's full and Finder disagrees.",
+    "tldr": "Choose <strong>Apple menu › System Settings › General › Storage</strong>. The bar at the top shows what's used by category and what's available. For folder sizes, use Finder's <strong>Calculate all sizes</strong>. For exact numbers, run <code>df -h /System/Volumes/Data</code> in Terminal.",
+    "card_title": "How to check Mac storage",
+    "card_blurb": "Five built-in ways, plus how to find what's taking up space.",
+    "footer": "Check Mac storage",
+    "related": ["/free-up-space-on-mac", "/what-is-system-data-on-mac", "/how-to-clear-cache-on-mac"],
+    "faqs": [
+        ("How do I check storage on a MacBook Air or MacBook Pro?", "Choose Apple menu › System Settings › General › Storage. It works the same on every Mac running macOS 13 or later, laptops included. On older versions, it's Apple menu › About This Mac › Storage."),
+        ("How do I see what's taking up space on my Mac?", "Storage settings groups it by category; click the info button next to a category to see the files. For folders, open your home folder in Finder in list view, turn on Calculate all sizes in View Options, and sort by size."),
+        ("Why does my Mac show more free space than Terminal?", "Finder and Storage settings count purgeable space, like local snapshots and iCloud files macOS can download again, as available. The df command only counts space that's free right now. Finder also uses gigabytes where df -h uses gibibytes."),
+        ("What's the difference between memory and storage on a Mac?", "Memory, or RAM, is the short-term workspace apps use while they run, and it empties when you quit them or restart. Storage is the SSD that keeps your files when the Mac is off. About This Mac shows your memory; Storage settings shows your storage."),
+        ("Why does Storage settings take so long to load?", "It measures every category when you open it, which can take a minute on a full disk. Let it finish before you trust the numbers, and give it another moment after you delete something."),
+    ],
+    "html": """
+        <h2>1. How to check storage on Mac in System Settings</h2>
+        <p>This is Apple's main storage view, and the one to start with.</p>
+        <ol class="steps">
+          <li><b>Open Storage settings.</b> Choose <strong>Apple menu › System Settings</strong>, click <strong>General</strong> in the sidebar, then click <strong>Storage</strong>. Or press Command-Space and type “Storage.”</li>
+          <li><b>Read the bar.</b> Wait for it to finish calculating. Each color is a category, like Applications, Documents, Photos, macOS, and System Data. The number above it is how much is available.</li>
+          <li><b>Look inside a category.</b> Scroll down and click the info button next to a category to see its files, sorted by size, with the option to delete them.</li>
+        </ol>
+        <p>One category won't open up this way: System Data, the gray slice near the end. <a href="/what-is-system-data-on-mac">What is System Data on Mac</a> explains what's in it.</p>
+
+        <h2 style="margin-top:56px">2. About This Mac</h2>
+        <p>Choose <strong>Apple menu › About This Mac</strong>, then click <strong>More Info</strong>. That opens <strong>System Settings › General › About</strong>, where the Storage row shows something like “142 GB available of 494 GB.” Click <strong>Storage Settings</strong> there to jump to the full view above. On macOS 12 and earlier, About This Mac had its own Storage tab.</p>
+
+        <h2 style="margin-top:56px">3. Finder</h2>
+        <ul>
+          <li><strong>The status bar.</strong> Choose <strong>View › Show Status Bar</strong>, and every Finder window shows how much space is available at the bottom.</li>
+          <li><strong>Get Info.</strong> Choose <strong>Go › Computer</strong>, select <strong>Macintosh HD</strong>, and press Command-I. The window shows capacity, available, and used.</li>
+          <li><strong>Folder sizes.</strong> Open a folder in list view (<strong>View › as List</strong>), choose <strong>View › Show View Options</strong>, and turn on <strong>Calculate all sizes</strong>. Click the Size column to sort. Start with your home folder: this is the quickest way to see which folders are big.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">4. Disk Utility</h2>
+        <p>Open <strong>Applications › Utilities › Disk Utility</strong>, and select <strong>Macintosh HD</strong> in the sidebar. You'll see used, free, and capacity for the whole disk, including other volumes in the same container. Disk Utility won't break usage down by category, but it's the place to check an external drive too.</p>
+
+        <h2 style="margin-top:56px">5. Terminal: how to check disk space on Mac precisely</h2>
+        <p>For exact numbers, open Terminal and run:</p>
+<pre><code>df -h /System/Volumes/Data</code></pre>
+        <p>Read the <strong>Avail</strong> column. Use <code>/System/Volumes/Data</code>, not <code>/</code>: since macOS Catalina, <code>/</code> is the read-only system volume, so <code>df -h /</code> shows only a few gigabytes used even when your disk is full. To list the biggest folders in your home folder:</p>
+<pre><code>du -sh ~/* 2>/dev/null | sort -h</code></pre>
+        <p>The biggest are at the bottom. Run the same command on <code>~/Library/*</code> to go one level deeper; it's where caches, app data, and developer files live. The first time, macOS may ask whether Terminal can access folders like Documents and Desktop. Allow it, or those folders are skipped.</p>
+
+        <h2 style="margin-top:56px">Why the numbers don't match</h2>
+        <ul>
+          <li><strong>Purgeable space.</strong> Finder and Storage settings count space macOS can free on demand, like local snapshots and iCloud files it can download again, as available. <code>df</code> doesn't. On the Mac this guide was written on, <code>df</code> showed 32 GB available while macOS counted 270 GB available for important files.</li>
+          <li><strong>GB versus GiB.</strong> Finder counts 1 GB as a billion bytes. <code>df -h</code> counts in gibibytes, about 7 percent larger, so a 994 GB disk shows as 926Gi.</li>
+          <li><strong>Timing.</strong> Storage settings measures when you open it and can lag behind what you just deleted. Give it a minute.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">How to see what's taking up space on Mac</h2>
+        <p>Start with the biggest category in Storage settings. If it's Applications, Documents, or Photos, its info button lists the files. If it's System Data, the space is in places Storage settings doesn't name, and <a href="/system-data">the System Data guide</a> shows how to reclaim it. If nothing stands out, sort your home folder by size in Finder, and look inside <code>~/Library</code>, <code>~/Downloads</code>, and any code or video folders.</p>
+
+        <h2 style="margin-top:56px">How to find large files on Mac</h2>
+        <ol class="steps">
+          <li><b>In Storage settings.</b> Click the info button next to <strong>Documents</strong> to see large files and downloads, sorted by size.</li>
+          <li><b>In Finder.</b> Press Command-F, click <strong>This Mac</strong>, change <strong>Kind</strong> to <strong>Other</strong>, choose <strong>File Size</strong>, and set it to “is greater than 1 GB.”</li>
+          <li><b>In Terminal.</b> Spotlight's index answers in seconds:
+<pre><code>mdfind 'kMDItemFSSize > 1000000000'</code></pre>
+          Or search your home folder directly, which is slower but includes files Spotlight skips:
+<pre><code>find ~ -type f -size +1G 2>/dev/null</code></pre></li>
+        </ol>
+        <p>Found more than you expected? <a href="/free-up-space-on-mac">The free up space checklist</a> goes through what's safe to remove, in order.</p>
+
+        <h2 style="margin-top:56px">Memory vs storage on Mac</h2>
+        <p>They're easy to mix up because both are measured in gigabytes.</p>
+        <ul>
+          <li><strong>Memory (RAM)</strong> is the workspace apps use while they run. It empties when you quit apps or restart. About This Mac shows how much you have, and <strong>Activity Monitor › Memory</strong> shows how much is in use.</li>
+          <li><strong>Storage</strong> is the SSD that keeps your files, apps, and macOS itself when the Mac is off. Everything in this guide checks storage.</li>
+          <li><strong>They meet in swap.</strong> When memory runs short, macOS moves some of it to storage. That's why a nearly full disk can bring up “Your system has run out of application memory,” even on a Mac with plenty of RAM.</li>
+        </ul>
+    """,
+    "shortcut": """
+          <h2>Or keep it in your menu bar.</h2>
+          <p>Disk Forecast shows your free space in the menu bar all day. Click it to see when you&#39;ll run out, the five folders taking the most space, and how much is safe to clear. It&#39;s free.</p>
+    """,
+    "mockup": "menu",
+    "cta": "Know before it's full.",
+}
+
+GUIDES = [SYSTEM_DATA, CACHE, FREE_UP, CHECK]
 
 # ---------------------------------------------------------------------- Privacy
 PRIVACY = {
