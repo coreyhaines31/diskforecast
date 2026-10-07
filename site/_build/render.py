@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Renders site/alternatives/*.html, the alternatives hub, the guides, and /privacy from pages.py,
+"""Renders site/alternatives/*.html, the roundups, the alternatives hub, the guides, and /privacy from pages.py,
 the per-tool pages under /clear-cache and /ai-models and their hubs from tools.py,
 rewrites the homepage footer list and JSON-LD between their <!-- alternatives --> and <!-- schema --> markers,
 and writes sitemap.xml.
@@ -13,7 +13,7 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
-from pages import GUIDES, GUIDES_HUB, HUB, PAGES, PRIVACY  # noqa: E402
+from pages import GUIDES, GUIDES_HUB, HUB, PAGES, PRIVACY, ROUNDUPS  # noqa: E402
 from tools import GUIDE_HUBS, SECTIONS  # noqa: E402
 
 TOOLS = [t for _, tools in SECTIONS for t in tools]
@@ -96,7 +96,8 @@ def nav():
 
 def footer_alternatives():
     """Every alternative page, linked from every footer for internal linking."""
-    links = "".join(f'<a href="/alternatives/{p["slug"]}">{esc(p["competitor"])} alternative</a>' for p in PAGES)
+    links = "".join(f'<a href="/alternatives/{p["slug"]}">{esc(p.get("footer", p["competitor"] + " alternative"))}</a>' for p in PAGES)
+    links += "".join(f'<a href="{r["path"]}">{esc(r["footer"])}</a>' for r in ROUNDUPS)
     return f'      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a>{links}</nav>\n'
 
 
@@ -179,6 +180,33 @@ def table(rows, competitor):
     return "\n".join(out)
 
 
+def grid_table(t):
+    """A table with any number of columns. The Disk Forecast column, or row, is highlighted."""
+    head, rows = t["head"], t["rows"]
+    style = f' style="min-width:{t["min_width"]}px"' if t.get("min_width") else ""
+    first = f'<th scope="col">{esc(head[0])}</th>' if head[0] else "<td></td>"
+    cols = "".join(f'<th scope="col"{" class=\"us\"" if h == "Disk Forecast" else ""}>{esc(h)}</th>' for h in head[1:])
+    out = [f'        <div class="table-card glass"><div class="table-scroll"><table class="compare"{style}>',
+           f'          <thead><tr>{first}{cols}</tr></thead><tbody>']
+    for label, *cells in rows:
+        tds = ""
+        for h, c in zip(head[1:], cells):
+            cls = "n" if c == "—" else "us" if "Disk Forecast" in (h, label) else ""
+            tds += f'<td class="{cls}">{c}</td>' if cls else f"<td>{c}</td>"
+        out.append(f'            <tr><th scope="row">{label}</th>{tds}</tr>')
+    out.append('          </tbody></table></div></div>')
+    if any("—" in row[1:] for row in rows):
+        out.append('        <p class="table-foot">“—” means we couldn\'t confirm it from the vendor\'s own materials as of October 2026.</p>')
+    return "\n".join(out)
+
+
+def tables(body, page):
+    """Swap each {{TABLE:name}} for the page's table of that name."""
+    for name, t in page.get("tables", {}).items():
+        body = body.replace("{{TABLE:" + name + "}}", grid_table(t))
+    return body
+
+
 def faq_schema(faqs):
     data = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
         {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}
@@ -242,6 +270,8 @@ def render_page(p):
         body = sec["html"]
         if sec.get("table"):
             body = body.replace("{{TABLE}}", table(sec["table"], p["competitor"]))
+        if sec.get("grid"):
+            body = body.replace("{{TABLE}}", grid_table(sec["grid"]))
         parts.append(f'    <section class="{cls}"{sid}>\n      <div class="wrap narrow"><div class="prose">\n{body}\n      </div></div>\n    </section>\n')
     parts.append(faq_block(p["faqs"]))
     others = [q for q in PAGES if q["slug"] != p["slug"]]
@@ -265,6 +295,7 @@ def render_page(p):
 def render_hub():
     path = "/alternatives"
     cards = "".join(f'          <a class="glass" href="/alternatives/{q["slug"]}"><b>{esc(q["card_title"])}</b><span>{esc(q["card_blurb"])}</span></a>\n' for q in PAGES)
+    cards += "".join(f'          <a class="glass" href="{r["path"]}"><b>{esc(r["card_title"])}</b><span>{esc(r["card_blurb"])}</span></a>\n' for r in ROUNDUPS)
     rows = "".join(f'<tr><th scope="row">{esc(a)}</th><td class="{"us" if b == "Disk Forecast" else ""}">{esc(b)}</td></tr>' for a, b in HUB["glance"][1:])
     body = f'''{head(HUB["title"], HUB["description"], path)}{nav()}  <main>
     <div class="sub-hero">
@@ -299,7 +330,8 @@ def render_hub():
 
 def related_guides(g):
     """Cards for the guides, hubs, and tool pages this one points to, by path."""
-    by_path = {q["path"]: q for q in GUIDES + GUIDE_HUBS + TOOLS}
+    alternatives = [{**p, "path": f"/alternatives/{p['slug']}"} for p in PAGES]
+    by_path = {q["path"]: q for q in GUIDES + GUIDE_HUBS + TOOLS + ROUNDUPS + alternatives}
     related = [by_path[path] for path in g.get("related", []) if path in by_path]
     if not related:
         return ""
@@ -327,7 +359,7 @@ def render_guide(g):
     </div>
     <section class="tight">
       <div class="wrap narrow"><div class="prose">
-{g["html"]}
+{tables(g["html"], g)}
       </div></div>
     </section>
     <section class="tight lit" id="shortcut">
@@ -351,7 +383,8 @@ def render_guide(g):
 
 def render_guides_hub():
     d = GUIDES_HUB
-    cards = "".join(f'          <a class="glass" href="{g["path"]}"><b>{esc(g["card_title"])}</b><span>{esc(g["card_blurb"])}</span></a>\n' for g in GUIDES + GUIDE_HUBS)
+    listed = GUIDES + GUIDE_HUBS + [r for r in ROUNDUPS if r.get("in_guides")]
+    cards = "".join(f'          <a class="glass" href="{g["path"]}"><b>{esc(g["card_title"])}</b><span>{esc(g["card_blurb"])}</span></a>\n' for g in listed)
     body = f'''{head(d["title"], d["description"], d["path"])}{nav()}  <main>
     <div class="sub-hero">
       <div class="wrap narrow">
@@ -425,7 +458,7 @@ def render_sitemap():
     paths = ["/", GUIDES_HUB["path"]] + [g["path"] for g in GUIDES]
     for hub, tools in SECTIONS:
         paths += [hub["path"]] + [t["path"] for t in tools]
-    paths += ["/alternatives"] + [f"/alternatives/{p['slug']}" for p in PAGES] + [PRIVACY["path"]]
+    paths += ["/alternatives"] + [f"/alternatives/{p['slug']}" for p in PAGES] + [r["path"] for r in ROUNDUPS] + [PRIVACY["path"]]
     urls = "".join(f"  <url><loc>{SITE}{p}</loc></url>\n" for p in paths)
     with open(os.path.join(ROOT, "sitemap.xml"), "w") as f:
         f.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
@@ -452,6 +485,8 @@ def render_privacy():
 if __name__ == "__main__":
     for p in PAGES:
         render_page(p)
+    for r in ROUNDUPS:
+        render_guide(r)
     render_hub()
     render_homepage_footer()
     render_homepage_schema()
@@ -464,5 +499,5 @@ if __name__ == "__main__":
     render_guides_hub()
     render_privacy()
     render_sitemap()
-    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + {len(GUIDES)} guides and their hub"
+    print(f"rendered {len(PAGES)} pages + {len(ROUNDUPS)} roundups + hub + homepage footer and schema + {len(GUIDES)} guides and their hub"
           f" + {len(TOOLS)} tool pages and {len(SECTIONS)} hubs + privacy + sitemap")
