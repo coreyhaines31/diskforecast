@@ -652,7 +652,117 @@ CLEAR_CACHE_HUB = {
     ],
 }
 
-SECTIONS = [(CLEAR_CACHE_HUB, CACHE_TOOLS)]
+# ------------------------------------------------------------------ Ollama
+# "ollama remove model" 600, "ollama delete model" 450, "uninstall ollama" 350, "uninstall ollama mac" 150,
+# "where are ollama models stored" 90, plus delete-all and location variants. Ollama isn't installed on the measuring Mac.
+OLLAMA = {
+    "slug": "ollama",
+    "title": "Ollama remove model: delete, find, and uninstall on Mac",
+    "description": "How to remove an Ollama model with ollama rm, delete all models at once, find where Ollama models are stored on Mac, and uninstall Ollama completely.",
+    "h1": "Ollama remove model on Mac, <em>step by step.</em>",
+    "lede": "A single local model can take more space than every app on your Mac. Here's how to see what you have, remove what you don't use, find where the files live, and uninstall Ollama completely.",
+    "tldr": "Run <code>ollama list</code> to see your models and their sizes, then <code>ollama rm</code> with a model's name, like <code>ollama rm llama3.2</code>. Ollama deletes the model's files unless another model shares them. On a Mac, models live in <code>~/.ollama/models</code>. To uninstall Ollama, quit it, move the app to the Trash, and delete <code>~/.ollama</code>.",
+    "card_title": "Ollama",
+    "card_blurb": "ollama rm, where models are stored, and a full uninstall.",
+    "paths": [
+        ("Models", "~/.ollama/models", "Not installed on the Mac we measured"),
+        ("Model files", "~/.ollama/models/blobs", "One sha256 file per layer"),
+        ("Model names and tags", "~/.ollama/models/manifests", "Tiny"),
+    ],
+    "html": """
+        <h2>How to remove an Ollama model</h2>
+<pre><code>ollama list                 # every model, with its size
+ollama ps                   # models loaded in memory right now
+ollama stop llama3.2        # unload one from memory
+ollama rm llama3.2          # delete one from disk
+ollama rm llama3.2 qwen3:8b # delete several</code></pre>
+        <p>Use the name exactly as <code>ollama list</code> shows it, tag included if it isn't <code>latest</code>: <code>ollama rm qwen3:8b</code> and <code>ollama rm qwen3</code> are different models. Ollama needs to be running for these commands; open the app or run <code>ollama serve</code>.</p>
+        <p>Removing a model is safe. <code>ollama pull</code> downloads it again, and nothing else on your Mac depends on it. Custom models you made with <code>ollama create</code> are the exception: keep the Modelfile, or you'll have to recreate them by hand.</p>
+
+        <h3>How to delete all Ollama models</h3>
+        <p>There's no built-in command for it. This removes every model <code>ollama list</code> shows:</p>
+<pre><code>ollama list | awk 'NR>1 {print $1}' | xargs ollama rm</code></pre>
+        <p>Run <code>ollama list</code> first and make sure that's what you want.</p>
+
+        <h2 style="margin-top:56px">Where are Ollama models stored on Mac?</h2>
+        <p>In <code>~/.ollama/models</code>, a hidden folder in your home folder. To open it in Finder, choose <strong>Go › Go to Folder</strong> and type the path.</p>
+        {{PATHS}}
+        <p>Ollama isn't installed on the Mac this page was written on, so there are no measured sizes here. Check yours with <code>du -sh ~/.ollama/models</code>.</p>
+        <p>Inside, <code>blobs</code> holds the actual weights as files named by their hash, and <code>manifests</code> maps names like <code>llama3.2:latest</code> to those blobs. Models that share a base share blobs, which is why <code>ollama rm</code> sometimes frees less than the size <code>ollama list</code> showed. Don't delete individual blobs by hand; you'll break whichever model uses them. Use <code>ollama rm</code>.</p>
+        <p>To keep models somewhere else, like an external SSD, set <code>OLLAMA_MODELS</code>. On a Mac, Ollama's docs say to do it with <code>launchctl</code>, then restart Ollama:</p>
+<pre><code>launchctl setenv OLLAMA_MODELS "/Volumes/External/ollama-models"</code></pre>
+        <p>Existing models don't move by themselves. Copy the contents of <code>~/.ollama/models</code> to the new folder first, then check <code>ollama list</code>.</p>
+
+        <h2 style="margin-top:56px">How big Ollama models are</h2>
+        <p>Roughly the parameter count times the bits per weight. At the 4-bit quantization most Ollama tags use, a 3B model is about 2 GB, an 8B model about 5 GB, a 30B model close to 20 GB, and a 70B model over 40 GB. Pull a few sizes of the same family to compare, and it's easy to pass 100 GB without noticing. <code>ollama list</code> shows each model's size before you decide.</p>
+
+        <h2 style="margin-top:56px">How to uninstall Ollama on Mac</h2>
+        <ol class="steps">
+          <li><b>Quit Ollama.</b> Click the llama in the menu bar and choose <strong>Quit Ollama</strong>.</li>
+          <li><b>Delete the app.</b> Move <code>Ollama.app</code> from Applications to the Trash.</li>
+          <li><b>Delete your models.</b> Move <code>~/.ollama</code> to the Trash. This is where the gigabytes are.</li>
+          <li><b>Remove what's left.</b> Ollama's own uninstall instructions list these too:
+<pre><code>sudo rm /usr/local/bin/ollama
+rm -rf ~/Library/Application\\ Support/Ollama
+rm -rf ~/Library/Saved\\ Application\\ State/com.electron.ollama.savedState
+rm -rf ~/Library/Caches/com.electron.ollama ~/Library/Caches/ollama
+rm -rf ~/Library/WebKit/com.electron.ollama</code></pre>
+          The first line removes the <code>ollama</code> command Ollama linked into your path. Check what each path holds before running a <code>rm</code> line.</li>
+        </ol>
+        <p>Installed with Homebrew instead? Run <code>brew uninstall ollama</code>, then delete <code>~/.ollama</code>. Homebrew doesn't remove your models.</p>
+        <p>Using other local AI tools too? <a href="/ai-models">Delete local AI models</a> covers LM Studio, Hugging Face, and ComfyUI. Apple's own models are different: see <a href="/ai-models/apple-intelligence">Apple Intelligence storage</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast lists your Ollama models under <strong>Cleanup › Worth a look › Ollama models</strong>, with the size of <code>~/.ollama/models</code>. Nothing in Worth a look is checked until you choose it, and checking it moves every model to the Trash at once. To remove one model, use <code>ollama rm</code>, as the row itself explains. LM Studio and Hugging Face models get their own rows, one entry per model. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/ai-models/apple-intelligence", "/ai-models", "/clear-cache/docker"],
+    "faqs": [
+        ("How do I remove a model from Ollama?", "Run ollama rm followed by the model's name as ollama list shows it, like ollama rm llama3.2 or ollama rm qwen3:8b. Ollama deletes its files from disk unless another model shares them. ollama pull downloads it again."),
+        ("How do I delete all Ollama models?", "There's no single command. Run ollama list | awk 'NR>1 {print $1}' | xargs ollama rm to remove every listed model, or quit Ollama and move ~/.ollama/models to the Trash."),
+        ("Where are Ollama models stored on a Mac?", "In ~/.ollama/models: blobs holds the model files and manifests maps model names to them. Set OLLAMA_MODELS with launchctl setenv to store them somewhere else, then restart Ollama."),
+        ("How do I uninstall Ollama on a Mac?", "Quit Ollama from the menu bar, move Ollama.app to the Trash, and delete ~/.ollama, which holds the models. Ollama's docs also list /usr/local/bin/ollama and a few folders in ~/Library to remove."),
+        ("Why didn't ollama rm free as much space as the model's size?", "Models can share files. If two models use the same base weights, removing one keeps the shared blobs for the other. The space comes back when you remove the last model that uses them."),
+    ],
+}
+
+AI_TOOLS = [OLLAMA]
+
+AI_MODELS_HUB = {
+    "path": "/ai-models",
+    "title": "Delete local AI models on Mac: Ollama, LM Studio, and more",
+    "description": "Where Ollama, LM Studio, Hugging Face, ComfyUI, and Apple Intelligence keep AI models on a Mac, how big they get, and how to delete each with its own tool.",
+    "h1": "Delete local AI models on Mac, <em>tool by tool.</em>",
+    "lede": "Local models are the biggest files most Macs have ever held, and every tool keeps them somewhere different. Here's where each one puts them, and how to remove them without breaking anything.",
+    "card_title": "Delete local AI models",
+    "card_blurb": "Ollama, LM Studio, Hugging Face, ComfyUI, and Apple's own.",
+    "footer": "Delete local AI models",
+    "cta": "Know before it's full.",
+    "html": """
+        <h2>LM Studio</h2>
+        <p>LM Studio keeps models in <code>~/.lmstudio/models</code>, in a folder per publisher and a folder per model inside that. Older versions used <code>~/.cache/lm-studio/models</code>, and you may still have both. The simplest way to delete one is LM Studio's own <strong>My Models</strong> tab, which shows the folder and lets you remove a model; you can also move a model's folder to the Trash with LM Studio quit. To uninstall, delete the app and both folders. LM Studio can download any model again.</p>
+
+        <h2 style="margin-top:56px">Hugging Face</h2>
+        <p>Python libraries like <code>transformers</code> and <code>diffusers</code> download models into the Hugging Face cache, <code>~/.cache/huggingface/hub</code>, or wherever <code>HF_HOME</code> or <code>HF_HUB_CACHE</code> point. One developer Mac measured for these pages had 1.6 GB there. Use the <code>hf</code> command to manage it:</p>
+<pre><code>hf cache ls                  # every cached model and dataset, with sizes
+hf cache rm model/gpt2       # remove one
+hf cache prune               # remove old revisions and incomplete downloads</code></pre>
+        <p>The older <code>huggingface-cli delete-cache</code> and <code>scan-cache</code> commands are deprecated; current versions of the library point you to <code>hf</code>. A model removed from the cache downloads again the next time a script asks for it.</p>
+
+        <h2 style="margin-top:56px">ComfyUI</h2>
+        <p>ComfyUI keeps models inside its own folder, in <code>models</code>, split by type: <code>checkpoints</code>, <code>loras</code>, <code>vae</code>, <code>controlnet</code>, <code>upscale_models</code>, and more. Where that folder is depends on how you installed it: wherever you cloned it, or the location you picked when setting up the desktop app. If you've set <code>extra_model_paths.yaml</code>, models can live in other folders too. Checkpoints are often 2 to 7 GB each, and some are larger. To delete one, quit ComfyUI and move the file to the Trash. Workflows that use it will ask for it again.</p>
+        <p>The two tools with the most to explain have their own pages: <a href="/ai-models/ollama">Ollama</a>, with list, remove, and a full uninstall, and <a href="/ai-models/apple-intelligence">Apple Intelligence</a>, which you can turn off but not delete. For caches from developer tools, see <a href="/clear-cache">clear cache by tool</a>.</p>
+    """,
+    "faqs": [
+        ("Where does LM Studio store models on a Mac?", "In ~/.lmstudio/models, one folder per publisher. Older versions used ~/.cache/lm-studio/models. LM Studio's My Models tab shows the folder and can delete models."),
+        ("Where is the Hugging Face cache directory on a Mac?", "In ~/.cache/huggingface/hub by default, or under HF_HOME or HF_HUB_CACHE if you've set them. Run hf cache ls to see what's in it and hf cache rm to remove a model."),
+        ("Where is the ComfyUI models folder?", "Inside your ComfyUI folder, in models, with subfolders like checkpoints, loras, and vae. The ComfyUI folder is wherever you installed it. extra_model_paths.yaml can add more model folders."),
+        ("Is it safe to delete local AI models?", "Yes, for models you downloaded. Each tool downloads them again when you need them. Keep anything you trained or fine-tuned yourself, since that can't be downloaded."),
+    ],
+}
+
+# Each hub and its pages: the hub's path is the route, and each page renders at <route>/<slug>.
+SECTIONS = [(CLEAR_CACHE_HUB, CACHE_TOOLS), (AI_MODELS_HUB, AI_TOOLS)]
 for _hub, _tools in SECTIONS:
     for _t in _tools:
         _t["path"] = f"{_hub['path']}/{_t['slug']}"

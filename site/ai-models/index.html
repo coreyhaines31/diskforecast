@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Delete local AI models on Mac: Ollama, LM Studio, and more</title>
+  <meta name="description" content="Where Ollama, LM Studio, Hugging Face, ComfyUI, and Apple Intelligence keep AI models on a Mac, how big they get, and how to delete each with its own tool.">
+  <link rel="canonical" href="https://diskforecast.com/ai-models">
+  <meta property="og:title" content="Delete local AI models on Mac: Ollama, LM Studio, and more">
+  <meta property="og:description" content="Where Ollama, LM Studio, Hugging Face, ComfyUI, and Apple Intelligence keep AI models on a Mac, how big they get, and how to delete each with its own tool.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/ai-models">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Delete local AI models on Mac: Ollama, LM Studio, and more">
+  <meta name="twitter:description" content="Where Ollama, LM Studio, Hugging Face, ComfyUI, and Apple Intelligence keep AI models on a Mac, how big they get, and how to delete each with its own tool.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guides</div>
+        <h1>Delete local AI models on Mac, <em>tool by tool.</em></h1>
+        <p class="lede">Local models are the biggest files most Macs have ever held, and every tool keeps them somewhere different. Here's where each one puts them, and how to remove them without breaking anything.</p>
+      </div>
+    </div>
+    <section class="tight lit" style="padding-top:0">
+      <div class="wrap narrow">
+        <div class="related">
+          <a class="glass" href="/ai-models/ollama"><b>Ollama</b><span>ollama rm, where models are stored, and a full uninstall.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>LM Studio</h2>
+        <p>LM Studio keeps models in <code>~/.lmstudio/models</code>, in a folder per publisher and a folder per model inside that. Older versions used <code>~/.cache/lm-studio/models</code>, and you may still have both. The simplest way to delete one is LM Studio's own <strong>My Models</strong> tab, which shows the folder and lets you remove a model; you can also move a model's folder to the Trash with LM Studio quit. To uninstall, delete the app and both folders. LM Studio can download any model again.</p>
+
+        <h2 style="margin-top:56px">Hugging Face</h2>
+        <p>Python libraries like <code>transformers</code> and <code>diffusers</code> download models into the Hugging Face cache, <code>~/.cache/huggingface/hub</code>, or wherever <code>HF_HOME</code> or <code>HF_HUB_CACHE</code> point. One developer Mac measured for these pages had 1.6 GB there. Use the <code>hf</code> command to manage it:</p>
+<pre><code>hf cache ls                  # every cached model and dataset, with sizes
+hf cache rm model/gpt2       # remove one
+hf cache prune               # remove old revisions and incomplete downloads</code></pre>
+        <p>The older <code>huggingface-cli delete-cache</code> and <code>scan-cache</code> commands are deprecated; current versions of the library point you to <code>hf</code>. A model removed from the cache downloads again the next time a script asks for it.</p>
+
+        <h2 style="margin-top:56px">ComfyUI</h2>
+        <p>ComfyUI keeps models inside its own folder, in <code>models</code>, split by type: <code>checkpoints</code>, <code>loras</code>, <code>vae</code>, <code>controlnet</code>, <code>upscale_models</code>, and more. Where that folder is depends on how you installed it: wherever you cloned it, or the location you picked when setting up the desktop app. If you've set <code>extra_model_paths.yaml</code>, models can live in other folders too. Checkpoints are often 2 to 7 GB each, and some are larger. To delete one, quit ComfyUI and move the file to the Trash. Workflows that use it will ask for it again.</p>
+        <p>The two tools with the most to explain have their own pages: <a href="/ai-models/ollama">Ollama</a>, with list, remove, and a full uninstall, and <a href="/ai-models/apple-intelligence">Apple Intelligence</a>, which you can turn off but not delete. For caches from developer tools, see <a href="/clear-cache">clear cache by tool</a>.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>Where does LM Studio store models on a Mac?</summary><p>In ~/.lmstudio/models, one folder per publisher. Older versions used ~/.cache/lm-studio/models. LM Studio&#x27;s My Models tab shows the folder and can delete models.</p></details>
+          <details><summary>Where is the Hugging Face cache directory on a Mac?</summary><p>In ~/.cache/huggingface/hub by default, or under HF_HOME or HF_HUB_CACHE if you&#x27;ve set them. Run hf cache ls to see what&#x27;s in it and hf cache rm to remove a model.</p></details>
+          <details><summary>Where is the ComfyUI models folder?</summary><p>Inside your ComfyUI folder, in models, with subfolders like checkpoints, loras, and vae. The ComfyUI folder is wherever you installed it. extra_model_paths.yaml can add more model folders.</p></details>
+          <details><summary>Is it safe to delete local AI models?</summary><p>Yes, for models you downloaded. Each tool downloads them again when you need them. Keep anything you trained or fine-tuned yourself, since that can&#x27;t be downloaded.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Where does LM Studio store models on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/.lmstudio/models, one folder per publisher. Older versions used ~/.cache/lm-studio/models. LM Studio's My Models tab shows the folder and can delete models."}}, {"@type": "Question", "name": "Where is the Hugging Face cache directory on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/.cache/huggingface/hub by default, or under HF_HOME or HF_HUB_CACHE if you've set them. Run hf cache ls to see what's in it and hf cache rm to remove a model."}}, {"@type": "Question", "name": "Where is the ComfyUI models folder?", "acceptedAnswer": {"@type": "Answer", "text": "Inside your ComfyUI folder, in models, with subfolders like checkpoints, loras, and vae. The ComfyUI folder is wherever you installed it. extra_model_paths.yaml can add more model folders."}}, {"@type": "Question", "name": "Is it safe to delete local AI models?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, for models you downloaded. Each tool downloads them again when you need them. Keep anything you trained or fine-tuned yourself, since that can't be downloaded."}}]}</script>
+</body>
+</html>

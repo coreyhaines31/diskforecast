@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Clear Gradle cache on Mac: what to delete in ~/.gradle</title>
-  <meta name="description" content="How to clear Gradle cache on Mac: where ~/.gradle keeps dependencies and wrapper downloads, why to stop the daemon first, and what Gradle cleans on its own.">
-  <link rel="canonical" href="https://diskforecast.com/clear-cache/gradle">
-  <meta property="og:title" content="Clear Gradle cache on Mac: what to delete in ~/.gradle">
-  <meta property="og:description" content="How to clear Gradle cache on Mac: where ~/.gradle keeps dependencies and wrapper downloads, why to stop the daemon first, and what Gradle cleans on its own.">
+  <title>Ollama remove model: delete, find, and uninstall on Mac</title>
+  <meta name="description" content="How to remove an Ollama model with ollama rm, delete all models at once, find where Ollama models are stored on Mac, and uninstall Ollama completely.">
+  <link rel="canonical" href="https://diskforecast.com/ai-models/ollama">
+  <meta property="og:title" content="Ollama remove model: delete, find, and uninstall on Mac">
+  <meta property="og:description" content="How to remove an Ollama model with ollama rm, delete all models at once, find where Ollama models are stored on Mac, and uninstall Ollama completely.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Disk Forecast">
   <meta property="og:image" content="https://diskforecast.com/images/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://diskforecast.com/clear-cache/gradle">
+  <meta property="og:url" content="https://diskforecast.com/ai-models/ollama">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Clear Gradle cache on Mac: what to delete in ~/.gradle">
-  <meta name="twitter:description" content="How to clear Gradle cache on Mac: where ~/.gradle keeps dependencies and wrapper downloads, why to stop the daemon first, and what Gradle cleans on its own.">
+  <meta name="twitter:title" content="Ollama remove model: delete, find, and uninstall on Mac">
+  <meta name="twitter:description" content="How to remove an Ollama model with ollama rm, delete all models at once, find where Ollama models are stored on Mac, and uninstall Ollama completely.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -46,47 +46,60 @@
     <div class="sub-hero">
       <div class="wrap narrow">
         <div class="eyebrow">Guide</div>
-        <h1>How to clear Gradle cache on Mac, <em>without breaking builds.</em></h1>
-        <p class="lede">Gradle keeps downloaded dependencies, transformed jars, and a full copy of every Gradle version your projects' wrappers ask for. All of it lives in one folder, and most of it is safe to clear.</p>
-        <div class="tldr glass"><h2>The short version</h2><p>Stop the Gradle daemon with <code>./gradlew --stop</code>, then move <code>~/.gradle/caches</code> to the Trash. Gradle downloads dependencies again on the next build. For old Gradle versions, move folders you don't need out of <code>~/.gradle/wrapper/dists</code>. Leave <code>~/.gradle/gradle.properties</code> and <code>init.d</code> alone: those are your settings. Each project's own <code>build</code> folder clears with <code>./gradlew clean</code>.</p></div>
+        <h1>Ollama remove model on Mac, <em>step by step.</em></h1>
+        <p class="lede">A single local model can take more space than every app on your Mac. Here's how to see what you have, remove what you don't use, find where the files live, and uninstall Ollama completely.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Run <code>ollama list</code> to see your models and their sizes, then <code>ollama rm</code> with a model's name, like <code>ollama rm llama3.2</code>. Ollama deletes the model's files unless another model shares them. On a Mac, models live in <code>~/.ollama/models</code>. To uninstall Ollama, quit it, move the app to the Trash, and delete <code>~/.ollama</code>.</p></div>
       </div>
     </div>
     <section class="tight">
       <div class="wrap narrow"><div class="prose">
 
-        <h2>Gradle cache location on Mac</h2>
-        <p>Gradle keeps everything in its user home, <code>~/.gradle</code>, unless <code>GRADLE_USER_HOME</code> points somewhere else. The same folder serves the command line, Android Studio, and IntelliJ IDEA.</p>
+        <h2>How to remove an Ollama model</h2>
+<pre><code>ollama list                 # every model, with its size
+ollama ps                   # models loaded in memory right now
+ollama stop llama3.2        # unload one from memory
+ollama rm llama3.2          # delete one from disk
+ollama rm llama3.2 qwen3:8b # delete several</code></pre>
+        <p>Use the name exactly as <code>ollama list</code> shows it, tag included if it isn't <code>latest</code>: <code>ollama rm qwen3:8b</code> and <code>ollama rm qwen3</code> are different models. Ollama needs to be running for these commands; open the app or run <code>ollama serve</code>.</p>
+        <p>Removing a model is safe. <code>ollama pull</code> downloads it again, and nothing else on your Mac depends on it. Custom models you made with <code>ollama create</code> are the exception: keep the Modelfile, or you'll have to recreate them by hand.</p>
+
+        <h3>How to delete all Ollama models</h3>
+        <p>There's no built-in command for it. This removes every model <code>ollama list</code> shows:</p>
+<pre><code>ollama list | awk 'NR>1 {print $1}' | xargs ollama rm</code></pre>
+        <p>Run <code>ollama list</code> first and make sure that's what you want.</p>
+
+        <h2 style="margin-top:56px">Where are Ollama models stored on Mac?</h2>
+        <p>In <code>~/.ollama/models</code>, a hidden folder in your home folder. To open it in Finder, choose <strong>Go › Go to Folder</strong> and type the path.</p>
                 <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
           <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
-            <tr><th scope="row">Dependencies and transforms</th><td><code>~/.gradle/caches</code></td><td>Not installed on the Mac we measured</td></tr>
-            <tr><th scope="row">Gradle versions for the wrapper</th><td><code>~/.gradle/wrapper/dists</code></td><td>Not installed on the Mac we measured</td></tr>
-            <tr><th scope="row">Daemon logs</th><td><code>~/.gradle/daemon</code></td><td>Not installed on the Mac we measured</td></tr>
-            <tr><th scope="row">Each project&#x27;s build output</th><td><code>your-project/build</code></td><td>Per project</td></tr>
+            <tr><th scope="row">Models</th><td><code>~/.ollama/models</code></td><td>Not installed on the Mac we measured</td></tr>
+            <tr><th scope="row">Model files</th><td><code>~/.ollama/models/blobs</code></td><td>One sha256 file per layer</td></tr>
+            <tr><th scope="row">Model names and tags</th><td><code>~/.ollama/models/manifests</code></td><td>Tiny</td></tr>
           </tbody></table></div></div>
-        <p>Gradle isn't installed on the Mac this page was written on, so there are no measured sizes here. Check yours with:</p>
-<pre><code>du -sh ~/.gradle/* 2>/dev/null | sort -h</code></pre>
+        <p>Ollama isn't installed on the Mac this page was written on, so there are no measured sizes here. Check yours with <code>du -sh ~/.ollama/models</code>.</p>
+        <p>Inside, <code>blobs</code> holds the actual weights as files named by their hash, and <code>manifests</code> maps names like <code>llama3.2:latest</code> to those blobs. Models that share a base share blobs, which is why <code>ollama rm</code> sometimes frees less than the size <code>ollama list</code> showed. Don't delete individual blobs by hand; you'll break whichever model uses them. Use <code>ollama rm</code>.</p>
+        <p>To keep models somewhere else, like an external SSD, set <code>OLLAMA_MODELS</code>. On a Mac, Ollama's docs say to do it with <code>launchctl</code>, then restart Ollama:</p>
+<pre><code>launchctl setenv OLLAMA_MODELS "/Volumes/External/ollama-models"</code></pre>
+        <p>Existing models don't move by themselves. Copy the contents of <code>~/.ollama/models</code> to the new folder first, then check <code>ollama list</code>.</p>
 
-        <h2 style="margin-top:56px">What's safe to delete in ~/.gradle</h2>
-        <ul>
-          <li><strong><code>caches</code>: safe.</strong> Downloaded dependencies in <code>modules-2</code>, transformed jars, the local build cache, and per-version script caches. Gradle downloads or rebuilds what it needs. The first build afterward is slow, and it needs a network connection.</li>
-          <li><strong><code>wrapper/dists</code>: safe, folder by folder.</strong> One full Gradle distribution for each version a project's wrapper asked for, each a hundred megabytes or more. Delete versions no current project uses; <code>./gradlew</code> downloads its version again if needed.</li>
-          <li><strong><code>daemon</code>: safe.</strong> Logs from background Gradle processes.</li>
-        </ul>
-        <p>Keep <code>gradle.properties</code> (often with signing keys or repository credentials) and <code>init.d</code> (init scripts). They aren't cache.</p>
+        <h2 style="margin-top:56px">How big Ollama models are</h2>
+        <p>Roughly the parameter count times the bits per weight. At the 4-bit quantization most Ollama tags use, a 3B model is about 2 GB, an 8B model about 5 GB, a 30B model close to 20 GB, and a 70B model over 40 GB. Pull a few sizes of the same family to compare, and it's easy to pass 100 GB without noticing. <code>ollama list</code> shows each model's size before you decide.</p>
 
-        <h2 style="margin-top:56px">How to clear Gradle cache, step by step</h2>
+        <h2 style="margin-top:56px">How to uninstall Ollama on Mac</h2>
         <ol class="steps">
-          <li><b>Stop the daemon.</b> Run <code>./gradlew --stop</code> in a project, or <code>gradle --stop</code>. Quit Android Studio too. A running daemon keeps files in the cache open.</li>
-          <li><b>Clear project build folders, if you want.</b> <code>./gradlew clean</code> deletes the current project's <code>build</code> folder.</li>
-          <li><b>Move the cache to the Trash.</b> In Terminal, <code>mv ~/.gradle/caches ~/.Trash/gradle-caches</code>, or open <code>~/.gradle</code> in Finder with <strong>Go › Go to Folder</strong>. It's hidden, so type the path.</li>
-          <li><b>Build once.</b> Run your usual build while online. If it succeeds, empty the Trash.</li>
+          <li><b>Quit Ollama.</b> Click the llama in the menu bar and choose <strong>Quit Ollama</strong>.</li>
+          <li><b>Delete the app.</b> Move <code>Ollama.app</code> from Applications to the Trash.</li>
+          <li><b>Delete your models.</b> Move <code>~/.ollama</code> to the Trash. This is where the gigabytes are.</li>
+          <li><b>Remove what's left.</b> Ollama's own uninstall instructions list these too:
+<pre><code>sudo rm /usr/local/bin/ollama
+rm -rf ~/Library/Application\ Support/Ollama
+rm -rf ~/Library/Saved\ Application\ State/com.electron.ollama.savedState
+rm -rf ~/Library/Caches/com.electron.ollama ~/Library/Caches/ollama
+rm -rf ~/Library/WebKit/com.electron.ollama</code></pre>
+          The first line removes the <code>ollama</code> command Ollama linked into your path. Check what each path holds before running a <code>rm</code> line.</li>
         </ol>
-        <p>To force fresh dependencies without deleting anything, <code>./gradlew build --refresh-dependencies</code> checks every dependency against its repository again. It's the better fix when one library looks stale.</p>
-
-        <h2 style="margin-top:56px">How big the Gradle cache gets</h2>
-        <p>On an Android developer's Mac, several gigabytes is normal, and 10 GB or more is common after a few years, because each Android Gradle Plugin and Gradle upgrade brings a new set of transformed files. Gradle cleans the cache on a schedule by default, removing downloaded files unused for 30 days and files it created itself after 7 days; since Gradle 8 you can change those limits in an init script. Old Gradle versions' folders still pile up when no project uses them anymore.</p>
-        <p>Android projects have more: the Android SDK in <code>~/Library/Android/sdk</code>, with system images for every emulator you've made, and the emulators themselves in <code>~/.android/avd</code>. Delete those from Android Studio's SDK Manager and Device Manager rather than Finder.</p>
-        <p>Also on the JVM? Maven keeps its downloads in <code>~/.m2/repository</code>. More caches: <a href="/clear-cache/cargo">Cargo</a>, <a href="/clear-cache/go">Go</a>, or <a href="/clear-cache">every tool</a>.</p>
+        <p>Installed with Homebrew instead? Run <code>brew uninstall ollama</code>, then delete <code>~/.ollama</code>. Homebrew doesn't remove your models.</p>
+        <p>Using other local AI tools too? <a href="/ai-models">Delete local AI models</a> covers LM Studio, Hugging Face, and ComfyUI. Apple's own models are different: see <a href="/ai-models/apple-intelligence">Apple Intelligence storage</a>.</p>
     
       </div></div>
     </section>
@@ -95,7 +108,7 @@
         <div class="head center">
           <h2>Disk Forecast finds this for you</h2>
 
-          <p>Disk Forecast lists <code>~/.gradle/caches</code> and <code>~/.gradle/wrapper/dists</code> under <strong>Cleanup › Safe to clear › Package manager caches</strong>. A project&#39;s <code>build</code> folder shows up as a Gradle build only when a <code>build.gradle</code> or <code>build.gradle.kts</code> sits beside it, so a random folder named build is never listed: under <strong>Build folders in old projects</strong> after 30 days without changes, or <strong>Build folders in active projects</strong> before that. Everything goes to the Trash. It&#39;s free.</p>
+          <p>Disk Forecast lists your Ollama models under <strong>Cleanup › Worth a look › Ollama models</strong>, with the size of <code>~/.ollama/models</code>. Nothing in Worth a look is checked until you choose it, and checking it moves every model to the Trash at once. To remove one model, use <code>ollama rm</code>, as the row itself explains. LM Studio and Hugging Face models get their own rows, one entry per model. It&#39;s free.</p>
     
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
@@ -130,10 +143,11 @@
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
         <div class="faq glass">
-          <details><summary>How do I clear the Gradle cache?</summary><p>Stop the daemon with ./gradlew --stop, quit Android Studio, then delete or move ~/.gradle/caches to the Trash. Gradle downloads dependencies again on the next build, which needs a network connection.</p></details>
-          <details><summary>Where is the Gradle cache located on a Mac?</summary><p>In ~/.gradle/caches, inside Gradle&#x27;s user home. Set GRADLE_USER_HOME to move it. Wrapper downloads of Gradle itself are in ~/.gradle/wrapper/dists.</p></details>
-          <details><summary>Is it safe to delete ~/.gradle?</summary><p>Mostly. caches, wrapper/dists, and daemon can all go. Keep gradle.properties and init.d if you have them: they&#x27;re your settings, and gradle.properties may hold credentials.</p></details>
-          <details><summary>Does ./gradlew clean clear the Gradle cache?</summary><p>No. It deletes the current project&#x27;s build folder. The shared cache in ~/.gradle/caches stays. To refetch dependencies without deleting the cache, use --refresh-dependencies.</p></details>
+          <details><summary>How do I remove a model from Ollama?</summary><p>Run ollama rm followed by the model&#x27;s name as ollama list shows it, like ollama rm llama3.2 or ollama rm qwen3:8b. Ollama deletes its files from disk unless another model shares them. ollama pull downloads it again.</p></details>
+          <details><summary>How do I delete all Ollama models?</summary><p>There&#x27;s no single command. Run ollama list | awk &#x27;NR&gt;1 {print $1}&#x27; | xargs ollama rm to remove every listed model, or quit Ollama and move ~/.ollama/models to the Trash.</p></details>
+          <details><summary>Where are Ollama models stored on a Mac?</summary><p>In ~/.ollama/models: blobs holds the model files and manifests maps model names to them. Set OLLAMA_MODELS with launchctl setenv to store them somewhere else, then restart Ollama.</p></details>
+          <details><summary>How do I uninstall Ollama on a Mac?</summary><p>Quit Ollama from the menu bar, move Ollama.app to the Trash, and delete ~/.ollama, which holds the models. Ollama&#x27;s docs also list /usr/local/bin/ollama and a few folders in ~/Library to remove.</p></details>
+          <details><summary>Why didn&#x27;t ollama rm free as much space as the model&#x27;s size?</summary><p>Models can share files. If two models use the same base weights, removing one keeps the shared blobs for the other. The space comes back when you remove the last model that uses them.</p></details>
         </div>
       </div>
     </section>
@@ -141,9 +155,8 @@
       <div class="wrap">
         <div class="head center head-sm"><h2>Related guides</h2></div>
         <div class="related">
-          <a class="glass" href="/clear-cache/cargo"><b>Cargo</b><span>cargo clean, target folders, and ~/.cargo/registry.</span></a>
-          <a class="glass" href="/clear-cache/go"><b>Go</b><span>go clean -cache, -modcache, and where GOCACHE lives.</span></a>
-          <a class="glass" href="/clear-cache/xcode"><b>Xcode</b><span>DerivedData, device support, simulators, and archives.</span></a>
+          <a class="glass" href="/ai-models"><b>Delete local AI models</b><span>Ollama, LM Studio, Hugging Face, ComfyUI, and Apple&#x27;s own.</span></a>
+          <a class="glass" href="/clear-cache/docker"><b>Docker</b><span>docker system prune, build cache, and the Docker.raw file.</span></a>
         </div>
       </div>
     </section>
@@ -170,6 +183,6 @@
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear the Gradle cache?", "acceptedAnswer": {"@type": "Answer", "text": "Stop the daemon with ./gradlew --stop, quit Android Studio, then delete or move ~/.gradle/caches to the Trash. Gradle downloads dependencies again on the next build, which needs a network connection."}}, {"@type": "Question", "name": "Where is the Gradle cache located on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/.gradle/caches, inside Gradle's user home. Set GRADLE_USER_HOME to move it. Wrapper downloads of Gradle itself are in ~/.gradle/wrapper/dists."}}, {"@type": "Question", "name": "Is it safe to delete ~/.gradle?", "acceptedAnswer": {"@type": "Answer", "text": "Mostly. caches, wrapper/dists, and daemon can all go. Keep gradle.properties and init.d if you have them: they're your settings, and gradle.properties may hold credentials."}}, {"@type": "Question", "name": "Does ./gradlew clean clear the Gradle cache?", "acceptedAnswer": {"@type": "Answer", "text": "No. It deletes the current project's build folder. The shared cache in ~/.gradle/caches stays. To refetch dependencies without deleting the cache, use --refresh-dependencies."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I remove a model from Ollama?", "acceptedAnswer": {"@type": "Answer", "text": "Run ollama rm followed by the model's name as ollama list shows it, like ollama rm llama3.2 or ollama rm qwen3:8b. Ollama deletes its files from disk unless another model shares them. ollama pull downloads it again."}}, {"@type": "Question", "name": "How do I delete all Ollama models?", "acceptedAnswer": {"@type": "Answer", "text": "There's no single command. Run ollama list | awk 'NR>1 {print $1}' | xargs ollama rm to remove every listed model, or quit Ollama and move ~/.ollama/models to the Trash."}}, {"@type": "Question", "name": "Where are Ollama models stored on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/.ollama/models: blobs holds the model files and manifests maps model names to them. Set OLLAMA_MODELS with launchctl setenv to store them somewhere else, then restart Ollama."}}, {"@type": "Question", "name": "How do I uninstall Ollama on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Quit Ollama from the menu bar, move Ollama.app to the Trash, and delete ~/.ollama, which holds the models. Ollama's docs also list /usr/local/bin/ollama and a few folders in ~/Library to remove."}}, {"@type": "Question", "name": "Why didn't ollama rm free as much space as the model's size?", "acceptedAnswer": {"@type": "Answer", "text": "Models can share files. If two models use the same base weights, removing one keeps the shared blobs for the other. The space comes back when you remove the last model that uses them."}}]}</script>
 </body>
 </html>
