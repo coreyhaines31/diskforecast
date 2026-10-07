@@ -418,10 +418,12 @@ def paths_table(rows):
 
 
 def render_tool(t):
-    """A per-tool page is a guide: the TL;DR answers it, the shortcut names the Disk Forecast row."""
+    """A per-tool page is a guide: the TL;DR answers it, the shortcut names the Disk Forecast row.
+    Pages where the app does less can title that section themselves with "finds_title"."""
+    finds_title = t.get("finds_title", "Disk Forecast finds this for you")
     render_guide({**t, "eyebrow": t.get("eyebrow", "Guide"), "cta": t.get("cta", "Know before it's full."),
                   "html": t["html"].replace("{{PATHS}}", paths_table(t["paths"])),
-                  "shortcut": f"          <h2>Disk Forecast finds this for you</h2>\n{t['finds']}"})
+                  "shortcut": f"          <h2>{finds_title}</h2>\n{t['finds']}"})
 
 
 def render_tool_hub(d, tools):
