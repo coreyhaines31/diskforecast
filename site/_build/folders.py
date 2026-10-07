@@ -135,7 +135,68 @@ IPHONE_BACKUPS = {
     ],
 }
 
-FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS]
+# ------------------------------------------------------------------ Messages
+# "messages taking up space on mac" 200 / KD 0, "imessage taking up storage on mac" 50, "delete messages attachments mac" 10.
+# Labels: "Keep Messages" with "30 Days", "1 Year", "Forever", "General", "iMessage", "Messages in iCloud" (MessagesSettingsUI);
+# the Messages Storage category and the Store in iCloud recommendation text (StorageManagement). ~/Library/Messages answered
+# "Operation not permitted" to ls from Terminal on this Mac, so no size is shown.
+MESSAGES = {
+    "slug": "messages",
+    "title": "Messages taking up space on Mac: how to reclaim it",
+    "description": "Why Messages takes up so much space on a Mac, where attachments are stored, and how to reclaim it with Keep Messages, Storage settings, or Messages in iCloud.",
+    "h1": "Messages taking up space on Mac, <em>and how to trim it.</em>",
+    "lede": "Every photo, video, and voice note anyone has sent you is kept on your Mac, for as long as Messages keeps the conversation. Here's where that lives and the three built-in ways to reclaim it.",
+    "tldr": "Messages keeps every attachment in <code>~/Library/Messages/Attachments</code>, forever by default. To reclaim space, choose <strong>Messages › Settings › General</strong> and set <strong>Keep Messages</strong> to <strong>1 Year</strong> or <strong>30 Days</strong>. Or open <strong>System Settings › General › Storage</strong>, click the info button next to <strong>Messages</strong>, and delete the biggest attachments. Don't delete files in the folder by hand.",
+    "card_title": "Messages",
+    "card_blurb": "Attachments, Keep Messages, and what Messages in iCloud changes.",
+    "finds_title": "Disk Forecast and Messages",
+    "paths": [
+        ("Photos, videos, and files people sent", "~/Library/Messages/Attachments", "Needs Full Disk Access to measure"),
+        ("The message history", "~/Library/Messages/chat.db", "Usually far smaller"),
+    ],
+    "html": """
+        <h2>Why Messages takes up so much space on Mac</h2>
+        <p>With iMessage on your Mac, every conversation from your iPhone shows up there too, and so does everything in it: photos, videos, voice notes, and files. Messages keeps them all, because <strong>Keep Messages</strong> is set to <strong>Forever</strong> unless you change it. Years of group chats with video add up to tens of gigabytes.</p>
+        {{PATHS}}
+        <p>The text of your conversations is small. The attachments are what's big. macOS guards this folder: on the Mac this page was written on, Terminal got “Operation not permitted” trying to list it, so measure it with Storage settings instead, which can see inside.</p>
+
+        <h2 style="margin-top:56px">How to reclaim space from Messages</h2>
+        <h3>Keep messages for less time</h3>
+        <ol class="steps">
+          <li><b>Open Messages settings.</b> In Messages, choose <strong>Messages › Settings</strong>, then click <strong>General</strong>.</li>
+          <li><b>Change Keep Messages.</b> Pick <strong>1 Year</strong> or <strong>30 Days</strong> instead of <strong>Forever</strong>.</li>
+          <li><b>Let it run.</b> Messages deletes conversations older than that, attachments included, and keeps doing it from then on.</li>
+        </ol>
+        <p>This is the one that keeps working. It's also the bluntest: older messages are gone, text and all, and if Messages in iCloud is on, they're gone from your other devices too.</p>
+        <h3>Delete the biggest attachments</h3>
+        <ol class="steps">
+          <li><b>Open Storage settings.</b> Choose <strong>Apple menu › System Settings › General › Storage</strong>.</li>
+          <li><b>Open Messages.</b> Click the info button next to <strong>Messages</strong>. You'll see attachments sorted by size, with the biggest videos at the top.</li>
+          <li><b>Delete what you don't need.</b> Select attachments, click <strong>Delete</strong>, and confirm. The conversations stay; only those files go.</li>
+        </ol>
+        <h3>Store messages in iCloud</h3>
+        <p>In <strong>Messages › Settings › iMessage</strong>, turn on <strong>Messages in iCloud</strong>. Or use the <strong>Store in iCloud</strong> recommendation at the top of Storage settings. Apple's description: all messages and attachments are stored in iCloud, and when storage space is needed, only recent attachments are kept on this Mac. You need enough iCloud storage to hold them all, and older attachments download again when you open them.</p>
+
+        <h2 style="margin-top:56px">Is it safe to delete Messages attachments on Mac?</h2>
+        <p>From Messages or Storage settings, yes; that's what they're for. A deleted attachment is gone from that conversation, so save any photo you want to keep to Photos or Finder first.</p>
+        <p>From Finder, no. Messages keeps a database, <code>chat.db</code>, of which file belongs to which message. Delete files from <code>Attachments</code> by hand and Messages still thinks they're there, so you get blank bubbles and a database that disagrees with the disk. It doesn't save you anything the two methods above don't.</p>
+        <p>Messages is one of several folders that grow on their own. See also <a href="/taking-up-space/iphone-backups">iPhone backups</a>, <a href="/taking-up-space/icloud-drive">iCloud Drive</a>, and <a href="/taking-up-space">everything else taking up space</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast won&#39;t delete Messages attachments: that belongs to Messages, which keeps track of every file. Without Full Disk Access, it skips <code>~/Library/Messages</code> entirely, so it never sets off a permission prompt. With Full Disk Access, it measures the folder, and if Messages is one of your biggest, it appears under <strong>Taking the most space</strong> in the menu. Then the forecast shows whether changing Keep Messages slowed the growth. It&#39;s free.</p>
+    """,
+    "mockup": "menu",
+    "related": ["/taking-up-space/iphone-backups", "/taking-up-space/icloud-drive", "/free-up-space-on-mac"],
+    "faqs": [
+        ("Why is Messages taking up so much space on my Mac?", "Because Messages keeps every photo, video, and file from every conversation, and Keep Messages is set to Forever by default. Those attachments live in ~/Library/Messages/Attachments and can reach tens of gigabytes."),
+        ("How do I reduce Messages storage on Mac?", "In Messages › Settings › General, set Keep Messages to 1 Year or 30 Days. Or open System Settings › General › Storage, click the info button next to Messages, and delete the biggest attachments."),
+        ("Where are Messages attachments stored on a Mac?", "In ~/Library/Messages/Attachments, organized in folders Messages names itself. macOS guards the folder, so Terminal needs Full Disk Access to read it. Storage settings lists the attachments by size."),
+        ("Can I delete the Messages Attachments folder?", "Not by hand. Messages keeps a database of which file belongs to which message, so deleting files in Finder leaves blank bubbles. Delete attachments from Storage settings or shorten Keep Messages instead."),
+        ("Does Messages in iCloud free up space on my Mac?", "It can. With Messages in iCloud on, macOS keeps only recent attachments on the Mac when storage space is needed, and downloads older ones when you open them. You need enough iCloud storage for everything."),
+    ],
+}
+
+FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES]
 
 TAKING_UP_SPACE_HUB = {
     "path": "/taking-up-space",

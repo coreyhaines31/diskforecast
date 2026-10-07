@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Where are iPhone backups stored on Mac? Find and delete</title>
-  <meta name="description" content="Where iPhone and iPad backups are stored on a Mac, how to open the folder, and how to delete old backups in Finder or Storage settings without breaking any.">
-  <link rel="canonical" href="https://diskforecast.com/taking-up-space/iphone-backups">
-  <meta property="og:title" content="Where are iPhone backups stored on Mac? Find and delete">
-  <meta property="og:description" content="Where iPhone and iPad backups are stored on a Mac, how to open the folder, and how to delete old backups in Finder or Storage settings without breaking any.">
+  <title>Messages taking up space on Mac: how to reclaim it</title>
+  <meta name="description" content="Why Messages takes up so much space on a Mac, where attachments are stored, and how to reclaim it with Keep Messages, Storage settings, or Messages in iCloud.">
+  <link rel="canonical" href="https://diskforecast.com/taking-up-space/messages">
+  <meta property="og:title" content="Messages taking up space on Mac: how to reclaim it">
+  <meta property="og:description" content="Why Messages takes up so much space on a Mac, where attachments are stored, and how to reclaim it with Keep Messages, Storage settings, or Messages in iCloud.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Disk Forecast">
   <meta property="og:image" content="https://diskforecast.com/images/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://diskforecast.com/taking-up-space/iphone-backups">
+  <meta property="og:url" content="https://diskforecast.com/taking-up-space/messages">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Where are iPhone backups stored on Mac? Find and delete">
-  <meta name="twitter:description" content="Where iPhone and iPad backups are stored on a Mac, how to open the folder, and how to delete old backups in Finder or Storage settings without breaking any.">
+  <meta name="twitter:title" content="Messages taking up space on Mac: how to reclaim it">
+  <meta name="twitter:description" content="Why Messages takes up so much space on a Mac, where attachments are stored, and how to reclaim it with Keep Messages, Storage settings, or Messages in iCloud.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -46,57 +46,53 @@
     <div class="sub-hero">
       <div class="wrap narrow">
         <div class="eyebrow">Guide</div>
-        <h1>Where iPhone backups are stored on Mac, <em>and how to delete them.</em></h1>
-        <p class="lede">Every iPhone or iPad you've backed up to this Mac left a folder behind, often tens of gigabytes each. Here's where they are, and the two built-in ways to remove the ones you no longer need.</p>
-        <div class="tldr glass"><h2>The short version</h2><p>iPhone and iPad backups are stored in <code>~/Library/Application Support/MobileSync/Backup</code>, one folder per backup. To delete one, open <strong>System Settings › General › Storage</strong>, click the info button next to <strong>iOS Files</strong>, select the backup, and click <strong>Delete</strong>. Or select the device in Finder's sidebar and click <strong>Manage Backups…</strong>. Delete whole backups, never files inside one.</p></div>
+        <h1>Messages taking up space on Mac, <em>and how to trim it.</em></h1>
+        <p class="lede">Every photo, video, and voice note anyone has sent you is kept on your Mac, for as long as Messages keeps the conversation. Here's where that lives and the three built-in ways to reclaim it.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Messages keeps every attachment in <code>~/Library/Messages/Attachments</code>, forever by default. To reclaim space, choose <strong>Messages › Settings › General</strong> and set <strong>Keep Messages</strong> to <strong>1 Year</strong> or <strong>30 Days</strong>. Or open <strong>System Settings › General › Storage</strong>, click the info button next to <strong>Messages</strong>, and delete the biggest attachments. Don't delete files in the folder by hand.</p></div>
       </div>
     </div>
     <section class="tight">
       <div class="wrap narrow"><div class="prose">
 
-        <h2>Where are iPhone backups stored on Mac?</h2>
-        <p>When you back up an iPhone or iPad to your Mac, through Finder or, on older versions of macOS, iTunes, the backup goes in your Library folder:</p>
+        <h2>Why Messages takes up so much space on Mac</h2>
+        <p>With iMessage on your Mac, every conversation from your iPhone shows up there too, and so does everything in it: photos, videos, voice notes, and files. Messages keeps them all, because <strong>Keep Messages</strong> is set to <strong>Forever</strong> unless you change it. Years of group chats with video add up to tens of gigabytes.</p>
                 <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
           <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
-            <tr><th scope="row">Device backups</th><td><code>~/Library/Application Support/MobileSync/Backup</code></td><td>One folder per backup</td></tr>
-            <tr><th scope="row">iPhone software updates</th><td><code>~/Library/iTunes/iPhone Software Updates</code></td><td>Only if you&#x27;ve restored a device</td></tr>
+            <tr><th scope="row">Photos, videos, and files people sent</th><td><code>~/Library/Messages/Attachments</code></td><td>Needs Full Disk Access to measure</td></tr>
+            <tr><th scope="row">The message history</th><td><code>~/Library/Messages/chat.db</code></td><td>Usually far smaller</td></tr>
           </tbody></table></div></div>
-        <p>Each backup is a folder named with a long device identifier, not the device's name, so you can't tell them apart by looking. Inside are thousands of files with hashed names. That's normal: a backup only makes sense to the Mac that restores it. The Mac this page was written on has never backed up a phone, so there's no size to show. Expect a backup to be roughly the size of what's on the device, minus what's already in iCloud, like iCloud Photos.</p>
-        <p>To open the folder in Finder, choose <strong>Go › Go to Folder</strong>, paste the path, and press Return. Terminal is different: macOS guards this folder, so <code>ls</code> and <code>du</code> answer “Operation not permitted” unless Terminal has Full Disk Access in <strong>System Settings › Privacy &amp; Security</strong>.</p>
+        <p>The text of your conversations is small. The attachments are what's big. macOS guards this folder: on the Mac this page was written on, Terminal got “Operation not permitted” trying to list it, so measure it with Storage settings instead, which can see inside.</p>
 
-        <h2 style="margin-top:56px">How to delete iPhone backups on Mac</h2>
-        <p>There are two ways to do it. Both show which device each backup belongs to and when it was made, which the folder itself won't.</p>
-        <h3>In Storage settings</h3>
+        <h2 style="margin-top:56px">How to reclaim space from Messages</h2>
+        <h3>Keep messages for less time</h3>
         <ol class="steps">
-          <li><b>Open Storage settings.</b> Choose <strong>Apple menu › System Settings › General › Storage</strong> and wait for it to finish calculating.</li>
-          <li><b>Open iOS Files.</b> Click the info button next to <strong>iOS Files</strong>. macOS describes it as device backups and software updates you can erase to free storage space.</li>
-          <li><b>Delete what you don't need.</b> Select a backup, click <strong>Delete</strong>, and confirm. The space comes back right away; nothing goes to the Trash.</li>
+          <li><b>Open Messages settings.</b> In Messages, choose <strong>Messages › Settings</strong>, then click <strong>General</strong>.</li>
+          <li><b>Change Keep Messages.</b> Pick <strong>1 Year</strong> or <strong>30 Days</strong> instead of <strong>Forever</strong>.</li>
+          <li><b>Let it run.</b> Messages deletes conversations older than that, attachments included, and keeps doing it from then on.</li>
         </ol>
-        <h3>In Finder</h3>
+        <p>This is the one that keeps working. It's also the bluntest: older messages are gone, text and all, and if Messages in iCloud is on, they're gone from your other devices too.</p>
+        <h3>Delete the biggest attachments</h3>
         <ol class="steps">
-          <li><b>Connect the device.</b> Plug it in, or use Wi-Fi if you've set that up, and select it under <strong>Locations</strong> in Finder's sidebar.</li>
-          <li><b>Open Manage Backups.</b> On the <strong>General</strong> tab, click <strong>Manage Backups…</strong>. You'll see every backup on this Mac, with its device name and date.</li>
-          <li><b>Delete one.</b> Select it, click <strong>Delete Backup</strong>, and confirm.</li>
+          <li><b>Open Storage settings.</b> Choose <strong>Apple menu › System Settings › General › Storage</strong>.</li>
+          <li><b>Open Messages.</b> Click the info button next to <strong>Messages</strong>. You'll see attachments sorted by size, with the biggest videos at the top.</li>
+          <li><b>Delete what you don't need.</b> Select attachments, click <strong>Delete</strong>, and confirm. The conversations stay; only those files go.</li>
         </ol>
-        <div class="callout"><p><strong>Don't delete files inside a backup.</strong> Remove whole backups, with one of the methods above. A backup missing some of its files won't restore, and you'll only find out when you need it.</p></div>
+        <h3>Store messages in iCloud</h3>
+        <p>In <strong>Messages › Settings › iMessage</strong>, turn on <strong>Messages in iCloud</strong>. Or use the <strong>Store in iCloud</strong> recommendation at the top of Storage settings. Apple's description: all messages and attachments are stored in iCloud, and when storage space is needed, only recent attachments are kept on this Mac. You need enough iCloud storage to hold them all, and older attachments download again when you open them.</p>
 
-        <h2 style="margin-top:56px">Which backups are safe to delete?</h2>
-        <ul>
-          <li><strong>Backups of devices you no longer own.</strong> If the phone was sold, traded in, or replaced, its backup is only useful for digging up something old.</li>
-          <li><strong>Backups you also have in iCloud.</strong> If the device backs up to iCloud (on the iPhone, <strong>Settings › [your name] › iCloud › iCloud Backup</strong>), the copy on your Mac is a second one.</li>
-          <li><strong>Old software updates.</strong> The iOS Files list includes downloaded update files, used when you restore or update a device from the Mac. Finder downloads them again when it needs one.</li>
-        </ul>
-        <p>Keep at least one recent backup of any device you still use and don't back up to iCloud. Encrypted backups also hold saved passwords and Health data, so make sure you have a newer one before you remove an old encrypted backup.</p>
-        <p>More folders that fill a Mac quietly: <a href="/taking-up-space/messages">Messages attachments</a>, <a href="/taking-up-space/icloud-drive">iCloud Drive</a>, and the full checklist in <a href="/free-up-space-on-mac">how to free up space on Mac</a>.</p>
+        <h2 style="margin-top:56px">Is it safe to delete Messages attachments on Mac?</h2>
+        <p>From Messages or Storage settings, yes; that's what they're for. A deleted attachment is gone from that conversation, so save any photo you want to keep to Photos or Finder first.</p>
+        <p>From Finder, no. Messages keeps a database, <code>chat.db</code>, of which file belongs to which message. Delete files from <code>Attachments</code> by hand and Messages still thinks they're there, so you get blank bubbles and a database that disagrees with the disk. It doesn't save you anything the two methods above don't.</p>
+        <p>Messages is one of several folders that grow on their own. See also <a href="/taking-up-space/iphone-backups">iPhone backups</a>, <a href="/taking-up-space/icloud-drive">iCloud Drive</a>, and <a href="/taking-up-space">everything else taking up space</a>.</p>
     
       </div></div>
     </section>
     <section class="tight lit" id="shortcut">
       <div class="wrap">
         <div class="head center">
-          <h2>Disk Forecast and iPhone backups</h2>
+          <h2>Disk Forecast and Messages</h2>
 
-          <p>Disk Forecast never deletes iPhone backups, and it doesn&#39;t list them as something to clear: deleting the wrong one isn&#39;t a mistake you can rebuild from. Without Full Disk Access, it skips the MobileSync folder entirely, the same way Terminal is blocked. With Full Disk Access, it measures the folder, and if it&#39;s one of your biggest, it shows up under <strong>Taking the most space</strong> in the menu, one click from Finder. Delete backups with Storage settings or Finder&#39;s Manage Backups. It&#39;s free.</p>
+          <p>Disk Forecast won&#39;t delete Messages attachments: that belongs to Messages, which keeps track of every file. Without Full Disk Access, it skips <code>~/Library/Messages</code> entirely, so it never sets off a permission prompt. With Full Disk Access, it measures the folder, and if Messages is one of your biggest, it appears under <strong>Taking the most space</strong> in the menu. Then the forecast shows whether changing Keep Messages slowed the growth. It&#39;s free.</p>
     
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
@@ -141,11 +137,11 @@
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
         <div class="faq glass">
-          <details><summary>Where are iPhone backups stored on a Mac?</summary><p>In ~/Library/Application Support/MobileSync/Backup, one folder per backup, named with the device&#x27;s identifier. Open it in Finder with Go › Go to Folder. Terminal needs Full Disk Access to read it.</p></details>
-          <details><summary>How do I delete old iPhone backups on my Mac?</summary><p>Open System Settings › General › Storage, click the info button next to iOS Files, select the backup, and click Delete. Or select the device in Finder&#x27;s sidebar, click Manage Backups…, and click Delete Backup.</p></details>
-          <details><summary>Is it safe to delete iPhone backups on a Mac?</summary><p>Yes, for backups you don&#x27;t need: devices you no longer own, or ones that also back up to iCloud. Keep a recent backup of any device you still use, and delete whole backups, never the files inside one.</p></details>
-          <details><summary>Why is iOS Files so big in Storage settings?</summary><p>It includes every device backup on this Mac, plus downloaded iPhone and iPad software updates. Each backup can be tens of gigabytes, and old ones stay until you delete them.</p></details>
-          <details><summary>Can I move iPhone backups to an external drive?</summary><p>Finder has no setting for it; backups always go to the MobileSync folder on your startup disk. Backing the device up to iCloud instead keeps it off your Mac.</p></details>
+          <details><summary>Why is Messages taking up so much space on my Mac?</summary><p>Because Messages keeps every photo, video, and file from every conversation, and Keep Messages is set to Forever by default. Those attachments live in ~/Library/Messages/Attachments and can reach tens of gigabytes.</p></details>
+          <details><summary>How do I reduce Messages storage on Mac?</summary><p>In Messages › Settings › General, set Keep Messages to 1 Year or 30 Days. Or open System Settings › General › Storage, click the info button next to Messages, and delete the biggest attachments.</p></details>
+          <details><summary>Where are Messages attachments stored on a Mac?</summary><p>In ~/Library/Messages/Attachments, organized in folders Messages names itself. macOS guards the folder, so Terminal needs Full Disk Access to read it. Storage settings lists the attachments by size.</p></details>
+          <details><summary>Can I delete the Messages Attachments folder?</summary><p>Not by hand. Messages keeps a database of which file belongs to which message, so deleting files in Finder leaves blank bubbles. Delete attachments from Storage settings or shorten Keep Messages instead.</p></details>
+          <details><summary>Does Messages in iCloud free up space on my Mac?</summary><p>It can. With Messages in iCloud on, macOS keeps only recent attachments on the Mac when storage space is needed, and downloads older ones when you open them. You need enough iCloud storage for everything.</p></details>
         </div>
       </div>
     </section>
@@ -153,7 +149,7 @@
       <div class="wrap">
         <div class="head center head-sm"><h2>Related guides</h2></div>
         <div class="related">
-          <a class="glass" href="/taking-up-space/messages"><b>Messages</b><span>Attachments, Keep Messages, and what Messages in iCloud changes.</span></a>
+          <a class="glass" href="/taking-up-space/iphone-backups"><b>iPhone backups</b><span>Where they&#x27;re stored, and how to delete old ones safely.</span></a>
           <a class="glass" href="/free-up-space-on-mac"><b>How to free up space on Mac</b><span>The complete checklist, from emptying the Trash to System Data.</span></a>
         </div>
       </div>
@@ -181,6 +177,6 @@
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Where are iPhone backups stored on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Application Support/MobileSync/Backup, one folder per backup, named with the device's identifier. Open it in Finder with Go \u203a Go to Folder. Terminal needs Full Disk Access to read it."}}, {"@type": "Question", "name": "How do I delete old iPhone backups on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Open System Settings \u203a General \u203a Storage, click the info button next to iOS Files, select the backup, and click Delete. Or select the device in Finder's sidebar, click Manage Backups\u2026, and click Delete Backup."}}, {"@type": "Question", "name": "Is it safe to delete iPhone backups on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, for backups you don't need: devices you no longer own, or ones that also back up to iCloud. Keep a recent backup of any device you still use, and delete whole backups, never the files inside one."}}, {"@type": "Question", "name": "Why is iOS Files so big in Storage settings?", "acceptedAnswer": {"@type": "Answer", "text": "It includes every device backup on this Mac, plus downloaded iPhone and iPad software updates. Each backup can be tens of gigabytes, and old ones stay until you delete them."}}, {"@type": "Question", "name": "Can I move iPhone backups to an external drive?", "acceptedAnswer": {"@type": "Answer", "text": "Finder has no setting for it; backups always go to the MobileSync folder on your startup disk. Backing the device up to iCloud instead keeps it off your Mac."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why is Messages taking up so much space on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Because Messages keeps every photo, video, and file from every conversation, and Keep Messages is set to Forever by default. Those attachments live in ~/Library/Messages/Attachments and can reach tens of gigabytes."}}, {"@type": "Question", "name": "How do I reduce Messages storage on Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In Messages \u203a Settings \u203a General, set Keep Messages to 1 Year or 30 Days. Or open System Settings \u203a General \u203a Storage, click the info button next to Messages, and delete the biggest attachments."}}, {"@type": "Question", "name": "Where are Messages attachments stored on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Messages/Attachments, organized in folders Messages names itself. macOS guards the folder, so Terminal needs Full Disk Access to read it. Storage settings lists the attachments by size."}}, {"@type": "Question", "name": "Can I delete the Messages Attachments folder?", "acceptedAnswer": {"@type": "Answer", "text": "Not by hand. Messages keeps a database of which file belongs to which message, so deleting files in Finder leaves blank bubbles. Delete attachments from Storage settings or shorten Keep Messages instead."}}, {"@type": "Question", "name": "Does Messages in iCloud free up space on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "It can. With Messages in iCloud on, macOS keeps only recent attachments on the Mac when storage space is needed, and downloads older ones when you open them. You need enough iCloud storage for everything."}}]}</script>
 </body>
 </html>
