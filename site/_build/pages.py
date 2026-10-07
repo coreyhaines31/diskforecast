@@ -322,8 +322,8 @@ pip cache purge</code></pre>
           Each tool downloads what it needs again on the next install.</li>
           <li><b>Prune Docker.</b> If you use Docker, its own command removes stopped containers, unused networks, dangling images, and build cache:
 <pre><code>docker system prune</code></pre>
-          Add <code>-a</code> to also remove images no container is using. You'll download them again the next time you need them.</li>
-          <li><b>Turn off Apple Intelligence, if you don't use it.</b> In <strong>System Settings › Apple Intelligence &amp; Siri</strong>, switch it off, and macOS can remove the on-device models. Turn it back on any time; they'll download again.</li>
+          Add <code>-a</code> to also remove images no container is using. You'll download them again the next time you need them. <a href="/clear-cache/docker">Docker system prune, explained</a> covers every flag.</li>
+          <li><b>Turn off Apple Intelligence, if you don't use it.</b> In <strong>System Settings › Apple Intelligence &amp; Siri</strong>, switch it off, and macOS can remove the on-device models. Turn it back on any time; they'll download again. <a href="/ai-models/apple-intelligence">What turning it off does</a> has the details.</li>
           <li><b>Rebuild the Spotlight index.</b> If it's grown large, rebuilding often shrinks it:
 <pre><code>sudo mdutil -E /</code></pre>
           Search results will be incomplete for a while as it re-indexes.</li>
@@ -421,6 +421,7 @@ CACHE = {
           <li><b>Move the big folders to the Trash.</b> Start with apps you recognize. Move the folders inside Caches, never the Caches folder itself.</li>
           <li><b>Empty the Trash a day later.</b> Use your Mac as usual first. If an app acts up, put its folder back. Otherwise, empty the Trash and the space is yours.</li>
         </ol>
+        <p>A few apps keep their cache somewhere else. Microsoft Teams, for one, keeps it inside its own containers: see <a href="/clear-cache/teams">how to clear Teams cache on Mac</a>.</p>
         <p>Want to know what else is filling the disk before you start? <a href="/how-to-check-storage-on-mac">Check your Mac's storage</a> first; caches are often only part of the story.</p>
 
         <h2 style="margin-top:56px">Is it safe to delete cache files on Mac?</h2>
@@ -447,6 +448,7 @@ brew cleanup --prune=all</code></pre>
 <pre><code>docker builder prune
 docker system prune</code></pre>
         <p>For Xcode, quit it, then move the folders inside <code>~/Library/Developer/Xcode/DerivedData</code> to the Trash; Xcode rebuilds them on the next build. Folders in <code>~/Library/Developer/Xcode/iOS DeviceSupport</code> come back when you plug that device in again. Simulator runtimes are bigger still, and they count toward System Data; <a href="/system-data">the System Data guide</a> covers removing them with <code>xcrun simctl</code>.</p>
+        <p>Every tool has its own page with the real path on a Mac, its flags, and what rebuilds: <a href="/clear-cache/npm">npm</a>, <a href="/clear-cache/yarn">Yarn</a>, <a href="/clear-cache/pip">pip</a>, <a href="/clear-cache/homebrew">Homebrew</a>, <a href="/clear-cache/docker">Docker</a>, <a href="/clear-cache/xcode">Xcode</a>, and more in <a href="/clear-cache">clear cache by tool</a>.</p>
     """,
     "shortcut": """
           <h2>Or reclaim every cache in one window.</h2>
@@ -504,7 +506,8 @@ FREE_UP = {
         <h2 style="margin-top:56px">If you write code</h2>
         <p>Developer Macs fill up differently. Build folders like <code>node_modules</code>, Xcode's DerivedData, simulator runtimes, package manager caches, Docker images, and local AI models add up fast. To list the <code>node_modules</code> folders in your home folder by size:</p>
 <pre><code>find ~ -name node_modules -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
-        <p>Delete the ones in projects you haven't touched in a while; <code>npm install</code> brings them back. For Ollama models, <code>ollama list</code> shows what you have and <code>ollama rm &lt;model&gt;</code> removes one.</p>
+        <p>Delete the ones in projects you haven't touched in a while; <code>npm install</code> brings them back. For Ollama models, <code>ollama list</code> shows what you have and <code>ollama rm &lt;model&gt;</code> removes one; <a href="/ai-models">delete local AI models</a> covers Ollama, LM Studio, and Hugging Face.</p>
+        <p>Package managers and build tools keep caches of their own, and each has a command to clear it. <a href="/clear-cache">Clear cache by tool</a> has a page for npm, Docker, Xcode, pip, and six more.</p>
 
         <h2 style="margin-top:56px">Your startup disk is almost full: what to do now</h2>
         <p>When free space gets critically low, macOS shows a warning: “Your disk is almost full,” or on older versions, “Your startup disk is almost full.” Its <strong>Manage</strong> button opens Storage settings. Take it seriously. With too little room, apps can't save, updates won't install, Messages warns that incoming messages may be lost, and macOS can't grow swap when memory runs short.</p>
@@ -659,8 +662,8 @@ WHAT_IS = {
           <li><strong>Purgeable space.</strong> Space macOS has already marked as reclaimable, like iCloud files it can download again. It frees it on its own when something needs the room.</li>
           <li><strong>Caches and logs.</strong> Copies apps keep so they don't have to download or rebuild things, plus records of what they did. Some land in named categories, but much of it counts here.</li>
           <li><strong>Simulators and runtimes.</strong> If you've installed Xcode, each iOS, watchOS, or visionOS simulator runtime can take several gigabytes.</li>
-          <li><strong>Docker and virtual machines.</strong> Docker keeps all its images, containers, and build cache in one disk image. Parallels, UTM, and VMware save whole computers as single files.</li>
-          <li><strong>Apple Intelligence and Siri models.</strong> On Macs that support it, the on-device models take several gigabytes.</li>
+          <li><strong>Docker and virtual machines.</strong> Docker keeps all its images, containers, and build cache in one disk image (<a href="/clear-cache/docker">here's how to prune it</a>). Parallels, UTM, and VMware save whole computers as single files.</li>
+          <li><strong>Apple Intelligence and Siri models.</strong> On Macs that support it, the on-device models take several gigabytes. <a href="/ai-models/apple-intelligence">Apple Intelligence storage</a> explains what turning it off does.</li>
           <li><strong>The Spotlight index.</strong> The database behind search. Usually small, occasionally not.</li>
         </ul>
 
