@@ -3,13 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Disk Forecast — Know before your Mac runs out of space</title>
-  <meta name="description" content="A free menu bar app that tells you when your Mac's disk will be full, explains System Data in plain English, and reclaims space safely to the Trash. Source on GitHub.">
+  <title>Disk Forecast: free Mac disk space app that warns you early</title>
+  <meta name="description" content="A free Mac menu bar app that tells you when your disk will be full, explains System Data in plain English, and reclaims space safely to the Trash.">
   <link rel="canonical" href="https://diskforecast.com/">
-  <meta property="og:title" content="Disk Forecast — Know before your Mac runs out of space">
+  <meta property="og:title" content="Disk Forecast: free Mac disk space app that warns you early">
   <meta property="og:description" content="Free storage forecast for your Mac's menu bar. Full in ~41 days, System Data explained, space reclaimed to the Trash.">
-  <meta property="og:image" content="https://diskforecast.com/images/icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:url" content="https://diskforecast.com/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Disk Forecast: free Mac disk space app that warns you early">
+  <meta name="twitter:description" content="Free storage forecast for your Mac's menu bar. Full in ~41 days, System Data explained, space reclaimed to the Trash.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -30,11 +37,11 @@
   <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="nav">
     <div class="wrap">
-      <a class="brand" href="/"><img src="/images/icon.svg" alt=""> Disk Forecast</a>
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
       <nav>
         <a href="#forecast">Features</a>
         <a href="/system-data">System Data</a>
-        <a href="/alternatives/">Compare</a>
+        <a href="/alternatives">Compare</a>
         <a href="#faq">FAQ</a>
         <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
       </nav>
@@ -202,7 +209,7 @@
     <section id="why" class="lit">
       <div class="wrap">
         <div class="founder glass">
-          <img src="/images/corey.jpg" alt="Corey Haines" width="72" height="72">
+          <img src="/images/corey.jpg" alt="Corey Haines" width="72" height="72" loading="lazy">
           <div>
             <p><strong>Why it exists.</strong> I build a lot of side projects, and my Mac kept filling up without warning. Storage settings lumped most of it into System Data and stopped there, and the tools that explain it cost $19 to $49. When I finally looked, 99 GB of my disk was build folders from projects I hadn&#39;t touched in a month. So I built the app I wanted: it warns me weeks ahead, explains where the space went, and moves files to the Trash instead of deleting them. And it&#39;s free.</p>
             <cite>Corey Haines, maker of Disk Forecast and Midnight Oil</cite>
@@ -218,16 +225,16 @@
           <p>Free, next to the apps people usually reach for.</p>
         </div>
         <div class="table-card glass"><div class="table-scroll"><table class="compare">
-          <thead><tr><th></th><th class="us">Disk Forecast</th><th><a href="/alternatives/diskbuddy">DiskBuddy</a></th><th><a href="/alternatives/daisydisk">DaisyDisk</a></th><th><a href="/alternatives/cleanmymac">CleanMyMac</a></th></tr></thead>
+          <thead><tr><td></td><th scope="col" class="us">Disk Forecast</th><th scope="col"><a href="/alternatives/diskbuddy">DiskBuddy</a></th><th scope="col"><a href="/alternatives/daisydisk">DaisyDisk</a></th><th scope="col"><a href="/alternatives/cleanmymac">CleanMyMac</a></th></tr></thead>
           <tbody>
-            <tr><td>Price</td><td class="us">Free</td><td>$19 at launch, now $49</td><td>$9.99 one-time</td><td>From $47.50 a year</td></tr>
-            <tr><td>Tells you when the disk will be full</td><td class="us">Yes</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
-            <tr><td>System Data explained</td><td class="us">Yes</td><td>Snapshots view</td><td class="n">—</td><td class="n">—</td></tr>
-            <tr><td>Deletes go to the Trash only</td><td class="us">Yes</td><td>Yes</td><td class="n">—</td><td class="n">—</td></tr>
-            <tr><td>Source available</td><td class="us">Yes, on GitHub</td><td class="n">—</td><td>No</td><td>No</td></tr>
+            <tr><th scope="row">Price</th><td class="us">Free</td><td>$19 at launch, now $49</td><td>$9.99 one-time</td><td>From $47.50 a year</td></tr>
+            <tr><th scope="row">Tells you when the disk will be full</th><td class="us">Yes</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+            <tr><th scope="row">System Data explained</th><td class="us">Yes</td><td>Snapshots view</td><td class="n">—</td><td class="n">—</td></tr>
+            <tr><th scope="row">Deletes go to the Trash only</th><td class="us">Yes</td><td>Yes</td><td class="n">—</td><td class="n">—</td></tr>
+            <tr><th scope="row">Source available</th><td class="us">Yes, on GitHub</td><td class="n">—</td><td>No</td><td>No</td></tr>
           </tbody>
         </table></div></div>
-        <p class="table-foot">“—” means we couldn&#39;t confirm it from the vendor&#39;s own materials as of October 2026. More detail: <a href="/alternatives/">every comparison</a>.</p>
+        <p class="table-foot">“—” means we couldn&#39;t confirm it from the vendor&#39;s own materials as of October 2026. More detail: <a href="/alternatives">every comparison</a>.</p>
       </div>
     </section>
 
@@ -249,7 +256,7 @@
     <section class="cta lit">
       <div class="wrap">
         <div class="cta-card glass">
-          <img src="/images/icon.svg" alt="" width="96" height="96">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
           <h2>Know before it&#39;s full.</h2>
           <p>Free. No account, no subscription.</p>
           <div class="actions">
@@ -265,7 +272,7 @@
   <footer>
     <div class="wrap">
       <!-- alternatives -->
-      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives/">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a></nav>
       <!-- /alternatives -->
       <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/system-data">Clear System Data</a><a href="/privacy">Privacy</a></div>
@@ -286,5 +293,9 @@
       } catch (_) { /* offline or rate-limited: leave the fallback text */ }
     })();
   </script>
+  <!-- schema -->
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Disk Forecast", "operatingSystem": "macOS 14 or later", "applicationCategory": "UtilitiesApplication", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "downloadUrl": "https://github.com/coreyhaines31/diskforecast/releases/latest", "url": "https://diskforecast.com/", "image": "https://diskforecast.com/images/icon.png", "author": {"@type": "Person", "name": "Corey Haines"}, "softwareVersion": "1.0.0"}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is it safe?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Files it clears go to the Trash, where you can put them back. Safe to clear only holds things that rebuild themselves, like caches and build folders. System Data fixes run Apple's own tools, and every one asks you first."}}, {"@type": "Question", "name": "Does it delete anything?", "acceptedAnswer": {"@type": "Answer", "text": "Not on its own. Files move to the Trash, and the space comes back when you empty it. The exceptions are System Data fixes, like removing local Time Machine snapshots: Apple's own tool does the work, and only after you confirm."}}, {"@type": "Question", "name": "Why does it want Full Disk Access?", "acceptedAnswer": {"@type": "Answer", "text": "It doesn't need it. Everything works with your home folder. Full Disk Access lets it measure the folders macOS guards, like Mail, Messages, iCloud Drive, and other apps' containers. Without it, their space shows up as unexplained."}}, {"@type": "Question", "name": "What is System Data?", "acceptedAnswer": {"@type": "Answer", "text": "The catch-all bar in Storage settings for everything macOS doesn't file under a named category: local Time Machine snapshots, purgeable space, simulator runtimes, caches, Apple Intelligence models, the Spotlight index. The guide walks through each one."}}, {"@type": "Question", "name": "How accurate is the forecast?", "acceptedAnswer": {"@type": "Answer", "text": "It's a trend, not a promise, which is why it says \u201c~\u201d. It draws a straight line through your last 30 days of free space. It appears after 3 days of history, and if your disk fills by less than 100 MB a day, it says \u201cNot filling up.\u201d"}}, {"@type": "Question", "name": "Why not the App Store?", "acceptedAnswer": {"@type": "Answer", "text": "App Store apps run in a sandbox that can't see most of your disk, so a disk tool there can't measure System Data or run Apple's fixes. Disk Forecast is signed and notarized by Apple, and installs from GitHub or Homebrew."}}, {"@type": "Question", "name": "Is it really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, at home or at work. No account, no trial, no subscription. The source is on GitHub, so you can read exactly how it counts and what it moves to the Trash."}}]}</script>
+  <!-- /schema -->
 </body>
 </html>

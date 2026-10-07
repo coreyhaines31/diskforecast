@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Renders site/alternatives/*.html, the alternatives hub, /system-data, and /privacy from pages.py,
-and rewrites the homepage footer list between its <!-- alternatives --> markers.
+and rewrites the homepage footer list and JSON-LD between their <!-- alternatives --> and <!-- schema --> markers.
 
     python3 site/_build/render.py
 """
 import html
 import json
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -47,8 +48,15 @@ def head(title, description, path):
   <link rel="canonical" href="{SITE}{path}">
   <meta property="og:title" content="{esc(title)}">
   <meta property="og:description" content="{esc(description)}">
-  <meta property="og:image" content="{SITE}/images/icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="{SITE}/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:url" content="{SITE}{path}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{esc(title)}">
+  <meta name="twitter:description" content="{esc(description)}">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -67,11 +75,11 @@ def nav():
     return f'''  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="nav">
     <div class="wrap">
-      <a class="brand" href="/"><img src="/images/icon.svg" alt=""> Disk Forecast</a>
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
       <nav>
         <a href="/#forecast">Features</a>
         <a href="/system-data">System Data</a>
-        <a href="/alternatives/">Compare</a>
+        <a href="/alternatives">Compare</a>
         <a href="/#faq">FAQ</a>
         <a class="btn" href="{DOWNLOAD}">Download</a>
       </nav>
@@ -83,7 +91,7 @@ def nav():
 def footer_alternatives():
     """Every alternative page, linked from every footer for internal linking."""
     links = "".join(f'<a href="/alternatives/{p["slug"]}">{esc(p["competitor"])} alternative</a>' for p in PAGES)
-    return f'      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives/">Alternatives</a>{links}</nav>\n'
+    return f'      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a>{links}</nav>\n'
 
 
 def footer():
@@ -111,6 +119,29 @@ def render_homepage_footer():
         f.write(page[:i] + footer_alternatives() + "      " + page[j:])
 
 
+def homepage_schema():
+    """SoftwareApplication plus a FAQPage built from the homepage's own FAQ, so the two never drift."""
+    page = homepage()
+    faqs = [(html.unescape(q), html.unescape(re.sub(r"<[^>]+>", "", a)))
+            for q, a in re.findall(r"<details><summary>(.*?)</summary><p>(.*?)</p></details>", page)]
+    app = {"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Disk Forecast",
+           "operatingSystem": "macOS 14 or later", "applicationCategory": "UtilitiesApplication",
+           "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+           "downloadUrl": DOWNLOAD, "url": f"{SITE}/", "image": f"{SITE}/images/icon.png",
+           "author": {"@type": "Person", "name": "Corey Haines"}, "softwareVersion": "1.0.0"}
+    return f'  <script type="application/ld+json">{json.dumps(app)}</script>\n  {faq_schema(faqs)}\n'
+
+
+def render_homepage_schema():
+    path = os.path.join(ROOT, "index.html")
+    page = homepage()
+    start, end = "<!-- schema -->\n", "  <!-- /schema -->"
+    i, j = page.index(start) + len(start), page.index(end)
+    schema = homepage_schema()
+    with open(path, "w") as f:
+        f.write(page[:i] + schema + page[j:])
+
+
 def mockup(name):
     """Reuse a hand-drawn mockup from the homepage so there's one copy of it."""
     page = homepage()
@@ -120,10 +151,10 @@ def mockup(name):
 
 def table(rows, competitor):
     out = ['        <div class="table-card glass"><div class="table-scroll"><table class="compare">',
-           f'          <thead><tr><th></th><th class="us">Disk Forecast</th><th>{esc(competitor)}</th></tr></thead><tbody>']
+           f'          <thead><tr><td></td><th scope="col" class="us">Disk Forecast</th><th scope="col">{esc(competitor)}</th></tr></thead><tbody>']
     for label, us, them in rows:
         cls = ' class="n"' if them == "—" else ""
-        out.append(f'            <tr><td>{label}</td><td class="us">{us}</td><td{cls}>{them}</td></tr>')
+        out.append(f'            <tr><th scope="row">{label}</th><td class="us">{us}</td><td{cls}>{them}</td></tr>')
     out.append('          </tbody></table></div></div>')
     out.append('        <p class="table-foot">“—” means we couldn\'t confirm it from the vendor\'s own materials as of October 2026.</p>')
     return "\n".join(out)
@@ -151,7 +182,7 @@ def cta(text):
     return f'''    <section class="cta lit">
       <div class="wrap">
         <div class="cta-card glass">
-          <img src="/images/icon.svg" alt="" width="96" height="96">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
           <h2>{text}</h2>
           <p>Free. No account, no subscription.</p>
           <div class="actions">
@@ -213,9 +244,9 @@ def render_page(p):
 
 
 def render_hub():
-    path = "/alternatives/"
+    path = "/alternatives"
     cards = "".join(f'          <a class="glass" href="/alternatives/{q["slug"]}"><b>{esc(q["card_title"])}</b><span>{esc(q["card_blurb"])}</span></a>\n' for q in PAGES)
-    rows = "".join(f'<tr><td>{esc(a)}</td><td class="{"us" if b == "Disk Forecast" else ""}">{esc(b)}</td></tr>' for a, b in HUB["glance"][1:])
+    rows = "".join(f'<tr><th scope="row">{esc(a)}</th><td class="{"us" if b == "Disk Forecast" else ""}">{esc(b)}</td></tr>' for a, b in HUB["glance"][1:])
     body = f'''{head(HUB["title"], HUB["description"], path)}{nav()}  <main>
     <div class="sub-hero">
       <div class="wrap narrow">
@@ -227,7 +258,7 @@ def render_hub():
     <section class="tight lit" style="padding-top:0">
       <div class="wrap narrow">
         <div class="table-card glass glance"><table class="compare">
-          <thead><tr><th>{esc(HUB["glance"][0][0])}</th><th>{esc(HUB["glance"][0][1])}</th></tr></thead>
+          <thead><tr><th scope="col">{esc(HUB["glance"][0][0])}</th><th scope="col">{esc(HUB["glance"][0][1])}</th></tr></thead>
           <tbody>{rows}</tbody>
         </table></div>
         <div class="related">
@@ -307,6 +338,7 @@ if __name__ == "__main__":
         render_page(p)
     render_hub()
     render_homepage_footer()
+    render_homepage_schema()
     render_guide()
     render_privacy()
-    print(f"rendered {len(PAGES)} pages + hub + homepage footer + system-data guide + privacy")
+    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + system-data guide + privacy")
