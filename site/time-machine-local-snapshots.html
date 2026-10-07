@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>How to delete Apple Intelligence on Mac: storage explained</title>
-  <meta name="description" content="Can you delete Apple Intelligence from a Mac? How much storage it uses, how to turn it off in System Settings, and what&#x27;s known about getting that space back.">
-  <link rel="canonical" href="https://diskforecast.com/ai-models/apple-intelligence">
-  <meta property="og:title" content="How to delete Apple Intelligence on Mac: storage explained">
-  <meta property="og:description" content="Can you delete Apple Intelligence from a Mac? How much storage it uses, how to turn it off in System Settings, and what&#x27;s known about getting that space back.">
+  <title>Time Machine local snapshots: how to delete them on Mac</title>
+  <meta name="description" content="What Time Machine local snapshots are, how to list them with tmutil, how to delete one or all of them, and why they come back every hour while backups are on.">
+  <link rel="canonical" href="https://diskforecast.com/time-machine-local-snapshots">
+  <meta property="og:title" content="Time Machine local snapshots: how to delete them on Mac">
+  <meta property="og:description" content="What Time Machine local snapshots are, how to list them with tmutil, how to delete one or all of them, and why they come back every hour while backups are on.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Disk Forecast">
   <meta property="og:image" content="https://diskforecast.com/images/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://diskforecast.com/ai-models/apple-intelligence">
+  <meta property="og:url" content="https://diskforecast.com/time-machine-local-snapshots">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="How to delete Apple Intelligence on Mac: storage explained">
-  <meta name="twitter:description" content="Can you delete Apple Intelligence from a Mac? How much storage it uses, how to turn it off in System Settings, and what&#x27;s known about getting that space back.">
+  <meta name="twitter:title" content="Time Machine local snapshots: how to delete them on Mac">
+  <meta name="twitter:description" content="What Time Machine local snapshots are, how to list them with tmutil, how to delete one or all of them, and why they come back every hour while backups are on.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -46,49 +46,59 @@
     <div class="sub-hero">
       <div class="wrap narrow">
         <div class="eyebrow">Guide</div>
-        <h1>How to delete Apple Intelligence on Mac, <em>honestly.</em></h1>
-        <p class="lede">You can't delete Apple Intelligence's files yourself, and you shouldn't try. You can turn it off. Here's what that does, what Apple says about the space, and what's still unclear.</p>
-        <div class="tldr glass"><h2>The short version</h2><p>You can't delete Apple Intelligence's models by hand: they live in a protected system folder. To stop using it, open <strong>System Settings › Apple Intelligence &amp; Siri</strong>, turn off <strong>Apple Intelligence</strong>, and confirm <strong>Turn Off Apple Intelligence</strong>. Apple says it uses up to 8 GB on most supported devices. Turning it off lets macOS remove its models, but Apple doesn't document when, and some Siri and dictation models stay because other features use them.</p></div>
+        <h1>Time Machine local snapshots, <em>and how to delete them.</em></h1>
+        <p class="lede">If you back up with Time Machine, your Mac quietly keeps snapshots of itself on its own disk. They're why deleted files don't free space right away, and often why System Data is huge. Here's how to see them and remove them.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>List them with <code>tmutil listlocalsnapshots /</code>. Delete one with <code>tmutil deletelocalsnapshots</code> and its date, like <code>2026-10-05-093012</code>, or all of them on the startup disk with <code>tmutil deletelocalsnapshots /</code>. Add <code>sudo</code> if macOS refuses. Your backups on the backup disk aren't touched. macOS removes each snapshot after 24 hours, or sooner when space runs low, and makes a new one every hour while automatic backups are on.</p></div>
       </div>
     </div>
     <section class="tight">
       <div class="wrap narrow"><div class="prose">
 
-        <h2>Can you delete Apple Intelligence from a Mac?</h2>
-        <p>Not the way you delete an app. Apple Intelligence is part of macOS, and its models are downloaded into <code>/System/Library/AssetsV2</code>, which System Integrity Protection guards. Even Terminal gets “Operation not permitted” when it tries to read the folders that hold the language and image models. Disabling System Integrity Protection to get at them isn't worth it: Apple's own settings warn that Apple Intelligence and other services may stop working when it's off.</p>
-        <p>What you can do is turn Apple Intelligence off, which is the supported way to tell macOS you don't want it.</p>
+        <h2>What are Time Machine local snapshots?</h2>
+        <p>When Time Machine is set up, it takes a snapshot of your startup disk every hour and keeps it on that disk. A snapshot is a frozen view of every file as it was at that moment. It lets you restore something from this morning even when the backup drive is at home, and it gives Time Machine a consistent copy to back up from.</p>
+        <p>Snapshots are cheap to make, but they hold on to the past. Delete a 20 GB video after a snapshot was taken, and the snapshot still has it, so the space doesn't come back until that snapshot goes. That's the usual reason a Mac that “should” have free space doesn't.</p>
+        <ul>
+          <li><strong>How long they last.</strong> macOS removes each local snapshot after 24 hours, and sooner when space runs low.</li>
+          <li><strong>Where they're counted.</strong> In System Data in Storage settings, and as purgeable space, so Finder treats them as available.</li>
+          <li><strong>What they aren't.</strong> A backup. They're on the same disk as your files, so they can't save you from a failed drive.</li>
+        </ul>
 
-        <h2 style="margin-top:56px">How to turn off Apple Intelligence on Mac</h2>
+        <h2 style="margin-top:56px">How to list local snapshots</h2>
+<pre><code>tmutil listlocalsnapshots /
+tmutil listlocalsnapshotdates /</code></pre>
+        <p>The first lists snapshots by name, like <code>com.apple.TimeMachine.2026-10-05-093012.local</code>. The second lists only the dates, in the <code>YYYY-MM-DD-HHMMSS</code> form the delete command takes. Both only read. On the Mac this guide was written on, Time Machine has no backup disk set up, and both came back empty: no backup disk, no local snapshots.</p>
+        <p>To see every APFS snapshot on the data volume, including ones other apps made, there's also <code>diskutil apfs listSnapshots /System/Volumes/Data</code>.</p>
+
+        <h2 style="margin-top:56px">How to delete Time Machine snapshots</h2>
         <ol class="steps">
-          <li><b>Open the settings.</b> Choose <strong>Apple menu › System Settings</strong>, then click <strong>Apple Intelligence &amp; Siri</strong> in the sidebar. On a Mac that doesn't support Apple Intelligence, the pane is just called Siri.</li>
-          <li><b>Turn it off.</b> Click the <strong>Apple Intelligence</strong> switch.</li>
-          <li><b>Confirm.</b> macOS warns that features like Writing Tools won't be available and Siri will stop using Apple Intelligence. Click <strong>Turn Off Apple Intelligence</strong>.</li>
+          <li><b>Delete one.</b> Use a date from the list:
+<pre><code>tmutil deletelocalsnapshots 2026-10-05-093012</code></pre>
+          The manual says a date deletes the local snapshots with that date on all mounted disks.</li>
+          <li><b>Delete all of them on the startup disk.</b> Give it the disk instead of a date:
+<pre><code>tmutil deletelocalsnapshots /</code></pre></li>
+          <li><b>Or thin them by size.</b> Ask Time Machine to reclaim an amount, in bytes, with an urgency from 1 to 4. This asks for 10 GB at the highest urgency:
+<pre><code>tmutil thinlocalsnapshots / 10000000000 4</code></pre>
+          macOS picks which snapshots to remove to get there.</li>
         </ol>
-        <p>Those are the labels on macOS 26.6. You can turn it back on at any time; macOS downloads the models again.</p>
+        <p>If <code>tmutil</code> answers with a permissions error, run the same command with <code>sudo</code> in front and enter your password. Your backups on the Time Machine disk are separate, and none of these commands touch them.</p>
 
-        <h2 style="margin-top:56px">How much storage Apple Intelligence uses</h2>
-        <p>Apple's support page for this year's releases says Apple Intelligence uses up to 8 GB of storage on most supported iPhone, iPad, and Mac models, and up to 14 GB on some newer devices.</p>
-        <p>Here's what we could measure on one Mac with an M4 Pro running macOS 26.6, with Apple Intelligence on:</p>
-                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
-          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
-            <tr><th scope="row">Siri, speech, translation, Photos models</th><td><code>/System/Library/AssetsV2/com_apple_MobileAsset_UAF_*</code></td><td>3.3 GB readable</td></tr>
-            <tr><th scope="row">Apple&#x27;s language and image models</th><td><code>/System/Library/AssetsV2/com_apple_MobileAsset_UAF_FM_*</code></td><td>Protected; can&#x27;t be measured</td></tr>
-          </tbody></table></div></div>
-        <p>The readable folders are Siri understanding (1.9 GB), text to speech (556 MB), speech recognition (409 MB), and the Photos Clean Up model (248 MB), among others. The language and image models themselves sit in folders macOS won't let anything outside the system read, so their size isn't something we can show you. Storage settings counts all of it under System Data.</p>
-
-        <h2 style="margin-top:56px">Does turning it off free the space?</h2>
-        <p>It's meant to: turning Apple Intelligence off tells macOS it can remove the models it downloaded for it. What Apple doesn't document is when that happens, so don't expect the space back the moment you flip the switch. Check <strong>System Settings › General › Storage</strong> after a restart and a day of normal use.</p>
-        <p>You also won't get every byte back. Some of the readable folders above belong to Siri, dictation, and translation, which work without Apple Intelligence, so expect those to stay. If you need the room urgently, the faster wins are elsewhere: local Time Machine snapshots, caches, and other apps' AI models. See <a href="/system-data">how to clear System Data</a> and <a href="/free-up-space-on-mac">how to free up space on Mac</a>.</p>
-        <p>Running your own models too? <a href="/ai-models/ollama">Ollama's models</a> are usually far bigger than Apple's, and you can delete those yourself.</p>
+        <h2 style="margin-top:56px">Why they come back</h2>
+        <p>Because Time Machine makes a new one every hour. Deleting snapshots reclaims space now; it doesn't change the schedule. Recent versions of macOS dropped the old <code>tmutil disablelocal</code> command, so there's no switch for local snapshots alone. You can:</p>
+        <ul>
+          <li><strong>Back up more often.</strong> Connect the backup disk regularly, and macOS has less reason to keep snapshots around.</li>
+          <li><strong>Let macOS handle it.</strong> When space runs low, it thins snapshots on its own. They're purgeable for a reason.</li>
+          <li><strong>Turn off automatic backups.</strong> In <strong>System Settings › General › Time Machine</strong>. No backups means no snapshots, which is a bad trade on most Macs.</li>
+        </ul>
+        <p>Snapshots are only one part of System Data. For the rest, see <a href="/system-data">how to clear System Data</a>, and for why Finder shows them as free space, <a href="/purgeable-space-mac">purgeable space on Mac</a>.</p>
     
       </div></div>
     </section>
     <section class="tight lit" id="shortcut">
       <div class="wrap">
         <div class="head center">
-          <h2>Disk Forecast finds this for you</h2>
 
-          <p>Disk Forecast shows these models in <strong>System Data › Apple Intelligence and Siri models</strong>, with the total size and the biggest folders it can read, by name. Its <strong>Open Apple Intelligence &amp; Siri settings…</strong> button takes you straight to the switch. It never touches the files itself. Then it keeps forecasting when your disk will be full, so you can see whether the space came back. It&#39;s free.</p>
+          <h2>Disk Forecast and local snapshots</h2>
+          <p>Disk Forecast lists your local snapshots by name in its System Data window. Its <strong>Remove local snapshots…</strong> button shows you the exact <code>tmutil deletelocalsnapshots</code> command for each date, and runs it only after you confirm. If macOS refuses, it asks for your administrator password and runs the same commands. Your backups on the backup disk aren&#39;t touched. It&#39;s free.</p>
     
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
@@ -115,10 +125,12 @@
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
         <div class="faq glass">
-          <details><summary>Can I delete Apple Intelligence from my Mac?</summary><p>Not by deleting files. Its models live in a folder protected by System Integrity Protection. You can turn it off in System Settings › Apple Intelligence &amp; Siri, which lets macOS remove the models it downloaded for it.</p></details>
-          <details><summary>How much storage does Apple Intelligence use on a Mac?</summary><p>Apple says up to 8 GB on most supported devices and up to 14 GB on some newer ones. Storage settings counts it under System Data.</p></details>
-          <details><summary>Does turning off Apple Intelligence free up storage?</summary><p>It lets macOS remove the Apple Intelligence models, but Apple doesn&#x27;t say how quickly. Some Siri, dictation, and translation models stay because other features use them. Check Storage settings after a restart.</p></details>
-          <details><summary>Where does Apple Intelligence store its models?</summary><p>In /System/Library/AssetsV2, in folders that start with com_apple_MobileAsset_UAF. The language and image model folders are protected, so even Terminal can&#x27;t read their size.</p></details>
+          <details><summary>How do I delete Time Machine local snapshots?</summary><p>Run tmutil listlocalsnapshots / in Terminal, then tmutil deletelocalsnapshots with a date from the list, like 2026-10-05-093012. To delete every local snapshot on the startup disk, run tmutil deletelocalsnapshots /. Add sudo if macOS says you don&#x27;t have permission.</p></details>
+          <details><summary>Is it safe to delete Time Machine local snapshots?</summary><p>Yes. They&#x27;re extra copies on your Mac&#x27;s own disk. Your backups on the Time Machine disk aren&#x27;t touched. You lose the ability to restore from the last few hours while the backup disk is away.</p></details>
+          <details><summary>Why do Time Machine snapshots keep coming back?</summary><p>Time Machine takes a new local snapshot every hour while automatic backups are on. macOS removes each after 24 hours, or sooner when space runs low. Turning off automatic backups stops new ones.</p></details>
+          <details><summary>Can I turn off Time Machine local snapshots?</summary><p>Not on their own. The old tmutil disablelocal command no longer works on recent macOS. Turning off automatic backups stops them, along with the backups.</p></details>
+          <details><summary>Where are Time Machine local snapshots stored?</summary><p>On your startup disk, as APFS snapshots of the data volume. They aren&#x27;t files in a folder, which is why Finder can&#x27;t show them. tmutil listlocalsnapshots / lists them by name.</p></details>
+          <details><summary>Do local snapshots count as System Data?</summary><p>Yes. Storage settings counts them in System Data, and macOS counts them as purgeable, so Finder includes them in available space.</p></details>
         </div>
       </div>
     </section>
@@ -126,9 +138,9 @@
       <div class="wrap">
         <div class="head center head-sm"><h2>Related guides</h2></div>
         <div class="related">
-          <a class="glass" href="/ai-models/ollama"><b>Ollama</b><span>ollama rm, where models are stored, and a full uninstall.</span></a>
-          <a class="glass" href="/what-is-system-data-on-mac"><b>What is System Data on Mac?</b><span>What&#x27;s inside it, how much is normal, and why it keeps growing.</span></a>
+          <a class="glass" href="/purgeable-space-mac"><b>Purgeable space on Mac</b><span>What it is, why Finder counts it as free, and when to clear it.</span></a>
           <a class="glass" href="/system-data"><b>How to clear System Data</b><span>The step-by-step guide, using only Apple&#x27;s own tools.</span></a>
+          <a class="glass" href="/what-is-system-data-on-mac"><b>What is System Data on Mac?</b><span>What&#x27;s inside it, how much is normal, and why it keeps growing.</span></a>
         </div>
       </div>
     </section>
@@ -155,6 +167,6 @@
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Can I delete Apple Intelligence from my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Not by deleting files. Its models live in a folder protected by System Integrity Protection. You can turn it off in System Settings \u203a Apple Intelligence & Siri, which lets macOS remove the models it downloaded for it."}}, {"@type": "Question", "name": "How much storage does Apple Intelligence use on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Apple says up to 8 GB on most supported devices and up to 14 GB on some newer ones. Storage settings counts it under System Data."}}, {"@type": "Question", "name": "Does turning off Apple Intelligence free up storage?", "acceptedAnswer": {"@type": "Answer", "text": "It lets macOS remove the Apple Intelligence models, but Apple doesn't say how quickly. Some Siri, dictation, and translation models stay because other features use them. Check Storage settings after a restart."}}, {"@type": "Question", "name": "Where does Apple Intelligence store its models?", "acceptedAnswer": {"@type": "Answer", "text": "In /System/Library/AssetsV2, in folders that start with com_apple_MobileAsset_UAF. The language and image model folders are protected, so even Terminal can't read their size."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I delete Time Machine local snapshots?", "acceptedAnswer": {"@type": "Answer", "text": "Run tmutil listlocalsnapshots / in Terminal, then tmutil deletelocalsnapshots with a date from the list, like 2026-10-05-093012. To delete every local snapshot on the startup disk, run tmutil deletelocalsnapshots /. Add sudo if macOS says you don't have permission."}}, {"@type": "Question", "name": "Is it safe to delete Time Machine local snapshots?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. They're extra copies on your Mac's own disk. Your backups on the Time Machine disk aren't touched. You lose the ability to restore from the last few hours while the backup disk is away."}}, {"@type": "Question", "name": "Why do Time Machine snapshots keep coming back?", "acceptedAnswer": {"@type": "Answer", "text": "Time Machine takes a new local snapshot every hour while automatic backups are on. macOS removes each after 24 hours, or sooner when space runs low. Turning off automatic backups stops new ones."}}, {"@type": "Question", "name": "Can I turn off Time Machine local snapshots?", "acceptedAnswer": {"@type": "Answer", "text": "Not on their own. The old tmutil disablelocal command no longer works on recent macOS. Turning off automatic backups stops them, along with the backups."}}, {"@type": "Question", "name": "Where are Time Machine local snapshots stored?", "acceptedAnswer": {"@type": "Answer", "text": "On your startup disk, as APFS snapshots of the data volume. They aren't files in a folder, which is why Finder can't show them. tmutil listlocalsnapshots / lists them by name."}}, {"@type": "Question", "name": "Do local snapshots count as System Data?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Storage settings counts them in System Data, and macOS counts them as purgeable, so Finder includes them in available space."}}]}</script>
 </body>
 </html>

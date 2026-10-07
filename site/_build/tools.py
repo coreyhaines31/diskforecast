@@ -1,4 +1,4 @@
-# Per-tool pages: /clear-cache/[tool] and /ai-models/[tool], plus their hubs.
+# Per-tool pages: /clear-cache/[tool] and /ai-models/[tool], plus their hubs. /taking-up-space comes from folders.py.
 # Each record renders with the guide template (render.py): TL;DR answer, prose with a {{PATHS}} table, a
 # "Disk Forecast finds this for you" section naming the exact Cleanup or System Data row, FAQ, siblings, CTA.
 #
@@ -9,6 +9,8 @@
 #
 # Copy rules: never "optimize", "boost", "speed up", or "junk"; say "reclaim" and "explain".
 # Say "free, source available", never "open source". No em dashes. Subheads list 1 or 3 items, never 2.
+
+from folders import FOLDER_PAGES, TAKING_UP_SPACE_HUB  # noqa: E402
 
 # ------------------------------------------------------------------ Docker
 # "docker system prune" 800, "clear docker cache" 250, "docker disk space" 50, "docker clean up disk space" 30, "docker.raw" 20.
@@ -817,7 +819,7 @@ hf cache prune               # remove old revisions and incomplete downloads</co
 }
 
 # Each hub and its pages: the hub's path is the route, and each page renders at <route>/<slug>.
-SECTIONS = [(CLEAR_CACHE_HUB, CACHE_TOOLS), (AI_MODELS_HUB, AI_TOOLS)]
+SECTIONS = [(CLEAR_CACHE_HUB, CACHE_TOOLS), (AI_MODELS_HUB, AI_TOOLS), (TAKING_UP_SPACE_HUB, FOLDER_PAGES)]
 for _hub, _tools in SECTIONS:
     for _t in _tools:
         _t["path"] = f"{_hub['path']}/{_t['slug']}"

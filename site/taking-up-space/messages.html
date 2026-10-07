@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Clear Teams cache on Mac: the new Microsoft Teams app</title>
-  <meta name="description" content="How to clear Teams cache on Mac for the new Microsoft Teams app: the two folders Microsoft names, what you lose, and when clearing it won&#x27;t help at all.">
-  <link rel="canonical" href="https://diskforecast.com/clear-cache/teams">
-  <meta property="og:title" content="Clear Teams cache on Mac: the new Microsoft Teams app">
-  <meta property="og:description" content="How to clear Teams cache on Mac for the new Microsoft Teams app: the two folders Microsoft names, what you lose, and when clearing it won&#x27;t help at all.">
+  <title>Messages taking up space on Mac: how to reclaim it</title>
+  <meta name="description" content="Why Messages takes up so much space on a Mac, where attachments are stored, and how to reclaim it with Keep Messages, Storage settings, or Messages in iCloud.">
+  <link rel="canonical" href="https://diskforecast.com/taking-up-space/messages">
+  <meta property="og:title" content="Messages taking up space on Mac: how to reclaim it">
+  <meta property="og:description" content="Why Messages takes up so much space on a Mac, where attachments are stored, and how to reclaim it with Keep Messages, Storage settings, or Messages in iCloud.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Disk Forecast">
   <meta property="og:image" content="https://diskforecast.com/images/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://diskforecast.com/clear-cache/teams">
+  <meta property="og:url" content="https://diskforecast.com/taking-up-space/messages">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Clear Teams cache on Mac: the new Microsoft Teams app">
-  <meta name="twitter:description" content="How to clear Teams cache on Mac for the new Microsoft Teams app: the two folders Microsoft names, what you lose, and when clearing it won&#x27;t help at all.">
+  <meta name="twitter:title" content="Messages taking up space on Mac: how to reclaim it">
+  <meta name="twitter:description" content="Why Messages takes up so much space on a Mac, where attachments are stored, and how to reclaim it with Keep Messages, Storage settings, or Messages in iCloud.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -46,53 +46,53 @@
     <div class="sub-hero">
       <div class="wrap narrow">
         <div class="eyebrow">Guide</div>
-        <h1>How to clear Teams cache on Mac, <em>the right way.</em></h1>
-        <p class="lede">Microsoft's own steps for the new Teams on Mac, done with the Trash instead of a permanent delete, and the problems Microsoft says clearing the cache won't fix.</p>
-        <div class="tldr glass"><h2>The short version</h2><p>Quit Teams with Command-Q. Then move two folders to the Trash: <code>~/Library/Group Containers/UBF8T346G9.com.microsoft.teams</code> and <code>~/Library/Containers/com.microsoft.teams2</code>. Those are the folders Microsoft names for the new Teams on Mac. Open Teams again; the first launch is slower while it rebuilds. Your chats and files live in Microsoft 365, so they aren't affected.</p></div>
+        <h1>Messages taking up space on Mac, <em>and how to trim it.</em></h1>
+        <p class="lede">Every photo, video, and voice note anyone has sent you is kept on your Mac, for as long as Messages keeps the conversation. Here's where that lives and the three built-in ways to reclaim it.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Messages keeps every attachment in <code>~/Library/Messages/Attachments</code>, forever by default. To reclaim space, choose <strong>Messages › Settings › General</strong> and set <strong>Keep Messages</strong> to <strong>1 Year</strong> or <strong>30 Days</strong>. Or open <strong>System Settings › General › Storage</strong>, click the info button next to <strong>Messages</strong>, and delete the biggest attachments. Don't delete files in the folder by hand.</p></div>
       </div>
     </div>
     <section class="tight">
       <div class="wrap narrow"><div class="prose">
 
-        <h2>Where the Teams cache lives on a Mac</h2>
-        <p>The new Teams app doesn't keep its cache in <code>~/Library/Caches</code> like most apps. It keeps it inside its own containers, mixed in with its settings and logs:</p>
+        <h2>Why Messages takes up so much space on Mac</h2>
+        <p>With iMessage on your Mac, every conversation from your iPhone shows up there too, and so does everything in it: photos, videos, voice notes, and files. Messages keeps them all, because <strong>Keep Messages</strong> is set to <strong>Forever</strong> unless you change it. Years of group chats with video add up to tens of gigabytes.</p>
                 <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
           <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
-            <tr><th scope="row">New Teams, shared data</th><td><code>~/Library/Group Containers/UBF8T346G9.com.microsoft.teams</code></td><td>Not installed on the Mac we measured</td></tr>
-            <tr><th scope="row">New Teams, app container</th><td><code>~/Library/Containers/com.microsoft.teams2</code></td><td>Not installed on the Mac we measured</td></tr>
-            <tr><th scope="row">Classic Teams</th><td><code>~/Library/Application Support/Microsoft/Teams</code></td><td>Not installed on the Mac we measured</td></tr>
+            <tr><th scope="row">Photos, videos, and files people sent</th><td><code>~/Library/Messages/Attachments</code></td><td>Needs Full Disk Access to measure</td></tr>
+            <tr><th scope="row">The message history</th><td><code>~/Library/Messages/chat.db</code></td><td>Usually far smaller</td></tr>
           </tbody></table></div></div>
-        <p>If <code>~/Library/Containers/com.microsoft.teams2</code> exists, you have the new Teams. The classic app's folder only matters if you still have the old app. To see how much space yours uses:</p>
-<pre><code>du -sh ~/Library/Group\ Containers/UBF8T346G9.com.microsoft.teams ~/Library/Containers/com.microsoft.teams2</code></pre>
-        <p>The first time, macOS may ask whether Terminal can access data from other apps. Allow it, or the numbers will be incomplete.</p>
+        <p>The text of your conversations is small. The attachments are what's big. macOS guards this folder: on the Mac this page was written on, Terminal got “Operation not permitted” trying to list it, so measure it with Storage settings instead, which can see inside.</p>
 
-        <h2 style="margin-top:56px">How to clear Teams cache on Mac, step by step</h2>
+        <h2 style="margin-top:56px">How to reclaim space from Messages</h2>
+        <h3>Keep messages for less time</h3>
         <ol class="steps">
-          <li><b>Quit Teams completely.</b> Press Command-Q in Teams, or right-click its Dock icon and choose <strong>Quit</strong>. Closing the window isn't enough.</li>
-          <li><b>Trash the group container.</b> In Finder, choose <strong>Go › Go to Folder</strong>, type <code>~/Library/Group Containers</code>, and move <code>UBF8T346G9.com.microsoft.teams</code> to the Trash.</li>
-          <li><b>Trash the app container.</b> Go to <code>~/Library/Containers</code> and move the new Teams container to the Trash. Finder may list it by name, as Microsoft Teams, instead of <code>com.microsoft.teams2</code>.</li>
-          <li><b>Open Teams.</b> It rebuilds both folders. The first launch takes longer, and you may need to sign in again.</li>
-          <li><b>Empty the Trash later.</b> Once Teams works the way you want, empty the Trash to reclaim the space.</li>
+          <li><b>Open Messages settings.</b> In Messages, choose <strong>Messages › Settings</strong>, then click <strong>General</strong>.</li>
+          <li><b>Change Keep Messages.</b> Pick <strong>1 Year</strong> or <strong>30 Days</strong> instead of <strong>Forever</strong>.</li>
+          <li><b>Let it run.</b> Messages deletes conversations older than that, attachments included, and keeps doing it from then on.</li>
         </ol>
-        <p>Microsoft's article gives the same two folders as Terminal commands using <code>rm -rf</code>, which deletes them permanently. The Finder steps above do the same job and leave you a way back.</p>
-        <p>Using Teams in a browser instead? Then its cache is your browser's: see <a href="/how-to-clear-cache-on-mac">how to clear cache on Mac</a> for Safari, Chrome, and Firefox.</p>
+        <p>This is the one that keeps working. It's also the bluntest: older messages are gone, text and all, and if Messages in iCloud is on, they're gone from your other devices too.</p>
+        <h3>Delete the biggest attachments</h3>
+        <ol class="steps">
+          <li><b>Open Storage settings.</b> Choose <strong>Apple menu › System Settings › General › Storage</strong>.</li>
+          <li><b>Open Messages.</b> Click the info button next to <strong>Messages</strong>. You'll see attachments sorted by size, with the biggest videos at the top.</li>
+          <li><b>Delete what you don't need.</b> Select attachments, click <strong>Delete</strong>, and confirm. The conversations stay; only those files go.</li>
+        </ol>
+        <h3>Store messages in iCloud</h3>
+        <p>In <strong>Messages › Settings › iMessage</strong>, turn on <strong>Messages in iCloud</strong>. Or use the <strong>Store in iCloud</strong> recommendation at the top of Storage settings. Apple's description: all messages and attachments are stored in iCloud, and when storage space is needed, only recent attachments are kept on this Mac. You need enough iCloud storage to hold them all, and older attachments download again when you open them.</p>
 
-        <h2 style="margin-top:56px">What clearing the Teams cache deletes</h2>
-        <p>Cached images and web content, local settings, and Teams' diagnostic logs. Your messages, channels, meetings, and files are stored in Microsoft 365, and Teams downloads what it needs again.</p>
-        <p>Microsoft is specific about when not to do it. For missing messages, chat history that won't load, a missing team or channel, or wrong notifications and unread counts, clearing the cache doesn't help, and it deletes the logs IT needs to find the cause. It's a targeted fix for problems with the app itself: Teams that won't open, won't sign in, or shows stale content after a change.</p>
-
-        <h2 style="margin-top:56px">How big the Teams cache gets</h2>
-        <p>Microsoft doesn't publish a typical size, and we couldn't measure it: Teams isn't installed on the Mac this page was written on. It grows with use, since it holds web content and logs, so check yours with the <code>du</code> command above before deciding it's worth clearing. If it's only a few hundred megabytes, clearing it won't change much on your disk.</p>
-        <p>More caches, one tool at a time: <a href="/clear-cache/xcode">Xcode</a>, <a href="/clear-cache/docker">Docker</a>, or <a href="/clear-cache">the full list</a>.</p>
+        <h2 style="margin-top:56px">Is it safe to delete Messages attachments on Mac?</h2>
+        <p>From Messages or Storage settings, yes; that's what they're for. A deleted attachment is gone from that conversation, so save any photo you want to keep to Photos or Finder first.</p>
+        <p>From Finder, no. Messages keeps a database, <code>chat.db</code>, of which file belongs to which message. Delete files from <code>Attachments</code> by hand and Messages still thinks they're there, so you get blank bubbles and a database that disagrees with the disk. It doesn't save you anything the two methods above don't.</p>
+        <p>Messages is one of several folders that grow on their own. See also <a href="/taking-up-space/iphone-backups">iPhone backups</a>, <a href="/taking-up-space/icloud-drive">iCloud Drive</a>, and <a href="/taking-up-space">everything else taking up space</a>.</p>
     
       </div></div>
     </section>
     <section class="tight lit" id="shortcut">
       <div class="wrap">
         <div class="head center">
-          <h2>Disk Forecast finds this for you</h2>
+          <h2>Disk Forecast and Messages</h2>
 
-          <p>Here&#39;s the honest answer: Disk Forecast doesn&#39;t list the Teams cache. Its <strong>App caches</strong> row covers <code>~/Library/Caches</code>, and Teams keeps its cache in its own containers instead. What Disk Forecast does show is where your space went, with <code>~/Library</code> in its <strong>Taking the most space</strong> list, and when your disk will be full at the rate it&#39;s filling. It&#39;s free.</p>
+          <p>Disk Forecast won&#39;t delete Messages attachments: that belongs to Messages, which keeps track of every file. Without Full Disk Access, it skips <code>~/Library/Messages</code> entirely, so it never sets off a permission prompt. With Full Disk Access, it measures the folder, and if Messages is one of your biggest, it appears under <strong>Taking the most space</strong> in the menu. Then the forecast shows whether changing Keep Messages slowed the growth. It&#39;s free.</p>
     
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
@@ -137,10 +137,11 @@
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
         <div class="faq glass">
-          <details><summary>How do I clear Teams cache on a Mac?</summary><p>Quit Teams with Command-Q, then move ~/Library/Group Containers/UBF8T346G9.com.microsoft.teams and ~/Library/Containers/com.microsoft.teams2 to the Trash. Those are the folders Microsoft names for the new Teams. Open Teams again and it rebuilds them.</p></details>
-          <details><summary>Will clearing the Teams cache delete my chats?</summary><p>No. Messages, channels, meetings, and files are stored in Microsoft 365, not in the cache. You may need to sign in again, and local settings reset.</p></details>
-          <details><summary>Where is the Teams cache on a Mac?</summary><p>For the new Teams, in ~/Library/Group Containers/UBF8T346G9.com.microsoft.teams and ~/Library/Containers/com.microsoft.teams2. The classic app used ~/Library/Application Support/Microsoft/Teams.</p></details>
-          <details><summary>Should I clear the Teams cache if messages are missing?</summary><p>No. Microsoft says clearing the cache doesn&#x27;t fix missing messages, chat history that won&#x27;t load, or wrong unread counts, and it deletes the logs needed to find the cause. Contact your IT team instead.</p></details>
+          <details><summary>Why is Messages taking up so much space on my Mac?</summary><p>Because Messages keeps every photo, video, and file from every conversation, and Keep Messages is set to Forever by default. Those attachments live in ~/Library/Messages/Attachments and can reach tens of gigabytes.</p></details>
+          <details><summary>How do I reduce Messages storage on Mac?</summary><p>In Messages › Settings › General, set Keep Messages to 1 Year or 30 Days. Or open System Settings › General › Storage, click the info button next to Messages, and delete the biggest attachments.</p></details>
+          <details><summary>Where are Messages attachments stored on a Mac?</summary><p>In ~/Library/Messages/Attachments, organized in folders Messages names itself. macOS guards the folder, so Terminal needs Full Disk Access to read it. Storage settings lists the attachments by size.</p></details>
+          <details><summary>Can I delete the Messages Attachments folder?</summary><p>Not by hand. Messages keeps a database of which file belongs to which message, so deleting files in Finder leaves blank bubbles. Delete attachments from Storage settings or shorten Keep Messages instead.</p></details>
+          <details><summary>Does Messages in iCloud free up space on my Mac?</summary><p>It can. With Messages in iCloud on, macOS keeps only recent attachments on the Mac when storage space is needed, and downloads older ones when you open them. You need enough iCloud storage for everything.</p></details>
         </div>
       </div>
     </section>
@@ -148,9 +149,9 @@
       <div class="wrap">
         <div class="head center head-sm"><h2>Related guides</h2></div>
         <div class="related">
-          <a class="glass" href="/how-to-clear-cache-on-mac"><b>How to clear cache on Mac</b><span>Safari, Chrome, and Firefox first, then app and developer caches.</span></a>
-          <a class="glass" href="/clear-cache/xcode"><b>Xcode</b><span>DerivedData, device support, simulators, and archives.</span></a>
-          <a class="glass" href="/clear-cache/docker"><b>Docker</b><span>docker system prune, build cache, and the Docker.raw file.</span></a>
+          <a class="glass" href="/taking-up-space/iphone-backups"><b>iPhone backups</b><span>Where they&#x27;re stored, and how to delete old ones safely.</span></a>
+          <a class="glass" href="/taking-up-space/icloud-drive"><b>iCloud Drive</b><span>Optimize Mac Storage, Remove Download, and why it uses space.</span></a>
+          <a class="glass" href="/free-up-space-on-mac"><b>How to free up space on Mac</b><span>The complete checklist, from emptying the Trash to System Data.</span></a>
         </div>
       </div>
     </section>
@@ -177,6 +178,6 @@
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear Teams cache on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Quit Teams with Command-Q, then move ~/Library/Group Containers/UBF8T346G9.com.microsoft.teams and ~/Library/Containers/com.microsoft.teams2 to the Trash. Those are the folders Microsoft names for the new Teams. Open Teams again and it rebuilds them."}}, {"@type": "Question", "name": "Will clearing the Teams cache delete my chats?", "acceptedAnswer": {"@type": "Answer", "text": "No. Messages, channels, meetings, and files are stored in Microsoft 365, not in the cache. You may need to sign in again, and local settings reset."}}, {"@type": "Question", "name": "Where is the Teams cache on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "For the new Teams, in ~/Library/Group Containers/UBF8T346G9.com.microsoft.teams and ~/Library/Containers/com.microsoft.teams2. The classic app used ~/Library/Application Support/Microsoft/Teams."}}, {"@type": "Question", "name": "Should I clear the Teams cache if messages are missing?", "acceptedAnswer": {"@type": "Answer", "text": "No. Microsoft says clearing the cache doesn't fix missing messages, chat history that won't load, or wrong unread counts, and it deletes the logs needed to find the cause. Contact your IT team instead."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why is Messages taking up so much space on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Because Messages keeps every photo, video, and file from every conversation, and Keep Messages is set to Forever by default. Those attachments live in ~/Library/Messages/Attachments and can reach tens of gigabytes."}}, {"@type": "Question", "name": "How do I reduce Messages storage on Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In Messages \u203a Settings \u203a General, set Keep Messages to 1 Year or 30 Days. Or open System Settings \u203a General \u203a Storage, click the info button next to Messages, and delete the biggest attachments."}}, {"@type": "Question", "name": "Where are Messages attachments stored on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Messages/Attachments, organized in folders Messages names itself. macOS guards the folder, so Terminal needs Full Disk Access to read it. Storage settings lists the attachments by size."}}, {"@type": "Question", "name": "Can I delete the Messages Attachments folder?", "acceptedAnswer": {"@type": "Answer", "text": "Not by hand. Messages keeps a database of which file belongs to which message, so deleting files in Finder leaves blank bubbles. Delete attachments from Storage settings or shorten Keep Messages instead."}}, {"@type": "Question", "name": "Does Messages in iCloud free up space on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "It can. With Messages in iCloud on, macOS keeps only recent attachments on the Mac when storage space is needed, and downloads older ones when you open them. You need enough iCloud storage for everything."}}]}</script>
 </body>
 </html>
