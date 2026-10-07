@@ -1227,4 +1227,66 @@ CLEANMYMAC_SAFE = {
     "cta": "Reclaim space, free.",
 }
 
-ROUNDUPS = [BEST_FREE, ANALYZER, CLEANMYMAC_SAFE]
+# Targets the "X vs Y" searches: "daisydisk vs cleanmymac" (60/mo US), "cleanmymac vs daisydisk" (10),
+# "daisydisk vs grandperspective" (20), "grandperspective vs daisydisk" (10), and "omnidisksweeper vs daisydisk" (10).
+# Facts are the ones cited on each app's own page above, checked 2026-10-06.
+COMPARE = {
+    "path": "/alternatives/compare",
+    "title": "DaisyDisk vs CleanMyMac, and every Mac disk app compared",
+    "description": "DaisyDisk vs CleanMyMac, DaisyDisk vs GrandPerspective, OmniDiskSweeper vs DaisyDisk, and nine Mac disk apps in one table, with what each one is best at.",
+    "eyebrow": "Comparison",
+    "h1": "DaisyDisk vs CleanMyMac, <em>and every other Mac disk app.</em>",
+    "lede": "One table for every Mac storage app we've compared, then a short, fair answer for the matchups people search for most.",
+    "tldr": "DaisyDisk is the best picture of your disk, for $9.99 once. CleanMyMac is a subscription suite where disk cleanup is one part of many. GrandPerspective is the free treemap. OmniDiskSweeper is a free size list that hasn't changed since 2018. Disk Forecast is free, and it's built around the question the others don't lead with: when will your disk be full?",
+    "card_title": "Every app, side by side",
+    "card_blurb": "DaisyDisk vs CleanMyMac, and every other matchup, in one table.",
+    "footer": "Compare all apps",
+    "related": ["/disk-space-analyzer-mac", "/best-free-mac-cleaner", "/is-cleanmymac-safe"],
+    "faqs": [
+        ("Which is better, DaisyDisk or CleanMyMac?", "They do different jobs. DaisyDisk shows what's on your disk as an interactive picture, for $9.99 once. CleanMyMac is a subscription suite with cleanup, malware scans, and app tools. For seeing and clearing disk space alone, DaisyDisk is the better buy."),
+        ("Is DaisyDisk better than GrandPerspective?", "DaisyDisk is more polished and easier to explore, and it costs $9.99. GrandPerspective draws a plainer treemap for free, and its source is open. Both are maintained and run natively on Apple silicon."),
+        ("Should I use OmniDiskSweeper or DaisyDisk?", "On an Apple silicon Mac, DaisyDisk: it's native and updated in 2026. OmniDiskSweeper is free but hasn't been updated since 2018 and runs through Rosetta 2. If you want free and current, try GrandPerspective or Disk Forecast."),
+        ("Which Mac disk apps are free?", "Disk Forecast, GrandPerspective, OmniDiskSweeper, Disk Inventory X, and Mole's command-line tool are free, and WizTreeMac is free for personal use. DaisyDisk, DiskBuddy, and CleanMyMac are paid."),
+        ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+    ],
+    "html": """
+        <h2>Every app, side by side</h2>
+        <p>Prices, versions, and platforms come from each vendor's own site, store listing, or GitHub, and in a few cases from the app itself, as of October 2026. Each app's own page says where every fact comes from.</p>
+        {{TABLE:all}}
+
+        <h2 style="margin-top:56px">DaisyDisk vs CleanMyMac</h2>
+        <p>These two get compared because both help when a Mac is full, but they're different kinds of app. <strong>DaisyDisk</strong> is an analyzer. It scans a disk, draws it as rings you click through, and lets you drag what you don't want to a collector to delete. It costs $9.99 once, and it's sold on the Mac App Store and directly. The App Store build can't see hidden and system files; the direct one can.</p>
+        <p><strong>CleanMyMac</strong> is MacPaw's suite. Disk cleanup is one part, alongside malware scans, an uninstaller and app updater, and a finder for duplicates and large files. It's a subscription: $39.99 a year on the Mac App Store, or $65.99 for Plus.</p>
+        <p><strong>Pick DaisyDisk</strong> if you want to see where the space went and decide for yourself, and pay once. <strong>Pick CleanMyMac</strong> if you'll use most of the suite. If you only need the disk space back, both are optional: <a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a> lists the free routes.</p>
+
+        <h2 style="margin-top:56px">DaisyDisk vs GrandPerspective</h2>
+        <p>Both draw your disk as a picture, and both are maintained: DaisyDisk shipped 4.34.2 in July 2026, and GrandPerspective shipped 3.8.1 in September 2026. <strong>DaisyDisk</strong> uses rings you click through, and it's the more pleasant of the two to explore. <strong>GrandPerspective</strong> uses a treemap, every file a rectangle sized by its space, and is free from its website, or $2.99 on the Mac App Store. Its source is open under the GPL.</p>
+        <p><strong>Pick DaisyDisk</strong> if you'll explore your disk often and want it to feel good. <strong>Pick GrandPerspective</strong> if you want the same answer for free.</p>
+
+        <h2 style="margin-top:56px">OmniDiskSweeper vs DaisyDisk</h2>
+        <p><strong>OmniDiskSweeper</strong> is a free list of folders sorted by size, from The Omni Group. It's the plainest tool here, and that's its appeal. But version 1.11 dates from 2018 and contains Intel code only, so on Apple silicon it runs through Rosetta 2. <strong>DaisyDisk</strong> is native on Apple silicon, updated in 2026, and costs $9.99.</p>
+        <p><strong>Pick DaisyDisk</strong> on a current Mac. If you want OmniDiskSweeper's plain list for free and native, Disk Forecast's top-folders list and Finder's Calculate all sizes are the closest.</p>
+
+        <h2 style="margin-top:56px">Where Disk Forecast fits</h2>
+        <p>Every other app in the table answers “what's using my space?” Disk Forecast starts one step earlier. It sits in the menu bar, checks free space every hour, and after 3 days says when your disk will be full. When it's time to reclaim space, it explains every item, sends what you clear to the Trash, and breaks System Data into its parts with Apple's own fixes. It's free, with the source on GitHub. It doesn't draw a map, so it pairs well with DaisyDisk or GrandPerspective.</p>
+    """,
+    "tables": {"all": {"head": ["App", "Price", "How it shows your disk", "Apple silicon", "Latest version", "Source available"], "min_width": 880, "rows": [
+        ("Disk Forecast", "Free", "Sorted lists, each item explained, plus a forecast", "Native", "Actively developed", "Yes, on GitHub"),
+        ("DaisyDisk", "$9.99 one-time", "Interactive rings", "Native", "4.34.2, July 2026", "No"),
+        ("CleanMyMac", "$39.99 a year on the App Store", "—", "Native", "5.7.1, October 2026", "No"),
+        ("GrandPerspective", "Free, or $2.99 on the App Store", "Treemap", "Native", "3.8.1, September 2026", "Yes, GPL"),
+        ("OmniDiskSweeper", "Free", "Columns sorted by size", "Intel only", "1.11, 2018", "—"),
+        ("Disk Inventory X", "Free", "Treemap", "Intel only", "1.3, December 2019", "Yes, GPL"),
+        ("WizTreeMac", "Free for personal use", "Treemap and file list", "Native", "1.00, September 2026", "—"),
+        ("Mole", "Free; $19 for the Mac app", "Disk explorer in Terminal", "Native", "1.58.0, October 2026", "Yes, GPL-3.0 (command-line tool)"),
+        ("DiskBuddy", "$49", "Space map and lists", "—", "3.0, October 2026", "—"),
+    ]}},
+    "shortcut": """
+          <h2>The one that tells you when.</h2>
+          <p>Disk Forecast learns how fast your disk fills and shows the countdown in your menu bar, so the next full disk isn&#39;t a surprise. It&#39;s free.</p>
+    """,
+    "mockup": "forecast",
+    "cta": "Know before it's full.",
+}
+
+ROUNDUPS = [BEST_FREE, ANALYZER, CLEANMYMAC_SAFE, COMPARE]
