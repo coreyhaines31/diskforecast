@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Developer disk space on Mac: Xcode, node_modules, Docker</title>
+  <meta name="description" content="Where developer files take disk space on a Mac: DerivedData, CoreSimulator, iOS DeviceSupport, node_modules, and Docker.raw, with what each rebuilds.">
+  <link rel="canonical" href="https://diskforecast.com/taking-up-space/developer-files">
+  <meta property="og:title" content="Developer disk space on Mac: Xcode, node_modules, Docker">
+  <meta property="og:description" content="Where developer files take disk space on a Mac: DerivedData, CoreSimulator, iOS DeviceSupport, node_modules, and Docker.raw, with what each rebuilds.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/taking-up-space/developer-files">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Developer disk space on Mac: Xcode, node_modules, Docker">
+  <meta name="twitter:description" content="Where developer files take disk space on a Mac: DerivedData, CoreSimulator, iOS DeviceSupport, node_modules, and Docker.raw, with what each rebuilds.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>Developer files taking up space on Mac, <em>folder by folder.</em></h1>
+        <p class="lede">On a developer's Mac, the biggest folders usually aren't documents. They're build output, simulators, dependencies, and container images. Here's where each lives, how big it got on one Mac, and the safe way to reclaim it.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Five folders do most of the damage: Xcode's <code>DerivedData</code>, simulators in <code>CoreSimulator</code>, <code>iOS DeviceSupport</code>, every project's <code>node_modules</code>, and Docker's <code>Docker.raw</code>. The first four rebuild or download again, so they're safe to remove. Docker's file isn't: prune it with <code>docker system prune</code> instead. On the Mac measured here, node_modules folders alone came to about 100 GB.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>How much space developer files take</h2>
+        <p>Here's one developer Mac, measured in October 2026. The node_modules figure is what <code>du</code> counted across every project in one code folder:</p>
+                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
+            <tr><th scope="row">Xcode build data</th><td><code>~/Library/Developer/Xcode/DerivedData</code></td><td>1.7 GB</td></tr>
+            <tr><th scope="row">Device debug symbols</th><td><code>~/Library/Developer/Xcode/iOS DeviceSupport</code></td><td>4.3 GB</td></tr>
+            <tr><th scope="row">Simulators and their apps</th><td><code>~/Library/Developer/CoreSimulator/Devices</code></td><td>10 GB, 22 simulators</td></tr>
+            <tr><th scope="row">Simulator runtimes</th><td>Managed by macOS; <code>xcrun simctl runtime list</code></td><td>15.7 GB</td></tr>
+            <tr><th scope="row">JavaScript dependencies</th><td><code>node_modules in every project</code></td><td>About 100 GB, 266 folders</td></tr>
+            <tr><th scope="row">Docker&#x27;s disk image</th><td><code>~/Library/Containers/com.docker.docker/Data/vms/0/data/Docker.raw</code></td><td>29 GB on disk</td></tr>
+          </tbody></table></div></div>
+        <p>That's over 160 GB, and none of it is source code. Every row can be rebuilt or downloaded again. The question is only how long you'll wait when you need it back.</p>
+
+        <h2 style="margin-top:56px">Xcode: DerivedData, CoreSimulator, and DeviceSupport</h2>
+        <ul>
+          <li><strong>DerivedData</strong> is build products and the index, one folder per project. Quit Xcode and move the folders inside it to the Trash; the next build is slower and indexing runs again.</li>
+          <li><strong>CoreSimulator</strong> holds every simulator you've created, with the apps and data installed on it. Simulator runtimes, the bigger part, are managed by macOS and count toward System Data. To remove simulators whose runtime is gone, which can't run anyway:
+<pre><code>xcrun simctl delete unavailable
+xcrun simctl runtime list
+xcrun simctl runtime delete &lt;identifier&gt;</code></pre></li>
+          <li><strong>iOS DeviceSupport</strong> is debug symbols copied from each iPhone or iPad OS version you've plugged in, a few gigabytes each. Delete folders for versions you no longer debug on; Xcode copies them again when that device connects.</li>
+        </ul>
+        <p><a href="/clear-cache/xcode">How to clear Xcode cache</a> covers each folder, plus archives and Swift build folders.</p>
+
+        <h2 style="margin-top:56px">How to delete node_modules</h2>
+        <p>Each JavaScript project installs its own copy of every dependency, so a dozen projects means a dozen <code>node_modules</code> folders, often hundreds of megabytes each. To list yours by size:</p>
+<pre><code>find ~ -name node_modules -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
+        <p>Or use npkill, a small tool that finds them for you. Run it from your code folder:</p>
+<pre><code>cd ~/code
+npx npkill</code></pre>
+        <p>It lists every <code>node_modules</code> below that folder with its size. Move to one with the arrow keys and press Space to delete it. npkill deletes for good rather than moving to the Trash, so stick to projects you can reinstall. Delete <code>node_modules</code> in projects you haven't touched in a while; <code>npm install</code> brings it back from the lockfile. Package manager caches are a separate folder: see <a href="/clear-cache/npm">npm</a>, <a href="/clear-cache/yarn">Yarn</a>, and <a href="/clear-cache">every other tool</a>.</p>
+
+        <h2 style="margin-top:56px">Docker.raw</h2>
+        <p>Docker Desktop keeps every image, container, volume, and build cache inside one file, <code>Docker.raw</code>. It's a sparse file, so Finder can show it at hundreds of gigabytes while <code>du</code> shows what it really uses: on the Mac above, Finder said 926 GB and <code>du</code> said 29 GB.</p>
+        <p>Never move it to the Trash: that deletes every image, container, and volume at once. Reclaim space with Docker's own command, which asks first:</p>
+<pre><code>docker system df
+docker system prune</code></pre>
+        <p><a href="/clear-cache/docker">Docker system prune, explained</a> covers every flag, including the one that removes volumes.</p>
+        <p>More folders that grow on their own: <a href="/taking-up-space/icloud-drive">iCloud Drive</a>, <a href="/taking-up-space/dropbox">Dropbox</a>, and <a href="/taking-up-space">the rest of the list</a>. For local AI models, which can outgrow all of these, see <a href="/ai-models">delete local AI models</a>.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Disk Forecast and developer files</h2>
+
+          <p>Disk Forecast lists every folder on this page. Under <strong>Cleanup › Safe to clear</strong>: <strong>Xcode DerivedData</strong>, <strong>Xcode device support</strong>, <strong>Simulator caches</strong>, and <strong>Build folders in old projects</strong>, which is <code>node_modules</code> and other build folders in projects you haven&#39;t changed in 30 days. Recent projects&#39; folders are under <strong>Worth a look</strong>, unchecked, next to the <strong>Docker disk image</strong>, which it never moves to the Trash. Its System Data window deletes simulator runtimes with <code>xcrun simctl</code> and prunes Docker with <code>docker system prune -f</code>, each after you confirm. Everything else goes to the Trash. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="stage glass">
+          <div class="mk mk-win" role="img" aria-label="The Disk Forecast Cleanup window, headed Reclaim space. Safe to clear, 12.4 GB, all checked: build folders in old projects, package manager caches, app caches, Xcode device support, Xcode DerivedData, and logs. Worth a look, 47 GB, unchecked: Ollama models, build folders in active projects, the Docker disk image, big downloads, and disk images and installers. The footer reads 12.4 GB selected, with Open Trash and Move to Trash buttons.">
+              <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">Cleanup</div></div>
+              <div class="mk-hdr"><div><b>Reclaim space</b><span>1,284,906 files measured in 9 s. Everything goes to the Trash first.</span></div><div class="mk-pill">Rescan</div></div>
+              <div class="mk-list">
+                <div class="mk-sec"><span>Safe to clear</span><span>12.4 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Build folders in old projects</b><span>node_modules, build, and package folders in projects you haven't changed in 30+ days. Reinstalling or rebuilding brings them back.</span></div><span class="sz">4.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Package manager caches</b><span>Downloads kept by npm, pnpm, Bun, Cargo, Gradle, pip, and friends so installs are faster. They fill back up as you install packages.</span></div><span class="sz">3.1 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>App caches</b><span>Files apps keep to load things faster. Apps recreate what they need. macOS's own caches are left alone.</span></div><span class="sz">2.2 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode device support</b><span>Debug symbols copied from devices you've plugged in. Xcode copies them again when you connect that device.</span></div><span class="sz">1.3 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode DerivedData</b><span>Xcode's build products and indexes. Xcode rebuilds them the next time you build.</span></div><span class="sz">812 MB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Logs</b><span>Records apps write about what they did. Useful for troubleshooting, then rarely read again.</span></div><span class="sz">402 MB</span></div>
+                <div class="mk-sec"><span>Worth a look</span><span>47 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Ollama models</b><span>Local AI models downloaded by Ollama. Running ollama pull downloads one again, and ollama rm removes a single model.</span></div><span class="sz">18 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Build folders in active projects</b><span>Build and package folders in projects you've changed recently. Safe to remove, but you'll wait for a reinstall or rebuild next time.</span></div><span class="sz">9.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><svg class="mk-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-2.5z"/></svg><div class="txt"><b>Docker disk image</b><span>Everything Docker stores: images, containers, and volumes, in one file. Reclaim space with Docker's own cleanup in System Data, not by deleting the file.</span><div class="mk-pill">Reclaim in System Data…</div></div><span class="sz">8.4 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Big downloads</b><span>Large files and folders in Downloads. Most were needed once.</span></div><span class="sz">5.9 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Disk images and installers</b><span>DMG, ISO, and PKG files. Once an app is installed, its installer is usually not needed.</span></div><span class="sz">4.7 GB</span></div>
+              </div>
+              <div class="mk-foot"><span>12.4 GB selected</span><div class="mk-pill">Open Trash</div><div class="mk-pill blue">Move to Trash…</div></div>
+            </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>Is it safe to delete DerivedData?</summary><p>Yes. It holds Xcode&#x27;s build products and index, and Xcode rebuilds both on the next build. Quit Xcode first, then move the folders inside ~/Library/Developer/Xcode/DerivedData to the Trash.</p></details>
+          <details><summary>Can I delete the CoreSimulator folder?</summary><p>Not the whole folder. Delete simulators you don&#x27;t use from Xcode&#x27;s Devices and Simulators window, or run xcrun simctl delete unavailable. Delete runtimes with xcrun simctl runtime delete or in Xcode › Settings › Components.</p></details>
+          <details><summary>Can I delete iOS DeviceSupport folders?</summary><p>Yes. They&#x27;re debug symbols for each device OS version you&#x27;ve connected. Xcode copies them again the next time a device running that version connects.</p></details>
+          <details><summary>What is npkill?</summary><p>A command-line tool that finds every node_modules folder below the current folder, lists them by size, and deletes the ones you pick. Run it with npx npkill. It deletes for good, not to the Trash.</p></details>
+          <details><summary>Can I delete Docker.raw on a Mac?</summary><p>Don&#x27;t. It holds every Docker image, container, and volume. Run docker system prune to remove what nothing is using, or use Clean / Purge data in Docker Desktop to start over.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/clear-cache/xcode"><b>Xcode</b><span>DerivedData, device support, simulators, and archives.</span></a>
+          <a class="glass" href="/clear-cache/docker"><b>Docker</b><span>docker system prune, build cache, and the Docker.raw file.</span></a>
+          <a class="glass" href="/clear-cache/npm"><b>npm</b><span>npm cache clean --force, the npx folder, and node_modules.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a><a href="/taking-up-space">What&#x27;s taking up space</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is it safe to delete DerivedData?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It holds Xcode's build products and index, and Xcode rebuilds both on the next build. Quit Xcode first, then move the folders inside ~/Library/Developer/Xcode/DerivedData to the Trash."}}, {"@type": "Question", "name": "Can I delete the CoreSimulator folder?", "acceptedAnswer": {"@type": "Answer", "text": "Not the whole folder. Delete simulators you don't use from Xcode's Devices and Simulators window, or run xcrun simctl delete unavailable. Delete runtimes with xcrun simctl runtime delete or in Xcode \u203a Settings \u203a Components."}}, {"@type": "Question", "name": "Can I delete iOS DeviceSupport folders?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. They're debug symbols for each device OS version you've connected. Xcode copies them again the next time a device running that version connects."}}, {"@type": "Question", "name": "What is npkill?", "acceptedAnswer": {"@type": "Answer", "text": "A command-line tool that finds every node_modules folder below the current folder, lists them by size, and deletes the ones you pick. Run it with npx npkill. It deletes for good, not to the Trash."}}, {"@type": "Question", "name": "Can I delete Docker.raw on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Don't. It holds every Docker image, container, and volume. Run docker system prune to remove what nothing is using, or use Clean / Purge data in Docker Desktop to start over."}}]}</script>
+</body>
+</html>

@@ -318,7 +318,76 @@ ICLOUD_DRIVE = {
     ],
 }
 
-FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX, ICLOUD_DRIVE]
+# ------------------------------------------------------------------ Developer files
+# Tiny volume each, so one page: "npkill" 80, "coresimulator" 30, "xcrun simctl delete unavailable" 20, "delete node_modules" 20,
+# "docker.raw" 20, "deriveddata" 10, "ios devicesupport" 10. Xcode and Docker sizes are the /clear-cache pages' measurements;
+# node_modules is find + du over ~/code on the same Mac (266 folders, du counted about 100 GB). npkill wasn't run here.
+DEVELOPER_FILES = {
+    "slug": "developer-files",
+    "title": "Developer disk space on Mac: Xcode, node_modules, Docker",
+    "description": "Where developer files take disk space on a Mac: DerivedData, CoreSimulator, iOS DeviceSupport, node_modules, and Docker.raw, with what each rebuilds.",
+    "h1": "Developer files taking up space on Mac, <em>folder by folder.</em>",
+    "lede": "On a developer's Mac, the biggest folders usually aren't documents. They're build output, simulators, dependencies, and container images. Here's where each lives, how big it got on one Mac, and the safe way to reclaim it.",
+    "tldr": "Five folders do most of the damage: Xcode's <code>DerivedData</code>, simulators in <code>CoreSimulator</code>, <code>iOS DeviceSupport</code>, every project's <code>node_modules</code>, and Docker's <code>Docker.raw</code>. The first four rebuild or download again, so they're safe to remove. Docker's file isn't: prune it with <code>docker system prune</code> instead. On the Mac measured here, node_modules folders alone came to about 100 GB.",
+    "card_title": "Developer files",
+    "card_blurb": "DerivedData, CoreSimulator, node_modules, and Docker.raw.",
+    "finds_title": "Disk Forecast and developer files",
+    "paths": [
+        ("Xcode build data", "~/Library/Developer/Xcode/DerivedData", "1.7 GB"),
+        ("Device debug symbols", "~/Library/Developer/Xcode/iOS DeviceSupport", "4.3 GB"),
+        ("Simulators and their apps", "~/Library/Developer/CoreSimulator/Devices", "10 GB, 22 simulators"),
+        ("Simulator runtimes", "Managed by macOS; <code>xcrun simctl runtime list</code>", "15.7 GB"),
+        ("JavaScript dependencies", "node_modules in every project", "About 100 GB, 266 folders"),
+        ("Docker's disk image", "~/Library/Containers/com.docker.docker/Data/vms/0/data/Docker.raw", "29 GB on disk"),
+    ],
+    "html": """
+        <h2>How much space developer files take</h2>
+        <p>Here's one developer Mac, measured in October 2026. The node_modules figure is what <code>du</code> counted across every project in one code folder:</p>
+        {{PATHS}}
+        <p>That's over 160 GB, and none of it is source code. Every row can be rebuilt or downloaded again. The question is only how long you'll wait when you need it back.</p>
+
+        <h2 style="margin-top:56px">Xcode: DerivedData, CoreSimulator, and DeviceSupport</h2>
+        <ul>
+          <li><strong>DerivedData</strong> is build products and the index, one folder per project. Quit Xcode and move the folders inside it to the Trash; the next build is slower and indexing runs again.</li>
+          <li><strong>CoreSimulator</strong> holds every simulator you've created, with the apps and data installed on it. Simulator runtimes, the bigger part, are managed by macOS and count toward System Data. To remove simulators whose runtime is gone, which can't run anyway:
+<pre><code>xcrun simctl delete unavailable
+xcrun simctl runtime list
+xcrun simctl runtime delete &lt;identifier&gt;</code></pre></li>
+          <li><strong>iOS DeviceSupport</strong> is debug symbols copied from each iPhone or iPad OS version you've plugged in, a few gigabytes each. Delete folders for versions you no longer debug on; Xcode copies them again when that device connects.</li>
+        </ul>
+        <p><a href="/clear-cache/xcode">How to clear Xcode cache</a> covers each folder, plus archives and Swift build folders.</p>
+
+        <h2 style="margin-top:56px">How to delete node_modules</h2>
+        <p>Each JavaScript project installs its own copy of every dependency, so a dozen projects means a dozen <code>node_modules</code> folders, often hundreds of megabytes each. To list yours by size:</p>
+<pre><code>find ~ -name node_modules -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
+        <p>Or use npkill, a small tool that finds them for you. Run it from your code folder:</p>
+<pre><code>cd ~/code
+npx npkill</code></pre>
+        <p>It lists every <code>node_modules</code> below that folder with its size. Move to one with the arrow keys and press Space to delete it. npkill deletes for good rather than moving to the Trash, so stick to projects you can reinstall. Delete <code>node_modules</code> in projects you haven't touched in a while; <code>npm install</code> brings it back from the lockfile. Package manager caches are a separate folder: see <a href="/clear-cache/npm">npm</a>, <a href="/clear-cache/yarn">Yarn</a>, and <a href="/clear-cache">every other tool</a>.</p>
+
+        <h2 style="margin-top:56px">Docker.raw</h2>
+        <p>Docker Desktop keeps every image, container, volume, and build cache inside one file, <code>Docker.raw</code>. It's a sparse file, so Finder can show it at hundreds of gigabytes while <code>du</code> shows what it really uses: on the Mac above, Finder said 926 GB and <code>du</code> said 29 GB.</p>
+        <p>Never move it to the Trash: that deletes every image, container, and volume at once. Reclaim space with Docker's own command, which asks first:</p>
+<pre><code>docker system df
+docker system prune</code></pre>
+        <p><a href="/clear-cache/docker">Docker system prune, explained</a> covers every flag, including the one that removes volumes.</p>
+        <p>More folders that grow on their own: <a href="/taking-up-space/icloud-drive">iCloud Drive</a>, <a href="/taking-up-space/dropbox">Dropbox</a>, and <a href="/taking-up-space">the rest of the list</a>. For local AI models, which can outgrow all of these, see <a href="/ai-models">delete local AI models</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast lists every folder on this page. Under <strong>Cleanup › Safe to clear</strong>: <strong>Xcode DerivedData</strong>, <strong>Xcode device support</strong>, <strong>Simulator caches</strong>, and <strong>Build folders in old projects</strong>, which is <code>node_modules</code> and other build folders in projects you haven&#39;t changed in 30 days. Recent projects&#39; folders are under <strong>Worth a look</strong>, unchecked, next to the <strong>Docker disk image</strong>, which it never moves to the Trash. Its System Data window deletes simulator runtimes with <code>xcrun simctl</code> and prunes Docker with <code>docker system prune -f</code>, each after you confirm. Everything else goes to the Trash. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/clear-cache/xcode", "/clear-cache/docker", "/clear-cache/npm"],
+    "faqs": [
+        ("Is it safe to delete DerivedData?", "Yes. It holds Xcode's build products and index, and Xcode rebuilds both on the next build. Quit Xcode first, then move the folders inside ~/Library/Developer/Xcode/DerivedData to the Trash."),
+        ("Can I delete the CoreSimulator folder?", "Not the whole folder. Delete simulators you don't use from Xcode's Devices and Simulators window, or run xcrun simctl delete unavailable. Delete runtimes with xcrun simctl runtime delete or in Xcode › Settings › Components."),
+        ("Can I delete iOS DeviceSupport folders?", "Yes. They're debug symbols for each device OS version you've connected. Xcode copies them again the next time a device running that version connects."),
+        ("What is npkill?", "A command-line tool that finds every node_modules folder below the current folder, lists them by size, and deletes the ones you pick. Run it with npx npkill. It deletes for good, not to the Trash."),
+        ("Can I delete Docker.raw on a Mac?", "Don't. It holds every Docker image, container, and volume. Run docker system prune to remove what nothing is using, or use Clean / Purge data in Docker Desktop to start over."),
+    ],
+}
+
+FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX, ICLOUD_DRIVE, DEVELOPER_FILES]
 
 TAKING_UP_SPACE_HUB = {
     "path": "/taking-up-space",
