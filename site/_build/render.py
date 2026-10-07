@@ -288,11 +288,12 @@ def render_hub():
 
 def related_guides(g):
     """Cards for the guides this one points to, by path."""
-    if not g.get("related"):
-        return ""
     by_path = {q["path"]: q for q in GUIDES}
+    related = [by_path[path] for path in g.get("related", []) if path in by_path]
+    if not related:
+        return ""
     cards = "".join(f'          <a class="glass" href="{q["path"]}"><b>{esc(q["card_title"])}</b><span>{esc(q["card_blurb"])}</span></a>\n'
-                    for q in (by_path[path] for path in g["related"]))
+                    for q in related)
     return f'''    <section class="tight lit">
       <div class="wrap">
         <div class="head center head-sm"><h2>Related guides</h2></div>
