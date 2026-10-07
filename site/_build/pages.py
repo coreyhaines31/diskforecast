@@ -131,16 +131,16 @@ PAGES = [
         "slug": "cleanmymac",
         "competitor": "CleanMyMac",
         "title": "CleanMyMac, compared with a free storage app for Mac",
-        "description": "CleanMyMac starts at $47.50 a year. Disk Forecast is a free, source-available CleanMyMac alternative that warns before your disk fills and reclaims space.",
+        "description": "CleanMyMac costs $39.99 a year or $89.99 once. Disk Forecast is a free, source-available CleanMyMac alternative that warns before your disk fills.",
         "eyebrow": "CleanMyMac alternative",
-        "h1": "CleanMyMac bills you every year. Disk Forecast <em>reclaims space for free.</em>",
-        "lede": "CleanMyMac is a big suite, and since July 2025 it starts at $47.50 a year. If what you actually need is room on your disk, you don't need to pay every year for it.",
-        "tldr": "Stay with CleanMyMac if you use the whole suite and the yearly price is worth it to you. If you mostly opened it to get disk space back, Disk Forecast does that part for free: it tells you when you'll run out, explains System Data, and sends what it clears to the Trash.",
+        "h1": "CleanMyMac is a whole suite. Disk Forecast <em>reclaims space for free.</em>",
+        "lede": "CleanMyMac is a big suite that costs $39.99 a year, or $89.99 once, on the Mac App Store. If what you actually need is room on your disk, you don't need to pay for it.",
+        "tldr": "Stay with CleanMyMac if you use the whole suite and the price is worth it to you. If you mostly opened it to get disk space back, Disk Forecast does that part for free: it tells you when you'll run out, explains System Data, and sends what it clears to the Trash.",
         "card_title": "CleanMyMac",
-        "card_blurb": "The big suite. Now a subscription from $47.50 a year.",
+        "card_blurb": "The big suite. From $39.99 a year, or $89.99 once.",
         "cta": "Reclaim space, free.",
         "faqs": [
-            ("How much does CleanMyMac cost?", "MacPaw raised CleanMyMac's price in July 2025, and it now starts at $47.50 a year. Check MacPaw's store for current plans."),
+            ("How much does CleanMyMac cost?", "On the Mac App Store (October 2026), CleanMyMac costs $9.99 a month or $39.99 a year, Plus costs $65.99 a year, and CleanMyMac X is a one-time $89.99. MacPaw's own store may differ, so check it for current plans."),
             ("Do I need a Mac cleaner app?", "For disk space, a careful tool helps when you're running low. Beyond that, usually not. macOS manages its own caches and memory, and on an SSD, free space doesn't change how a Mac runs until the disk is nearly full."),
             ("Can I use Disk Forecast and CleanMyMac together?", "Yes. They don't conflict. Disk Forecast only moves files to the Trash when you ask it to."),
             ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
@@ -148,7 +148,7 @@ PAGES = [
         "sections": [
             {"id": "why", "html": """
         <h2>What CleanMyMac is</h2>
-        <p>CleanMyMac is MacPaw's long-running Mac suite, with storage cleanup as one part of a larger set of tools. In July 2025 its pricing moved to a subscription that starts at $47.50 a year, and some users have pushed back on the billing.</p>
+        <p>CleanMyMac is MacPaw's long-running Mac suite, with storage cleanup as one part of a larger set of tools. On the Mac App Store it costs $39.99 a year, $65.99 a year for Plus, or $89.99 once for CleanMyMac X (October 2026). Macworld reported a direct price of $47.50 a year for the Basic plan in July 2025, and some users pushed back on that change.</p>
         <p>If you use everything in it, that may be fine. Many people open it for one reason: the disk is full.</p>
         <h3>Do you need a cleaner at all?</h3>
         <p>Regulars on Apple's own support forums have warned against Mac cleaner apps for years, and they have a point. On a modern Mac with APFS and an SSD, there's nothing to tune. A Mac with 100 GB free runs the same as one with 300 GB free.</p>
@@ -156,14 +156,14 @@ PAGES = [
             """},
             {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs CleanMyMac</h2>
-        <p>CleanMyMac facts come from MacPaw's store and coverage of the 2025 price change.</p>
+        <p>CleanMyMac prices come from its Mac App Store listing on October 6, 2026.</p>
         {{TABLE}}
         <h3>What CleanMyMac does better</h3>
         <p>Scope. It's a suite with many tools beyond storage, a polished interface, and a company behind it with a support team.</p>
         <h3>What Disk Forecast does better</h3>
         <p>It costs nothing, warns you before the disk fills, explains System Data in plain English, and uses Apple's own tools for system fixes. The source is on GitHub, so you can see exactly what it moves to the Trash.</p>
             """, "table": [
-                ("Price", "Free", "From $47.50 a year"),
+                ("Price", "Free", "$39.99 a year, or $89.99 once"),
                 ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
                 ("System Data broken down", "Every part, in plain English, with Apple's fixes", "—"),
                 ("Deletes go to the Trash", "Yes", "—"),
@@ -237,17 +237,276 @@ PAGES = [
             """},
         ],
     },
+    # ------------------------------------------------------------------ OmniDiskSweeper
+    # Targets "omnidisksweeper" (450/mo US, KD 5). Facts: omnigroup.com/more, and the 1.11 app itself
+    # (lipo: x86_64 only; signed and notarized by The Omni Group on 2018-09-23), checked 2026-10-06.
+    {
+        "slug": "omnidisksweeper",
+        "competitor": "OmniDiskSweeper",
+        "title": "OmniDiskSweeper for Mac, compared with a free alternative",
+        "description": "OmniDiskSweeper is the free size list from The Omni Group, last built in 2018 for Intel. Disk Forecast is a free alternative that says when your disk fills.",
+        "eyebrow": "OmniDiskSweeper alternative",
+        "h1": "OmniDiskSweeper lists the biggest files. Disk Forecast <em>says when you'll run out.</em>",
+        "lede": "OmniDiskSweeper has been the plain, free way to find big files on a Mac for years: every folder, largest first, with a Trash button. Its newest version, 1.11, was built in 2018 for Intel Macs. Here's how it compares with Disk Forecast today.",
+        "tldr": "OmniDiskSweeper still works as a quick size list, and it's free. But version 1.11 is an Intel app from 2018, so an Apple silicon Mac runs it through Rosetta 2, which Apple says stays available for general use through macOS 27. Disk Forecast is free too, runs natively on Apple silicon and Intel, and adds a countdown to a full disk, System Data explained, and a cleanup list sorted by risk.",
+        "card_title": "OmniDiskSweeper",
+        "card_blurb": "The classic free size list. Last built in 2018, for Intel.",
+        "cta": "Know before it's full.",
+        "faqs": [
+            ("Is OmniDiskSweeper free?", "Yes. The Omni Group offers it as a free download from its website, with no purchase or account."),
+            ("Does OmniDiskSweeper work on Apple silicon?", "Version 1.11, the newest on Omni's site as of October 2026, contains Intel code only. On an Apple silicon Mac it runs through Rosetta 2, which Apple says stays available as a general-purpose tool through macOS 27."),
+            ("Is OmniDiskSweeper still updated?", "Omni's download page lists versions up to 1.11, for macOS 10.13 High Sierra, and the 1.11 app was signed in September 2018. We couldn't find a newer release."),
+            ("Is OmniDiskSweeper safe?", "It's signed and notarized by The Omni Group, and it moves files to the Trash when you ask it to. The risk is the same as with any size list: it shows how big something is, not whether you still need it."),
+            ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+        ],
+        "sections": [
+            {"id": "why", "html": """
+        <h2>What OmniDiskSweeper does well</h2>
+        <p>OmniDiskSweeper does one thing. It scans a drive and shows its folders in columns, sorted largest to smallest, like Finder's column view with sizes attached. Click the biggest folder, then the biggest folder inside that, and you find the 30 GB you forgot about in under a minute. Omni's own description is exactly that: it “shows you the files on your drive, largest to smallest, and lets you quickly Trash or open them.”</p>
+        <p>It's free, it comes from The Omni Group, the company behind OmniFocus and OmniGraffle, and the app is signed and notarized. For a long time it was the first answer to “what's filling my Mac?”</p>
+        <h3>Where it stops</h3>
+        <p><strong>It hasn't changed since 2018.</strong> The newest download on Omni's site is version 1.11, listed for macOS 10.13 High Sierra. We checked the app inside: it was signed in September 2018 and contains Intel code only. On an Apple silicon Mac, macOS runs it through Rosetta 2, and Apple says Rosetta stays available as a general-purpose tool through macOS 27.</p>
+        <p><strong>Sizes, not meanings.</strong> A list tells you a folder is 18 GB. It can't tell you that the folder is Xcode's DerivedData, that Xcode rebuilds it on the next build, and that clearing it is safe. Disk Forecast puts a one-line explanation next to everything it lists.</p>
+        <p><strong>It waits for you.</strong> You open OmniDiskSweeper after macOS has already warned you. Disk Forecast checks free space every hour and tells you weeks ahead.</p>
+            """},
+            {"id": "compare", "lit": True, "html": """
+        <h2>Disk Forecast vs OmniDiskSweeper</h2>
+        <p>OmniDiskSweeper facts come from Omni's download page and the 1.11 app itself, checked in October 2026.</p>
+        {{TABLE}}
+        <h3>What OmniDiskSweeper does better</h3>
+        <p>Drilling into any folder on any drive in a plain column view. If all you want is sizes, nothing is simpler, and it costs nothing.</p>
+        <h3>What Disk Forecast does better</h3>
+        <p>It runs natively on Apple silicon, watches your disk all day, explains what it finds, and breaks down System Data with Apple's own fixes. It's free, with the source on GitHub.</p>
+            """, "table": [
+                ("Price", "Free", "Free"),
+                ("Latest version", "Actively developed", "1.11, signed September 2018"),
+                ("Apple silicon", "Native", "Intel only, runs through Rosetta 2"),
+                ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
+                ("How it shows your disk", "Lists sorted by size, each item explained", "Columns sorted by size"),
+                ("System Data broken down", "Every part, in plain English, with Apple's fixes", "—"),
+                ("Cleanup sorted by risk", "Yes", "—"),
+                ("Deletes go to the Trash", "Yes", "Yes"),
+                ("Source available", "Yes, on GitHub", "—"),
+            ]},
+            {"id": "switch", "html": """
+        <h2>Switching takes a minute</h2>
+        <ol class="steps">
+          <li><b>Install Disk Forecast.</b> <code>brew install --cask coreyhaines31/tap/diskforecast</code>, or download the app from GitHub and drag it to Applications.</li>
+          <li><b>Look at the top folders.</b> The menu shows the five folders taking the most space, the same first look OmniDiskSweeper gives you, with free space beside it.</li>
+          <li><b>Clear what's safe.</b> “Safe to clear” is everything that rebuilds on its own. Click it, confirm, and it all goes to the Trash.</li>
+          <li><b>Let the forecast build.</b> After 3 days of history, the menu bar shows when your disk will be full, so next time you're not hunting in a hurry.</li>
+        </ol>
+            """},
+        ],
+    },
+    # ------------------------------------------------------------------ WinDirStat, WizTree, TreeSize
+    # Targets "windirstat for mac" (450/mo US, KD 0), plus "windirstat mac", "wiztree mac", and "treesize mac".
+    # Facts, checked 2026-10-06: windirstat.net and its GitHub releases (2.9.2, Windows builds only); diskanalyzer.com/download
+    # and /wiztreemac-vs-wiztree (WizTreeMac 1.00, 2026-09-16, macOS 12+, Universal); jam-software.com/treesize (Windows only).
+    {
+        "slug": "windirstat-mac",
+        "competitor": "WinDirStat",
+        "footer": "WinDirStat for Mac",
+        "title": "WinDirStat for Mac: what to use instead on macOS",
+        "description": "WinDirStat, WizTree, and TreeSize on Windows, and what to use on a Mac: WizTree's new Mac app, the treemap apps, and Disk Forecast, which is free.",
+        "eyebrow": "WinDirStat for Mac",
+        "h1": "WinDirStat for Mac doesn't exist. <em>Here's what does.</em>",
+        "lede": "If you came from Windows, you probably reached for WinDirStat, WizTree, or TreeSize when the disk filled up. WinDirStat and TreeSize don't run on macOS. WizTree does now, as of September 2026. Here's what each does on Windows, and the closest tools on a Mac.",
+        "tldr": "WinDirStat and TreeSize are Windows only. WizTree released a Mac version, WizTreeMac, in September 2026, free for personal use. For the WinDirStat treemap, GrandPerspective is the free Mac equivalent and DaisyDisk the polished paid one. Disk Forecast does what none of them lead with: it tells you when your Mac's disk will be full and explains what's safe to clear.",
+        "card_title": "WinDirStat for Mac",
+        "card_blurb": "WinDirStat, WizTree, and TreeSize, and what runs on a Mac.",
+        "cta": "Know before it's full.",
+        "faqs": [
+            ("Is there a WinDirStat for Mac?", "No. WinDirStat is a free, GPL-licensed disk analyzer for Windows, and its October 2026 release, 2.9.2, ships Windows builds only. On a Mac, GrandPerspective draws the same kind of treemap for free."),
+            ("Is WizTree available for Mac?", "Yes, since September 16, 2026. WizTreeMac 1.00 needs macOS 12 or later, runs natively on Apple silicon and Intel, and like the Windows version is free for personal use."),
+            ("Is there a TreeSize for Mac?", "Not from JAM Software, which lists TreeSize for Windows only: a free edition for private use, plus paid Personal and Professional editions."),
+            ("What's the closest thing to WinDirStat on a Mac?", "For the treemap, GrandPerspective or WizTreeMac, both free. For a list of the biggest folders with an explanation of each, Disk Forecast. For a quick look with nothing to install, Finder's Calculate all sizes."),
+            ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+        ],
+        "sections": [
+            {"id": "why", "html": """
+        <h2>What WinDirStat, WizTree, and TreeSize do on Windows</h2>
+        <p><strong>WinDirStat</strong> is the original. It scans a drive and shows three views at once: a folder list, a list of file types, and a treemap where, in its own words, “each rectangle represents a file,” sized by space and colored by type. It's free under the GNU GPL and still maintained; version 2.9.2 shipped in October 2026.</p>
+        <p><strong>WizTree</strong> does the same job much faster on NTFS drives, because it reads the drive's Master File Table directly instead of opening every folder. It's free for personal use, and businesses buy a supporter license priced by staff size, from $25 to $500.</p>
+        <p><strong>TreeSize</strong>, from JAM Software, adds reports, scheduled scans, and a duplicate finder. TreeSize Free covers private use. Personal is $25.20 per user per year, and Professional starts at $49.</p>
+        <h3>What happens on a Mac</h3>
+        <p>WinDirStat and TreeSize have no Mac version. WizTree is the exception: Antibody Software released WizTreeMac 1.00 on September 16, 2026, for macOS 12 and later, native on Apple silicon and Intel. Its site says it has almost all of the Windows version's features, including the treemap. APFS has no Master File Table, so on a Mac it uses macOS's bulk folder reading across several threads instead.</p>
+            """},
+            {"id": "compare", "lit": True, "html": """
+        <h2>Disk Forecast vs WinDirStat, WizTree, and TreeSize</h2>
+        <p>Facts come from each vendor's own site and WinDirStat's GitHub releases, checked in October 2026.</p>
+        {{TABLE}}
+        <h3>What the Windows tools do better</h3>
+        <p>Treemaps. If you think in rectangles, WinDirStat's picture of a drive is hard to give up. On a Mac, WizTreeMac and GrandPerspective draw the same kind of map, and DaisyDisk draws rings instead.</p>
+        <h3>What Disk Forecast does better</h3>
+        <p>It's built for the Mac's own disk. It shows free space in the menu bar, tells you when you'll run out, explains each item it finds, and breaks System Data into parts with Apple's own fixes.</p>
+            """, "grid": {"head": ["", "Disk Forecast", "WinDirStat", "WizTree", "TreeSize"], "min_width": 720, "rows": [
+                ("Runs on macOS", "Yes, macOS 14 or later", "No", "Yes, as WizTreeMac, macOS 12 or later", "No"),
+                ("Price", "Free", "Free", "Free for personal use", "Free for private use; paid from $25.20 a year"),
+                ("Treemap", "No", "Yes", "Yes", "Yes"),
+                ("Tells you when the disk will be full", "Yes, in the menu bar", "—", "—", "—"),
+                ("Explains what each item is", "Yes, in plain English", "—", "—", "—"),
+                ("System Data broken down", "Every part, with Apple's fixes", "Not a Mac app", "—", "Not a Mac app"),
+                ("Source available", "Yes, on GitHub", "Yes, GPL", "—", "—"),
+            ]}},
+            {"id": "switch", "html": """
+        <h2>The closest Mac tools</h2>
+        <ul>
+          <li><strong>For the treemap:</strong> <a href="/alternatives/grandperspective">GrandPerspective</a> is free, open source, and updated in September 2026. WizTreeMac is free for personal use. <a href="/alternatives/daisydisk">DaisyDisk</a> is $9.99 and draws rings instead of rectangles.</li>
+          <li><strong>For finding what to delete:</strong> Disk Forecast lists the biggest folders and a cleanup list with a plain-English line for every item, sorted into “Safe to clear” and “Worth a look.” Everything goes to the Trash.</li>
+          <li><strong>With nothing to install:</strong> <strong>System Settings › General › Storage</strong> sorts your disk by category, and Finder's <strong>Calculate all sizes</strong> shows folder sizes in list view. <a href="/how-to-check-storage-on-mac">How to check Mac storage</a> walks through both.</li>
+        </ul>
+        <h3>One difference to expect on a Mac</h3>
+        <p>On APFS, a duplicated file can share space with the original, and macOS keeps purgeable space and local Time Machine snapshots that don't show up as ordinary files. So a Mac analyzer, Finder, and Storage settings can each show a different total. <a href="/disk-space-analyzer-mac">Disk space analyzers for Mac</a> explains why, and how Disk Forecast counts shared space once.</p>
+            """},
+        ],
+    },
+    # ------------------------------------------------------------------ Mole
+    # Targets "mole mac" (350/mo US), "mole mac cleaner" (200), and "mole cleaner" (50). Facts, checked 2026-10-06:
+    # github.com/tw93/Mole README and API (GPL-3.0, 69,455 stars, V1.58.0 on 2026-10-05), and mole.fit (the $19 app).
+    {
+        "slug": "mole",
+        "competitor": "Mole",
+        "title": "Mole Mac cleaner, compared with a free alternative",
+        "description": "Mole is a free, open-source Mac cleaner you run in Terminal, plus a $19 app. Disk Forecast is a free menu bar app that warns weeks before your disk fills.",
+        "eyebrow": "Mole alternative",
+        "h1": "The Mole Mac cleaner works in Terminal. Disk Forecast <em>works from the menu bar.</em>",
+        "lede": "Mole, by tw93, is one of the most popular Mac tools on GitHub, with about 69,000 stars. It's a free, open-source command-line cleaner, plus a separate paid Mac app. Disk Forecast overlaps with part of it, and adds the part Mole doesn't lead with: telling you when you'll run out.",
+        "tldr": "Pick Mole if you live in Terminal and want one command that cleans caches, uninstalls apps, and shows live system stats. Pick Disk Forecast if you want a menu bar countdown to a full disk, System Data explained with Apple's own fixes, and every cleanup sent to the Trash. Both are free, and they don't conflict.",
+        "card_title": "Mole",
+        "card_blurb": "The popular open-source cleaner you run in Terminal.",
+        "cta": "Know before it's full.",
+        "faqs": [
+            ("What is Mole for Mac?", "A command-line Mac cleaner by tw93 on GitHub. Its mo command cleans caches and logs, uninstalls apps with their leftovers, removes build folders, finds old installers, explores disk usage, and shows live system stats. It's licensed under GPL-3.0."),
+            ("Is Mole free?", "The command-line tool is free and open source under GPL-3.0. Mole for Mac, a separate native app, is $19 once for two Macs; scanning is free, and each paid tool works twice without a license."),
+            ("Is Mole safe?", "Its README describes path checks, protected system locations, a --dry-run preview for every command that deletes, a whitelist, and an operations log. mo analyze moves items to the Trash, while mo purge permanently deletes the build folders you confirm. Run --dry-run first."),
+            ("How do I install Mole?", "With Homebrew: brew install mole. It needs macOS 12 or later and runs on Apple silicon and Intel. The Homebrew formula installs the command-line tool only, not the paid app."),
+            ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+        ],
+        "sections": [
+            {"id": "why", "html": """
+        <h2>What Mole does well</h2>
+        <p>Mole puts several Mac utilities into one terminal command, <code>mo</code>. Its README says it combines “CleanMyMac, AppCleaner, DaisyDisk, and iStat Menus style workflows in a single terminal binary.”</p>
+        <ul>
+          <li><code>mo clean</code> clears caches, logs, temporary files, and leftovers from apps you've removed.</li>
+          <li><code>mo uninstall</code> removes an app together with its launch agents and preferences.</li>
+          <li><code>mo purge</code> finds build folders like <code>node_modules</code> and <code>target</code>, grouped by project.</li>
+          <li><code>mo analyze</code> is a disk explorer in the terminal, and <code>mo status</code> is a live dashboard of CPU, memory, disk, and network.</li>
+        </ul>
+        <p>It's careful for a cleaner. Every command that deletes takes <code>--dry-run</code>, you can whitelist caches you want to keep, and it logs what it did. It's open source under GPL-3.0, it ships often (version 1.58.0 came out on October 5, 2026), and it runs on macOS 12 or later, on Apple silicon and Intel.</p>
+        <h3>Where it stops</h3>
+        <p><strong>It runs when you run it.</strong> Mole is a tool you reach for. Nothing in the command-line tool watches the disk between runs, so the first sign of trouble is still macOS saying your disk is almost full.</p>
+        <p><strong>Not everything goes to the Trash.</strong> <code>mo analyze</code> moves what you pick to the Trash, but <code>mo purge</code> “permanently deletes only the items you confirm.” Disk Forecast sends everything it clears to the Trash, so you can change your mind until you empty it.</p>
+        <p><strong>A different first question.</strong> Mole starts with what it can clean. Disk Forecast starts with when you'll run out, then breaks System Data into local snapshots, simulators, the Spotlight index, Apple Intelligence and Siri models, and Docker, and runs Apple's own tool for each fix after showing you the command.</p>
+            """},
+            {"id": "compare", "lit": True, "html": """
+        <h2>Disk Forecast vs Mole</h2>
+        <p>Mole facts come from its GitHub README and releases, and from mole.fit, as of October 2026.</p>
+        {{TABLE}}
+        <h3>What Mole does better</h3>
+        <p>Breadth in one command. An uninstaller, a maintenance command that refreshes caches and system services, live system stats, and scripting from Terminal, Raycast, or Alfred. If you want one tool for all of it, Mole is a strong free choice.</p>
+        <h3>What Disk Forecast does better</h3>
+        <p>Warning you ahead of time, explaining every item in plain English, and making every cleanup reversible until you empty the Trash. It's a Mac app you never have to remember to run.</p>
+            """, "table": [
+                ("Price", "Free", "Free command-line tool; Mac app $19 once for 2 Macs"),
+                ("Where it runs", "Menu bar app", "Terminal, plus a separate paid app"),
+                ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
+                ("System Data broken down", "Every part, in plain English, with Apple's fixes", "—"),
+                ("Cleanup sorted by risk", "Yes", "—"),
+                ("Deletes go to the Trash", "Yes, always", "Some commands; purge deletes permanently"),
+                ("Preview before deleting", "Every item listed and explained", "Yes, with --dry-run"),
+                ("Uninstalls apps", "No", "Yes"),
+                ("Live CPU and memory stats", "No", "Yes"),
+                ("Source available", "Yes, on GitHub", "Yes, GPL-3.0 (command-line tool)"),
+            ]},
+            {"id": "switch", "html": """
+        <h2>Using them together</h2>
+        <ol class="steps">
+          <li><b>Install Disk Forecast.</b> <code>brew install --cask coreyhaines31/tap/diskforecast</code>, or download the app from GitHub.</li>
+          <li><b>Let it watch.</b> Free space shows in the menu bar right away, and the forecast appears after 3 days of history.</li>
+          <li><b>Clear what's safe when it's time.</b> “Safe to clear” is everything that rebuilds on its own: caches, logs, Xcode DerivedData, and build folders in projects you haven't touched in 30 days. It all goes to the Trash.</li>
+          <li><b>Keep Mole for the rest.</b> Uninstalling apps and checking system stats are Mole's jobs, not Disk Forecast's. Run its <code>--dry-run</code> first.</li>
+        </ol>
+            """},
+        ],
+    },
+    # ------------------------------------------------------------------ Disk Inventory X
+    # Targets "disk inventory x" (300/mo US, KD 0), "disk inventory x alternative", and "disk inventory x apple silicon".
+    # Facts, checked 2026-10-06: derlien.com and its release notes (1.3 on 2019-12-08; 1.2 "64 Bit (Intel only)";
+    # 1.3 "still not signed nor notarized"), and the 1.3 app itself (lipo: x86_64 only; Gatekeeper: not signed at all).
+    {
+        "slug": "disk-inventory-x",
+        "competitor": "Disk Inventory X",
+        "title": "Disk Inventory X on Apple silicon, and a free alternative",
+        "description": "Disk Inventory X was last updated in 2019, is Intel only, and isn't notarized. Here's how it runs on Apple silicon today, and the free tools that replace it.",
+        "eyebrow": "Disk Inventory X alternative",
+        "h1": "Disk Inventory X stopped in 2019. <em>Your Mac didn't.</em>",
+        "lede": "Disk Inventory X was the treemap a lot of Mac users learned on. Its last release, 1.3, came out on December 8, 2019, before the first Apple silicon Macs shipped. Here's what that means on a Mac today, and which free tools have taken its place.",
+        "tldr": "Disk Inventory X 1.3 is Intel only and was never signed or notarized, so on Apple silicon it runs through Rosetta 2 and needs a manual override to open. GrandPerspective is the free, maintained treemap that replaces it. Disk Forecast is the free app that tells you when your disk will be full and what's safe to clear.",
+        "card_title": "Disk Inventory X",
+        "card_blurb": "The treemap many Mac users learned on. Last updated in 2019.",
+        "cta": "Know before it's full.",
+        "faqs": [
+            ("Does Disk Inventory X work on Apple silicon?", "Version 1.3 contains Intel code only, so an Apple silicon Mac runs it through Rosetta 2, which Apple says stays available as a general-purpose tool through macOS 27. The app isn't signed or notarized, so macOS blocks it until you allow it in System Settings › Privacy & Security."),
+            ("Is Disk Inventory X still updated?", "Its release notes list 1.3, from December 8, 2019, as the latest version, and its website lists macOS 10.13 to 10.15. We couldn't find anything newer."),
+            ("Is Disk Inventory X free?", "Yes. It's free and released under the GPL, with a donation link on its website."),
+            ("What's the best Disk Inventory X alternative?", "For the same kind of treemap, GrandPerspective: free, open source, and updated in September 2026 for macOS 14 and later. For a forecast and a cleanup list that explains each item, Disk Forecast, also free."),
+            ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+        ],
+        "sections": [
+            {"id": "why", "html": """
+        <h2>What Disk Inventory X did well</h2>
+        <p>Disk Inventory X showed a whole drive as a treemap, with a list of file kinds beside it, so you could see at a glance that most of the disk was video, or one giant disk image. It was free, released under the GPL, and for years it was the first app people recommended when a Mac filled up. It's the Mac cousin of KDirStat and WinDirStat, and its website still links to both.</p>
+        <h3>Where it is now</h3>
+        <p><strong>No release since 2019.</strong> Its release notes list 1.3, from December 8, 2019, as the latest version. The notes for 1.2 say it became 64-bit, “Intel only.”</p>
+        <p><strong>Intel code only.</strong> We checked the 1.3 app: it contains Intel code and nothing else. An Apple silicon Mac runs it through Rosetta 2, and Apple says Rosetta stays available as a general-purpose tool through macOS 27.</p>
+        <p><strong>Not signed or notarized.</strong> The 1.3 release notes say so, and Gatekeeper agrees: it rejects the app as unsigned. You can still open it by allowing it in System Settings › Privacy & Security, but that overrides a safety check for an app that hasn't been updated in years.</p>
+        <p><strong>Built for older macOS.</strong> Its website lists macOS 10.13 to 10.15. Anything newer is up to you to test.</p>
+            """},
+            {"id": "compare", "lit": True, "html": """
+        <h2>Disk Forecast vs Disk Inventory X</h2>
+        <p>Disk Inventory X facts come from its website, its release notes, and the 1.3 app itself, checked in October 2026.</p>
+        {{TABLE}}
+        <h3>What Disk Inventory X does better</h3>
+        <p>The treemap with a file-kind legend, which made it easy to see what type of file was filling a drive. If that's what you miss, GrandPerspective draws the same kind of map and is still maintained.</p>
+        <h3>What Disk Forecast does better</h3>
+        <p>It's current. It runs natively on Apple silicon and Intel, it's signed and notarized, it warns you before your disk fills, and it explains what each item is and whether it's safe to clear.</p>
+            """, "table": [
+                ("Price", "Free", "Free"),
+                ("Latest version", "Actively developed", "1.3, December 2019"),
+                ("Apple silicon", "Native", "Intel only, runs through Rosetta 2"),
+                ("Signed and notarized", "Yes", "No"),
+                ("Supported macOS", "14 or later", "10.13 to 10.15, per its website"),
+                ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
+                ("How it shows your disk", "Lists sorted by size, each item explained", "A treemap with a file-kind legend"),
+                ("System Data broken down", "Every part, with Apple's fixes", "—"),
+                ("Source available", "Yes, on GitHub", "Yes, GPL"),
+            ]},
+            {"id": "switch", "html": """
+        <h2>Replacing it</h2>
+        <ol class="steps">
+          <li><b>Install Disk Forecast.</b> <code>brew install --cask coreyhaines31/tap/diskforecast</code>, or download the app from GitHub.</li>
+          <li><b>Start with Safe to clear.</b> Caches, logs, and build folders in old projects, each explained, sent to the Trash after one confirm.</li>
+          <li><b>Get your treemap back.</b> <a href="/alternatives/grandperspective">GrandPerspective</a> is free, open source, native on Apple silicon, and updated in September 2026. It's the closest thing to Disk Inventory X that's still maintained.</li>
+          <li><b>Remove the old app.</b> Drag Disk Inventory X from Applications to the Trash, and you're no longer overriding Gatekeeper to open it.</li>
+        </ol>
+            """},
+        ],
+    },
 ]
 
 HUB = {
     "title": "Mac disk space apps compared: DiskBuddy, DaisyDisk and more",
-    "description": "Honest comparisons of DiskBuddy, DaisyDisk, CleanMyMac and GrandPerspective, and where Disk Forecast fits: the free Mac app that warns before your disk fills.",
+    "description": "Honest comparisons of DaisyDisk, CleanMyMac, GrandPerspective, Mole, and more, and where Disk Forecast fits: the free Mac app that warns before disks fill.",
     "h1": "Every way to see what's filling your Mac, <em>compared.</em>",
-    "lede": "Four popular storage apps, what each does well, and where it stops. Sometimes the other app is the right one, and we say so.",
+    "lede": "The Mac storage apps people search for, what each does well, and where it stops. Sometimes the other app is the right one, and we say so.",
     "glance": [
         ("You want…", "Use"),
         ("A beautiful picture of your disk, paid for once", "DaisyDisk"),
         ("A free treemap and nothing else", "GrandPerspective"),
+        ("Windows' WizTree, on a Mac", "WizTreeMac"),
+        ("A cleaner and system stats in Terminal", "Mole"),
+        ("Just to remove an app and its leftovers", "AppCleaner"),
         ("Duplicates, compression, and a Windows license too", "DiskBuddy"),
         ("A broad suite of Mac tools on a subscription", "CleanMyMac"),
         ("To know when you'll run out, before you do", "Disk Forecast"),
@@ -257,7 +516,8 @@ HUB = {
     "html": """
         <h2>How we compare</h2>
         <p>Every page here draws on the competitor's own site, store listing, and release posts as of October 2026, and says plainly what the other app does better. Where we couldn't confirm a feature either way, the table shows “—” instead of guessing. If something is out of date, <a href="https://github.com/coreyhaines31/diskforecast/issues">open an issue</a> and we'll fix it.</p>
-        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, now a subscription. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
+        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, now a subscription. <strong>Mole</strong> is the open-source cleaner for Terminal. <strong>OmniDiskSweeper</strong> and <strong>Disk Inventory X</strong> are the free classics, both Intel only and unchanged for years. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
+        <p>To see them all at once, start with <a href="/alternatives/compare">every app side by side</a>. Coming from Windows? <a href="/alternatives/windirstat-mac">WinDirStat for Mac</a> covers what runs here.</p>
     """,
 }
 
@@ -735,3 +995,302 @@ PRIVACY = {
         <p>Open an issue on <a href="https://github.com/coreyhaines31/diskforecast/issues">GitHub</a>. The source is public, so you can check every claim on this page yourself.</p>
     """,
 }
+
+# ---------------------------------------------------------------------- Roundups
+# Comparison and category pages that cover several apps at once. Each renders with the guide template;
+# its html can hold {{TABLE:name}} placeholders for the tables in its "tables". "in_guides" also lists it on /guides.
+# Competitor facts were checked against each vendor's site, store listing, GitHub, or the app itself in October 2026.
+# Targets "free mac cleaner" (500/mo US, KD 0), "best mac cleaner" (350), and "best free mac cleaner" (200).
+# "Speed up" and "junk" appear only as quoted category claims, to debunk them. Facts, checked 2026-10-06:
+# grandperspectiv.sourceforge.net (3.8.1, macOS 14+), omnigroup.com/more, github.com/tw93/Mole, freemacsoft.net/appcleaner (3.7, macOS 15+).
+BEST_FREE = {
+    "path": "/best-free-mac-cleaner",
+    "title": "Best free Mac cleaner: 6 honest picks for 2026",
+    "description": "The best free Mac cleaner apps for 2026, compared honestly: Disk Forecast, GrandPerspective, OmniDiskSweeper, Mole, AppCleaner, and macOS Storage settings.",
+    "eyebrow": "Roundup",
+    "h1": "The best free Mac cleaner <em>tells you what it deletes.</em>",
+    "lede": "Most Mac cleaner apps sell a feeling. Here's what a cleaner should actually do on a modern Mac, what it can't do, and six free options, each with what it's good at.",
+    "tldr": "On a Mac with an SSD, a cleaner is for one thing: reclaiming disk space when you need it. Pick one that explains every item, moves files to the Trash, and uses Apple's own tools for system files. Disk Forecast does all three and warns you before you run out. GrandPerspective and OmniDiskSweeper find big files, Mole cleans from Terminal, AppCleaner uninstalls apps, and Storage settings is already on your Mac.",
+    "card_title": "Best free Mac cleaner",
+    "card_blurb": "Six honest picks, and what a cleaner should and shouldn't do.",
+    "footer": "Best free Mac cleaner",
+    "in_guides": True,
+    "related": ["/is-cleanmymac-safe", "/disk-space-analyzer-mac", "/free-up-space-on-mac"],
+    "faqs": [
+        ("What is the best free Mac cleaner?", "It depends on the job. To reclaim space with an explanation of every item, and a warning before your disk fills, Disk Forecast. For a picture of a whole drive, GrandPerspective. For Terminal users, Mole. To uninstall apps, AppCleaner. All four are free."),
+        ("Do Mac cleaners actually work?", "They reclaim disk space, and that's real when you need room for an update, a project, or a backup. Claims that they make a Mac faster mostly don't hold up on an SSD: macOS manages its own memory and caches, and free space only matters when the disk is nearly full."),
+        ("Is it safe to use a free Mac cleaner?", "It is when the app explains what it deletes, moves files to the Trash, and uses Apple's tools for system files. Be wary of anything that deletes permanently without a preview, or asks for your password without saying why."),
+        ("Does macOS have a built-in cleaner?", "Sort of. System Settings › General › Storage shows what's using space and offers recommendations like Store in iCloud and Empty Trash Automatically. It doesn't explain System Data or developer files."),
+        ("Do I need CleanMyMac?", "Not for disk space. The free tools on this page cover reclaiming space. CleanMyMac bundles more, like malware scans and an app updater, on a subscription."),
+    ],
+    "html": """
+        <h2>What a Mac cleaner should do</h2>
+        <p>Modern Macs use APFS on an SSD. There's nothing to defragment, macOS manages its own memory and caches, and a Mac with 100 GB free runs the same as one with 300 GB free. Free space only matters when it's nearly gone.</p>
+        <p>So a good cleaner does three things:</p>
+        <ul>
+          <li><strong>Explains every item.</strong> “2.1 GB of caches” isn't enough. You should know which app made them and whether they rebuild.</li>
+          <li><strong>Lets you undo.</strong> Files go to the Trash, not straight to oblivion.</li>
+          <li><strong>Uses Apple's tools for system files.</strong> Local snapshots, simulators, and the Spotlight index each have their own command. A cleaner should run those, not delete folders under <code>/private/var</code>.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">What it can't promise</h2>
+        <p>The category loves two phrases: “speed up your Mac” and “remove junk.” On an SSD, clearing caches doesn't make a Mac faster; the next launch of each app is usually a little slower while its cache rebuilds. And much of what gets cleared is your apps' working files. Clear space because you need the room, not for a promised performance gain.</p>
+
+        <h2 style="margin-top:56px">The 6 best free Mac cleaners</h2>
+        {{TABLE:picks}}
+
+        <h3 style="margin-top:40px">1. Disk Forecast</h3>
+        <p>Free, source available, for macOS 14 or later. It shows free space in the menu bar and, after 3 days of history, when your disk will be full. Its cleanup list sorts what it finds into “Safe to clear,” like caches, logs, and old build folders, and “Worth a look,” like big downloads, AI models, and virtual machines. Every item has a one-line explanation, and everything goes to the Trash. Its System Data window explains snapshots, simulators, and the rest, and runs Apple's own tool for each fix after showing you the command. It doesn't draw a treemap, uninstall apps, or find duplicates.</p>
+
+        <h3>2. GrandPerspective</h3>
+        <p>A free treemap of any folder or drive: every file a rectangle, sized by its space. It's open source under the GPL, updated in September 2026 for macOS 14 and later, and native on Apple silicon. It's free from its website, or $2.99 on the Mac App Store. It shows sizes, not meanings. <a href="/alternatives/grandperspective">GrandPerspective compared</a>.</p>
+
+        <h3>3. OmniDiskSweeper</h3>
+        <p>The Omni Group's free column view of folder sizes, largest first, with a button to send what you pick to the Trash. It's quick to learn. Version 1.11 dates from 2018 and contains Intel code only, so on Apple silicon it runs through Rosetta 2. <a href="/alternatives/omnidisksweeper">OmniDiskSweeper compared</a>.</p>
+
+        <h3>4. Mole</h3>
+        <p>A free, open-source command-line cleaner by tw93, licensed under GPL-3.0. One command, <code>mo</code>, cleans caches, uninstalls apps, explores disk usage, and shows live system stats, with a <code>--dry-run</code> preview for anything that deletes. Note that <code>mo purge</code> deletes permanently. A separate Mac app costs $19. <a href="/alternatives/mole">Mole compared</a>.</p>
+
+        <h3>5. AppCleaner</h3>
+        <p>From FreeMacSoft, free with a donation option. Drop an app on its window, and it finds the files that app left around your Mac so you can remove them together. It's an uninstaller, and a good one. Version 3.7 needs macOS 15 or later.</p>
+
+        <h3>6. Storage settings in macOS</h3>
+        <p>Already on your Mac: <strong>System Settings › General › Storage</strong>. It sorts your disk by category, lets you delete large files and old iPhone backups, and offers a few recommendations. It can't tell you what's inside System Data; <a href="/system-data">the System Data guide</a> covers that.</p>
+
+        <h2 style="margin-top:56px">Paid cleaners, briefly</h2>
+        <p><strong>CleanMyMac</strong> is MacPaw's suite of cleanup, malware scanning, and app tools, sold as a subscription. <a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a> covers what it deletes and what it costs. <strong>DaisyDisk</strong> is a $9.99 analyzer that draws your disk as rings.</p>
+
+        <h2 style="margin-top:56px">How to choose</h2>
+        <ul>
+          <li><strong>You want a warning before the disk fills:</strong> Disk Forecast.</li>
+          <li><strong>You want to see a whole drive at once:</strong> GrandPerspective.</li>
+          <li><strong>You live in Terminal:</strong> Mole.</li>
+          <li><strong>You're removing an app:</strong> AppCleaner.</li>
+        </ul>
+    """,
+    "tables": {"picks": {"head": ["App", "Good at", "Price", "Apple silicon"], "min_width": 600, "rows": [
+        ("Disk Forecast", "Knowing when you'll run out, then reclaiming space safely", "Free", "Native"),
+        ("GrandPerspective", "A treemap of a whole drive", "Free, or $2.99 on the App Store", "Native"),
+        ("OmniDiskSweeper", "A plain list of folder sizes", "Free", "Intel only, through Rosetta 2"),
+        ("Mole", "Cleaning, uninstalling, and stats from Terminal", "Free; $19 for the Mac app", "Native"),
+        ("AppCleaner", "Removing an app and its leftover files", "Free", "—"),
+        ("Storage settings", "A first look, built into macOS", "Built in", "Native"),
+    ]}},
+    "shortcut": """
+          <h2>A cleaner that explains itself.</h2>
+          <p>Disk Forecast lists what&#39;s safe to clear, says what each item is, and moves it to the Trash after one confirm. Then it tells you when you&#39;ll need to do it again. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "cta": "Know before it's full.",
+}
+
+# Targets "disk space analyzer" (700/mo US, KD 2, TP 25k), "mac disk space analyzer" (300), and "disk space analyzer mac" (150).
+# Facts, checked 2026-10-06: each app's site, store listing, or GitHub, as cited on its own page. DaisyDisk: daisydiskapp.com
+# (4.34.2, July 10, 2026). Clone and hard-link counting: Packages/DiskForecastCore/.../DiskScanner.swift.
+ANALYZER = {
+    "path": "/disk-space-analyzer-mac",
+    "title": "Disk space analyzer for Mac: free and paid, compared",
+    "description": "What a disk space analyzer for Mac does, how treemaps, rings, and lists differ from a forecast, the APFS gotchas, and the free and paid apps worth using.",
+    "eyebrow": "Guide",
+    "h1": "Disk space analyzer for Mac: <em>maps, lists, and forecasts.</em>",
+    "lede": "A disk space analyzer answers “what's using my space?” Here are the three ways analyzers show it, what they get wrong on APFS, and the Mac apps worth using, free and paid.",
+    "tldr": "An analyzer scans your disk and shows where the space went: as a treemap (GrandPerspective, WizTreeMac), as rings (DaisyDisk), or as a sorted list (OmniDiskSweeper, Finder, Disk Forecast). A monitor watches free space over time, and a forecast says when it runs out. On APFS, clones, hard links, purgeable space, and local snapshots make different apps disagree. Disk Forecast counts clones and hard links once.",
+    "card_title": "Disk space analyzers for Mac",
+    "card_blurb": "Treemaps, rings, and lists, the APFS gotchas, and which app to use.",
+    "footer": "Disk space analyzers",
+    "in_guides": True,
+    "related": ["/how-to-check-storage-on-mac", "/best-free-mac-cleaner", "/alternatives/compare"],
+    "faqs": [
+        ("What is the best disk space analyzer for Mac?", "For a picture of the disk, DaisyDisk is the most polished at $9.99, and GrandPerspective is the best free one. For a list with every item explained, plus a warning before the disk fills, Disk Forecast, which is free."),
+        ("Is there a free disk space analyzer for Mac?", "Yes, several. GrandPerspective, WizTreeMac for personal use, OmniDiskSweeper, Mole, and Disk Forecast are free, and Finder's Calculate all sizes is built in."),
+        ("Why do disk analyzers show different sizes than Finder?", "Because of APFS. Clones share space, hard links put one file at several paths, purgeable space counts as free in Finder but used in Terminal, and local snapshots hold space no folder shows. Each app handles those differently."),
+        ("Does macOS have a built-in disk space analyzer?", "Storage settings, in System Settings › General › Storage, breaks your disk into categories, and Finder shows folder sizes in list view once you turn on Calculate all sizes. Neither draws a map or explains System Data."),
+        ("Can a disk analyzer see System Data?", "Only partly. Local Time Machine snapshots and purgeable space aren't ordinary files, so a folder scan can't show them. Disk Forecast's System Data window lists them separately, with Apple's own tools to reclaim them."),
+    ],
+    "html": """
+        <h2>What a disk space analyzer does</h2>
+        <p>An analyzer walks every folder on a disk, adds up the sizes, and draws the result so the biggest things stand out. There are three common pictures:</p>
+        <ul>
+          <li><strong>Treemap.</strong> Every file is a rectangle sized by its space, nested inside its folder's rectangle. It's great for spotting one huge file. GrandPerspective and WizTreeMac draw treemaps, as WinDirStat does on Windows.</li>
+          <li><strong>Sunburst.</strong> Folders become rings around a center, each slice sized by its space, and you click inward to drill down. DaisyDisk is the best-known one.</li>
+          <li><strong>List.</strong> Folders sorted largest first. Less striking, but easier to read exact numbers from. OmniDiskSweeper, Finder's Calculate all sizes, and <code>du</code> in Terminal all work this way.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Analyzer, monitor, or forecast?</h2>
+        <p>An analyzer is a snapshot of what's on the disk right now. Most people open one after macOS has already said the disk is almost full.</p>
+        <p>A <strong>monitor</strong> watches free space over time, so you see the trend, not just the total. A <strong>forecast</strong> takes that history and projects it forward: “Full in ~41 days.”</p>
+        <p>Disk Forecast is a monitor and forecast first. It checks free space every hour and, after 3 days of history, shows a countdown in the menu bar. When you need room, it lists the folders taking the most space and a cleanup list with each item explained. It doesn't draw a treemap or a sunburst. If you want one, use it alongside GrandPerspective or DaisyDisk.</p>
+
+        <h2 style="margin-top:56px">APFS gotchas: why analyzers disagree</h2>
+        <p>Run three analyzers on the same Mac and you can get three totals. APFS, the file system on every modern Mac, is why.</p>
+        <ul>
+          <li><strong>Clones.</strong> When you duplicate a file in Finder, the copy shares the original's blocks until one of them changes. Two 10 GB files can use 10 GB. An analyzer that adds up file sizes counts 20.</li>
+          <li><strong>Hard links.</strong> One file can live at several paths. pnpm, for one, links packages from its store into each project. Count every path and the file counts several times.</li>
+          <li><strong>Purgeable space.</strong> Space macOS has marked as reclaimable, like iCloud files it can download again. Finder counts it as available, and <code>df</code> counts it as used.</li>
+          <li><strong>Local snapshots.</strong> Time Machine's local snapshots keep the blocks of files you've since deleted. They aren't files in any folder, so an analyzer can't show them, but they still take space. <code>tmutil listlocalsnapshots /</code> lists them.</li>
+        </ul>
+        <p>Disk Forecast counts allocated space, what the disk actually spends, and counts shared space once. A hard-linked file counts at its first link. An APFS clone counts in full the first time its clone family appears, and after that only for the bytes it doesn't share. Purgeable space and local snapshots appear in its System Data window, where it runs Apple's <code>tmutil</code> to remove snapshots after you confirm.</p>
+
+        <h2 style="margin-top:56px">Disk space analyzers for Mac, free and paid</h2>
+        {{TABLE:apps}}
+        <p>Each app has a full comparison: <a href="/alternatives/daisydisk">DaisyDisk</a>, <a href="/alternatives/grandperspective">GrandPerspective</a>, <a href="/alternatives/windirstat-mac">WizTreeMac and the Windows tools</a>, <a href="/alternatives/omnidisksweeper">OmniDiskSweeper</a>, <a href="/alternatives/disk-inventory-x">Disk Inventory X</a>, <a href="/alternatives/diskbuddy">DiskBuddy</a>, and <a href="/alternatives/mole">Mole</a>. Or see them all at once in <a href="/alternatives/compare">every Mac disk app compared</a>.</p>
+
+        <h2 style="margin-top:56px">Which one to use</h2>
+        <ul>
+          <li><strong>You want to see where the space went, once:</strong> GrandPerspective for free, or DaisyDisk for the nicest picture.</li>
+          <li><strong>You want to know before it's full:</strong> Disk Forecast, in the menu bar all day.</li>
+          <li><strong>You want nothing new on your Mac:</strong> Storage settings and Finder. <a href="/how-to-check-storage-on-mac">How to check Mac storage</a> shows five built-in ways.</li>
+        </ul>
+    """,
+    "tables": {"apps": {"head": ["App", "Price", "How it shows your disk", "Apple silicon", "Latest version"], "min_width": 720, "rows": [
+        ("Disk Forecast", "Free", "Sorted lists, each item explained, plus a forecast", "Native", "Actively developed"),
+        ("DaisyDisk", "$9.99 one-time", "Interactive rings", "Native", "4.34.2, July 2026"),
+        ("GrandPerspective", "Free, or $2.99 on the App Store", "Treemap", "Native", "3.8.1, September 2026"),
+        ("WizTreeMac", "Free for personal use", "Treemap and file list", "Native", "1.00, September 2026"),
+        ("DiskBuddy", "$49", "Space map and lists", "—", "3.0, October 2026"),
+        ("Mole", "Free; $19 for the Mac app", "Disk explorer in Terminal", "Native", "1.58.0, October 2026"),
+        ("OmniDiskSweeper", "Free", "Columns sorted by size", "Intel only", "1.11, 2018"),
+        ("Disk Inventory X", "Free", "Treemap", "Intel only", "1.3, December 2019"),
+        ("Storage settings and Finder", "Built in", "Categories and folder sizes", "Native", "Part of macOS"),
+    ]}},
+    "shortcut": """
+          <h2>The analyzer that watches the weather.</h2>
+          <p>Disk Forecast shows your free space in the menu bar, tells you when you&#39;ll run out, and lists the five folders taking the most space. It counts shared APFS space once. It&#39;s free.</p>
+    """,
+    "mockup": "menu",
+    "cta": "Know before it's full.",
+}
+
+# Targets "is cleanmymac safe" (150/mo US, KD 0), "cleanmymac review" (250), and "is cleanmymac worth it" (40).
+# Facts, checked 2026-10-06: the CleanMyMac Mac App Store listing (id1339170533: version 5.7.1, in-app prices, features),
+# macpaw.com/cleanmymac ("Notarized by Apple", "from $3.33/month"), macpaw.com/how-to/is-cleanmymac-safe, macworld.com/article/352922
+# (the July 2025 price change), and the 5.7.1 DMG from download.macpaw.com (Gatekeeper: Notarized Developer ID, MacPaw Way Ltd; arm64 + x86_64).
+# macpaw.com/store returns 403 to scripts, so the table uses App Store prices. Keep it fair: no claims beyond these sources.
+CLEANMYMAC_SAFE = {
+    "path": "/is-cleanmymac-safe",
+    "title": "Is CleanMyMac safe? An honest review for 2026",
+    "description": "Is CleanMyMac safe? It's notarized and made by MacPaw, so it isn't malware. Here's what it deletes, what it costs in 2026, and what you can do for free.",
+    "eyebrow": "Review",
+    "h1": "Is CleanMyMac safe? <em>Yes. Here's what it costs.</em>",
+    "lede": "CleanMyMac comes up in every thread about a full Mac, usually next to someone asking whether it's safe. It is. Here's what it is, what it deletes, what it costs, and when a free tool does the same job.",
+    "tldr": "CleanMyMac is safe to install. It's made by MacPaw, it's sold on the Mac App Store, and the app from MacPaw's site is signed and notarized by Apple. It removes caches, logs, app leftovers, and the files you pick, after you review them. It's a subscription: on the Mac App Store, $39.99 a year, or $65.99 a year for Plus. If you mostly want disk space back, free tools do that part.",
+    "card_title": "Is CleanMyMac safe?",
+    "card_blurb": "What it deletes, what it costs in 2026, and the free options.",
+    "footer": "Is CleanMyMac safe?",
+    "related": ["/alternatives/cleanmymac", "/best-free-mac-cleaner", "/free-up-space-on-mac"],
+    "faqs": [
+        ("Is CleanMyMac safe to use?", "Yes. It's made by MacPaw, sold on the Mac App Store, and the version on MacPaw's site is signed and notarized by Apple. As with any cleaner, review what it selects before you click, because some of it, like language files or mail attachments, you may want to keep."),
+        ("Is CleanMyMac a virus or malware?", "No. Apple notarizes the app MacPaw distributes, which means Apple scanned it for known malware, and the Mac App Store version passes Apple's review. Fake cleaner pop-ups on websites are a different thing."),
+        ("Is CleanMyMac worth it?", "If you use most of the suite, like the malware scans, the app updater, and the uninstaller, it can be. If you mainly open it because your disk is full, free tools reclaim the same space without a yearly fee."),
+        ("How much is CleanMyMac?", "On the Mac App Store as of October 2026: $9.99 a month or $39.99 a year, Plus at $15.99 a month or $65.99 a year, and a one-time CleanMyMac X purchase at $89.99. MacPaw's own site advertises plans from $3.33 a month. Prices vary by region and change over time."),
+        ("Is there a free version of CleanMyMac?", "There's a free trial, and the App Store download itself is free, with plans sold as in-app purchases. The free options on this page cover disk space without a subscription."),
+        ("Can I use CleanMyMac and Disk Forecast together?", "Yes. They don't conflict. Disk Forecast only moves files to the Trash when you ask it to."),
+    ],
+    "html": """
+        <h2>Is CleanMyMac malware?</h2>
+        <p>No. CleanMyMac is made by MacPaw, a long-running Mac developer, and it's sold on the Mac App Store, where apps go through Apple's review. We also downloaded version 5.7.1 from MacPaw's site in October 2026: it's signed with MacPaw's Developer ID and notarized by Apple, which means Apple scanned it for known malware before it could run. It runs natively on Apple silicon and Intel, and needs macOS 11 or later.</p>
+        <p>Most of the doubt comes from the category. Fake cleaner pop-ups and scary “your Mac is infected” warnings on websites have nothing to do with MacPaw, but they make every cleaner look suspect.</p>
+
+        <h2 style="margin-top:56px">What CleanMyMac deletes</h2>
+        <p>MacPaw says its cleanup targets “cache files, outdated logs, broken downloads, unused language files, application leftovers,” and stays away from “core macOS system files, user documents, and files needed for macOS operation.” A Safety Database of rules and exceptions decides what's eligible, and you review the results and can deselect anything before it's removed.</p>
+        <p>The rest of the suite, per its App Store listing: malware scans powered by Moonlock, background process management, an uninstaller and app updater, cloud storage cleanup, and a finder for duplicates, similar photos, and large files.</p>
+        <h3>What to watch for</h3>
+        <ul>
+          <li><strong>Review before you click.</strong> Caches rebuild on their own. Language files, mail attachments, and leftovers from an app you still use are worth a second look.</li>
+          <li><strong>Know where files go.</strong> We couldn't confirm from MacPaw's materials whether cleanup moves files to the Trash or removes them outright, so treat it as permanent until you've checked.</li>
+          <li><strong>Read the performance claims carefully.</strong> MacPaw's site says it can “make your slow Mac fast again.” On an SSD, clearing caches doesn't make a Mac faster, and free space only matters when the disk is nearly full. Managing background processes can help a Mac that's genuinely overloaded, but so can Activity Monitor, which is built in.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">What CleanMyMac costs</h2>
+        {{TABLE:prices}}
+        <p>Prices are from the Mac App Store listing on October 6, 2026, in US dollars. MacPaw's own site advertises plans “from $3.33/month,” and Macworld reported direct prices of $47.50 a year for Basic and $71.40 for Plus after MacPaw's July 2025 price change. There's a free trial. Check MacPaw's store for the plans in your region.</p>
+
+        <h2 style="margin-top:56px">Is CleanMyMac worth it?</h2>
+        <p>It depends on how much of it you use. If you want malware scans, an app updater, an uninstaller, and cleanup in one polished app with a company and a support team behind it, the yearly price buys that. If you opened it because the disk was full, you'd be paying every year for the one part free tools already cover.</p>
+
+        <h2 style="margin-top:56px">What you can do for free</h2>
+        <ul>
+          <li><strong>Storage settings.</strong> <strong>System Settings › General › Storage</strong> shows what's using space and lets you delete large files and old backups. <a href="/free-up-space-on-mac">The free up space checklist</a> goes step by step.</li>
+          <li><strong>Disk Forecast.</strong> A free menu bar app that tells you when your disk will be full, lists what's safe to clear with an explanation of each item, and moves it to the Trash. Its System Data window runs Apple's own tools after showing you the command. It doesn't scan for malware or uninstall apps.</li>
+          <li><strong>AppCleaner.</strong> A free uninstaller from FreeMacSoft that removes an app along with its leftover files.</li>
+        </ul>
+        <p>More options, including GrandPerspective and Mole, are in <a href="/best-free-mac-cleaner">the best free Mac cleaner roundup</a>, and <a href="/alternatives/cleanmymac">CleanMyMac compared with Disk Forecast</a> goes feature by feature.</p>
+    """,
+    "tables": {"prices": {"head": ["Plan", "Price on the Mac App Store"], "rows": [
+        ("CleanMyMac, monthly", "$9.99"),
+        ("CleanMyMac, yearly", "$39.99"),
+        ("CleanMyMac Plus, monthly", "$15.99"),
+        ("CleanMyMac Plus, yearly", "$65.99"),
+        ("CleanMyMac X, one-time purchase", "$89.99"),
+    ]}},
+    "shortcut": """
+          <h2>Reclaim space without a subscription.</h2>
+          <p>Disk Forecast lists what&#39;s safe to clear, explains every item, and moves it to the Trash after one confirm. It&#39;s free, and the source is on GitHub.</p>
+    """,
+    "mockup": "cleanup",
+    "cta": "Reclaim space, free.",
+}
+
+# Targets the "X vs Y" searches: "daisydisk vs cleanmymac" (60/mo US), "cleanmymac vs daisydisk" (10),
+# "daisydisk vs grandperspective" (20), "grandperspective vs daisydisk" (10), and "omnidisksweeper vs daisydisk" (10).
+# Facts are the ones cited on each app's own page above, checked 2026-10-06.
+COMPARE = {
+    "path": "/alternatives/compare",
+    "title": "DaisyDisk vs CleanMyMac, and every Mac disk app compared",
+    "description": "DaisyDisk vs CleanMyMac, DaisyDisk vs GrandPerspective, OmniDiskSweeper vs DaisyDisk, and nine Mac disk apps in one table, with what each one is best at.",
+    "eyebrow": "Comparison",
+    "h1": "DaisyDisk vs CleanMyMac, <em>and every other Mac disk app.</em>",
+    "lede": "One table for every Mac storage app we've compared, then a short, fair answer for the matchups people search for most.",
+    "tldr": "DaisyDisk is the best picture of your disk, for $9.99 once. CleanMyMac is a subscription suite where disk cleanup is one part of many. GrandPerspective is the free treemap. OmniDiskSweeper is a free size list that hasn't changed since 2018. Disk Forecast is free, and it's built around the question the others don't lead with: when will your disk be full?",
+    "card_title": "Every app, side by side",
+    "card_blurb": "DaisyDisk vs CleanMyMac, and every other matchup, in one table.",
+    "footer": "Compare all apps",
+    "related": ["/disk-space-analyzer-mac", "/best-free-mac-cleaner", "/is-cleanmymac-safe"],
+    "faqs": [
+        ("Which is better, DaisyDisk or CleanMyMac?", "They do different jobs. DaisyDisk shows what's on your disk as an interactive picture, for $9.99 once. CleanMyMac is a subscription suite with cleanup, malware scans, and app tools. For seeing and clearing disk space alone, DaisyDisk is the better buy."),
+        ("Is DaisyDisk better than GrandPerspective?", "DaisyDisk is more polished and easier to explore, and it costs $9.99. GrandPerspective draws a plainer treemap for free, and its source is open. Both are maintained and run natively on Apple silicon."),
+        ("Should I use OmniDiskSweeper or DaisyDisk?", "On an Apple silicon Mac, DaisyDisk: it's native and updated in 2026. OmniDiskSweeper is free but hasn't been updated since 2018 and runs through Rosetta 2. If you want free and current, try GrandPerspective or Disk Forecast."),
+        ("Which Mac disk apps are free?", "Disk Forecast, GrandPerspective, OmniDiskSweeper, Disk Inventory X, and Mole's command-line tool are free, and WizTreeMac is free for personal use. DaisyDisk, DiskBuddy, and CleanMyMac are paid."),
+        ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+    ],
+    "html": """
+        <h2>Every app, side by side</h2>
+        <p>Prices, versions, and platforms come from each vendor's own site, store listing, or GitHub, and in a few cases from the app itself, as of October 2026. Each app's own page says where every fact comes from.</p>
+        {{TABLE:all}}
+
+        <h2 style="margin-top:56px">DaisyDisk vs CleanMyMac</h2>
+        <p>These two get compared because both help when a Mac is full, but they're different kinds of app. <strong>DaisyDisk</strong> is an analyzer. It scans a disk, draws it as rings you click through, and lets you drag what you don't want to a collector to delete. It costs $9.99 once, and it's sold on the Mac App Store and directly. The App Store build can't see hidden and system files; the direct one can.</p>
+        <p><strong>CleanMyMac</strong> is MacPaw's suite. Disk cleanup is one part, alongside malware scans, an uninstaller and app updater, and a finder for duplicates and large files. It's a subscription: $39.99 a year on the Mac App Store, or $65.99 for Plus.</p>
+        <p><strong>Pick DaisyDisk</strong> if you want to see where the space went and decide for yourself, and pay once. <strong>Pick CleanMyMac</strong> if you'll use most of the suite. If you only need the disk space back, both are optional: <a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a> lists the free routes.</p>
+
+        <h2 style="margin-top:56px">DaisyDisk vs GrandPerspective</h2>
+        <p>Both draw your disk as a picture, and both are maintained: DaisyDisk shipped 4.34.2 in July 2026, and GrandPerspective shipped 3.8.1 in September 2026. <strong>DaisyDisk</strong> uses rings you click through, and it's the more pleasant of the two to explore. <strong>GrandPerspective</strong> uses a treemap, every file a rectangle sized by its space, and is free from its website, or $2.99 on the Mac App Store. Its source is open under the GPL.</p>
+        <p><strong>Pick DaisyDisk</strong> if you'll explore your disk often and want it to feel good. <strong>Pick GrandPerspective</strong> if you want the same answer for free.</p>
+
+        <h2 style="margin-top:56px">OmniDiskSweeper vs DaisyDisk</h2>
+        <p><strong>OmniDiskSweeper</strong> is a free list of folders sorted by size, from The Omni Group. It's the plainest tool here, and that's its appeal. But version 1.11 dates from 2018 and contains Intel code only, so on Apple silicon it runs through Rosetta 2. <strong>DaisyDisk</strong> is native on Apple silicon, updated in 2026, and costs $9.99.</p>
+        <p><strong>Pick DaisyDisk</strong> on a current Mac. If you want OmniDiskSweeper's plain list for free and native, Disk Forecast's top-folders list and Finder's Calculate all sizes are the closest.</p>
+
+        <h2 style="margin-top:56px">Where Disk Forecast fits</h2>
+        <p>Every other app in the table answers “what's using my space?” Disk Forecast starts one step earlier. It sits in the menu bar, checks free space every hour, and after 3 days says when your disk will be full. When it's time to reclaim space, it explains every item, sends what you clear to the Trash, and breaks System Data into its parts with Apple's own fixes. It's free, with the source on GitHub. It doesn't draw a map, so it pairs well with DaisyDisk or GrandPerspective.</p>
+    """,
+    "tables": {"all": {"head": ["App", "Price", "How it shows your disk", "Apple silicon", "Latest version", "Source available"], "min_width": 760, "rows": [
+        ("Disk Forecast", "Free", "Sorted lists, each item explained, plus a forecast", "Native", "Actively developed", "Yes, on GitHub"),
+        ("DaisyDisk", "$9.99 one-time", "Interactive rings", "Native", "4.34.2, July 2026", "No"),
+        ("CleanMyMac", "$39.99 a year on the App Store", "—", "Native", "5.7.1, October 2026", "No"),
+        ("GrandPerspective", "Free, or $2.99 on the App Store", "Treemap", "Native", "3.8.1, September 2026", "Yes, GPL"),
+        ("OmniDiskSweeper", "Free", "Columns sorted by size", "Intel only", "1.11, 2018", "—"),
+        ("Disk Inventory X", "Free", "Treemap", "Intel only", "1.3, December 2019", "Yes, GPL"),
+        ("WizTreeMac", "Free for personal use", "Treemap and file list", "Native", "1.00, September 2026", "—"),
+        ("Mole", "Free; $19 for the Mac app", "Disk explorer in Terminal", "Native", "1.58.0, October 2026", "Command-line tool, GPL-3.0"),
+        ("DiskBuddy", "$49", "Space map and lists", "—", "3.0, October 2026", "—"),
+    ]}},
+    "shortcut": """
+          <h2>The one that tells you when.</h2>
+          <p>Disk Forecast learns how fast your disk fills and shows the countdown in your menu bar, so the next full disk isn&#39;t a surprise. It&#39;s free.</p>
+    """,
+    "mockup": "forecast",
+    "cta": "Know before it's full.",
+}
+
+ROUNDUPS = [BEST_FREE, ANALYZER, CLEANMYMAC_SAFE, COMPARE]

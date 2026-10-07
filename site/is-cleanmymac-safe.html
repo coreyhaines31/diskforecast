@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Clear Gradle cache on Mac: what to delete in ~/.gradle</title>
-  <meta name="description" content="How to clear Gradle cache on Mac: where ~/.gradle keeps dependencies and wrapper downloads, why to stop the daemon first, and what Gradle cleans on its own.">
-  <link rel="canonical" href="https://diskforecast.com/clear-cache/gradle">
-  <meta property="og:title" content="Clear Gradle cache on Mac: what to delete in ~/.gradle">
-  <meta property="og:description" content="How to clear Gradle cache on Mac: where ~/.gradle keeps dependencies and wrapper downloads, why to stop the daemon first, and what Gradle cleans on its own.">
+  <title>Is CleanMyMac safe? An honest review for 2026</title>
+  <meta name="description" content="Is CleanMyMac safe? It&#x27;s notarized and made by MacPaw, so it isn&#x27;t malware. Here&#x27;s what it deletes, what it costs in 2026, and what you can do for free.">
+  <link rel="canonical" href="https://diskforecast.com/is-cleanmymac-safe">
+  <meta property="og:title" content="Is CleanMyMac safe? An honest review for 2026">
+  <meta property="og:description" content="Is CleanMyMac safe? It&#x27;s notarized and made by MacPaw, so it isn&#x27;t malware. Here&#x27;s what it deletes, what it costs in 2026, and what you can do for free.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Disk Forecast">
   <meta property="og:image" content="https://diskforecast.com/images/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://diskforecast.com/clear-cache/gradle">
+  <meta property="og:url" content="https://diskforecast.com/is-cleanmymac-safe">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Clear Gradle cache on Mac: what to delete in ~/.gradle">
-  <meta name="twitter:description" content="How to clear Gradle cache on Mac: where ~/.gradle keeps dependencies and wrapper downloads, why to stop the daemon first, and what Gradle cleans on its own.">
+  <meta name="twitter:title" content="Is CleanMyMac safe? An honest review for 2026">
+  <meta name="twitter:description" content="Is CleanMyMac safe? It&#x27;s notarized and made by MacPaw, so it isn&#x27;t malware. Here&#x27;s what it deletes, what it costs in 2026, and what you can do for free.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -45,57 +45,59 @@
   <main>
     <div class="sub-hero">
       <div class="wrap narrow">
-        <div class="eyebrow">Guide</div>
-        <h1>How to clear Gradle cache on Mac, <em>without breaking builds.</em></h1>
-        <p class="lede">Gradle keeps downloaded dependencies, transformed jars, and a full copy of every Gradle version your projects' wrappers ask for. All of it lives in one folder, and most of it is safe to clear.</p>
-        <div class="tldr glass"><h2>The short version</h2><p>Stop the Gradle daemon with <code>./gradlew --stop</code>, then move <code>~/.gradle/caches</code> to the Trash. Gradle downloads dependencies again on the next build. For old Gradle versions, move folders you don't need out of <code>~/.gradle/wrapper/dists</code>. Leave <code>~/.gradle/gradle.properties</code> and <code>init.d</code> alone: those are your settings. Each project's own <code>build</code> folder clears with <code>./gradlew clean</code>.</p></div>
+        <div class="eyebrow">Review</div>
+        <h1>Is CleanMyMac safe? <em>Yes. Here's what it costs.</em></h1>
+        <p class="lede">CleanMyMac comes up in every thread about a full Mac, usually next to someone asking whether it's safe. It is. Here's what it is, what it deletes, what it costs, and when a free tool does the same job.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>CleanMyMac is safe to install. It's made by MacPaw, it's sold on the Mac App Store, and the app from MacPaw's site is signed and notarized by Apple. It removes caches, logs, app leftovers, and the files you pick, after you review them. It's a subscription: on the Mac App Store, $39.99 a year, or $65.99 a year for Plus. If you mostly want disk space back, free tools do that part.</p></div>
       </div>
     </div>
     <section class="tight">
       <div class="wrap narrow"><div class="prose">
 
-        <h2>Gradle cache location on Mac</h2>
-        <p>Gradle keeps everything in its user home, <code>~/.gradle</code>, unless <code>GRADLE_USER_HOME</code> points somewhere else. The same folder serves the command line, Android Studio, and IntelliJ IDEA.</p>
-                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
-          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
-            <tr><th scope="row">Dependencies and transforms</th><td><code>~/.gradle/caches</code></td><td>Not installed on the Mac we measured</td></tr>
-            <tr><th scope="row">Gradle versions for the wrapper</th><td><code>~/.gradle/wrapper/dists</code></td><td>Not installed on the Mac we measured</td></tr>
-            <tr><th scope="row">Daemon logs</th><td><code>~/.gradle/daemon</code></td><td>Not installed on the Mac we measured</td></tr>
-            <tr><th scope="row">Each project&#x27;s build output</th><td><code>your-project/build</code></td><td>Per project</td></tr>
-          </tbody></table></div></div>
-        <p>Gradle isn't installed on the Mac this page was written on, so there are no measured sizes here. Check yours with:</p>
-<pre><code>du -sh ~/.gradle/* 2>/dev/null | sort -h</code></pre>
+        <h2>Is CleanMyMac malware?</h2>
+        <p>No. CleanMyMac is made by MacPaw, a long-running Mac developer, and it's sold on the Mac App Store, where apps go through Apple's review. We also downloaded version 5.7.1 from MacPaw's site in October 2026: it's signed with MacPaw's Developer ID and notarized by Apple, which means Apple scanned it for known malware before it could run. It runs natively on Apple silicon and Intel, and needs macOS 11 or later.</p>
+        <p>Most of the doubt comes from the category. Fake cleaner pop-ups and scary “your Mac is infected” warnings on websites have nothing to do with MacPaw, but they make every cleaner look suspect.</p>
 
-        <h2 style="margin-top:56px">What's safe to delete in ~/.gradle</h2>
+        <h2 style="margin-top:56px">What CleanMyMac deletes</h2>
+        <p>MacPaw says its cleanup targets “cache files, outdated logs, broken downloads, unused language files, application leftovers,” and stays away from “core macOS system files, user documents, and files needed for macOS operation.” A Safety Database of rules and exceptions decides what's eligible, and you review the results and can deselect anything before it's removed.</p>
+        <p>The rest of the suite, per its App Store listing: malware scans powered by Moonlock, background process management, an uninstaller and app updater, cloud storage cleanup, and a finder for duplicates, similar photos, and large files.</p>
+        <h3>What to watch for</h3>
         <ul>
-          <li><strong><code>caches</code>: safe.</strong> Downloaded dependencies in <code>modules-2</code>, transformed jars, the local build cache, and per-version script caches. Gradle downloads or rebuilds what it needs. The first build afterward is slow, and it needs a network connection.</li>
-          <li><strong><code>wrapper/dists</code>: safe, folder by folder.</strong> One full Gradle distribution for each version a project's wrapper asked for, each a hundred megabytes or more. Delete versions no current project uses; <code>./gradlew</code> downloads its version again if needed.</li>
-          <li><strong><code>daemon</code>: safe.</strong> Logs from background Gradle processes.</li>
+          <li><strong>Review before you click.</strong> Caches rebuild on their own. Language files, mail attachments, and leftovers from an app you still use are worth a second look.</li>
+          <li><strong>Know where files go.</strong> We couldn't confirm from MacPaw's materials whether cleanup moves files to the Trash or removes them outright, so treat it as permanent until you've checked.</li>
+          <li><strong>Read the performance claims carefully.</strong> MacPaw's site says it can “make your slow Mac fast again.” On an SSD, clearing caches doesn't make a Mac faster, and free space only matters when the disk is nearly full. Managing background processes can help a Mac that's genuinely overloaded, but so can Activity Monitor, which is built in.</li>
         </ul>
-        <p>Keep <code>gradle.properties</code> (often with signing keys or repository credentials) and <code>init.d</code> (init scripts). They aren't cache.</p>
 
-        <h2 style="margin-top:56px">How to clear Gradle cache, step by step</h2>
-        <ol class="steps">
-          <li><b>Stop the daemon.</b> Run <code>./gradlew --stop</code> in a project, or <code>gradle --stop</code>. Quit Android Studio too. A running daemon keeps files in the cache open.</li>
-          <li><b>Clear project build folders, if you want.</b> <code>./gradlew clean</code> deletes the current project's <code>build</code> folder.</li>
-          <li><b>Move the cache to the Trash.</b> In Terminal, <code>mv ~/.gradle/caches ~/.Trash/gradle-caches</code>, or open <code>~/.gradle</code> in Finder with <strong>Go › Go to Folder</strong>. It's hidden, so type the path.</li>
-          <li><b>Build once.</b> Run your usual build while online. If it succeeds, empty the Trash.</li>
-        </ol>
-        <p>To force fresh dependencies without deleting anything, <code>./gradlew build --refresh-dependencies</code> checks every dependency against its repository again. It's the better fix when one library looks stale.</p>
+        <h2 style="margin-top:56px">What CleanMyMac costs</h2>
+                <div class="table-card glass"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">Plan</th><th scope="col">Price on the Mac App Store</th></tr></thead><tbody>
+            <tr><th scope="row">CleanMyMac, monthly</th><td>$9.99</td></tr>
+            <tr><th scope="row">CleanMyMac, yearly</th><td>$39.99</td></tr>
+            <tr><th scope="row">CleanMyMac Plus, monthly</th><td>$15.99</td></tr>
+            <tr><th scope="row">CleanMyMac Plus, yearly</th><td>$65.99</td></tr>
+            <tr><th scope="row">CleanMyMac X, one-time purchase</th><td>$89.99</td></tr>
+          </tbody></table></div></div>
+        <p>Prices are from the Mac App Store listing on October 6, 2026, in US dollars. MacPaw's own site advertises plans “from $3.33/month,” and Macworld reported direct prices of $47.50 a year for Basic and $71.40 for Plus after MacPaw's July 2025 price change. There's a free trial. Check MacPaw's store for the plans in your region.</p>
 
-        <h2 style="margin-top:56px">How big the Gradle cache gets</h2>
-        <p>On an Android developer's Mac, several gigabytes is normal, and 10 GB or more is common after a few years, because each Android Gradle Plugin and Gradle upgrade brings a new set of transformed files. Gradle cleans the cache on a schedule by default, removing downloaded files unused for 30 days and files it created itself after 7 days; since Gradle 8 you can change those limits in an init script. Old Gradle versions' folders still pile up when no project uses them anymore.</p>
-        <p>Android projects have more: the Android SDK in <code>~/Library/Android/sdk</code>, with system images for every emulator you've made, and the emulators themselves in <code>~/.android/avd</code>. Delete those from Android Studio's SDK Manager and Device Manager rather than Finder.</p>
-        <p>Also on the JVM? Maven keeps its downloads in <code>~/.m2/repository</code>. More caches: <a href="/clear-cache/cargo">Cargo</a>, <a href="/clear-cache/go">Go</a>, or <a href="/clear-cache">every tool</a>.</p>
+        <h2 style="margin-top:56px">Is CleanMyMac worth it?</h2>
+        <p>It depends on how much of it you use. If you want malware scans, an app updater, an uninstaller, and cleanup in one polished app with a company and a support team behind it, the yearly price buys that. If you opened it because the disk was full, you'd be paying every year for the one part free tools already cover.</p>
+
+        <h2 style="margin-top:56px">What you can do for free</h2>
+        <ul>
+          <li><strong>Storage settings.</strong> <strong>System Settings › General › Storage</strong> shows what's using space and lets you delete large files and old backups. <a href="/free-up-space-on-mac">The free up space checklist</a> goes step by step.</li>
+          <li><strong>Disk Forecast.</strong> A free menu bar app that tells you when your disk will be full, lists what's safe to clear with an explanation of each item, and moves it to the Trash. Its System Data window runs Apple's own tools after showing you the command. It doesn't scan for malware or uninstall apps.</li>
+          <li><strong>AppCleaner.</strong> A free uninstaller from FreeMacSoft that removes an app along with its leftover files.</li>
+        </ul>
+        <p>More options, including GrandPerspective and Mole, are in <a href="/best-free-mac-cleaner">the best free Mac cleaner roundup</a>, and <a href="/alternatives/cleanmymac">CleanMyMac compared with Disk Forecast</a> goes feature by feature.</p>
     
       </div></div>
     </section>
     <section class="tight lit" id="shortcut">
       <div class="wrap">
         <div class="head center">
-          <h2>Disk Forecast finds this for you</h2>
 
-          <p>Disk Forecast lists <code>~/.gradle/caches</code> and <code>~/.gradle/wrapper/dists</code> under <strong>Cleanup › Safe to clear › Package manager caches</strong>. A project&#39;s <code>build</code> folder shows up as a Gradle build only when a <code>build.gradle</code> or <code>build.gradle.kts</code> sits beside it, so a random folder named build is never listed: under <strong>Build folders in old projects</strong> after 30 days without changes, or <strong>Build folders in active projects</strong> before that. Everything goes to the Trash. It&#39;s free.</p>
+          <h2>Reclaim space without a subscription.</h2>
+          <p>Disk Forecast lists what&#39;s safe to clear, explains every item, and moves it to the Trash after one confirm. It&#39;s free, and the source is on GitHub.</p>
     
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
@@ -130,10 +132,12 @@
       <div class="wrap">
         <div class="head center head-sm"><h2>Questions</h2></div>
         <div class="faq glass">
-          <details><summary>How do I clear the Gradle cache?</summary><p>Stop the daemon with ./gradlew --stop, quit Android Studio, then delete or move ~/.gradle/caches to the Trash. Gradle downloads dependencies again on the next build, which needs a network connection.</p></details>
-          <details><summary>Where is the Gradle cache located on a Mac?</summary><p>In ~/.gradle/caches, inside Gradle&#x27;s user home. Set GRADLE_USER_HOME to move it. Wrapper downloads of Gradle itself are in ~/.gradle/wrapper/dists.</p></details>
-          <details><summary>Is it safe to delete ~/.gradle?</summary><p>Mostly. caches, wrapper/dists, and daemon can all go. Keep gradle.properties and init.d if you have them: they&#x27;re your settings, and gradle.properties may hold credentials.</p></details>
-          <details><summary>Does ./gradlew clean clear the Gradle cache?</summary><p>No. It deletes the current project&#x27;s build folder. The shared cache in ~/.gradle/caches stays. To refetch dependencies without deleting the cache, use --refresh-dependencies.</p></details>
+          <details><summary>Is CleanMyMac safe to use?</summary><p>Yes. It&#x27;s made by MacPaw, sold on the Mac App Store, and the version on MacPaw&#x27;s site is signed and notarized by Apple. As with any cleaner, review what it selects before you click, because some of it, like language files or mail attachments, you may want to keep.</p></details>
+          <details><summary>Is CleanMyMac a virus or malware?</summary><p>No. Apple notarizes the app MacPaw distributes, which means Apple scanned it for known malware, and the Mac App Store version passes Apple&#x27;s review. Fake cleaner pop-ups on websites are a different thing.</p></details>
+          <details><summary>Is CleanMyMac worth it?</summary><p>If you use most of the suite, like the malware scans, the app updater, and the uninstaller, it can be. If you mainly open it because your disk is full, free tools reclaim the same space without a yearly fee.</p></details>
+          <details><summary>How much is CleanMyMac?</summary><p>On the Mac App Store as of October 2026: $9.99 a month or $39.99 a year, Plus at $15.99 a month or $65.99 a year, and a one-time CleanMyMac X purchase at $89.99. MacPaw&#x27;s own site advertises plans from $3.33 a month. Prices vary by region and change over time.</p></details>
+          <details><summary>Is there a free version of CleanMyMac?</summary><p>There&#x27;s a free trial, and the App Store download itself is free, with plans sold as in-app purchases. The free options on this page cover disk space without a subscription.</p></details>
+          <details><summary>Can I use CleanMyMac and Disk Forecast together?</summary><p>Yes. They don&#x27;t conflict. Disk Forecast only moves files to the Trash when you ask it to.</p></details>
         </div>
       </div>
     </section>
@@ -141,9 +145,9 @@
       <div class="wrap">
         <div class="head center head-sm"><h2>Related guides</h2></div>
         <div class="related">
-          <a class="glass" href="/clear-cache/cargo"><b>Cargo</b><span>cargo clean, target folders, and ~/.cargo/registry.</span></a>
-          <a class="glass" href="/clear-cache/go"><b>Go</b><span>go clean -cache, -modcache, and where GOCACHE lives.</span></a>
-          <a class="glass" href="/clear-cache/xcode"><b>Xcode</b><span>DerivedData, device support, simulators, and archives.</span></a>
+          <a class="glass" href="/alternatives/cleanmymac"><b>CleanMyMac</b><span>The big suite. From $39.99 a year, or $89.99 once.</span></a>
+          <a class="glass" href="/best-free-mac-cleaner"><b>Best free Mac cleaner</b><span>Six honest picks, and what a cleaner should and shouldn&#x27;t do.</span></a>
+          <a class="glass" href="/free-up-space-on-mac"><b>How to free up space on Mac</b><span>The complete checklist, from emptying the Trash to System Data.</span></a>
         </div>
       </div>
     </section>
@@ -151,7 +155,7 @@
       <div class="wrap">
         <div class="cta-card glass">
           <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
-          <h2>Know before it's full.</h2>
+          <h2>Reclaim space, free.</h2>
           <p>Free. No account, no subscription.</p>
           <div class="actions">
             <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
@@ -170,6 +174,6 @@
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear the Gradle cache?", "acceptedAnswer": {"@type": "Answer", "text": "Stop the daemon with ./gradlew --stop, quit Android Studio, then delete or move ~/.gradle/caches to the Trash. Gradle downloads dependencies again on the next build, which needs a network connection."}}, {"@type": "Question", "name": "Where is the Gradle cache located on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/.gradle/caches, inside Gradle's user home. Set GRADLE_USER_HOME to move it. Wrapper downloads of Gradle itself are in ~/.gradle/wrapper/dists."}}, {"@type": "Question", "name": "Is it safe to delete ~/.gradle?", "acceptedAnswer": {"@type": "Answer", "text": "Mostly. caches, wrapper/dists, and daemon can all go. Keep gradle.properties and init.d if you have them: they're your settings, and gradle.properties may hold credentials."}}, {"@type": "Question", "name": "Does ./gradlew clean clear the Gradle cache?", "acceptedAnswer": {"@type": "Answer", "text": "No. It deletes the current project's build folder. The shared cache in ~/.gradle/caches stays. To refetch dependencies without deleting the cache, use --refresh-dependencies."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is CleanMyMac safe to use?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It's made by MacPaw, sold on the Mac App Store, and the version on MacPaw's site is signed and notarized by Apple. As with any cleaner, review what it selects before you click, because some of it, like language files or mail attachments, you may want to keep."}}, {"@type": "Question", "name": "Is CleanMyMac a virus or malware?", "acceptedAnswer": {"@type": "Answer", "text": "No. Apple notarizes the app MacPaw distributes, which means Apple scanned it for known malware, and the Mac App Store version passes Apple's review. Fake cleaner pop-ups on websites are a different thing."}}, {"@type": "Question", "name": "Is CleanMyMac worth it?", "acceptedAnswer": {"@type": "Answer", "text": "If you use most of the suite, like the malware scans, the app updater, and the uninstaller, it can be. If you mainly open it because your disk is full, free tools reclaim the same space without a yearly fee."}}, {"@type": "Question", "name": "How much is CleanMyMac?", "acceptedAnswer": {"@type": "Answer", "text": "On the Mac App Store as of October 2026: $9.99 a month or $39.99 a year, Plus at $15.99 a month or $65.99 a year, and a one-time CleanMyMac X purchase at $89.99. MacPaw's own site advertises plans from $3.33 a month. Prices vary by region and change over time."}}, {"@type": "Question", "name": "Is there a free version of CleanMyMac?", "acceptedAnswer": {"@type": "Answer", "text": "There's a free trial, and the App Store download itself is free, with plans sold as in-app purchases. The free options on this page cover disk space without a subscription."}}, {"@type": "Question", "name": "Can I use CleanMyMac and Disk Forecast together?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. They don't conflict. Disk Forecast only moves files to the Trash when you ask it to."}}]}</script>
 </body>
 </html>
