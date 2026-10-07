@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Renders site/alternatives/*.html, the alternatives hub, /system-data, and /privacy from pages.py,
-and rewrites the homepage footer list and JSON-LD between their <!-- alternatives --> and <!-- schema --> markers.
+"""Renders site/alternatives/*.html, the alternatives hub, the guides, and /privacy from pages.py,
+rewrites the homepage footer list and JSON-LD between their <!-- alternatives --> and <!-- schema --> markers,
+and writes sitemap.xml.
 
     python3 site/_build/render.py
 """
@@ -11,7 +12,7 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
-from pages import GUIDE, HUB, PAGES, PRIVACY  # noqa: E402
+from pages import GUIDES, GUIDES_HUB, HUB, PAGES, PRIVACY  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 SITE = "https://diskforecast.com"
@@ -78,6 +79,7 @@ def nav():
       <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
       <nav>
         <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
         <a href="/system-data">System Data</a>
         <a href="/alternatives">Compare</a>
         <a href="/#faq">FAQ</a>
@@ -94,11 +96,17 @@ def footer_alternatives():
     return f'      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a>{links}</nav>\n'
 
 
+def footer_guides():
+    """Every guide, linked from every footer for internal linking."""
+    links = "".join(f'<a href="{g["path"]}">{esc(g["footer"])}</a>' for g in GUIDES)
+    return f'      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a>{links}</nav>\n'
+
+
 def footer():
     return f'''  <footer>
     <div class="wrap">
-{footer_alternatives()}      <div class="footer-links"><span>© 2026 Corey Haines. <a href="{REPO}/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
-      <div class="footer-links"><a href="{REPO}">GitHub</a><a href="{REPO}/releases">Releases</a><a href="{REPO}/issues">Issues</a><a href="/system-data">Clear System Data</a><a href="/privacy">Privacy</a></div>
+{footer_guides()}{footer_alternatives()}      <div class="footer-links"><span>© 2026 Corey Haines. <a href="{REPO}/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="{REPO}">GitHub</a><a href="{REPO}/releases">Releases</a><a href="{REPO}/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
 '''
@@ -110,13 +118,13 @@ def homepage():
 
 
 def render_homepage_footer():
-    """The homepage is hand-written; keep its footer list in sync between the markers."""
+    """The homepage is hand-written; keep its footer lists in sync between the markers."""
     path = os.path.join(ROOT, "index.html")
     page = homepage()
     start, end = "<!-- alternatives -->\n", "<!-- /alternatives -->"
     i, j = page.index(start) + len(start), page.index(end)
     with open(path, "w") as f:
-        f.write(page[:i] + footer_alternatives() + "      " + page[j:])
+        f.write(page[:i] + footer_guides() + footer_alternatives() + "      " + page[j:])
 
 
 def homepage_schema():
@@ -147,6 +155,13 @@ def mockup(name):
     page = homepage()
     start, end = f"<!-- mockup:{name} -->", f"<!-- /mockup:{name} -->"
     return page[page.index(start) + len(start):page.index(end)].strip()
+
+
+def staged(name):
+    """App windows sit on a glass stage, like on the homepage; the menu bar and chart bring their own frame."""
+    if name in ("system-data", "cleanup"):
+        return f'<div class="stage glass">\n          {mockup(name)}\n        </div>'
+    return mockup(name)
 
 
 def table(rows, competitor):
@@ -278,8 +293,25 @@ def render_hub():
         f.write(body)
 
 
-def render_guide():
-    g = GUIDE
+def related_guides(g):
+    """Cards for the guides this one points to, by path."""
+    by_path = {q["path"]: q for q in GUIDES}
+    related = [by_path[path] for path in g.get("related", []) if path in by_path]
+    if not related:
+        return ""
+    cards = "".join(f'          <a class="glass" href="{q["path"]}"><b>{esc(q["card_title"])}</b><span>{esc(q["card_blurb"])}</span></a>\n'
+                    for q in related)
+    return f'''    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+{cards}        </div>
+      </div>
+    </section>
+'''
+
+
+def render_guide(g):
     body = f'''{head(g["title"], g["description"], g["path"])}{nav()}  <main>
     <div class="sub-hero">
       <div class="wrap narrow">
@@ -302,17 +334,46 @@ def render_guide():
             {CTAS}
           </div>
         </div>
-        <div class="stage glass">
-          {mockup("system-data")}
-        </div>
+        {staged(g["mockup"])}
       </div>
     </section>
-{faq_block(g["faqs"])}{cta("Know before it's full.")}  </main>
+{faq_block(g["faqs"])}{related_guides(g)}{cta(g["cta"])}  </main>
 {footer()}{faq_schema(g["faqs"])}
 </body>
 </html>
 '''
     write(g["path"], body)
+
+
+def render_guides_hub():
+    d = GUIDES_HUB
+    cards = "".join(f'          <a class="glass" href="{g["path"]}"><b>{esc(g["card_title"])}</b><span>{esc(g["card_blurb"])}</span></a>\n' for g in GUIDES)
+    body = f'''{head(d["title"], d["description"], d["path"])}{nav()}  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guides</div>
+        <h1>{d["h1"]}</h1>
+        <p class="lede">{d["lede"]}</p>
+      </div>
+    </div>
+    <section class="tight lit" style="padding-top:0">
+      <div class="wrap narrow">
+        <div class="related" style="grid-template-columns:1fr">
+{cards}        </div>
+      </div>
+    </section>
+{cta(d["cta"])}  </main>
+{footer()}</body>
+</html>
+'''
+    write(d["path"], body)
+
+
+def render_sitemap():
+    paths = ["/", GUIDES_HUB["path"]] + [g["path"] for g in GUIDES] + ["/alternatives"] + [f"/alternatives/{p['slug']}" for p in PAGES] + [PRIVACY["path"]]
+    urls = "".join(f"  <url><loc>{SITE}{p}</loc></url>\n" for p in paths)
+    with open(os.path.join(ROOT, "sitemap.xml"), "w") as f:
+        f.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
 
 
 def render_privacy():
@@ -339,6 +400,9 @@ if __name__ == "__main__":
     render_hub()
     render_homepage_footer()
     render_homepage_schema()
-    render_guide()
+    for g in GUIDES:
+        render_guide(g)
+    render_guides_hub()
     render_privacy()
-    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + system-data guide + privacy")
+    render_sitemap()
+    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + {len(GUIDES)} guides and their hub + privacy + sitemap")

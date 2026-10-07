@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to check Mac storage: 5 ways built into macOS</title>
+  <meta name="description" content="How to check Mac storage in System Settings, About This Mac, Finder, Disk Utility, and Terminal, then see what&#x27;s taking up space and find large files.">
+  <link rel="canonical" href="https://diskforecast.com/how-to-check-storage-on-mac">
+  <meta property="og:title" content="How to check Mac storage: 5 ways built into macOS">
+  <meta property="og:description" content="How to check Mac storage in System Settings, About This Mac, Finder, Disk Utility, and Terminal, then see what&#x27;s taking up space and find large files.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/how-to-check-storage-on-mac">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How to check Mac storage: 5 ways built into macOS">
+  <meta name="twitter:description" content="How to check Mac storage in System Settings, About This Mac, Finder, Disk Utility, and Terminal, then see what&#x27;s taking up space and find large files.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>How to check Mac storage, <em>five ways.</em></h1>
+        <p class="lede">The fastest way takes three clicks. The others show different numbers, and it helps to know why, especially when your Mac says it's full and Finder disagrees.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Choose <strong>Apple menu › System Settings › General › Storage</strong>. The bar at the top shows what's used by category and what's available. For folder sizes, use Finder's <strong>Calculate all sizes</strong>. For exact numbers, run <code>df -h /System/Volumes/Data</code> in Terminal.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>1. How to check storage on Mac in System Settings</h2>
+        <p>This is Apple's main storage view, and the one to start with.</p>
+        <ol class="steps">
+          <li><b>Open Storage settings.</b> Choose <strong>Apple menu › System Settings</strong>, click <strong>General</strong> in the sidebar, then click <strong>Storage</strong>. Or press Command-Space and type “Storage.”</li>
+          <li><b>Read the bar.</b> Wait for it to finish calculating. Each color is a category, like Applications, Documents, Photos, macOS, and System Data. The number above it is how much is available.</li>
+          <li><b>Look inside a category.</b> Scroll down and click the info button next to a category to see its files, sorted by size, with the option to delete them.</li>
+        </ol>
+        <p>One category won't open up this way: System Data, the gray slice near the end. <a href="/what-is-system-data-on-mac">What is System Data on Mac</a> explains what's in it.</p>
+
+        <h2 style="margin-top:56px">2. About This Mac</h2>
+        <p>Choose <strong>Apple menu › About This Mac</strong>, then click <strong>More Info</strong>. That opens <strong>System Settings › General › About</strong>, where the Storage row shows something like “142 GB available of 494 GB.” Click <strong>Storage Settings</strong> there to jump to the full view above. On macOS 12 and earlier, About This Mac had its own Storage tab.</p>
+
+        <h2 style="margin-top:56px">3. Finder</h2>
+        <ul>
+          <li><strong>The status bar.</strong> Choose <strong>View › Show Status Bar</strong>, and every Finder window shows how much space is available at the bottom.</li>
+          <li><strong>Get Info.</strong> Choose <strong>Go › Computer</strong>, select <strong>Macintosh HD</strong>, and press Command-I. The window shows capacity, available, and used.</li>
+          <li><strong>Folder sizes.</strong> Open a folder in list view (<strong>View › as List</strong>), choose <strong>View › Show View Options</strong>, and turn on <strong>Calculate all sizes</strong>. Click the Size column to sort. Start with your home folder: this is the quickest way to see which folders are big.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">4. Disk Utility</h2>
+        <p>Open <strong>Applications › Utilities › Disk Utility</strong>, and select <strong>Macintosh HD</strong> in the sidebar. You'll see used, free, and capacity for the whole disk, including other volumes in the same container. Disk Utility won't break usage down by category, but it's the place to check an external drive too.</p>
+
+        <h2 style="margin-top:56px">5. Terminal: how to check disk space on Mac precisely</h2>
+        <p>For exact numbers, open Terminal and run:</p>
+<pre><code>df -h /System/Volumes/Data</code></pre>
+        <p>Read the <strong>Avail</strong> column. Use <code>/System/Volumes/Data</code>, not <code>/</code>: since macOS Catalina, <code>/</code> is the read-only system volume, so <code>df -h /</code> shows only a few gigabytes used even when your disk is full. To list the biggest folders in your home folder:</p>
+<pre><code>du -sh ~/* 2>/dev/null | sort -h</code></pre>
+        <p>The biggest are at the bottom. Run the same command on <code>~/Library/*</code> to go one level deeper; it's where caches, app data, and developer files live. The first time, macOS may ask whether Terminal can access folders like Documents and Desktop. Allow it, or those folders are skipped.</p>
+
+        <h2 style="margin-top:56px">Why the numbers don't match</h2>
+        <ul>
+          <li><strong>Purgeable space.</strong> Finder and Storage settings count space macOS can free on demand, like local snapshots and iCloud files it can download again, as available. <code>df</code> doesn't. On the Mac this guide was written on, <code>df</code> showed 32 GB available while macOS counted 270 GB available for important files.</li>
+          <li><strong>GB versus GiB.</strong> Finder counts 1 GB as a billion bytes. <code>df -h</code> counts in gibibytes, about 7 percent larger, so a 994 GB disk shows as 926Gi.</li>
+          <li><strong>Timing.</strong> Storage settings measures when you open it and can lag behind what you just deleted. Give it a minute.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">How to see what's taking up space on Mac</h2>
+        <p>Start with the biggest category in Storage settings. If it's Applications, Documents, or Photos, its info button lists the files. If it's System Data, the space is in places Storage settings doesn't name, and <a href="/system-data">the System Data guide</a> shows how to reclaim it. If nothing stands out, sort your home folder by size in Finder, and look inside <code>~/Library</code>, <code>~/Downloads</code>, and any code or video folders.</p>
+
+        <h2 style="margin-top:56px">How to find large files on Mac</h2>
+        <ol class="steps">
+          <li><b>In Storage settings.</b> Click the info button next to <strong>Documents</strong> to see large files and downloads, sorted by size.</li>
+          <li><b>In Finder.</b> Press Command-F, click <strong>This Mac</strong>, change <strong>Kind</strong> to <strong>Other</strong>, choose <strong>File Size</strong>, and set it to “is greater than 1 GB.”</li>
+          <li><b>In Terminal.</b> Spotlight's index answers in seconds:
+<pre><code>mdfind 'kMDItemFSSize > 1000000000'</code></pre>
+          Or search your home folder directly, which is slower but includes files Spotlight skips:
+<pre><code>find ~ -type f -size +1G 2>/dev/null</code></pre></li>
+        </ol>
+        <p>Found more than you expected? <a href="/free-up-space-on-mac">The free up space checklist</a> goes through what's safe to remove, in order.</p>
+
+        <h2 style="margin-top:56px">Memory vs storage on Mac</h2>
+        <p>They're easy to mix up because both are measured in gigabytes.</p>
+        <ul>
+          <li><strong>Memory (RAM)</strong> is the workspace apps use while they run. It empties when you quit apps or restart. About This Mac shows how much you have, and <strong>Activity Monitor › Memory</strong> shows how much is in use.</li>
+          <li><strong>Storage</strong> is the SSD that keeps your files, apps, and macOS itself when the Mac is off. Everything in this guide checks storage.</li>
+          <li><strong>They meet in swap.</strong> When memory runs short, macOS moves some of it to storage. That's why a nearly full disk can bring up “Your system has run out of application memory,” even on a Mac with plenty of RAM.</li>
+        </ul>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+
+          <h2>Or keep it in your menu bar.</h2>
+          <p>Disk Forecast shows your free space in the menu bar all day. Click it to see when you&#39;ll run out, the five folders taking the most space, and how much is safe to clear. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="desk mk" role="img" aria-label="The Mac menu bar showing 142 GB free, with the Disk Forecast menu open: 142 GB free of 494 GB, Full in about 41 days, the five folders taking the most space, and Safe to clear: 12.4 GB.">
+          <div class="mk-menubar">
+            <div class="l"><svg class="apple" viewBox="0 0 14 17"><path d="M11.6 9c0-2 1.6-2.9 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7-.6 0-1.6-.7-2.6-.7C3.4 4.4 2 5.2 1.3 6.6c-1.5 2.6-.4 6.4 1 8.5.7 1 1.5 2.1 2.6 2.1 1 0 1.4-.7 2.7-.7 1.2 0 1.6.7 2.6.7 1.1 0 1.8-1 2.5-2 .8-1.1 1.1-2.2 1.1-2.3 0 0-2.2-.8-2.2-3.4zM9.6 3c.6-.7 1-1.6.9-2.6-.8 0-1.8.6-2.4 1.3-.5.6-1 1.6-.9 2.5.9.1 1.8-.5 2.4-1.2z"/></svg><b>Finder</b><span>File</span><span>Edit</span></div>
+            <div class="r">
+              <span class="item on"><svg viewBox="0 0 24 24"><path d="M5.5 9.5 7.3 5.6A2 2 0 0 1 9.1 4.5h5.8a2 2 0 0 1 1.8 1.1l1.8 3.9"/><rect x="3.5" y="9.5" width="17" height="9" rx="2.2"/><path d="M8.5 14h.01M11 14h.01M13.5 14h.01M16 14h.01"/></svg>142 GB</span>
+              <svg viewBox="0 0 24 24" class="hide-sm"><path d="M2.5 9.5a14 14 0 0 1 19 0M5.6 13a9.5 9.5 0 0 1 12.8 0M8.8 16.4a5 5 0 0 1 6.4 0"/><circle cx="12" cy="19.5" r="0.8" fill="currentColor"/></svg>
+              <svg viewBox="0 0 24 24"><rect x="2" y="7.5" width="18" height="9" rx="2.5"/><path d="M22 10.5v3"/><rect x="4" y="9.5" width="11" height="5" rx="1" fill="currentColor" stroke="none"/></svg>
+              <svg viewBox="0 0 24 24" class="hide-sm"><rect x="3" y="4.5" width="18" height="6.5" rx="3.25"/><rect x="3" y="13" width="18" height="6.5" rx="3.25"/><circle cx="16.5" cy="7.75" r="1.6" fill="currentColor"/><circle cx="7.5" cy="16.25" r="1.6" fill="currentColor"/></svg>
+              <span>Mon 9:41 AM</span>
+            </div>
+          </div>
+          <div class="mk-nsmenu">
+            <div class="mk-item dim"><span class="t">142 GB free of 494 GB</span></div>
+            <div class="mk-item dim"><span class="t">Full in ~41 days</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-label">Taking the most space</div>
+            <div class="mk-item"><span class="t">~/Library</span><span class="v">88 GB</span></div>
+            <div class="mk-item"><span class="t">~/code</span><span class="v">61 GB</span></div>
+            <div class="mk-item"><span class="t">~/Movies</span><span class="v">39 GB</span></div>
+            <div class="mk-item"><span class="t">~/Downloads</span><span class="v">24 GB</span></div>
+            <div class="mk-item"><span class="t">~/Pictures</span><span class="v">20 GB</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-item hl"><span class="t">Safe to clear: 12.4 GB…</span></div>
+            <div class="mk-item"><span class="t">Open Cleanup…</span></div>
+            <div class="mk-item"><span class="t">System Data…</span></div>
+            <div class="mk-item"><span class="t">Rescan</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-item"><span class="t">Settings…</span><span class="k">⌘,</span></div>
+            <div class="mk-item"><span class="t">Check for Updates…</span></div>
+            <div class="mk-item"><span class="t">Quit Disk Forecast</span><span class="k">⌘Q</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>How do I check storage on a MacBook Air or MacBook Pro?</summary><p>Choose Apple menu › System Settings › General › Storage. It works the same on every Mac running macOS 13 or later, laptops included. On older versions, it&#x27;s Apple menu › About This Mac › Storage.</p></details>
+          <details><summary>How do I see what&#x27;s taking up space on my Mac?</summary><p>Storage settings groups it by category; click the info button next to a category to see the files. For folders, open your home folder in Finder in list view, turn on Calculate all sizes in View Options, and sort by size.</p></details>
+          <details><summary>Why does my Mac show more free space than Terminal?</summary><p>Finder and Storage settings count purgeable space, like local snapshots and iCloud files macOS can download again, as available. The df command only counts space that&#x27;s free right now. Finder also uses gigabytes where df -h uses gibibytes.</p></details>
+          <details><summary>What&#x27;s the difference between memory and storage on a Mac?</summary><p>Memory, or RAM, is the short-term workspace apps use while they run, and it empties when you quit them or restart. Storage is the SSD that keeps your files when the Mac is off. About This Mac shows your memory; Storage settings shows your storage.</p></details>
+          <details><summary>Why does Storage settings take so long to load?</summary><p>It measures every category when you open it, which can take a minute on a full disk. Let it finish before you trust the numbers, and give it another moment after you delete something.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/free-up-space-on-mac"><b>How to free up space on Mac</b><span>The complete checklist, from emptying the Trash to System Data.</span></a>
+          <a class="glass" href="/what-is-system-data-on-mac"><b>What is System Data on Mac?</b><span>What&#x27;s inside it, how much is normal, and why it keeps growing.</span></a>
+          <a class="glass" href="/how-to-clear-cache-on-mac"><b>How to clear cache on Mac</b><span>Safari, Chrome, and Firefox first, then app and developer caches.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I check storage on a MacBook Air or MacBook Pro?", "acceptedAnswer": {"@type": "Answer", "text": "Choose Apple menu \u203a System Settings \u203a General \u203a Storage. It works the same on every Mac running macOS 13 or later, laptops included. On older versions, it's Apple menu \u203a About This Mac \u203a Storage."}}, {"@type": "Question", "name": "How do I see what's taking up space on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Storage settings groups it by category; click the info button next to a category to see the files. For folders, open your home folder in Finder in list view, turn on Calculate all sizes in View Options, and sort by size."}}, {"@type": "Question", "name": "Why does my Mac show more free space than Terminal?", "acceptedAnswer": {"@type": "Answer", "text": "Finder and Storage settings count purgeable space, like local snapshots and iCloud files macOS can download again, as available. The df command only counts space that's free right now. Finder also uses gigabytes where df -h uses gibibytes."}}, {"@type": "Question", "name": "What's the difference between memory and storage on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Memory, or RAM, is the short-term workspace apps use while they run, and it empties when you quit them or restart. Storage is the SSD that keeps your files when the Mac is off. About This Mac shows your memory; Storage settings shows your storage."}}, {"@type": "Question", "name": "Why does Storage settings take so long to load?", "acceptedAnswer": {"@type": "Answer", "text": "It measures every category when you open it, which can take a minute on a full disk. Let it finish before you trust the numbers, and give it another moment after you delete something."}}]}</script>
+</body>
+</html>
