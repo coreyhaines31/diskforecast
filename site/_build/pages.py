@@ -1274,7 +1274,7 @@ COMPARE = {
         <h2 style="margin-top:56px">Where Disk Forecast fits</h2>
         <p>Every other app in the table answers “what's using my space?” Disk Forecast starts one step earlier. It sits in the menu bar, checks free space every hour, and after 3 days says when your disk will be full. When it's time to reclaim space, it explains every item, sends what you clear to the Trash, and breaks System Data into its parts with Apple's own fixes. It's free, with the source on GitHub. It doesn't draw a map, so it pairs well with DaisyDisk or GrandPerspective.</p>
     """,
-    "tables": {"all": {"head": ["App", "Price", "How it shows your disk", "Apple silicon", "Latest version", "Source available"], "min_width": 880, "rows": [
+    "tables": {"all": {"head": ["App", "Price", "How it shows your disk", "Apple silicon", "Latest version", "Source available"], "min_width": 760, "rows": [
         ("Disk Forecast", "Free", "Sorted lists, each item explained, plus a forecast", "Native", "Actively developed", "Yes, on GitHub"),
         ("DaisyDisk", "$9.99 one-time", "Interactive rings", "Native", "4.34.2, July 2026", "No"),
         ("CleanMyMac", "$39.99 a year on the App Store", "—", "Native", "5.7.1, October 2026", "No"),
@@ -1282,7 +1282,7 @@ COMPARE = {
         ("OmniDiskSweeper", "Free", "Columns sorted by size", "Intel only", "1.11, 2018", "—"),
         ("Disk Inventory X", "Free", "Treemap", "Intel only", "1.3, December 2019", "Yes, GPL"),
         ("WizTreeMac", "Free for personal use", "Treemap and file list", "Native", "1.00, September 2026", "—"),
-        ("Mole", "Free; $19 for the Mac app", "Disk explorer in Terminal", "Native", "1.58.0, October 2026", "Yes, GPL-3.0 (command-line tool)"),
+        ("Mole", "Free; $19 for the Mac app", "Disk explorer in Terminal", "Native", "1.58.0, October 2026", "Command-line tool, GPL-3.0"),
         ("DiskBuddy", "$49", "Space map and lists", "—", "3.0, October 2026", "—"),
     ]}},
     "shortcut": """
