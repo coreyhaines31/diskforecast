@@ -237,6 +237,68 @@ PAGES = [
             """},
         ],
     },
+    # ------------------------------------------------------------------ OmniDiskSweeper
+    # Targets "omnidisksweeper" (450/mo US, KD 5). Facts: omnigroup.com/more, and the 1.11 app itself
+    # (lipo: x86_64 only; signed and notarized by The Omni Group on 2018-09-23), checked 2026-10-06.
+    {
+        "slug": "omnidisksweeper",
+        "competitor": "OmniDiskSweeper",
+        "title": "OmniDiskSweeper for Mac, compared with a free alternative",
+        "description": "OmniDiskSweeper is the free size list from The Omni Group, last built in 2018 for Intel. Disk Forecast is a free alternative that says when your disk fills.",
+        "eyebrow": "OmniDiskSweeper alternative",
+        "h1": "OmniDiskSweeper lists the biggest files. Disk Forecast <em>says when you'll run out.</em>",
+        "lede": "OmniDiskSweeper has been the plain, free way to find big files on a Mac for years: every folder, largest first, with a Trash button. Its newest version, 1.11, was built in 2018 for Intel Macs. Here's how it compares with Disk Forecast today.",
+        "tldr": "OmniDiskSweeper still works as a quick size list, and it's free. But version 1.11 is an Intel app from 2018, so an Apple silicon Mac runs it through Rosetta 2, which Apple says stays available for general use through macOS 27. Disk Forecast is free too, runs natively on Apple silicon and Intel, and adds a countdown to a full disk, System Data explained, and a cleanup list sorted by risk.",
+        "card_title": "OmniDiskSweeper",
+        "card_blurb": "The classic free size list. Last built in 2018, for Intel.",
+        "cta": "Know before it's full.",
+        "faqs": [
+            ("Is OmniDiskSweeper free?", "Yes. The Omni Group offers it as a free download from its website, with no purchase or account."),
+            ("Does OmniDiskSweeper work on Apple silicon?", "Version 1.11, the newest on Omni's site as of October 2026, contains Intel code only. On an Apple silicon Mac it runs through Rosetta 2, which Apple says stays available as a general-purpose tool through macOS 27."),
+            ("Is OmniDiskSweeper still updated?", "Omni's download page lists versions up to 1.11, for macOS 10.13 High Sierra, and the 1.11 app was signed in September 2018. We couldn't find a newer release."),
+            ("Is OmniDiskSweeper safe?", "It's signed and notarized by The Omni Group, and it moves files to the Trash when you ask it to. The risk is the same as with any size list: it shows how big something is, not whether you still need it."),
+            ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+        ],
+        "sections": [
+            {"id": "why", "html": """
+        <h2>What OmniDiskSweeper does well</h2>
+        <p>OmniDiskSweeper does one thing. It scans a drive and shows its folders in columns, sorted largest to smallest, like Finder's column view with sizes attached. Click the biggest folder, then the biggest folder inside that, and you find the 30 GB you forgot about in under a minute. Omni's own description is exactly that: it “shows you the files on your drive, largest to smallest, and lets you quickly Trash or open them.”</p>
+        <p>It's free, it comes from The Omni Group, the company behind OmniFocus and OmniGraffle, and the app is signed and notarized. For a long time it was the first answer to “what's filling my Mac?”</p>
+        <h3>Where it stops</h3>
+        <p><strong>It hasn't changed since 2018.</strong> The newest download on Omni's site is version 1.11, listed for macOS 10.13 High Sierra. We checked the app inside: it was signed in September 2018 and contains Intel code only. On an Apple silicon Mac, macOS runs it through Rosetta 2, and Apple says Rosetta stays available as a general-purpose tool through macOS 27.</p>
+        <p><strong>Sizes, not meanings.</strong> A list tells you a folder is 18 GB. It can't tell you that the folder is Xcode's DerivedData, that Xcode rebuilds it on the next build, and that clearing it is safe. Disk Forecast puts a one-line explanation next to everything it lists.</p>
+        <p><strong>It waits for you.</strong> You open OmniDiskSweeper after macOS has already warned you. Disk Forecast checks free space every hour and tells you weeks ahead.</p>
+            """},
+            {"id": "compare", "lit": True, "html": """
+        <h2>Disk Forecast vs OmniDiskSweeper</h2>
+        <p>OmniDiskSweeper facts come from Omni's download page and the 1.11 app itself, checked in October 2026.</p>
+        {{TABLE}}
+        <h3>What OmniDiskSweeper does better</h3>
+        <p>Drilling into any folder on any drive in a plain column view. If all you want is sizes, nothing is simpler, and it costs nothing.</p>
+        <h3>What Disk Forecast does better</h3>
+        <p>It runs natively on Apple silicon, watches your disk all day, explains what it finds, and breaks down System Data with Apple's own fixes. It's free, with the source on GitHub.</p>
+            """, "table": [
+                ("Price", "Free", "Free"),
+                ("Latest version", "Actively developed", "1.11, signed September 2018"),
+                ("Apple silicon", "Native", "Intel only, runs through Rosetta 2"),
+                ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
+                ("How it shows your disk", "Lists sorted by size, each item explained", "Columns sorted by size"),
+                ("System Data broken down", "Every part, in plain English, with Apple's fixes", "—"),
+                ("Cleanup sorted by risk", "Yes", "—"),
+                ("Deletes go to the Trash", "Yes", "Yes"),
+                ("Source available", "Yes, on GitHub", "—"),
+            ]},
+            {"id": "switch", "html": """
+        <h2>Switching takes a minute</h2>
+        <ol class="steps">
+          <li><b>Install Disk Forecast.</b> <code>brew install --cask coreyhaines31/tap/diskforecast</code>, or download the app from GitHub and drag it to Applications.</li>
+          <li><b>Look at the top folders.</b> The menu shows the five folders taking the most space, the same first look OmniDiskSweeper gives you, with free space beside it.</li>
+          <li><b>Clear what's safe.</b> “Safe to clear” is everything that rebuilds on its own. Click it, confirm, and it all goes to the Trash.</li>
+          <li><b>Let the forecast build.</b> After 3 days of history, the menu bar shows when your disk will be full, so next time you're not hunting in a hurry.</li>
+        </ol>
+            """},
+        ],
+    },
 ]
 
 HUB = {
