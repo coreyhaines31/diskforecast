@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Renders site/alternatives/*.html, the alternatives hub, the guides, and /privacy from pages.py,
-and rewrites the homepage footer list and JSON-LD between their <!-- alternatives --> and <!-- schema --> markers.
+rewrites the homepage footer list and JSON-LD between their <!-- alternatives --> and <!-- schema --> markers,
+and writes sitemap.xml.
 
     python3 site/_build/render.py
 """
@@ -331,6 +332,13 @@ def render_guide(g):
     write(g["path"], body)
 
 
+def render_sitemap():
+    paths = ["/"] + [g["path"] for g in GUIDES] + ["/alternatives"] + [f"/alternatives/{p['slug']}" for p in PAGES] + [PRIVACY["path"]]
+    urls = "".join(f"  <url><loc>{SITE}{p}</loc></url>\n" for p in paths)
+    with open(os.path.join(ROOT, "sitemap.xml"), "w") as f:
+        f.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
+
+
 def render_privacy():
     d = PRIVACY
     body = f'''{head(d["title"], d["description"], d["path"])}{nav()}  <main>
@@ -358,4 +366,5 @@ if __name__ == "__main__":
     for g in GUIDES:
         render_guide(g)
     render_privacy()
-    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + {len(GUIDES)} guides + privacy")
+    render_sitemap()
+    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + {len(GUIDES)} guides + privacy + sitemap")
