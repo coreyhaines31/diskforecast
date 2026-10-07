@@ -497,13 +497,16 @@ PAGES = [
 
 HUB = {
     "title": "Mac disk space apps compared: DiskBuddy, DaisyDisk and more",
-    "description": "Honest comparisons of DiskBuddy, DaisyDisk, CleanMyMac and GrandPerspective, and where Disk Forecast fits: the free Mac app that warns before your disk fills.",
+    "description": "Honest comparisons of DaisyDisk, CleanMyMac, GrandPerspective, Mole, and more, and where Disk Forecast fits: the free Mac app that warns before disks fill.",
     "h1": "Every way to see what's filling your Mac, <em>compared.</em>",
-    "lede": "Four popular storage apps, what each does well, and where it stops. Sometimes the other app is the right one, and we say so.",
+    "lede": "The Mac storage apps people search for, what each does well, and where it stops. Sometimes the other app is the right one, and we say so.",
     "glance": [
         ("You want…", "Use"),
         ("A beautiful picture of your disk, paid for once", "DaisyDisk"),
         ("A free treemap and nothing else", "GrandPerspective"),
+        ("Windows' WizTree, on a Mac", "WizTreeMac"),
+        ("A cleaner and system stats in Terminal", "Mole"),
+        ("Just to remove an app and its leftovers", "AppCleaner"),
         ("Duplicates, compression, and a Windows license too", "DiskBuddy"),
         ("A broad suite of Mac tools on a subscription", "CleanMyMac"),
         ("To know when you'll run out, before you do", "Disk Forecast"),
@@ -513,7 +516,8 @@ HUB = {
     "html": """
         <h2>How we compare</h2>
         <p>Every page here draws on the competitor's own site, store listing, and release posts as of October 2026, and says plainly what the other app does better. Where we couldn't confirm a feature either way, the table shows “—” instead of guessing. If something is out of date, <a href="https://github.com/coreyhaines31/diskforecast/issues">open an issue</a> and we'll fix it.</p>
-        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, now a subscription. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
+        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, now a subscription. <strong>Mole</strong> is the open-source cleaner for Terminal. <strong>OmniDiskSweeper</strong> and <strong>Disk Inventory X</strong> are the free classics, both Intel only and unchanged for years. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
+        <p>To see them all at once, start with <a href="/alternatives/compare">every app side by side</a>. Coming from Windows? <a href="/alternatives/windirstat-mac">WinDirStat for Mac</a> covers what runs here.</p>
     """,
 }
 
