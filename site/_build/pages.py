@@ -1099,8 +1099,72 @@ tmutil listlocalsnapshotdates /</code></pre>
     "cta": "Know before it's full.",
 }
 
+# Targets "other users and shared mac storage" (600/mo US, KD 0) and its variants: "what is other users and shared on mac" (200),
+# "how to delete other users and shared on mac" (100), "other users and shared mac storage delete" (100), ~1,450 in all.
+# Facts from macOS 26.6: the category name and what it measures come from StorageManagement's OtherUsersStorageExtension
+# (other accounts' home folders, /Users/Shared/, /Users/Deleted Users/); the delete-account labels from UsersGroups.appex.
+OTHER_USERS = {
+    "path": "/other-users-and-shared-mac",
+    "title": "Other Users & Shared Mac storage: what's in it",
+    "description": "What Other Users & Shared means in Mac Storage settings, how to check what's in it, and how to delete other accounts and shared files without losing anything.",
+    "eyebrow": "Guide",
+    "h1": "Other Users &amp; Shared on Mac storage, <em>explained.</em>",
+    "lede": "It's a newer category in Storage settings, and it can't be opened like Documents or Applications. Here's what macOS counts in it, how to see it yourself, and what's safe to remove.",
+    "tldr": "Other Users &amp; Shared is the space used by everything in <code>/Users</code> that isn't your own home folder: other people's accounts on this Mac, the <code>/Users/Shared</code> folder, and <code>/Users/Deleted Users</code>, where macOS keeps disk images of deleted accounts. To reclaim it, sign in as the other user and clean up, delete accounts nobody uses in <strong>System Settings › Users &amp; Groups</strong>, or remove what you recognize in the Shared folder.",
+    "card_title": "Other Users & Shared",
+    "card_blurb": "Other accounts, the Shared folder, and deleted users' images.",
+    "footer": "Other Users & Shared",
+    "related": ["/how-to-check-storage-on-mac", "/what-is-system-data-on-mac", "/purgeable-space-mac"],
+    "faqs": [
+        ("What is Other Users & Shared on Mac storage?", "It's the Storage settings category for files in /Users that aren't in your home folder: other accounts' home folders, the /Users/Shared folder, and /Users/Deleted Users, which holds disk images of deleted accounts."),
+        ("How do I delete Other Users & Shared on my Mac?", "There's no single button. Delete accounts nobody uses in System Settings › Users & Groups, remove old disk images from /Users/Deleted Users, and move files you recognize out of /Users/Shared. Another person's files are theirs to clean up."),
+        ("Why is Other Users & Shared so big when I'm the only user?", "Look in /Users/Shared and /Users/Deleted Users first. Apps sometimes keep shared data in /Users/Shared, and a deleted account's saved home folder can be tens of gigabytes. Storage settings also measures when you open it, so give it a minute."),
+        ("Is it safe to delete the Shared folder on Mac?", "Not the folder itself; macOS expects /Users/Shared to exist. Files inside it are safe to remove if you know what they are. Some apps keep their shared data there, so look before you delete."),
+        ("What happens to files when I delete a user on Mac?", "macOS asks. You can save the home folder in a disk image, which goes to /Users/Deleted Users, leave the home folder where it is, or delete it. Only deleting it reclaims the space."),
+    ],
+    "html": """
+        <h2>What is Other Users &amp; Shared on Mac?</h2>
+        <p>Open <strong>System Settings › General › Storage</strong> on a recent version of macOS, and one of the categories is <strong>Other Users &amp; Shared</strong>. It counts the space used by folders in <code>/Users</code> that aren't yours. On macOS 26.6, the part of Storage settings that measures it looks at three places:</p>
+        <ul>
+          <li><strong>Other accounts' home folders.</strong> Everyone else who has a login on this Mac, with their documents, photos, apps' data, and caches.</li>
+          <li><strong>/Users/Shared.</strong> A folder every account can read and write. People drop files there to share them, and some apps keep shared data or downloads there.</li>
+          <li><strong>/Users/Deleted Users.</strong> When you delete an account and choose to save its home folder in a disk image, the image goes here and stays until you remove it.</li>
+        </ul>
+        <p>Your own home folder isn't in it. That's counted in Documents, Applications, Photos, and the other categories.</p>
+
+        <h2 style="margin-top:56px">How to check what's in it</h2>
+        <p>Storage settings shows the total but won't list the files. In Finder, choose <strong>Go › Go to Folder</strong>, type <code>/Users</code>, and press Return to see every account and the Shared folder. To measure them in Terminal:</p>
+<pre><code>ls /Users
+du -sh /Users/Shared
+sudo du -sh /Users/*</code></pre>
+        <p>Other people's home folders are private, so the last line needs your administrator password, and Terminal may still be blocked from some of their folders without Full Disk Access. On the Mac this guide was written on, <code>/Users</code> holds one account and the Shared folder, which was 3.5 MB, and there's no Deleted Users folder. If yours has more, that's where your number comes from.</p>
+
+        <h2 style="margin-top:56px">What's safe to delete</h2>
+        <h3>Other accounts</h3>
+        <p>Those files belong to someone. The safe way to reclaim space is to sign in as that user and clean up the way you would on your own account. For an account nobody uses anymore, open <strong>System Settings › Users &amp; Groups</strong>, click the info button next to it, and click <strong>Delete User…</strong>. macOS asks what to do with the home folder:</p>
+        <ul>
+          <li><strong>Save the home folder in a disk image.</strong> It moves into <code>/Users/Deleted Users</code>, which is still Other Users &amp; Shared.</li>
+          <li><strong>Don't change the home folder.</strong> The folder stays in <code>/Users</code>, and so does the space.</li>
+          <li><strong>Delete the home folder.</strong> The only choice that reclaims the space. Copy anything worth keeping first.</li>
+        </ul>
+        <h3>The Shared folder</h3>
+        <p>Keep <code>/Users/Shared</code> itself; macOS expects it. Inside, delete what you recognize: old installers, files someone shared and forgot. If a folder is named after an app, it may be that app's shared data, so check before you remove it. On the Mac this guide was written on, it held <code>Relocated Items</code> folders, where macOS upgrades put files they moved aside, and <code>SC Info</code>, which Apple's media apps use. Look through a Relocated Items folder before deleting it, and leave SC Info alone.</p>
+        <h3>Deleted Users</h3>
+        <p>Each disk image here is a former account's whole home folder. Double-click one to open it and check what's inside. Once you're sure nothing is needed, move the image to the Trash and empty it.</p>
+
+        <h2 style="margin-top:56px">If you're the only user</h2>
+        <p>Then Other Users &amp; Shared should be small. If it isn't, check <code>/Users/Shared</code> and <code>/Users/Deleted Users</code> with the commands above; one of them almost always explains it. Storage settings measures when you open it and can lag behind, so give it a minute, or a restart, before you trust a number that looks wrong. For categories that are big for other reasons, see <a href="/what-is-system-data-on-mac">what is System Data on Mac</a> and <a href="/how-to-check-storage-on-mac">how to check Mac storage</a>.</p>
+    """,
+    "shortcut": """
+          <h2>Disk Forecast and Other Users &amp; Shared</h2>
+          <p>Disk Forecast scans your own home folder, not other accounts or <code>/Users/Shared</code>, so it won&#39;t list or delete anything in this category. What it does see is the whole disk&#39;s free space, every hour, which includes everything every account uses. After 3 days, it tells you when the disk will be full, so another account filling it up doesn&#39;t catch you out. It&#39;s free.</p>
+    """,
+    "mockup": "forecast",
+    "cta": "Know before it's full.",
+}
+
 # In reading order: the hub and every footer list them this way.
-GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS]
+GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS]
 
 GUIDES_HUB = {
     "path": "/guides",
