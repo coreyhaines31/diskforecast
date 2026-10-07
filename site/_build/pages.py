@@ -443,7 +443,88 @@ docker system prune</code></pre>
     "cta": "Know before it's full.",
 }
 
-GUIDES = [SYSTEM_DATA, CACHE]
+# Targets "how to free up disk space on mac" (3,700/mo US, KD 0), plus "how to free up space on mac", "how to clear storage on mac",
+# "how to get more storage on mac", and "your startup disk is almost full". "Optimize" appears once, only as Apple's setting name.
+FREE_UP = {
+    "path": "/free-up-space-on-mac",
+    "title": "How to free up disk space on Mac: the complete checklist",
+    "description": "How to free up disk space on Mac, in order: the quick wins, the big folders, the developer files, and what to do when your startup disk is almost full.",
+    "eyebrow": "Guide",
+    "h1": "How to free up disk space on Mac, <em>in order.</em>",
+    "lede": "A checklist that starts with the steps that reclaim the most space for the least effort, and ends with the ones only some Macs need. Every step uses something built into macOS, or the tool that made the files.",
+    "tldr": "Empty the Trash, then clear out <code>~/Downloads</code> and old installers. Delete apps you don't use. Turn on Apple's own recommendations in <strong>System Settings › General › Storage</strong>. Then go after the big folders: old iPhone backups, caches, developer files, and System Data. Restart when you're done.",
+    "card_title": "How to free up space on Mac",
+    "card_blurb": "The complete checklist, from emptying the Trash to System Data.",
+    "footer": "Free up space on Mac",
+    "related": ["/how-to-check-storage-on-mac", "/how-to-clear-cache-on-mac", "/what-is-system-data-on-mac"],
+    "faqs": [
+        ("What's the fastest way to free up space on a Mac?", "Empty the Trash, then sort your Downloads folder by size and move old installers and big files to the Trash. Restart afterward. Those three steps take five minutes and often reclaim several gigabytes."),
+        ("Why is my Mac storage full when I don't have many files?", "Usually because of things you didn't save yourself: local Time Machine snapshots, caches, old iPhone backups, Xcode simulators, or a Docker disk image. Most of that shows up as System Data in Storage settings."),
+        ("How much free space should a Mac have?", "There's no official number. A good rule is to keep at least 10 percent of the disk free, and more before a major macOS upgrade, which needs tens of gigabytes to install."),
+        ("What does Store in iCloud do?", "It keeps your Desktop and Documents folders, photos, and messages in iCloud, and keeps only recent files and smaller photo versions on your Mac when space runs low. You can download the originals at any time. It needs enough iCloud storage for everything you store."),
+        ("Is it safe to use a Mac cleaner app?", "It depends on what the app deletes and whether you can undo it. Look for one that explains each item, uses Apple's own tools for system files, and moves files to the Trash instead of deleting them. Disk Forecast does all three, and it's free."),
+        ("Does freeing up space make a Mac run better?", "Only if the disk was nearly full. macOS needs free space for swap, updates, and temporary files, so a Mac with a few gigabytes left can stall. Beyond that, more free space doesn't change much."),
+    ],
+    "html": """
+        <h2>First, see what's taking up space</h2>
+        <p>Open <strong>System Settings › General › Storage</strong> and wait for the bar to finish calculating. It splits your disk into categories like Applications, Documents, Photos, and System Data. The biggest category tells you which steps below matter most for your Mac. For more ways to look, including Finder and Terminal, see <a href="/how-to-check-storage-on-mac">how to check Mac storage</a>.</p>
+
+        <h2 style="margin-top:56px">Quick wins: how to free up space on Mac in 5 minutes</h2>
+        <ol class="steps">
+          <li><b>Empty the Trash.</b> Files you've deleted still take space until you do. Choose <strong>Finder › Empty Trash</strong>, or press Command-Shift-Delete in Finder. Photos and Mail have their own: <strong>Recently Deleted</strong> in Photos keeps items for up to 30 days unless you delete them there too.</li>
+          <li><b>Clear out Downloads.</b> Open <code>Downloads</code> in Finder, choose <strong>View › as List</strong>, and click the Size column. Old installers (<code>.dmg</code> and <code>.pkg</code> files) and zip files you've already opened are safe to move to the Trash.</li>
+          <li><b>Delete apps you don't use.</b> In Storage settings, click the info button next to <strong>Applications</strong> to see them sorted by size. Drag the ones you don't need from the Applications folder to the Trash. Big creative apps and games often take 10 GB or more each.</li>
+          <li><b>Turn on Apple's recommendations.</b> At the top of Storage settings: <strong>Store in iCloud</strong> keeps your files, photos, and messages in iCloud and only recent ones on your Mac. <strong>Optimize Storage</strong> removes Apple TV movies and shows you've already watched, and keeps only recent Mail attachments. <strong>Empty Trash Automatically</strong> erases items that have been in the Trash for more than 30 days.</li>
+          <li><b>Restart.</b> A restart clears temporary files and swap, and gives macOS a chance to remove old local snapshots. Storage settings also recalculates.</li>
+        </ol>
+
+        <h2 style="margin-top:56px">How to clear storage on Mac: the big folders</h2>
+        <ol class="steps">
+          <li><b>Delete old iPhone and iPad backups.</b> Backups made through Finder live in <code>~/Library/Application Support/MobileSync/Backup</code> and can be tens of gigabytes each. In Storage settings, click the info button next to <strong>iOS Files</strong> to see them and delete the ones for devices you no longer have.</li>
+          <li><b>Trim Messages attachments.</b> In Messages, choose <strong>Messages › Settings › General</strong> and set <strong>Keep messages</strong> to 1 Year or 30 Days. Or click the info button next to <strong>Messages</strong> in Storage settings and delete the largest attachments.</li>
+          <li><b>Clear caches.</b> Apps keep gigabytes of cached files in <code>~/Library/Caches</code>, and they rebuild what they need. <a href="/how-to-clear-cache-on-mac">How to clear cache on Mac</a> covers browsers, apps, and what to leave alone.</li>
+          <li><b>Find large files.</b> In a Finder window, press Command-F, click <strong>This Mac</strong>, change <strong>Kind</strong> to <strong>Other › File Size</strong>, and search for files greater than 1 GB. Old screen recordings, videos, and disk images are the usual finds.</li>
+          <li><b>Move big media to an external drive.</b> A Photos library, video projects, or a music collection can live on an external SSD. Copy it, confirm the copy opens, then remove the original.</li>
+          <li><b>Reclaim System Data.</b> If System Data is the biggest slice, it's usually local Time Machine snapshots, simulator runtimes, or Docker. <a href="/system-data">How to clear System Data</a> walks through each with Apple's own tools.</li>
+        </ol>
+
+        <h2 style="margin-top:56px">If you write code</h2>
+        <p>Developer Macs fill up differently. Build folders like <code>node_modules</code>, Xcode's DerivedData, simulator runtimes, package manager caches, Docker images, and local AI models add up fast. To list the <code>node_modules</code> folders in your home folder by size:</p>
+<pre><code>find ~ -name node_modules -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
+        <p>Delete the ones in projects you haven't touched in a while; <code>npm install</code> brings them back. For Ollama models, <code>ollama list</code> shows what you have and <code>ollama rm &lt;model&gt;</code> removes one.</p>
+
+        <h2 style="margin-top:56px">Your startup disk is almost full: what to do now</h2>
+        <p>When free space gets critically low, macOS shows a warning: “Your disk is almost full,” or on older versions, “Your startup disk is almost full.” Its <strong>Manage</strong> button opens Storage settings. Take it seriously. With too little room, apps can't save, updates won't install, Messages warns that incoming messages may be lost, and macOS can't grow swap when memory runs short.</p>
+        <ol class="steps">
+          <li><b>Make room right away.</b> Empty the Trash and move your biggest downloads to the Trash, then empty it again. Even 10 GB gets you out of the danger zone.</li>
+          <li><b>Restart.</b> Swap and temporary files are cleared, and macOS gets a chance to release purgeable space it was holding.</li>
+          <li><b>Work through the checklist.</b> Start with whichever category is biggest in Storage settings.</li>
+        </ol>
+
+        <h2 style="margin-top:56px">How to get more storage on Mac</h2>
+        <p>On most Macs, internal storage can't be upgraded after you buy it. You can still get more room:</p>
+        <ul>
+          <li><strong>iCloud.</strong> Store in iCloud keeps the originals online and recent files on your Mac. It needs enough iCloud storage for everything you store.</li>
+          <li><strong>An external SSD.</strong> Fast enough to keep a Photos library, video projects, or virtual machines on it, and inexpensive per gigabyte.</li>
+          <li><strong>Time Machine on an external drive.</strong> Backing up regularly lets macOS clear its local snapshots instead of holding them for the next backup.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">What not to delete</h2>
+        <ul>
+          <li><strong>Anything under /System.</strong> It's on a sealed, read-only volume, and macOS needs all of it.</li>
+          <li><strong>Folders in ~/Library/Application Support you don't recognize.</strong> That's where apps keep their data, not their caches. Look up a folder before you remove it.</li>
+          <li><strong>Commands from forums that start with <code>sudo rm</code>.</strong> If a step deletes files as administrator, make sure you know exactly which ones.</li>
+        </ul>
+    """,
+    "shortcut": """
+          <h2>Get the warning weeks ahead, not at 2 GB.</h2>
+          <p>Disk Forecast checks your free space every hour and, after 3 days, tells you when you&#39;ll run out. When it&#39;s time, it shows what&#39;s safe to clear and moves it to the Trash. It&#39;s free.</p>
+    """,
+    "mockup": "forecast",
+    "cta": "Know before it's full.",
+}
+
+GUIDES = [SYSTEM_DATA, CACHE, FREE_UP]
 
 # ---------------------------------------------------------------------- Privacy
 PRIVACY = {
