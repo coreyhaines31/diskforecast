@@ -758,7 +758,7 @@ APPLE_INTELLIGENCE = {
         <p>Those are the labels on macOS 26.6. You can turn it back on at any time; macOS downloads the models again.</p>
 
         <h2 style="margin-top:56px">How much storage Apple Intelligence uses</h2>
-        <p>Apple's support page for this year's releases says Apple Intelligence uses up to 8 GB of storage on most supported iPhone, iPad, and Mac models, and up to 14 GB on some newer devices. For macOS 26, Apple asked for 7 GB of available storage before it would turn on.</p>
+        <p>Apple's support page for this year's releases says Apple Intelligence uses up to 8 GB of storage on most supported iPhone, iPad, and Mac models, and up to 14 GB on some newer devices.</p>
         <p>Here's what we could measure on one Mac with an M4 Pro running macOS 26.6, with Apple Intelligence on:</p>
         {{PATHS}}
         <p>The readable folders are Siri understanding (1.9 GB), text to speech (556 MB), speech recognition (409 MB), and the Photos Clean Up model (248 MB), among others. The language and image models themselves sit in folders macOS won't let anything outside the system read, so their size isn't something we can show you. Storage settings counts all of it under System Data.</p>
@@ -775,7 +775,7 @@ APPLE_INTELLIGENCE = {
     "related": ["/ai-models/ollama", "/what-is-system-data-on-mac", "/system-data"],
     "faqs": [
         ("Can I delete Apple Intelligence from my Mac?", "Not by deleting files. Its models live in a folder protected by System Integrity Protection. You can turn it off in System Settings › Apple Intelligence & Siri, which lets macOS remove the models it downloaded for it."),
-        ("How much storage does Apple Intelligence use on a Mac?", "Apple says up to 8 GB on most supported devices and up to 14 GB on some newer ones. For macOS 26, Apple required 7 GB of available storage to turn it on. Storage settings counts it under System Data."),
+        ("How much storage does Apple Intelligence use on a Mac?", "Apple says up to 8 GB on most supported devices and up to 14 GB on some newer ones. Storage settings counts it under System Data."),
         ("Does turning off Apple Intelligence free up storage?", "It lets macOS remove the Apple Intelligence models, but Apple doesn't say how quickly. Some Siri, dictation, and translation models stay because other features use them. Check Storage settings after a restart."),
         ("Where does Apple Intelligence store its models?", "In /System/Library/AssetsV2, in folders that start with com_apple_MobileAsset_UAF. The language and image model folders are protected, so even Terminal can't read their size."),
     ],
