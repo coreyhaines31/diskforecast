@@ -549,7 +549,7 @@ SYSTEM_DATA = {
         <h2>First, look at what you have</h2>
         <p>Open <strong>System Settings › General › Storage</strong>. The colored bar at the top splits your disk into categories, and System Data is usually the gray slice near the end. Hover over it to see its size.</p>
         <p>Storage settings won't tell you what's inside, and its number can lag behind reality. Give it a minute after opening, and don't panic if it jumps around. For what counts as System Data, how much is normal, and why it grows, see <a href="/what-is-system-data-on-mac">what is System Data on Mac</a>.</p>
-        <div class="callout"><p><strong>What System Data is not.</strong> It isn't your documents, photos, or apps, which have their own categories. And it isn't “wasted.” Most of it is macOS doing its job, just more of it than you'd like.</p></div>
+        <div class="callout"><p><strong>What System Data is not.</strong> It isn't your documents, photos, or apps, which have their own categories, and it isn't other accounts' files, which are counted in <a href="/other-users-and-shared-mac">Other Users &amp; Shared</a>. And it isn't “wasted.” Most of it is macOS doing its job, just more of it than you'd like.</p></div>
 
         <h2 style="margin-top:56px">What's inside System Data</h2>
         <ul>
@@ -569,7 +569,7 @@ SYSTEM_DATA = {
           <li><b>Remove local Time Machine snapshots.</b> List them, then delete by date:
 <pre><code>tmutil listlocalsnapshots /
 sudo tmutil deletelocalsnapshots 2026-10-05-093012</code></pre>
-          Replace the date with one from the list. Time Machine keeps taking new ones, and macOS removes each after 24 hours anyway, so this is for when you need the room right now. Recent macOS versions no longer let you turn local snapshots off with <code>tmutil disablelocal</code>.</li>
+          Replace the date with one from the list. Time Machine keeps taking new ones, and macOS removes each after 24 hours anyway, so this is for when you need the room right now. Recent macOS versions no longer let you turn local snapshots off with <code>tmutil disablelocal</code>. <a href="/time-machine-local-snapshots">Time Machine local snapshots</a> has every <code>tmutil</code> command.</li>
           <li><b>Delete simulator runtimes you don't use.</b> Remove simulators for runtimes no installed Xcode supports:
 <pre><code>xcrun simctl delete unavailable</code></pre>
           To remove whole runtimes, list them and delete by identifier, or use <strong>Xcode › Settings › Components</strong>:
@@ -587,7 +587,7 @@ pip cache purge</code></pre>
           <li><b>Rebuild the Spotlight index.</b> If it's grown large, rebuilding often shrinks it:
 <pre><code>sudo mdutil -E /</code></pre>
           Search results will be incomplete for a while as it re-indexes.</li>
-          <li><b>Leave purgeable space alone.</b> macOS frees it the moment something needs the room. Apps that “free” it for you are only doing what macOS would have done anyway.</li>
+          <li><b>Leave purgeable space alone.</b> macOS frees it the moment something needs the room. Apps that “free” it for you are only doing what macOS would have done anyway. <a href="/purgeable-space-mac">What purgeable space is</a> explains when clearing it is worth it.</li>
         </ol>
 
         <h2 style="margin-top:56px">How to reduce System Data and keep it down</h2>
@@ -755,8 +755,9 @@ FREE_UP = {
 
         <h2 style="margin-top:56px">How to clear storage on Mac: the big folders</h2>
         <ol class="steps">
-          <li><b>Delete old iPhone and iPad backups.</b> Backups made through Finder live in <code>~/Library/Application Support/MobileSync/Backup</code> and can be tens of gigabytes each. In Storage settings, click the info button next to <strong>iOS Files</strong> to see them and delete the ones for devices you no longer have.</li>
-          <li><b>Trim Messages attachments.</b> In Messages, choose <strong>Messages › Settings › General</strong> and set <strong>Keep messages</strong> to 1 Year or 30 Days. Or click the info button next to <strong>Messages</strong> in Storage settings and delete the largest attachments.</li>
+          <li><b>Delete old iPhone and iPad backups.</b> Backups made through Finder live in <code>~/Library/Application Support/MobileSync/Backup</code> and can be tens of gigabytes each. In Storage settings, click the info button next to <strong>iOS Files</strong> to see them and delete the ones for devices you no longer have. <a href="/taking-up-space/iphone-backups">Where iPhone backups are stored</a> has both ways to delete them.</li>
+          <li><b>Trim Messages attachments.</b> In Messages, choose <strong>Messages › Settings › General</strong> and set <strong>Keep Messages</strong> to 1 Year or 30 Days. Or click the info button next to <strong>Messages</strong> in Storage settings and delete the largest attachments. See <a href="/taking-up-space/messages">Messages taking up space</a>.</li>
+          <li><b>Send cloud files back to the cloud.</b> iCloud Drive and Dropbox keep downloaded copies on your Mac. Remove the downloads and the files stay online: see <a href="/taking-up-space/icloud-drive">iCloud Drive</a> and <a href="/taking-up-space/dropbox">Dropbox</a>.</li>
           <li><b>Clear caches.</b> Apps keep gigabytes of cached files in <code>~/Library/Caches</code>, and they rebuild what they need. <a href="/how-to-clear-cache-on-mac">How to clear cache on Mac</a> covers browsers, apps, and what to leave alone.</li>
           <li><b>Find large files.</b> In a Finder window, press Command-F, click <strong>This Mac</strong>, change <strong>Kind</strong> to <strong>Other › File Size</strong>, and search for files greater than 1 GB. Old screen recordings, videos, and disk images are the usual finds.</li>
           <li><b>Move big media to an external drive.</b> A Photos library, video projects, or a music collection can live on an external SSD. Copy it, confirm the copy opens, then remove the original.</li>
@@ -767,7 +768,8 @@ FREE_UP = {
         <p>Developer Macs fill up differently. Build folders like <code>node_modules</code>, Xcode's DerivedData, simulator runtimes, package manager caches, Docker images, and local AI models add up fast. To list the <code>node_modules</code> folders in your home folder by size:</p>
 <pre><code>find ~ -name node_modules -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
         <p>Delete the ones in projects you haven't touched in a while; <code>npm install</code> brings them back. For Ollama models, <code>ollama list</code> shows what you have and <code>ollama rm &lt;model&gt;</code> removes one; <a href="/ai-models">delete local AI models</a> covers Ollama, LM Studio, and Hugging Face.</p>
-        <p>Package managers and build tools keep caches of their own, and each has a command to clear it. <a href="/clear-cache">Clear cache by tool</a> has a page for npm, Docker, Xcode, pip, and six more.</p>
+        <p>Package managers and build tools keep caches of their own, and each has a command to clear it. <a href="/clear-cache">Clear cache by tool</a> has a page for npm, Docker, Xcode, pip, and six more, and <a href="/taking-up-space/developer-files">developer files taking up space</a> covers DerivedData, simulators, node_modules, and Docker.raw on one page.</p>
+        <p>Not sure which folder is the big one? <a href="/taking-up-space">What's taking up space</a> goes folder by folder, including the <a href="/taking-up-space/sleepimage">sleepimage</a> file people often find first.</p>
 
         <h2 style="margin-top:56px">Your startup disk is almost full: what to do now</h2>
         <p>When free space gets critically low, macOS shows a warning: “Your disk is almost full,” or on older versions, “Your startup disk is almost full.” Its <strong>Manage</strong> button opens Storage settings. Take it seriously. With too little room, apps can't save, updates won't install, Messages warns that incoming messages may be lost, and macOS can't grow swap when memory runs short.</p>
@@ -913,13 +915,13 @@ WHAT_IS = {
     "html": """
         <h2>What System Data is</h2>
         <p>Open <strong>System Settings › General › Storage</strong> and the bar at the top splits your disk into categories: Applications, Documents, Photos, Messages, macOS, and more. Each named category is something macOS can recognize and count. <strong>System Data is everything else.</strong> It's a catch-all, not a single folder, which is why Storage settings can't show you what's inside it the way it can for Documents.</p>
-        <p>It's also not the operating system. macOS itself has its own category, simply called macOS, on recent versions. System Data is what builds up around it: files macOS, your apps, and your tools create while you use the Mac.</p>
+        <p>It's also not the operating system. macOS itself has its own category, simply called macOS, on recent versions. System Data is what builds up around it: files macOS, your apps, and your tools create while you use the Mac. Other people's accounts on the same Mac aren't in it either; they have their own category, <a href="/other-users-and-shared-mac">Other Users &amp; Shared</a>.</p>
         <div class="callout"><p><strong>The short definition.</strong> System Data is space used by files that aren't apps, aren't your documents or media, and aren't macOS itself. Most of it is temporary, rebuildable, or both.</p></div>
 
         <h2 style="margin-top:56px">What's inside System Data on Mac</h2>
         <ul>
-          <li><strong>Local Time Machine snapshots.</strong> If you back up with Time Machine, macOS keeps hourly snapshots on your Mac between backups, so you can restore files even when the backup drive isn't connected. They're the most common reason System Data is huge.</li>
-          <li><strong>Purgeable space.</strong> Space macOS has already marked as reclaimable, like iCloud files it can download again. It frees it on its own when something needs the room.</li>
+          <li><strong>Local Time Machine snapshots.</strong> If you back up with Time Machine, macOS keeps hourly snapshots on your Mac between backups, so you can restore files even when the backup drive isn't connected. They're the most common reason System Data is huge. <a href="/time-machine-local-snapshots">Here's how to list and delete them</a>.</li>
+          <li><strong>Purgeable space.</strong> Space macOS has already marked as reclaimable, like iCloud files it can download again. It frees it on its own when something needs the room. <a href="/purgeable-space-mac">Purgeable space, explained</a>.</li>
           <li><strong>Caches and logs.</strong> Copies apps keep so they don't have to download or rebuild things, plus records of what they did. Some land in named categories, but much of it counts here.</li>
           <li><strong>Simulators and runtimes.</strong> If you've installed Xcode, each iOS, watchOS, or visionOS simulator runtime can take several gigabytes.</li>
           <li><strong>Docker and virtual machines.</strong> Docker keeps all its images, containers, and build cache in one disk image (<a href="/clear-cache/docker">here's how to prune it</a>). Parallels, UTM, and VMware save whole computers as single files.</li>
@@ -963,8 +965,208 @@ WHAT_IS = {
     "cta": "Know before it's full.",
 }
 
+# Targets "purgeable space mac" (200/mo US, KD 2), "mac purgeable space" (150), "how to clear purgeable space on mac" (100),
+# "what is purgeable space on mac" (100), "macos purgeable space" (100), "remove purgeable space mac" (70), and
+# "what does purgeable mean on mac" (60). Measured on this Mac with df and URLResourceValues (available vs important usage).
+PURGEABLE = {
+    "path": "/purgeable-space-mac",
+    "title": "Purgeable space on Mac: what it is and how to clear it",
+    "description": "What purgeable space on Mac is, why Finder counts it as available, how macOS frees it on its own, and how to clear it when a tool needs real free space.",
+    "eyebrow": "Guide",
+    "h1": "Purgeable space on Mac, <em>explained.</em>",
+    "lede": "Finder says you have plenty of room. Terminal says you're nearly full. Both are right, and the difference is purgeable space: storage macOS has already promised to give back.",
+    "tldr": "Purgeable space is storage used by files macOS can delete on its own when it needs room: local Time Machine snapshots, downloaded copies of iCloud files, and caches. Finder and Storage settings count it as available, because macOS frees it the moment an app asks. You rarely need to clear it. When a tool insists on real free space, restart, then delete local snapshots with <code>tmutil</code>.",
+    "card_title": "Purgeable space on Mac",
+    "card_blurb": "What it is, why Finder counts it as free, and when to clear it.",
+    "footer": "Purgeable space",
+    "related": ["/time-machine-local-snapshots", "/what-is-system-data-on-mac", "/how-to-check-storage-on-mac"],
+    "faqs": [
+        ("What is purgeable space on Mac?", "Storage used by files macOS can delete by itself when it needs room, because they can be recreated or downloaded again: local Time Machine snapshots, downloaded copies of iCloud files, and caches. Finder counts it as available."),
+        ("What does purgeable mean on a Mac?", "That macOS may remove the file without asking when space runs low. Purgeable files are in use until then, but macOS has already decided they're expendable."),
+        ("How do I clear purgeable space on my Mac?", "You usually don't need to: macOS frees it when an app needs room. If a tool demands real free space, restart, delete local Time Machine snapshots with tmutil deletelocalsnapshots, and use Remove Download on big iCloud Drive files."),
+        ("Why is purgeable space so large on my Mac?", "Usually local Time Machine snapshots, or iCloud files downloaded with Optimize Mac Storage on. macOS doesn't list what's in it. On one Mac with no snapshots at all, it was still over 200 GB."),
+        ("Why does Finder show more free space than Terminal?", "Finder counts purgeable space as available, and df counts only space that's free right now. On one Mac, df showed 32 GB available while macOS counted 270 GB available for important files."),
+        ("Is it safe to remove purgeable space?", "It's safe, but it rarely helps. macOS removes it as soon as something needs the room. Deleting it early only means downloading or rebuilding those files sooner."),
+    ],
+    "html": """
+        <h2>What is purgeable space on Mac?</h2>
+        <p>Some files on your Mac exist for convenience. They can be recreated, or downloaded again, so macOS marks them as purgeable: it may delete them, without asking, when it needs the room. Purgeable space is the total of those files. The idea arrived in macOS Sierra in 2016, alongside the storage recommendations Storage settings still shows.</p>
+        <p>On a typical Mac, three things make up most of it:</p>
+        <ul>
+          <li><strong>Local Time Machine snapshots.</strong> Hourly snapshots of your disk, kept between backups. They can hold tens of gigabytes of files you've already deleted.</li>
+          <li><strong>Downloaded iCloud files.</strong> With Optimize Mac Storage on, the copies of iCloud Drive files on your Mac can be removed and downloaded again later.</li>
+          <li><strong>Caches.</strong> Some caches, from apps and from macOS itself, are marked as safe to delete under pressure.</li>
+        </ul>
+        <p>macOS doesn't publish a list of what it counts, and it doesn't show you one either.</p>
+
+        <h2 style="margin-top:56px">Why Finder counts purgeable space as available</h2>
+        <p>Finder and Storage settings show available space as free space plus purgeable space. That's on purpose: if you copy a big file, macOS makes room by purging, so in practice the space is yours. Terminal's <code>df</code> shows only what's free right now. To see both:</p>
+<pre><code>df -h /System/Volumes/Data</code></pre>
+        <p>Then compare its <strong>Avail</strong> column with Finder: choose <strong>Go › Computer</strong>, select <strong>Macintosh HD</strong>, and press Command-I. On the Mac this guide was written on, <code>df</code> showed 32 GB available while macOS counted 270 GB available for important files. That's about 235 GB of purgeable space, with no Time Machine snapshots on the disk at all.</p>
+
+        <h2 style="margin-top:56px">How macOS reclaims it</h2>
+        <p>When an app asks for more space than is free, a background service in macOS deletes purgeable files until there's enough, starting with what's least useful. Local snapshots go oldest first, iCloud downloads are removed, and caches are cleared. It usually happens within seconds, and you won't see it.</p>
+        <p>Time Machine's own tool shows the mechanism. <code>tmutil thinlocalsnapshots</code> takes an amount to reclaim and an urgency from 1 to 4, which is how macOS asks for space with more or less force.</p>
+
+        <h2 style="margin-top:56px">How to clear purgeable space on Mac</h2>
+        <p>Most of the time, don't. It's already counted as free, and deleting it early only means downloading or rebuilding those files sooner. Clear it when a tool reads raw free space and refuses to run, like a large installer, a virtual machine asking for a fixed-size disk, or a script that checks <code>df</code>.</p>
+        <ol class="steps">
+          <li><b>Restart.</b> Temporary files and swap are cleared, and macOS takes the chance to purge.</li>
+          <li><b>Delete local Time Machine snapshots.</b> They're usually the biggest part. List them, then delete by date:
+<pre><code>tmutil listlocalsnapshots /
+tmutil deletelocalsnapshots 2026-10-05-093012</code></pre>
+          <a href="/time-machine-local-snapshots">Time Machine local snapshots</a> has every command and what each removes.</li>
+          <li><b>Remove iCloud downloads.</b> In iCloud Drive, Control-click big files or folders and choose <strong>Remove Download</strong>. See <a href="/taking-up-space/icloud-drive">iCloud Drive taking up space</a>.</li>
+        </ol>
+        <p>What you can't do is empty purgeable space with a single button. macOS doesn't offer one. Apps that promise to remove it usually fill the disk with a temporary file until macOS purges, which macOS would have done anyway the moment you needed the room.</p>
+
+        <h2 style="margin-top:56px">Where local snapshots fit in</h2>
+        <p>On a Mac that backs up with Time Machine, snapshots are often most of the purgeable space, and also the part that makes System Data look huge in Storage settings. They're also the only part you can list and delete by name. If your purgeable number grows overnight and drops after a backup, snapshots are why. For the rest of System Data, see <a href="/what-is-system-data-on-mac">what is System Data on Mac</a>.</p>
+    """,
+    "shortcut": """
+          <h2>Disk Forecast and purgeable space</h2>
+          <p>Disk Forecast shows purgeable space as the first row of its System Data window, sized the way macOS reports it: what&#39;s available for important files, minus what&#39;s free right now. There&#39;s no button to clear it, on purpose, since macOS frees it when it&#39;s needed. Its free-space number counts purgeable space as available, like Finder, so the forecast doesn&#39;t cry wolf. The snapshots row next to it lists each snapshot and removes them with <code>tmutil</code> after you confirm. It&#39;s free.</p>
+    """,
+    "mockup": "system-data",
+    "cta": "Know before it's full.",
+}
+
+# Targets "delete time machine snapshots" (80/mo US, KD 1), "how to delete time machine snapshots" (50), "time machine local
+# snapshots" (40), "time machine snapshots" (40), "delete local time machine snapshots" (40), and "tmutil deletelocalsnapshots" (20).
+# Commands from man tmutil on macOS 26.6. Only tmutil listlocalsnapshots / and listlocalsnapshotdates / were run (both empty;
+# Time Machine has no destination on this Mac), plus diskutil apfs listSnapshots, read-only.
+SNAPSHOTS = {
+    "path": "/time-machine-local-snapshots",
+    "title": "Time Machine local snapshots: how to delete them on Mac",
+    "description": "What Time Machine local snapshots are, how to list them with tmutil, how to delete one or all of them, and why they come back every hour while backups are on.",
+    "eyebrow": "Guide",
+    "h1": "Time Machine local snapshots, <em>and how to delete them.</em>",
+    "lede": "If you back up with Time Machine, your Mac quietly keeps snapshots of itself on its own disk. They're why deleted files don't free space right away, and often why System Data is huge. Here's how to see them and remove them.",
+    "tldr": "List them with <code>tmutil listlocalsnapshots /</code>. Delete one with <code>tmutil deletelocalsnapshots</code> and its date, like <code>2026-10-05-093012</code>, or all of them on the startup disk with <code>tmutil deletelocalsnapshots /</code>. Add <code>sudo</code> if macOS refuses. Your backups on the backup disk aren't touched. macOS removes each snapshot after 24 hours, or sooner when space runs low, and makes a new one every hour while automatic backups are on.",
+    "card_title": "Time Machine local snapshots",
+    "card_blurb": "List and delete them with tmutil, and why they come back.",
+    "footer": "Time Machine snapshots",
+    "related": ["/purgeable-space-mac", "/system-data", "/what-is-system-data-on-mac"],
+    "faqs": [
+        ("How do I delete Time Machine local snapshots?", "Run tmutil listlocalsnapshots / in Terminal, then tmutil deletelocalsnapshots with a date from the list, like 2026-10-05-093012. To delete every local snapshot on the startup disk, run tmutil deletelocalsnapshots /. Add sudo if macOS says you don't have permission."),
+        ("Is it safe to delete Time Machine local snapshots?", "Yes. They're extra copies on your Mac's own disk. Your backups on the Time Machine disk aren't touched. You lose the ability to restore from the last few hours while the backup disk is away."),
+        ("Why do Time Machine snapshots keep coming back?", "Time Machine takes a new local snapshot every hour while automatic backups are on. macOS removes each after 24 hours, or sooner when space runs low. Turning off automatic backups stops new ones."),
+        ("Can I turn off Time Machine local snapshots?", "Not on their own. The old tmutil disablelocal command no longer works on recent macOS. Turning off automatic backups stops them, along with the backups."),
+        ("Where are Time Machine local snapshots stored?", "On your startup disk, as APFS snapshots of the data volume. They aren't files in a folder, which is why Finder can't show them. tmutil listlocalsnapshots / lists them by name."),
+        ("Do local snapshots count as System Data?", "Yes. Storage settings counts them in System Data, and macOS counts them as purgeable, so Finder includes them in available space."),
+    ],
+    "html": """
+        <h2>What are Time Machine local snapshots?</h2>
+        <p>When Time Machine is set up, it takes a snapshot of your startup disk every hour and keeps it on that disk. A snapshot is a frozen view of every file as it was at that moment. It lets you restore something from this morning even when the backup drive is at home, and it gives Time Machine a consistent copy to back up from.</p>
+        <p>Snapshots are cheap to make, but they hold on to the past. Delete a 20 GB video after a snapshot was taken, and the snapshot still has it, so the space doesn't come back until that snapshot goes. That's the usual reason a Mac that “should” have free space doesn't.</p>
+        <ul>
+          <li><strong>How long they last.</strong> macOS removes each local snapshot after 24 hours, and sooner when space runs low.</li>
+          <li><strong>Where they're counted.</strong> In System Data in Storage settings, and as purgeable space, so Finder treats them as available.</li>
+          <li><strong>What they aren't.</strong> A backup. They're on the same disk as your files, so they can't save you from a failed drive.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">How to list local snapshots</h2>
+<pre><code>tmutil listlocalsnapshots /
+tmutil listlocalsnapshotdates /</code></pre>
+        <p>The first lists snapshots by name, like <code>com.apple.TimeMachine.2026-10-05-093012.local</code>. The second lists only the dates, in the <code>YYYY-MM-DD-HHMMSS</code> form the delete command takes. Both only read. On the Mac this guide was written on, Time Machine has no backup disk set up, and both came back empty: no backup disk, no local snapshots.</p>
+        <p>To see every APFS snapshot on the data volume, including ones other apps made, there's also <code>diskutil apfs listSnapshots /System/Volumes/Data</code>.</p>
+
+        <h2 style="margin-top:56px">How to delete Time Machine snapshots</h2>
+        <ol class="steps">
+          <li><b>Delete one.</b> Use a date from the list:
+<pre><code>tmutil deletelocalsnapshots 2026-10-05-093012</code></pre>
+          The manual says a date deletes the local snapshots with that date on all mounted disks.</li>
+          <li><b>Delete all of them on the startup disk.</b> Give it the disk instead of a date:
+<pre><code>tmutil deletelocalsnapshots /</code></pre></li>
+          <li><b>Or thin them by size.</b> Ask Time Machine to reclaim an amount, in bytes, with an urgency from 1 to 4. This asks for 10 GB at the highest urgency:
+<pre><code>tmutil thinlocalsnapshots / 10000000000 4</code></pre>
+          macOS picks which snapshots to remove to get there.</li>
+        </ol>
+        <p>If <code>tmutil</code> answers with a permissions error, run the same command with <code>sudo</code> in front and enter your password. Your backups on the Time Machine disk are separate, and none of these commands touch them.</p>
+
+        <h2 style="margin-top:56px">Why they come back</h2>
+        <p>Because Time Machine makes a new one every hour. Deleting snapshots reclaims space now; it doesn't change the schedule. Recent versions of macOS dropped the old <code>tmutil disablelocal</code> command, so there's no switch for local snapshots alone. You can:</p>
+        <ul>
+          <li><strong>Back up more often.</strong> Connect the backup disk regularly, and macOS has less reason to keep snapshots around.</li>
+          <li><strong>Let macOS handle it.</strong> When space runs low, it thins snapshots on its own. They're purgeable for a reason.</li>
+          <li><strong>Turn off automatic backups.</strong> In <strong>System Settings › General › Time Machine</strong>. No backups means no snapshots, which is a bad trade on most Macs.</li>
+        </ul>
+        <p>Snapshots are only one part of System Data. For the rest, see <a href="/system-data">how to clear System Data</a>, and for why Finder shows them as free space, <a href="/purgeable-space-mac">purgeable space on Mac</a>.</p>
+    """,
+    "shortcut": """
+          <h2>Disk Forecast and local snapshots</h2>
+          <p>Disk Forecast lists your local snapshots by name in its System Data window. Its <strong>Remove local snapshots…</strong> button shows you the exact <code>tmutil deletelocalsnapshots</code> command for each date, and runs it only after you confirm. If macOS refuses, it asks for your administrator password and runs the same commands. Your backups on the backup disk aren&#39;t touched. It&#39;s free.</p>
+    """,
+    "mockup": "system-data",
+    "cta": "Know before it's full.",
+}
+
+# Targets "other users and shared mac storage" (600/mo US, KD 0) and its variants: "what is other users and shared on mac" (200),
+# "how to delete other users and shared on mac" (100), "other users and shared mac storage delete" (100), ~1,450 in all.
+# Facts from macOS 26.6: the category name and what it measures come from StorageManagement's OtherUsersStorageExtension
+# (other accounts' home folders, /Users/Shared/, /Users/Deleted Users/); the delete-account labels from UsersGroups.appex.
+OTHER_USERS = {
+    "path": "/other-users-and-shared-mac",
+    "title": "Other Users & Shared Mac storage: what's in it",
+    "description": "What Other Users & Shared means in Mac Storage settings, how to check what's in it, and how to delete other accounts and shared files without losing anything.",
+    "eyebrow": "Guide",
+    "h1": "Other Users &amp; Shared on Mac storage, <em>explained.</em>",
+    "lede": "It's a newer category in Storage settings, and it can't be opened like Documents or Applications. Here's what macOS counts in it, how to see it yourself, and what's safe to remove.",
+    "tldr": "Other Users &amp; Shared is the space used by everything in <code>/Users</code> that isn't your own home folder: other people's accounts on this Mac, the <code>/Users/Shared</code> folder, and <code>/Users/Deleted Users</code>, where macOS keeps disk images of deleted accounts. To reclaim it, sign in as the other user and clean up, delete accounts nobody uses in <strong>System Settings › Users &amp; Groups</strong>, or remove what you recognize in the Shared folder.",
+    "card_title": "Other Users & Shared",
+    "card_blurb": "Other accounts, the Shared folder, and deleted users' images.",
+    "footer": "Other Users & Shared",
+    "related": ["/how-to-check-storage-on-mac", "/what-is-system-data-on-mac", "/purgeable-space-mac"],
+    "faqs": [
+        ("What is Other Users & Shared on Mac storage?", "It's the Storage settings category for files in /Users that aren't in your home folder: other accounts' home folders, the /Users/Shared folder, and /Users/Deleted Users, which holds disk images of deleted accounts."),
+        ("How do I delete Other Users & Shared on my Mac?", "There's no single button. Delete accounts nobody uses in System Settings › Users & Groups, remove old disk images from /Users/Deleted Users, and move files you recognize out of /Users/Shared. Another person's files are theirs to clean up."),
+        ("Why is Other Users & Shared so big when I'm the only user?", "Look in /Users/Shared and /Users/Deleted Users first. Apps sometimes keep shared data in /Users/Shared, and a deleted account's saved home folder can be tens of gigabytes. Storage settings also measures when you open it, so give it a minute."),
+        ("Is it safe to delete the Shared folder on Mac?", "Not the folder itself; macOS expects /Users/Shared to exist. Files inside it are safe to remove if you know what they are. Some apps keep their shared data there, so look before you delete."),
+        ("What happens to files when I delete a user on Mac?", "macOS asks. You can save the home folder in a disk image, which goes to /Users/Deleted Users, leave the home folder where it is, or delete it. Only deleting it reclaims the space."),
+    ],
+    "html": """
+        <h2>What is Other Users &amp; Shared on Mac?</h2>
+        <p>Open <strong>System Settings › General › Storage</strong> on a recent version of macOS, and one of the categories is <strong>Other Users &amp; Shared</strong>. It counts the space used by folders in <code>/Users</code> that aren't yours. On macOS 26.6, the part of Storage settings that measures it looks at three places:</p>
+        <ul>
+          <li><strong>Other accounts' home folders.</strong> Everyone else who has a login on this Mac, with their documents, photos, apps' data, and caches.</li>
+          <li><strong>/Users/Shared.</strong> A folder every account can read and write. People drop files there to share them, and some apps keep shared data or downloads there.</li>
+          <li><strong>/Users/Deleted Users.</strong> When you delete an account and choose to save its home folder in a disk image, the image goes here and stays until you remove it.</li>
+        </ul>
+        <p>Your own home folder isn't in it. That's counted in Documents, Applications, Photos, and the other categories.</p>
+
+        <h2 style="margin-top:56px">How to check what's in it</h2>
+        <p>Storage settings shows the total but won't list the files. In Finder, choose <strong>Go › Go to Folder</strong>, type <code>/Users</code>, and press Return to see every account and the Shared folder. To measure them in Terminal:</p>
+<pre><code>ls /Users
+du -sh /Users/Shared
+sudo du -sh /Users/*</code></pre>
+        <p>Other people's home folders are private, so the last line needs your administrator password, and Terminal may still be blocked from some of their folders without Full Disk Access. On the Mac this guide was written on, <code>/Users</code> holds one account and the Shared folder, which was 3.5 MB, and there's no Deleted Users folder. If yours has more, that's where your number comes from.</p>
+
+        <h2 style="margin-top:56px">What's safe to delete</h2>
+        <h3>Other accounts</h3>
+        <p>Those files belong to someone. The safe way to reclaim space is to sign in as that user and clean up the way you would on your own account. For an account nobody uses anymore, open <strong>System Settings › Users &amp; Groups</strong>, click the info button next to it, and click <strong>Delete User…</strong>. macOS asks what to do with the home folder:</p>
+        <ul>
+          <li><strong>Save the home folder in a disk image.</strong> It moves into <code>/Users/Deleted Users</code>, which is still Other Users &amp; Shared.</li>
+          <li><strong>Don't change the home folder.</strong> The folder stays in <code>/Users</code>, and so does the space.</li>
+          <li><strong>Delete the home folder.</strong> The only choice that reclaims the space. Copy anything worth keeping first.</li>
+        </ul>
+        <h3>The Shared folder</h3>
+        <p>Keep <code>/Users/Shared</code> itself; macOS expects it. Inside, delete what you recognize: old installers, files someone shared and forgot. If a folder is named after an app, it may be that app's shared data, so check before you remove it. On the Mac this guide was written on, it held <code>Relocated Items</code> folders, where macOS upgrades put files they moved aside, and <code>SC Info</code>, which Apple's media apps use. Look through a Relocated Items folder before deleting it, and leave SC Info alone.</p>
+        <h3>Deleted Users</h3>
+        <p>Each disk image here is a former account's whole home folder. Double-click one to open it and check what's inside. Once you're sure nothing is needed, move the image to the Trash and empty it.</p>
+
+        <h2 style="margin-top:56px">If you're the only user</h2>
+        <p>Then Other Users &amp; Shared should be small. If it isn't, check <code>/Users/Shared</code> and <code>/Users/Deleted Users</code> with the commands above; one of them almost always explains it. Storage settings measures when you open it and can lag behind, so give it a minute, or a restart, before you trust a number that looks wrong. For categories that are big for other reasons, see <a href="/what-is-system-data-on-mac">what is System Data on Mac</a> and <a href="/how-to-check-storage-on-mac">how to check Mac storage</a>.</p>
+    """,
+    "shortcut": """
+          <h2>Disk Forecast and Other Users &amp; Shared</h2>
+          <p>Disk Forecast scans your own home folder, not other accounts or <code>/Users/Shared</code>, so it won&#39;t list or delete anything in this category. What it does see is the whole disk&#39;s free space, every hour, which includes everything every account uses. After 3 days, it tells you when the disk will be full, so another account filling it up doesn&#39;t catch you out. It&#39;s free.</p>
+    """,
+    "mockup": "forecast",
+    "cta": "Know before it's full.",
+}
+
 # In reading order: the hub and every footer list them this way.
-GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA]
+GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS]
 
 GUIDES_HUB = {
     "path": "/guides",

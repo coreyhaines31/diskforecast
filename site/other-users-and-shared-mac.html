@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Other Users &amp; Shared Mac storage: what&#x27;s in it</title>
+  <meta name="description" content="What Other Users &amp; Shared means in Mac Storage settings, how to check what&#x27;s in it, and how to delete other accounts and shared files without losing anything.">
+  <link rel="canonical" href="https://diskforecast.com/other-users-and-shared-mac">
+  <meta property="og:title" content="Other Users &amp; Shared Mac storage: what&#x27;s in it">
+  <meta property="og:description" content="What Other Users &amp; Shared means in Mac Storage settings, how to check what&#x27;s in it, and how to delete other accounts and shared files without losing anything.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/other-users-and-shared-mac">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Other Users &amp; Shared Mac storage: what&#x27;s in it">
+  <meta name="twitter:description" content="What Other Users &amp; Shared means in Mac Storage settings, how to check what&#x27;s in it, and how to delete other accounts and shared files without losing anything.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>Other Users &amp; Shared on Mac storage, <em>explained.</em></h1>
+        <p class="lede">It's a newer category in Storage settings, and it can't be opened like Documents or Applications. Here's what macOS counts in it, how to see it yourself, and what's safe to remove.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Other Users &amp; Shared is the space used by everything in <code>/Users</code> that isn't your own home folder: other people's accounts on this Mac, the <code>/Users/Shared</code> folder, and <code>/Users/Deleted Users</code>, where macOS keeps disk images of deleted accounts. To reclaim it, sign in as the other user and clean up, delete accounts nobody uses in <strong>System Settings › Users &amp; Groups</strong>, or remove what you recognize in the Shared folder.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>What is Other Users &amp; Shared on Mac?</h2>
+        <p>Open <strong>System Settings › General › Storage</strong> on a recent version of macOS, and one of the categories is <strong>Other Users &amp; Shared</strong>. It counts the space used by folders in <code>/Users</code> that aren't yours. On macOS 26.6, the part of Storage settings that measures it looks at three places:</p>
+        <ul>
+          <li><strong>Other accounts' home folders.</strong> Everyone else who has a login on this Mac, with their documents, photos, apps' data, and caches.</li>
+          <li><strong>/Users/Shared.</strong> A folder every account can read and write. People drop files there to share them, and some apps keep shared data or downloads there.</li>
+          <li><strong>/Users/Deleted Users.</strong> When you delete an account and choose to save its home folder in a disk image, the image goes here and stays until you remove it.</li>
+        </ul>
+        <p>Your own home folder isn't in it. That's counted in Documents, Applications, Photos, and the other categories.</p>
+
+        <h2 style="margin-top:56px">How to check what's in it</h2>
+        <p>Storage settings shows the total but won't list the files. In Finder, choose <strong>Go › Go to Folder</strong>, type <code>/Users</code>, and press Return to see every account and the Shared folder. To measure them in Terminal:</p>
+<pre><code>ls /Users
+du -sh /Users/Shared
+sudo du -sh /Users/*</code></pre>
+        <p>Other people's home folders are private, so the last line needs your administrator password, and Terminal may still be blocked from some of their folders without Full Disk Access. On the Mac this guide was written on, <code>/Users</code> holds one account and the Shared folder, which was 3.5 MB, and there's no Deleted Users folder. If yours has more, that's where your number comes from.</p>
+
+        <h2 style="margin-top:56px">What's safe to delete</h2>
+        <h3>Other accounts</h3>
+        <p>Those files belong to someone. The safe way to reclaim space is to sign in as that user and clean up the way you would on your own account. For an account nobody uses anymore, open <strong>System Settings › Users &amp; Groups</strong>, click the info button next to it, and click <strong>Delete User…</strong>. macOS asks what to do with the home folder:</p>
+        <ul>
+          <li><strong>Save the home folder in a disk image.</strong> It moves into <code>/Users/Deleted Users</code>, which is still Other Users &amp; Shared.</li>
+          <li><strong>Don't change the home folder.</strong> The folder stays in <code>/Users</code>, and so does the space.</li>
+          <li><strong>Delete the home folder.</strong> The only choice that reclaims the space. Copy anything worth keeping first.</li>
+        </ul>
+        <h3>The Shared folder</h3>
+        <p>Keep <code>/Users/Shared</code> itself; macOS expects it. Inside, delete what you recognize: old installers, files someone shared and forgot. If a folder is named after an app, it may be that app's shared data, so check before you remove it. On the Mac this guide was written on, it held <code>Relocated Items</code> folders, where macOS upgrades put files they moved aside, and <code>SC Info</code>, which Apple's media apps use. Look through a Relocated Items folder before deleting it, and leave SC Info alone.</p>
+        <h3>Deleted Users</h3>
+        <p>Each disk image here is a former account's whole home folder. Double-click one to open it and check what's inside. Once you're sure nothing is needed, move the image to the Trash and empty it.</p>
+
+        <h2 style="margin-top:56px">If you're the only user</h2>
+        <p>Then Other Users &amp; Shared should be small. If it isn't, check <code>/Users/Shared</code> and <code>/Users/Deleted Users</code> with the commands above; one of them almost always explains it. Storage settings measures when you open it and can lag behind, so give it a minute, or a restart, before you trust a number that looks wrong. For categories that are big for other reasons, see <a href="/what-is-system-data-on-mac">what is System Data on Mac</a> and <a href="/how-to-check-storage-on-mac">how to check Mac storage</a>.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+
+          <h2>Disk Forecast and Other Users &amp; Shared</h2>
+          <p>Disk Forecast scans your own home folder, not other accounts or <code>/Users/Shared</code>, so it won&#39;t list or delete anything in this category. What it does see is the whole disk&#39;s free space, every hour, which includes everything every account uses. After 3 days, it tells you when the disk will be full, so another account filling it up doesn&#39;t catch you out. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="chart-card glass" role="img" aria-label="Chart of free space since September 5: it falls from about 229 GB to 142 GB today, with a jump after a cleanup in late September. A dashed forecast line continues to zero around November 15, inside a shaded range of likely outcomes.">
+          <div class="chart-top"><b>Macintosh HD</b><span>Free space, last 30 days and forecast</span></div>
+          <div class="chart">
+            <svg viewBox="0 0 640 240" preserveAspectRatio="none" aria-hidden="true">
+              <g class="grid"><line x1="0" y1="60.8" x2="640" y2="60.8"/><line x1="0" y1="145.4" x2="640" y2="145.4"/></g>
+              <path class="cone" d="M256 109.8 L546.1 230 L640 230 L640 218 Z"/>
+              <path class="area" d="M0.0 36.2 L8.5 39.6 L17.1 42.9 L25.6 44.8 L34.1 48.9 L42.7 51.0 L51.2 54.3 L59.7 57.9 L68.3 59.9 L76.8 63.8 L85.3 66.0 L93.9 69.7 L102.4 72.6 L110.9 74.9 L119.5 77.0 L128.0 81.4 L136.5 84.2 L145.1 71.1 L153.6 73.4 L162.1 77.1 L170.7 80.4 L179.2 82.2 L187.7 87.1 L196.3 88.4 L204.8 92.5 L213.3 95.8 L221.9 98.8 L230.4 101.4 L238.9 103.3 L247.5 107.5 L256.0 109.8 L256 230 L0 230 Z"/>
+              <path class="hist" d="M0.0 36.2 L8.5 39.6 L17.1 42.9 L25.6 44.8 L34.1 48.9 L42.7 51.0 L51.2 54.3 L59.7 57.9 L68.3 59.9 L76.8 63.8 L85.3 66.0 L93.9 69.7 L102.4 72.6 L110.9 74.9 L119.5 77.0 L128.0 81.4 L136.5 84.2 L145.1 71.1 L153.6 73.4 L162.1 77.1 L170.7 80.4 L179.2 82.2 L187.7 87.1 L196.3 88.4 L204.8 92.5 L213.3 95.8 L221.9 98.8 L230.4 101.4 L238.9 103.3 L247.5 107.5 L256.0 109.8" vector-effect="non-scaling-stroke"/>
+              <path class="proj" d="M256 109.8 L605.9 230" vector-effect="non-scaling-stroke"/>
+              <line class="zero" x1="0" y1="230" x2="640" y2="230" vector-effect="non-scaling-stroke"/>
+            </svg>
+            <span class="chip" style="left:40%;top:45.75%">Today · 142 GB</span>
+            <span class="chip warn" style="left:94.67%;top:95.83%">Nov 15 · full</span>
+            <i class="dotmark" style="left:40%;top:45.75%"></i>
+            <i class="dotmark end" style="left:94.67%;top:95.83%"></i>
+          </div>
+          <div class="axis" aria-hidden="true"><span style="left:2%">Sep 5</span><span style="left:34.67%">Oct 1</span><span style="left:76%">Nov 1</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>What is Other Users &amp; Shared on Mac storage?</summary><p>It&#x27;s the Storage settings category for files in /Users that aren&#x27;t in your home folder: other accounts&#x27; home folders, the /Users/Shared folder, and /Users/Deleted Users, which holds disk images of deleted accounts.</p></details>
+          <details><summary>How do I delete Other Users &amp; Shared on my Mac?</summary><p>There&#x27;s no single button. Delete accounts nobody uses in System Settings › Users &amp; Groups, remove old disk images from /Users/Deleted Users, and move files you recognize out of /Users/Shared. Another person&#x27;s files are theirs to clean up.</p></details>
+          <details><summary>Why is Other Users &amp; Shared so big when I&#x27;m the only user?</summary><p>Look in /Users/Shared and /Users/Deleted Users first. Apps sometimes keep shared data in /Users/Shared, and a deleted account&#x27;s saved home folder can be tens of gigabytes. Storage settings also measures when you open it, so give it a minute.</p></details>
+          <details><summary>Is it safe to delete the Shared folder on Mac?</summary><p>Not the folder itself; macOS expects /Users/Shared to exist. Files inside it are safe to remove if you know what they are. Some apps keep their shared data there, so look before you delete.</p></details>
+          <details><summary>What happens to files when I delete a user on Mac?</summary><p>macOS asks. You can save the home folder in a disk image, which goes to /Users/Deleted Users, leave the home folder where it is, or delete it. Only deleting it reclaims the space.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/how-to-check-storage-on-mac"><b>How to check Mac storage</b><span>Five built-in ways, plus how to find what&#x27;s taking up space.</span></a>
+          <a class="glass" href="/what-is-system-data-on-mac"><b>What is System Data on Mac?</b><span>What&#x27;s inside it, how much is normal, and why it keeps growing.</span></a>
+          <a class="glass" href="/purgeable-space-mac"><b>Purgeable space on Mac</b><span>What it is, why Finder counts it as free, and when to clear it.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/purgeable-space-mac">Purgeable space</a><a href="/time-machine-local-snapshots">Time Machine snapshots</a><a href="/other-users-and-shared-mac">Other Users &amp; Shared</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a><a href="/taking-up-space">What&#x27;s taking up space</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is Other Users & Shared on Mac storage?", "acceptedAnswer": {"@type": "Answer", "text": "It's the Storage settings category for files in /Users that aren't in your home folder: other accounts' home folders, the /Users/Shared folder, and /Users/Deleted Users, which holds disk images of deleted accounts."}}, {"@type": "Question", "name": "How do I delete Other Users & Shared on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "There's no single button. Delete accounts nobody uses in System Settings \u203a Users & Groups, remove old disk images from /Users/Deleted Users, and move files you recognize out of /Users/Shared. Another person's files are theirs to clean up."}}, {"@type": "Question", "name": "Why is Other Users & Shared so big when I'm the only user?", "acceptedAnswer": {"@type": "Answer", "text": "Look in /Users/Shared and /Users/Deleted Users first. Apps sometimes keep shared data in /Users/Shared, and a deleted account's saved home folder can be tens of gigabytes. Storage settings also measures when you open it, so give it a minute."}}, {"@type": "Question", "name": "Is it safe to delete the Shared folder on Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Not the folder itself; macOS expects /Users/Shared to exist. Files inside it are safe to remove if you know what they are. Some apps keep their shared data there, so look before you delete."}}, {"@type": "Question", "name": "What happens to files when I delete a user on Mac?", "acceptedAnswer": {"@type": "Answer", "text": "macOS asks. You can save the home folder in a disk image, which goes to /Users/Deleted Users, leave the home folder where it is, or delete it. Only deleting it reclaims the space."}}]}</script>
+</body>
+</html>
