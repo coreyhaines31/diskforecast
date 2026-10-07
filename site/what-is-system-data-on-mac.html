@@ -56,13 +56,13 @@
 
         <h2>What System Data is</h2>
         <p>Open <strong>System Settings › General › Storage</strong> and the bar at the top splits your disk into categories: Applications, Documents, Photos, Messages, macOS, and more. Each named category is something macOS can recognize and count. <strong>System Data is everything else.</strong> It's a catch-all, not a single folder, which is why Storage settings can't show you what's inside it the way it can for Documents.</p>
-        <p>It's also not the operating system. macOS itself has its own category, simply called macOS, on recent versions. System Data is what builds up around it: files macOS, your apps, and your tools create while you use the Mac.</p>
+        <p>It's also not the operating system. macOS itself has its own category, simply called macOS, on recent versions. System Data is what builds up around it: files macOS, your apps, and your tools create while you use the Mac. Other people's accounts on the same Mac aren't in it either; they have their own category, <a href="/other-users-and-shared-mac">Other Users &amp; Shared</a>.</p>
         <div class="callout"><p><strong>The short definition.</strong> System Data is space used by files that aren't apps, aren't your documents or media, and aren't macOS itself. Most of it is temporary, rebuildable, or both.</p></div>
 
         <h2 style="margin-top:56px">What's inside System Data on Mac</h2>
         <ul>
-          <li><strong>Local Time Machine snapshots.</strong> If you back up with Time Machine, macOS keeps hourly snapshots on your Mac between backups, so you can restore files even when the backup drive isn't connected. They're the most common reason System Data is huge.</li>
-          <li><strong>Purgeable space.</strong> Space macOS has already marked as reclaimable, like iCloud files it can download again. It frees it on its own when something needs the room.</li>
+          <li><strong>Local Time Machine snapshots.</strong> If you back up with Time Machine, macOS keeps hourly snapshots on your Mac between backups, so you can restore files even when the backup drive isn't connected. They're the most common reason System Data is huge. <a href="/time-machine-local-snapshots">Here's how to list and delete them</a>.</li>
+          <li><strong>Purgeable space.</strong> Space macOS has already marked as reclaimable, like iCloud files it can download again. It frees it on its own when something needs the room. <a href="/purgeable-space-mac">Purgeable space, explained</a>.</li>
           <li><strong>Caches and logs.</strong> Copies apps keep so they don't have to download or rebuild things, plus records of what they did. Some land in named categories, but much of it counts here.</li>
           <li><strong>Simulators and runtimes.</strong> If you've installed Xcode, each iOS, watchOS, or visionOS simulator runtime can take several gigabytes.</li>
           <li><strong>Docker and virtual machines.</strong> Docker keeps all its images, containers, and build cache in one disk image (<a href="/clear-cache/docker">here's how to prune it</a>). Parallels, UTM, and VMware save whole computers as single files.</li>

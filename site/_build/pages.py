@@ -549,7 +549,7 @@ SYSTEM_DATA = {
         <h2>First, look at what you have</h2>
         <p>Open <strong>System Settings › General › Storage</strong>. The colored bar at the top splits your disk into categories, and System Data is usually the gray slice near the end. Hover over it to see its size.</p>
         <p>Storage settings won't tell you what's inside, and its number can lag behind reality. Give it a minute after opening, and don't panic if it jumps around. For what counts as System Data, how much is normal, and why it grows, see <a href="/what-is-system-data-on-mac">what is System Data on Mac</a>.</p>
-        <div class="callout"><p><strong>What System Data is not.</strong> It isn't your documents, photos, or apps, which have their own categories. And it isn't “wasted.” Most of it is macOS doing its job, just more of it than you'd like.</p></div>
+        <div class="callout"><p><strong>What System Data is not.</strong> It isn't your documents, photos, or apps, which have their own categories, and it isn't other accounts' files, which are counted in <a href="/other-users-and-shared-mac">Other Users &amp; Shared</a>. And it isn't “wasted.” Most of it is macOS doing its job, just more of it than you'd like.</p></div>
 
         <h2 style="margin-top:56px">What's inside System Data</h2>
         <ul>
@@ -569,7 +569,7 @@ SYSTEM_DATA = {
           <li><b>Remove local Time Machine snapshots.</b> List them, then delete by date:
 <pre><code>tmutil listlocalsnapshots /
 sudo tmutil deletelocalsnapshots 2026-10-05-093012</code></pre>
-          Replace the date with one from the list. Time Machine keeps taking new ones, and macOS removes each after 24 hours anyway, so this is for when you need the room right now. Recent macOS versions no longer let you turn local snapshots off with <code>tmutil disablelocal</code>.</li>
+          Replace the date with one from the list. Time Machine keeps taking new ones, and macOS removes each after 24 hours anyway, so this is for when you need the room right now. Recent macOS versions no longer let you turn local snapshots off with <code>tmutil disablelocal</code>. <a href="/time-machine-local-snapshots">Time Machine local snapshots</a> has every <code>tmutil</code> command.</li>
           <li><b>Delete simulator runtimes you don't use.</b> Remove simulators for runtimes no installed Xcode supports:
 <pre><code>xcrun simctl delete unavailable</code></pre>
           To remove whole runtimes, list them and delete by identifier, or use <strong>Xcode › Settings › Components</strong>:
@@ -587,7 +587,7 @@ pip cache purge</code></pre>
           <li><b>Rebuild the Spotlight index.</b> If it's grown large, rebuilding often shrinks it:
 <pre><code>sudo mdutil -E /</code></pre>
           Search results will be incomplete for a while as it re-indexes.</li>
-          <li><b>Leave purgeable space alone.</b> macOS frees it the moment something needs the room. Apps that “free” it for you are only doing what macOS would have done anyway.</li>
+          <li><b>Leave purgeable space alone.</b> macOS frees it the moment something needs the room. Apps that “free” it for you are only doing what macOS would have done anyway. <a href="/purgeable-space-mac">What purgeable space is</a> explains when clearing it is worth it.</li>
         </ol>
 
         <h2 style="margin-top:56px">How to reduce System Data and keep it down</h2>
@@ -913,13 +913,13 @@ WHAT_IS = {
     "html": """
         <h2>What System Data is</h2>
         <p>Open <strong>System Settings › General › Storage</strong> and the bar at the top splits your disk into categories: Applications, Documents, Photos, Messages, macOS, and more. Each named category is something macOS can recognize and count. <strong>System Data is everything else.</strong> It's a catch-all, not a single folder, which is why Storage settings can't show you what's inside it the way it can for Documents.</p>
-        <p>It's also not the operating system. macOS itself has its own category, simply called macOS, on recent versions. System Data is what builds up around it: files macOS, your apps, and your tools create while you use the Mac.</p>
+        <p>It's also not the operating system. macOS itself has its own category, simply called macOS, on recent versions. System Data is what builds up around it: files macOS, your apps, and your tools create while you use the Mac. Other people's accounts on the same Mac aren't in it either; they have their own category, <a href="/other-users-and-shared-mac">Other Users &amp; Shared</a>.</p>
         <div class="callout"><p><strong>The short definition.</strong> System Data is space used by files that aren't apps, aren't your documents or media, and aren't macOS itself. Most of it is temporary, rebuildable, or both.</p></div>
 
         <h2 style="margin-top:56px">What's inside System Data on Mac</h2>
         <ul>
-          <li><strong>Local Time Machine snapshots.</strong> If you back up with Time Machine, macOS keeps hourly snapshots on your Mac between backups, so you can restore files even when the backup drive isn't connected. They're the most common reason System Data is huge.</li>
-          <li><strong>Purgeable space.</strong> Space macOS has already marked as reclaimable, like iCloud files it can download again. It frees it on its own when something needs the room.</li>
+          <li><strong>Local Time Machine snapshots.</strong> If you back up with Time Machine, macOS keeps hourly snapshots on your Mac between backups, so you can restore files even when the backup drive isn't connected. They're the most common reason System Data is huge. <a href="/time-machine-local-snapshots">Here's how to list and delete them</a>.</li>
+          <li><strong>Purgeable space.</strong> Space macOS has already marked as reclaimable, like iCloud files it can download again. It frees it on its own when something needs the room. <a href="/purgeable-space-mac">Purgeable space, explained</a>.</li>
           <li><strong>Caches and logs.</strong> Copies apps keep so they don't have to download or rebuild things, plus records of what they did. Some land in named categories, but much of it counts here.</li>
           <li><strong>Simulators and runtimes.</strong> If you've installed Xcode, each iOS, watchOS, or visionOS simulator runtime can take several gigabytes.</li>
           <li><strong>Docker and virtual machines.</strong> Docker keeps all its images, containers, and build cache in one disk image (<a href="/clear-cache/docker">here's how to prune it</a>). Parallels, UTM, and VMware save whole computers as single files.</li>

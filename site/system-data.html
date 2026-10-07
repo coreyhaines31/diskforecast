@@ -57,7 +57,7 @@
         <h2>First, look at what you have</h2>
         <p>Open <strong>System Settings › General › Storage</strong>. The colored bar at the top splits your disk into categories, and System Data is usually the gray slice near the end. Hover over it to see its size.</p>
         <p>Storage settings won't tell you what's inside, and its number can lag behind reality. Give it a minute after opening, and don't panic if it jumps around. For what counts as System Data, how much is normal, and why it grows, see <a href="/what-is-system-data-on-mac">what is System Data on Mac</a>.</p>
-        <div class="callout"><p><strong>What System Data is not.</strong> It isn't your documents, photos, or apps, which have their own categories. And it isn't “wasted.” Most of it is macOS doing its job, just more of it than you'd like.</p></div>
+        <div class="callout"><p><strong>What System Data is not.</strong> It isn't your documents, photos, or apps, which have their own categories, and it isn't other accounts' files, which are counted in <a href="/other-users-and-shared-mac">Other Users &amp; Shared</a>. And it isn't “wasted.” Most of it is macOS doing its job, just more of it than you'd like.</p></div>
 
         <h2 style="margin-top:56px">What's inside System Data</h2>
         <ul>
@@ -77,7 +77,7 @@
           <li><b>Remove local Time Machine snapshots.</b> List them, then delete by date:
 <pre><code>tmutil listlocalsnapshots /
 sudo tmutil deletelocalsnapshots 2026-10-05-093012</code></pre>
-          Replace the date with one from the list. Time Machine keeps taking new ones, and macOS removes each after 24 hours anyway, so this is for when you need the room right now. Recent macOS versions no longer let you turn local snapshots off with <code>tmutil disablelocal</code>.</li>
+          Replace the date with one from the list. Time Machine keeps taking new ones, and macOS removes each after 24 hours anyway, so this is for when you need the room right now. Recent macOS versions no longer let you turn local snapshots off with <code>tmutil disablelocal</code>. <a href="/time-machine-local-snapshots">Time Machine local snapshots</a> has every <code>tmutil</code> command.</li>
           <li><b>Delete simulator runtimes you don't use.</b> Remove simulators for runtimes no installed Xcode supports:
 <pre><code>xcrun simctl delete unavailable</code></pre>
           To remove whole runtimes, list them and delete by identifier, or use <strong>Xcode › Settings › Components</strong>:
@@ -95,7 +95,7 @@ pip cache purge</code></pre>
           <li><b>Rebuild the Spotlight index.</b> If it's grown large, rebuilding often shrinks it:
 <pre><code>sudo mdutil -E /</code></pre>
           Search results will be incomplete for a while as it re-indexes.</li>
-          <li><b>Leave purgeable space alone.</b> macOS frees it the moment something needs the room. Apps that “free” it for you are only doing what macOS would have done anyway.</li>
+          <li><b>Leave purgeable space alone.</b> macOS frees it the moment something needs the room. Apps that “free” it for you are only doing what macOS would have done anyway. <a href="/purgeable-space-mac">What purgeable space is</a> explains when clearing it is worth it.</li>
         </ol>
 
         <h2 style="margin-top:56px">How to reduce System Data and keep it down</h2>
