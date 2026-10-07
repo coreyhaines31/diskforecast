@@ -299,6 +299,68 @@ PAGES = [
             """},
         ],
     },
+    # ------------------------------------------------------------------ WinDirStat, WizTree, TreeSize
+    # Targets "windirstat for mac" (450/mo US, KD 0), plus "windirstat mac", "wiztree mac", and "treesize mac".
+    # Facts, checked 2026-10-06: windirstat.net and its GitHub releases (2.9.2, Windows builds only); diskanalyzer.com/download
+    # and /wiztreemac-vs-wiztree (WizTreeMac 1.00, 2026-09-16, macOS 12+, Universal); jam-software.com/treesize (Windows only).
+    {
+        "slug": "windirstat-mac",
+        "competitor": "WinDirStat",
+        "footer": "WinDirStat for Mac",
+        "title": "WinDirStat for Mac: what to use instead on macOS",
+        "description": "WinDirStat, WizTree, and TreeSize on Windows, and what to use on a Mac: WizTree's new Mac app, the treemap apps, and Disk Forecast, which is free.",
+        "eyebrow": "WinDirStat for Mac",
+        "h1": "WinDirStat for Mac doesn't exist. <em>Here's what does.</em>",
+        "lede": "If you came from Windows, you probably reached for WinDirStat, WizTree, or TreeSize when the disk filled up. WinDirStat and TreeSize don't run on macOS. WizTree does now, as of September 2026. Here's what each does on Windows, and the closest tools on a Mac.",
+        "tldr": "WinDirStat and TreeSize are Windows only. WizTree released a Mac version, WizTreeMac, in September 2026, free for personal use. For the WinDirStat treemap, GrandPerspective is the free Mac equivalent and DaisyDisk the polished paid one. Disk Forecast does what none of them lead with: it tells you when your Mac's disk will be full and explains what's safe to clear.",
+        "card_title": "WinDirStat for Mac",
+        "card_blurb": "WinDirStat, WizTree, and TreeSize, and what runs on a Mac.",
+        "cta": "Know before it's full.",
+        "faqs": [
+            ("Is there a WinDirStat for Mac?", "No. WinDirStat is a free, GPL-licensed disk analyzer for Windows, and its October 2026 release, 2.9.2, ships Windows builds only. On a Mac, GrandPerspective draws the same kind of treemap for free."),
+            ("Is WizTree available for Mac?", "Yes, since September 16, 2026. WizTreeMac 1.00 needs macOS 12 or later, runs natively on Apple silicon and Intel, and like the Windows version is free for personal use."),
+            ("Is there a TreeSize for Mac?", "Not from JAM Software, which lists TreeSize for Windows only: a free edition for private use, plus paid Personal and Professional editions."),
+            ("What's the closest thing to WinDirStat on a Mac?", "For the treemap, GrandPerspective or WizTreeMac, both free. For a list of the biggest folders with an explanation of each, Disk Forecast. For a quick look with nothing to install, Finder's Calculate all sizes."),
+            ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+        ],
+        "sections": [
+            {"id": "why", "html": """
+        <h2>What WinDirStat, WizTree, and TreeSize do on Windows</h2>
+        <p><strong>WinDirStat</strong> is the original. It scans a drive and shows three views at once: a folder list, a list of file types, and a treemap where, in its own words, “each rectangle represents a file,” sized by space and colored by type. It's free under the GNU GPL and still maintained; version 2.9.2 shipped in October 2026.</p>
+        <p><strong>WizTree</strong> does the same job much faster on NTFS drives, because it reads the drive's Master File Table directly instead of opening every folder. It's free for personal use, and businesses buy a supporter license priced by staff size, from $25 to $500.</p>
+        <p><strong>TreeSize</strong>, from JAM Software, adds reports, scheduled scans, and a duplicate finder. TreeSize Free covers private use. Personal is $25.20 per user per year, and Professional starts at $49.</p>
+        <h3>What happens on a Mac</h3>
+        <p>WinDirStat and TreeSize have no Mac version. WizTree is the exception: Antibody Software released WizTreeMac 1.00 on September 16, 2026, for macOS 12 and later, native on Apple silicon and Intel. Its site says it has almost all of the Windows version's features, including the treemap. APFS has no Master File Table, so on a Mac it uses macOS's bulk folder reading across several threads instead.</p>
+            """},
+            {"id": "compare", "lit": True, "html": """
+        <h2>Disk Forecast vs WinDirStat, WizTree, and TreeSize</h2>
+        <p>Facts come from each vendor's own site and WinDirStat's GitHub releases, checked in October 2026.</p>
+        {{TABLE}}
+        <h3>What the Windows tools do better</h3>
+        <p>Treemaps. If you think in rectangles, WinDirStat's picture of a drive is hard to give up. On a Mac, WizTreeMac and GrandPerspective draw the same kind of map, and DaisyDisk draws rings instead.</p>
+        <h3>What Disk Forecast does better</h3>
+        <p>It's built for the Mac's own disk. It shows free space in the menu bar, tells you when you'll run out, explains each item it finds, and breaks System Data into parts with Apple's own fixes.</p>
+            """, "grid": {"head": ["", "Disk Forecast", "WinDirStat", "WizTree", "TreeSize"], "min_width": 720, "rows": [
+                ("Runs on macOS", "Yes, macOS 14 or later", "No", "Yes, as WizTreeMac, macOS 12 or later", "No"),
+                ("Price", "Free", "Free", "Free for personal use", "Free for private use; paid from $25.20 a year"),
+                ("Treemap", "No", "Yes", "Yes", "Yes"),
+                ("Tells you when the disk will be full", "Yes, in the menu bar", "—", "—", "—"),
+                ("Explains what each item is", "Yes, in plain English", "—", "—", "—"),
+                ("System Data broken down", "Every part, with Apple's fixes", "Not a Mac app", "—", "Not a Mac app"),
+                ("Source available", "Yes, on GitHub", "Yes, GPL", "—", "—"),
+            ]}},
+            {"id": "switch", "html": """
+        <h2>The closest Mac tools</h2>
+        <ul>
+          <li><strong>For the treemap:</strong> <a href="/alternatives/grandperspective">GrandPerspective</a> is free, open source, and updated in September 2026. WizTreeMac is free for personal use. <a href="/alternatives/daisydisk">DaisyDisk</a> is $9.99 and draws rings instead of rectangles.</li>
+          <li><strong>For finding what to delete:</strong> Disk Forecast lists the biggest folders and a cleanup list with a plain-English line for every item, sorted into “Safe to clear” and “Worth a look.” Everything goes to the Trash.</li>
+          <li><strong>With nothing to install:</strong> <strong>System Settings › General › Storage</strong> sorts your disk by category, and Finder's <strong>Calculate all sizes</strong> shows folder sizes in list view. <a href="/how-to-check-storage-on-mac">How to check Mac storage</a> walks through both.</li>
+        </ul>
+        <h3>One difference to expect on a Mac</h3>
+        <p>On APFS, a duplicated file can share space with the original, and macOS keeps purgeable space and local Time Machine snapshots that don't show up as ordinary files. So a Mac analyzer, Finder, and Storage settings can each show a different total. <a href="/disk-space-analyzer-mac">Disk space analyzers for Mac</a> explains why, and how Disk Forecast counts shared space once.</p>
+            """},
+        ],
+    },
 ]
 
 HUB = {
