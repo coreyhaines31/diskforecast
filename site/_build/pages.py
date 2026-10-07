@@ -1080,4 +1080,81 @@ BEST_FREE = {
     "cta": "Know before it's full.",
 }
 
-ROUNDUPS = [BEST_FREE]
+# Targets "disk space analyzer" (700/mo US, KD 2, TP 25k), "mac disk space analyzer" (300), and "disk space analyzer mac" (150).
+# Facts, checked 2026-10-06: each app's site, store listing, or GitHub, as cited on its own page. DaisyDisk: daisydiskapp.com
+# (4.34.2, July 10, 2026). Clone and hard-link counting: Packages/DiskForecastCore/.../DiskScanner.swift.
+ANALYZER = {
+    "path": "/disk-space-analyzer-mac",
+    "title": "Disk space analyzer for Mac: free and paid, compared",
+    "description": "What a disk space analyzer for Mac does, how treemaps, rings, and lists differ from a forecast, the APFS gotchas, and the free and paid apps worth using.",
+    "eyebrow": "Guide",
+    "h1": "Disk space analyzer for Mac: <em>maps, lists, and forecasts.</em>",
+    "lede": "A disk space analyzer answers “what's using my space?” Here are the three ways analyzers show it, what they get wrong on APFS, and the Mac apps worth using, free and paid.",
+    "tldr": "An analyzer scans your disk and shows where the space went: as a treemap (GrandPerspective, WizTreeMac), as rings (DaisyDisk), or as a sorted list (OmniDiskSweeper, Finder, Disk Forecast). A monitor watches free space over time, and a forecast says when it runs out. On APFS, clones, hard links, purgeable space, and local snapshots make different apps disagree. Disk Forecast counts clones and hard links once.",
+    "card_title": "Disk space analyzers for Mac",
+    "card_blurb": "Treemaps, rings, and lists, the APFS gotchas, and which app to use.",
+    "footer": "Disk space analyzers",
+    "in_guides": True,
+    "related": ["/how-to-check-storage-on-mac", "/best-free-mac-cleaner", "/alternatives/compare"],
+    "faqs": [
+        ("What is the best disk space analyzer for Mac?", "For a picture of the disk, DaisyDisk is the most polished at $9.99, and GrandPerspective is the best free one. For a list with every item explained, plus a warning before the disk fills, Disk Forecast, which is free."),
+        ("Is there a free disk space analyzer for Mac?", "Yes, several. GrandPerspective, WizTreeMac for personal use, OmniDiskSweeper, Mole, and Disk Forecast are free, and Finder's Calculate all sizes is built in."),
+        ("Why do disk analyzers show different sizes than Finder?", "Because of APFS. Clones share space, hard links put one file at several paths, purgeable space counts as free in Finder but used in Terminal, and local snapshots hold space no folder shows. Each app handles those differently."),
+        ("Does macOS have a built-in disk space analyzer?", "Storage settings, in System Settings › General › Storage, breaks your disk into categories, and Finder shows folder sizes in list view once you turn on Calculate all sizes. Neither draws a map or explains System Data."),
+        ("Can a disk analyzer see System Data?", "Only partly. Local Time Machine snapshots and purgeable space aren't ordinary files, so a folder scan can't show them. Disk Forecast's System Data window lists them separately, with Apple's own tools to reclaim them."),
+    ],
+    "html": """
+        <h2>What a disk space analyzer does</h2>
+        <p>An analyzer walks every folder on a disk, adds up the sizes, and draws the result so the biggest things stand out. There are three common pictures:</p>
+        <ul>
+          <li><strong>Treemap.</strong> Every file is a rectangle sized by its space, nested inside its folder's rectangle. It's great for spotting one huge file. GrandPerspective and WizTreeMac draw treemaps, as WinDirStat does on Windows.</li>
+          <li><strong>Sunburst.</strong> Folders become rings around a center, each slice sized by its space, and you click inward to drill down. DaisyDisk is the best-known one.</li>
+          <li><strong>List.</strong> Folders sorted largest first. Less striking, but easier to read exact numbers from. OmniDiskSweeper, Finder's Calculate all sizes, and <code>du</code> in Terminal all work this way.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Analyzer, monitor, or forecast?</h2>
+        <p>An analyzer is a snapshot of what's on the disk right now. Most people open one after macOS has already said the disk is almost full.</p>
+        <p>A <strong>monitor</strong> watches free space over time, so you see the trend, not just the total. A <strong>forecast</strong> takes that history and projects it forward: “Full in ~41 days.”</p>
+        <p>Disk Forecast is a monitor and forecast first. It checks free space every hour and, after 3 days of history, shows a countdown in the menu bar. When you need room, it lists the folders taking the most space and a cleanup list with each item explained. It doesn't draw a treemap or a sunburst. If you want one, use it alongside GrandPerspective or DaisyDisk.</p>
+
+        <h2 style="margin-top:56px">APFS gotchas: why analyzers disagree</h2>
+        <p>Run three analyzers on the same Mac and you can get three totals. APFS, the file system on every modern Mac, is why.</p>
+        <ul>
+          <li><strong>Clones.</strong> When you duplicate a file in Finder, the copy shares the original's blocks until one of them changes. Two 10 GB files can use 10 GB. An analyzer that adds up file sizes counts 20.</li>
+          <li><strong>Hard links.</strong> One file can live at several paths. pnpm, for one, links packages from its store into each project. Count every path and the file counts several times.</li>
+          <li><strong>Purgeable space.</strong> Space macOS has marked as reclaimable, like iCloud files it can download again. Finder counts it as available, and <code>df</code> counts it as used.</li>
+          <li><strong>Local snapshots.</strong> Time Machine's local snapshots keep the blocks of files you've since deleted. They aren't files in any folder, so an analyzer can't show them, but they still take space. <code>tmutil listlocalsnapshots /</code> lists them.</li>
+        </ul>
+        <p>Disk Forecast counts allocated space, what the disk actually spends, and counts shared space once. A hard-linked file counts at its first link. An APFS clone counts in full the first time its clone family appears, and after that only for the bytes it doesn't share. Purgeable space and local snapshots appear in its System Data window, where it runs Apple's <code>tmutil</code> to remove snapshots after you confirm.</p>
+
+        <h2 style="margin-top:56px">Disk space analyzers for Mac, free and paid</h2>
+        {{TABLE:apps}}
+        <p>Each app has a full comparison: <a href="/alternatives/daisydisk">DaisyDisk</a>, <a href="/alternatives/grandperspective">GrandPerspective</a>, <a href="/alternatives/windirstat-mac">WizTreeMac and the Windows tools</a>, <a href="/alternatives/omnidisksweeper">OmniDiskSweeper</a>, <a href="/alternatives/disk-inventory-x">Disk Inventory X</a>, <a href="/alternatives/diskbuddy">DiskBuddy</a>, and <a href="/alternatives/mole">Mole</a>. Or see them all at once in <a href="/alternatives/compare">every Mac disk app compared</a>.</p>
+
+        <h2 style="margin-top:56px">Which one to use</h2>
+        <ul>
+          <li><strong>You want to see where the space went, once:</strong> GrandPerspective for free, or DaisyDisk for the nicest picture.</li>
+          <li><strong>You want to know before it's full:</strong> Disk Forecast, in the menu bar all day.</li>
+          <li><strong>You want nothing new on your Mac:</strong> Storage settings and Finder. <a href="/how-to-check-storage-on-mac">How to check Mac storage</a> shows five built-in ways.</li>
+        </ul>
+    """,
+    "tables": {"apps": {"head": ["App", "Price", "How it shows your disk", "Apple silicon", "Latest version"], "min_width": 720, "rows": [
+        ("Disk Forecast", "Free", "Sorted lists, each item explained, plus a forecast", "Native", "Actively developed"),
+        ("DaisyDisk", "$9.99 one-time", "Interactive rings", "Native", "4.34.2, July 2026"),
+        ("GrandPerspective", "Free, or $2.99 on the App Store", "Treemap", "Native", "3.8.1, September 2026"),
+        ("WizTreeMac", "Free for personal use", "Treemap and file list", "Native", "1.00, September 2026"),
+        ("DiskBuddy", "$49", "Space map and lists", "—", "3.0, October 2026"),
+        ("Mole", "Free; $19 for the Mac app", "Disk explorer in Terminal", "Native", "1.58.0, October 2026"),
+        ("OmniDiskSweeper", "Free", "Columns sorted by size", "Intel only", "1.11, 2018"),
+        ("Disk Inventory X", "Free", "Treemap", "Intel only", "1.3, December 2019"),
+        ("Storage settings and Finder", "Built in", "Categories and folder sizes", "Native", "Part of macOS"),
+    ]}},
+    "shortcut": """
+          <h2>The analyzer that watches the weather.</h2>
+          <p>Disk Forecast shows your free space in the menu bar, tells you when you&#39;ll run out, and lists the five folders taking the most space. It counts shared APFS space once. It&#39;s free.</p>
+    """,
+    "mockup": "menu",
+    "cta": "Know before it's full.",
+}
+
+ROUNDUPS = [BEST_FREE, ANALYZER]

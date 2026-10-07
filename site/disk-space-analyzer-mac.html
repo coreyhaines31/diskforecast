@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Disk space analyzer for Mac: free and paid, compared</title>
+  <meta name="description" content="What a disk space analyzer for Mac does, how treemaps, rings, and lists differ from a forecast, the APFS gotchas, and the free and paid apps worth using.">
+  <link rel="canonical" href="https://diskforecast.com/disk-space-analyzer-mac">
+  <meta property="og:title" content="Disk space analyzer for Mac: free and paid, compared">
+  <meta property="og:description" content="What a disk space analyzer for Mac does, how treemaps, rings, and lists differ from a forecast, the APFS gotchas, and the free and paid apps worth using.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/disk-space-analyzer-mac">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Disk space analyzer for Mac: free and paid, compared">
+  <meta name="twitter:description" content="What a disk space analyzer for Mac does, how treemaps, rings, and lists differ from a forecast, the APFS gotchas, and the free and paid apps worth using.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>Disk space analyzer for Mac: <em>maps, lists, and forecasts.</em></h1>
+        <p class="lede">A disk space analyzer answers “what's using my space?” Here are the three ways analyzers show it, what they get wrong on APFS, and the Mac apps worth using, free and paid.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>An analyzer scans your disk and shows where the space went: as a treemap (GrandPerspective, WizTreeMac), as rings (DaisyDisk), or as a sorted list (OmniDiskSweeper, Finder, Disk Forecast). A monitor watches free space over time, and a forecast says when it runs out. On APFS, clones, hard links, purgeable space, and local snapshots make different apps disagree. Disk Forecast counts clones and hard links once.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>What a disk space analyzer does</h2>
+        <p>An analyzer walks every folder on a disk, adds up the sizes, and draws the result so the biggest things stand out. There are three common pictures:</p>
+        <ul>
+          <li><strong>Treemap.</strong> Every file is a rectangle sized by its space, nested inside its folder's rectangle. It's great for spotting one huge file. GrandPerspective and WizTreeMac draw treemaps, as WinDirStat does on Windows.</li>
+          <li><strong>Sunburst.</strong> Folders become rings around a center, each slice sized by its space, and you click inward to drill down. DaisyDisk is the best-known one.</li>
+          <li><strong>List.</strong> Folders sorted largest first. Less striking, but easier to read exact numbers from. OmniDiskSweeper, Finder's Calculate all sizes, and <code>du</code> in Terminal all work this way.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Analyzer, monitor, or forecast?</h2>
+        <p>An analyzer is a snapshot of what's on the disk right now. Most people open one after macOS has already said the disk is almost full.</p>
+        <p>A <strong>monitor</strong> watches free space over time, so you see the trend, not just the total. A <strong>forecast</strong> takes that history and projects it forward: “Full in ~41 days.”</p>
+        <p>Disk Forecast is a monitor and forecast first. It checks free space every hour and, after 3 days of history, shows a countdown in the menu bar. When you need room, it lists the folders taking the most space and a cleanup list with each item explained. It doesn't draw a treemap or a sunburst. If you want one, use it alongside GrandPerspective or DaisyDisk.</p>
+
+        <h2 style="margin-top:56px">APFS gotchas: why analyzers disagree</h2>
+        <p>Run three analyzers on the same Mac and you can get three totals. APFS, the file system on every modern Mac, is why.</p>
+        <ul>
+          <li><strong>Clones.</strong> When you duplicate a file in Finder, the copy shares the original's blocks until one of them changes. Two 10 GB files can use 10 GB. An analyzer that adds up file sizes counts 20.</li>
+          <li><strong>Hard links.</strong> One file can live at several paths. pnpm, for one, links packages from its store into each project. Count every path and the file counts several times.</li>
+          <li><strong>Purgeable space.</strong> Space macOS has marked as reclaimable, like iCloud files it can download again. Finder counts it as available, and <code>df</code> counts it as used.</li>
+          <li><strong>Local snapshots.</strong> Time Machine's local snapshots keep the blocks of files you've since deleted. They aren't files in any folder, so an analyzer can't show them, but they still take space. <code>tmutil listlocalsnapshots /</code> lists them.</li>
+        </ul>
+        <p>Disk Forecast counts allocated space, what the disk actually spends, and counts shared space once. A hard-linked file counts at its first link. An APFS clone counts in full the first time its clone family appears, and after that only for the bytes it doesn't share. Purgeable space and local snapshots appear in its System Data window, where it runs Apple's <code>tmutil</code> to remove snapshots after you confirm.</p>
+
+        <h2 style="margin-top:56px">Disk space analyzers for Mac, free and paid</h2>
+                <div class="table-card glass"><div class="table-scroll"><table class="compare" style="min-width:720px">
+          <thead><tr><th scope="col">App</th><th scope="col">Price</th><th scope="col">How it shows your disk</th><th scope="col">Apple silicon</th><th scope="col">Latest version</th></tr></thead><tbody>
+            <tr><th scope="row">Disk Forecast</th><td class="us">Free</td><td class="us">Sorted lists, each item explained, plus a forecast</td><td class="us">Native</td><td class="us">Actively developed</td></tr>
+            <tr><th scope="row">DaisyDisk</th><td>$9.99 one-time</td><td>Interactive rings</td><td>Native</td><td>4.34.2, July 2026</td></tr>
+            <tr><th scope="row">GrandPerspective</th><td>Free, or $2.99 on the App Store</td><td>Treemap</td><td>Native</td><td>3.8.1, September 2026</td></tr>
+            <tr><th scope="row">WizTreeMac</th><td>Free for personal use</td><td>Treemap and file list</td><td>Native</td><td>1.00, September 2026</td></tr>
+            <tr><th scope="row">DiskBuddy</th><td>$49</td><td>Space map and lists</td><td class="n">—</td><td>3.0, October 2026</td></tr>
+            <tr><th scope="row">Mole</th><td>Free; $19 for the Mac app</td><td>Disk explorer in Terminal</td><td>Native</td><td>1.58.0, October 2026</td></tr>
+            <tr><th scope="row">OmniDiskSweeper</th><td>Free</td><td>Columns sorted by size</td><td>Intel only</td><td>1.11, 2018</td></tr>
+            <tr><th scope="row">Disk Inventory X</th><td>Free</td><td>Treemap</td><td>Intel only</td><td>1.3, December 2019</td></tr>
+            <tr><th scope="row">Storage settings and Finder</th><td>Built in</td><td>Categories and folder sizes</td><td>Native</td><td>Part of macOS</td></tr>
+          </tbody></table></div></div>
+        <p class="table-foot">“—” means we couldn't confirm it from the vendor's own materials as of October 2026.</p>
+        <p>Each app has a full comparison: <a href="/alternatives/daisydisk">DaisyDisk</a>, <a href="/alternatives/grandperspective">GrandPerspective</a>, <a href="/alternatives/windirstat-mac">WizTreeMac and the Windows tools</a>, <a href="/alternatives/omnidisksweeper">OmniDiskSweeper</a>, <a href="/alternatives/disk-inventory-x">Disk Inventory X</a>, <a href="/alternatives/diskbuddy">DiskBuddy</a>, and <a href="/alternatives/mole">Mole</a>. Or see them all at once in <a href="/alternatives/compare">every Mac disk app compared</a>.</p>
+
+        <h2 style="margin-top:56px">Which one to use</h2>
+        <ul>
+          <li><strong>You want to see where the space went, once:</strong> GrandPerspective for free, or DaisyDisk for the nicest picture.</li>
+          <li><strong>You want to know before it's full:</strong> Disk Forecast, in the menu bar all day.</li>
+          <li><strong>You want nothing new on your Mac:</strong> Storage settings and Finder. <a href="/how-to-check-storage-on-mac">How to check Mac storage</a> shows five built-in ways.</li>
+        </ul>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+
+          <h2>The analyzer that watches the weather.</h2>
+          <p>Disk Forecast shows your free space in the menu bar, tells you when you&#39;ll run out, and lists the five folders taking the most space. It counts shared APFS space once. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="desk mk" role="img" aria-label="The Mac menu bar showing 142 GB free, with the Disk Forecast menu open: 142 GB free of 494 GB, Full in about 41 days, the five folders taking the most space, and Safe to clear: 12.4 GB.">
+          <div class="mk-menubar">
+            <div class="l"><svg class="apple" viewBox="0 0 14 17"><path d="M11.6 9c0-2 1.6-2.9 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7-.6 0-1.6-.7-2.6-.7C3.4 4.4 2 5.2 1.3 6.6c-1.5 2.6-.4 6.4 1 8.5.7 1 1.5 2.1 2.6 2.1 1 0 1.4-.7 2.7-.7 1.2 0 1.6.7 2.6.7 1.1 0 1.8-1 2.5-2 .8-1.1 1.1-2.2 1.1-2.3 0 0-2.2-.8-2.2-3.4zM9.6 3c.6-.7 1-1.6.9-2.6-.8 0-1.8.6-2.4 1.3-.5.6-1 1.6-.9 2.5.9.1 1.8-.5 2.4-1.2z"/></svg><b>Finder</b><span>File</span><span>Edit</span></div>
+            <div class="r">
+              <span class="item on"><svg viewBox="0 0 24 24"><path d="M5.5 9.5 7.3 5.6A2 2 0 0 1 9.1 4.5h5.8a2 2 0 0 1 1.8 1.1l1.8 3.9"/><rect x="3.5" y="9.5" width="17" height="9" rx="2.2"/><path d="M8.5 14h.01M11 14h.01M13.5 14h.01M16 14h.01"/></svg>142 GB</span>
+              <svg viewBox="0 0 24 24" class="hide-sm"><path d="M2.5 9.5a14 14 0 0 1 19 0M5.6 13a9.5 9.5 0 0 1 12.8 0M8.8 16.4a5 5 0 0 1 6.4 0"/><circle cx="12" cy="19.5" r="0.8" fill="currentColor"/></svg>
+              <svg viewBox="0 0 24 24"><rect x="2" y="7.5" width="18" height="9" rx="2.5"/><path d="M22 10.5v3"/><rect x="4" y="9.5" width="11" height="5" rx="1" fill="currentColor" stroke="none"/></svg>
+              <svg viewBox="0 0 24 24" class="hide-sm"><rect x="3" y="4.5" width="18" height="6.5" rx="3.25"/><rect x="3" y="13" width="18" height="6.5" rx="3.25"/><circle cx="16.5" cy="7.75" r="1.6" fill="currentColor"/><circle cx="7.5" cy="16.25" r="1.6" fill="currentColor"/></svg>
+              <span>Mon 9:41 AM</span>
+            </div>
+          </div>
+          <div class="mk-nsmenu">
+            <div class="mk-item dim"><span class="t">142 GB free of 494 GB</span></div>
+            <div class="mk-item dim"><span class="t">Full in ~41 days</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-label">Taking the most space</div>
+            <div class="mk-item"><span class="t">~/Library</span><span class="v">88 GB</span></div>
+            <div class="mk-item"><span class="t">~/code</span><span class="v">61 GB</span></div>
+            <div class="mk-item"><span class="t">~/Movies</span><span class="v">39 GB</span></div>
+            <div class="mk-item"><span class="t">~/Downloads</span><span class="v">24 GB</span></div>
+            <div class="mk-item"><span class="t">~/Pictures</span><span class="v">20 GB</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-item hl"><span class="t">Safe to clear: 12.4 GB…</span></div>
+            <div class="mk-item"><span class="t">Open Cleanup…</span></div>
+            <div class="mk-item"><span class="t">System Data…</span></div>
+            <div class="mk-item"><span class="t">Rescan</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-item"><span class="t">Settings…</span><span class="k">⌘,</span></div>
+            <div class="mk-item"><span class="t">Check for Updates…</span></div>
+            <div class="mk-item"><span class="t">Quit Disk Forecast</span><span class="k">⌘Q</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>What is the best disk space analyzer for Mac?</summary><p>For a picture of the disk, DaisyDisk is the most polished at $9.99, and GrandPerspective is the best free one. For a list with every item explained, plus a warning before the disk fills, Disk Forecast, which is free.</p></details>
+          <details><summary>Is there a free disk space analyzer for Mac?</summary><p>Yes, several. GrandPerspective, WizTreeMac for personal use, OmniDiskSweeper, Mole, and Disk Forecast are free, and Finder&#x27;s Calculate all sizes is built in.</p></details>
+          <details><summary>Why do disk analyzers show different sizes than Finder?</summary><p>Because of APFS. Clones share space, hard links put one file at several paths, purgeable space counts as free in Finder but used in Terminal, and local snapshots hold space no folder shows. Each app handles those differently.</p></details>
+          <details><summary>Does macOS have a built-in disk space analyzer?</summary><p>Storage settings, in System Settings › General › Storage, breaks your disk into categories, and Finder shows folder sizes in list view once you turn on Calculate all sizes. Neither draws a map or explains System Data.</p></details>
+          <details><summary>Can a disk analyzer see System Data?</summary><p>Only partly. Local Time Machine snapshots and purgeable space aren&#x27;t ordinary files, so a folder scan can&#x27;t show them. Disk Forecast&#x27;s System Data window lists them separately, with Apple&#x27;s own tools to reclaim them.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/how-to-check-storage-on-mac"><b>How to check Mac storage</b><span>Five built-in ways, plus how to find what&#x27;s taking up space.</span></a>
+          <a class="glass" href="/best-free-mac-cleaner"><b>Best free Mac cleaner</b><span>Six honest picks, and what a cleaner should and shouldn&#x27;t do.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the best disk space analyzer for Mac?", "acceptedAnswer": {"@type": "Answer", "text": "For a picture of the disk, DaisyDisk is the most polished at $9.99, and GrandPerspective is the best free one. For a list with every item explained, plus a warning before the disk fills, Disk Forecast, which is free."}}, {"@type": "Question", "name": "Is there a free disk space analyzer for Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, several. GrandPerspective, WizTreeMac for personal use, OmniDiskSweeper, Mole, and Disk Forecast are free, and Finder's Calculate all sizes is built in."}}, {"@type": "Question", "name": "Why do disk analyzers show different sizes than Finder?", "acceptedAnswer": {"@type": "Answer", "text": "Because of APFS. Clones share space, hard links put one file at several paths, purgeable space counts as free in Finder but used in Terminal, and local snapshots hold space no folder shows. Each app handles those differently."}}, {"@type": "Question", "name": "Does macOS have a built-in disk space analyzer?", "acceptedAnswer": {"@type": "Answer", "text": "Storage settings, in System Settings \u203a General \u203a Storage, breaks your disk into categories, and Finder shows folder sizes in list view once you turn on Calculate all sizes. Neither draws a map or explains System Data."}}, {"@type": "Question", "name": "Can a disk analyzer see System Data?", "acceptedAnswer": {"@type": "Answer", "text": "Only partly. Local Time Machine snapshots and purgeable space aren't ordinary files, so a folder scan can't show them. Disk Forecast's System Data window lists them separately, with Apple's own tools to reclaim them."}}]}</script>
+</body>
+</html>
