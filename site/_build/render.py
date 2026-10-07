@@ -12,7 +12,7 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
-from pages import GUIDES, HUB, PAGES, PRIVACY  # noqa: E402
+from pages import GUIDES, GUIDES_HUB, HUB, PAGES, PRIVACY  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 SITE = "https://diskforecast.com"
@@ -338,8 +338,32 @@ def render_guide(g):
     write(g["path"], body)
 
 
+def render_guides_hub():
+    d = GUIDES_HUB
+    cards = "".join(f'          <a class="glass" href="{g["path"]}"><b>{esc(g["card_title"])}</b><span>{esc(g["card_blurb"])}</span></a>\n' for g in GUIDES)
+    body = f'''{head(d["title"], d["description"], d["path"])}{nav()}  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guides</div>
+        <h1>{d["h1"]}</h1>
+        <p class="lede">{d["lede"]}</p>
+      </div>
+    </div>
+    <section class="tight lit" style="padding-top:0">
+      <div class="wrap">
+        <div class="related">
+{cards}        </div>
+      </div>
+    </section>
+{cta(d["cta"])}  </main>
+{footer()}</body>
+</html>
+'''
+    write(d["path"], body)
+
+
 def render_sitemap():
-    paths = ["/"] + [g["path"] for g in GUIDES] + ["/alternatives"] + [f"/alternatives/{p['slug']}" for p in PAGES] + [PRIVACY["path"]]
+    paths = ["/", GUIDES_HUB["path"]] + [g["path"] for g in GUIDES] + ["/alternatives"] + [f"/alternatives/{p['slug']}" for p in PAGES] + [PRIVACY["path"]]
     urls = "".join(f"  <url><loc>{SITE}{p}</loc></url>\n" for p in paths)
     with open(os.path.join(ROOT, "sitemap.xml"), "w") as f:
         f.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
@@ -371,6 +395,7 @@ if __name__ == "__main__":
     render_homepage_schema()
     for g in GUIDES:
         render_guide(g)
+    render_guides_hub()
     render_privacy()
     render_sitemap()
-    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + {len(GUIDES)} guides + privacy + sitemap")
+    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + {len(GUIDES)} guides and their hub + privacy + sitemap")

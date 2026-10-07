@@ -700,7 +700,17 @@ WHAT_IS = {
     "cta": "Know before it's full.",
 }
 
-GUIDES = [SYSTEM_DATA, CACHE, FREE_UP, CHECK, WHAT_IS]
+# In reading order: the hub and every footer list them this way.
+GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA]
+
+GUIDES_HUB = {
+    "path": "/guides",
+    "title": "Mac storage guides: check, clear, and reclaim disk space",
+    "description": "Plain-English guides to Mac storage: how to check it, free up disk space, clear cache, and understand and clear System Data with macOS's own tools.",
+    "h1": "Mac storage guides, <em>in plain English.</em>",
+    "lede": "How to see what's filling your Mac, what's safe to clear, and how to reclaim it with the tools built into macOS. Every step is something you can do yourself, for free.",
+    "cta": "Know before it's full.",
+}
 
 # ---------------------------------------------------------------------- Privacy
 PRIVACY = {
