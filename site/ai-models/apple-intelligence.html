@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to delete Apple Intelligence on Mac: storage explained</title>
+  <meta name="description" content="Can you delete Apple Intelligence from a Mac? How much storage it uses, how to turn it off in System Settings, and what&#x27;s known about getting that space back.">
+  <link rel="canonical" href="https://diskforecast.com/ai-models/apple-intelligence">
+  <meta property="og:title" content="How to delete Apple Intelligence on Mac: storage explained">
+  <meta property="og:description" content="Can you delete Apple Intelligence from a Mac? How much storage it uses, how to turn it off in System Settings, and what&#x27;s known about getting that space back.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/ai-models/apple-intelligence">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How to delete Apple Intelligence on Mac: storage explained">
+  <meta name="twitter:description" content="Can you delete Apple Intelligence from a Mac? How much storage it uses, how to turn it off in System Settings, and what&#x27;s known about getting that space back.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>How to delete Apple Intelligence on Mac, <em>honestly.</em></h1>
+        <p class="lede">You can't delete Apple Intelligence's files yourself, and you shouldn't try. You can turn it off. Here's what that does, what Apple says about the space, and what's still unclear.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>You can't delete Apple Intelligence's models by hand: they live in a protected system folder. To stop using it, open <strong>System Settings › Apple Intelligence &amp; Siri</strong>, turn off <strong>Apple Intelligence</strong>, and confirm <strong>Turn Off Apple Intelligence</strong>. Apple says it uses up to 8 GB on most supported devices. Turning it off lets macOS remove its models, but Apple doesn't document when, and some Siri and dictation models stay because other features use them.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>Can you delete Apple Intelligence from a Mac?</h2>
+        <p>Not the way you delete an app. Apple Intelligence is part of macOS, and its models are downloaded into <code>/System/Library/AssetsV2</code>, which System Integrity Protection guards. Even Terminal gets “Operation not permitted” when it tries to read the folders that hold the language and image models. Disabling System Integrity Protection to get at them isn't worth it: Apple's own settings warn that Apple Intelligence and other services may stop working when it's off.</p>
+        <p>What you can do is turn Apple Intelligence off, which is the supported way to tell macOS you don't want it.</p>
+
+        <h2 style="margin-top:56px">How to turn off Apple Intelligence on Mac</h2>
+        <ol class="steps">
+          <li><b>Open the settings.</b> Choose <strong>Apple menu › System Settings</strong>, then click <strong>Apple Intelligence &amp; Siri</strong> in the sidebar. On a Mac that doesn't support Apple Intelligence, the pane is just called Siri.</li>
+          <li><b>Turn it off.</b> Click the <strong>Apple Intelligence</strong> switch.</li>
+          <li><b>Confirm.</b> macOS warns that features like Writing Tools won't be available and Siri will stop using Apple Intelligence. Click <strong>Turn Off Apple Intelligence</strong>.</li>
+        </ol>
+        <p>Those are the labels on macOS 26.6. You can turn it back on at any time; macOS downloads the models again.</p>
+
+        <h2 style="margin-top:56px">How much storage Apple Intelligence uses</h2>
+        <p>Apple's support page for this year's releases says Apple Intelligence uses up to 8 GB of storage on most supported iPhone, iPad, and Mac models, and up to 14 GB on some newer devices. For macOS 26, Apple asked for 7 GB of available storage before it would turn on.</p>
+        <p>Here's what we could measure on one Mac with an M4 Pro running macOS 26.6, with Apple Intelligence on:</p>
+                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
+            <tr><th scope="row">Siri, speech, translation, Photos models</th><td><code>/System/Library/AssetsV2/com_apple_MobileAsset_UAF_*</code></td><td>3.3 GB readable</td></tr>
+            <tr><th scope="row">Apple&#x27;s language and image models</th><td><code>/System/Library/AssetsV2/com_apple_MobileAsset_UAF_FM_*</code></td><td>Protected; can&#x27;t be measured</td></tr>
+          </tbody></table></div></div>
+        <p>The readable folders are Siri understanding (1.9 GB), text to speech (556 MB), speech recognition (409 MB), and the Photos Clean Up model (248 MB), among others. The language and image models themselves sit in folders macOS won't let anything outside the system read, so their size isn't something we can show you. Storage settings counts all of it under System Data.</p>
+
+        <h2 style="margin-top:56px">Does turning it off free the space?</h2>
+        <p>It's meant to: turning Apple Intelligence off tells macOS it can remove the models it downloaded for it. What Apple doesn't document is when that happens, so don't expect the space back the moment you flip the switch. Check <strong>System Settings › General › Storage</strong> after a restart and a day of normal use.</p>
+        <p>You also won't get every byte back. Some of the readable folders above belong to Siri, dictation, and translation, which work without Apple Intelligence, so expect those to stay. If you need the room urgently, the faster wins are elsewhere: local Time Machine snapshots, caches, and other apps' AI models. See <a href="/system-data">how to clear System Data</a> and <a href="/free-up-space-on-mac">how to free up space on Mac</a>.</p>
+        <p>Running your own models too? <a href="/ai-models/ollama">Ollama's models</a> are usually far bigger than Apple's, and you can delete those yourself.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Disk Forecast finds this for you</h2>
+
+          <p>Disk Forecast shows these models in <strong>System Data › Apple Intelligence and Siri models</strong>, with the total size and the biggest folders it can read, by name. Its <strong>Open Apple Intelligence &amp; Siri settings…</strong> button takes you straight to the switch. It never touches the files itself. Then it keeps forecasting when your disk will be full, so you can see whether the space came back. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="stage glass">
+          <div class="mk mk-win" role="img" aria-label="The Disk Forecast System Data window, titled System Data, explained. It lists purgeable space, three local Time Machine snapshots, the Spotlight index, simulators with two iOS runtimes, Apple Intelligence and Siri models, and Docker, each with a plain explanation and, except purgeable space, a button that runs the owning tool's own fix.">
+            <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">System Data</div></div>
+            <div class="mk-hdr"><div><b>System Data, explained</b><span>What macOS files under System Data in Storage settings, and how to reclaim it with Apple's and each tool's own commands. Nothing runs until you confirm.</span></div><div class="mk-pill">Refresh</div></div>
+            <div class="mk-list">
+                <div class="mk-srow"><div class="top"><b>Purgeable space</b><span class="sz">24 GB</span></div><div class="txt"><span>Space macOS is holding for caches, iCloud copies, and snapshots. It's already counted as free, and macOS gives it back on its own when an app needs room.</span></div></div>
+                <div class="mk-srow"><div class="top"><b>Local Time Machine snapshots</b><span class="sz note">3 snapshots</span></div><div class="txt"><span>Hourly copies Time Machine keeps on this Mac between backups. macOS counts them as purgeable and removes them after 24 hours or when space runs low.</span><div class="mk-det">com.apple.TimeMachine.2026-10-05-073012.local<br>com.apple.TimeMachine.2026-10-05-083008.local<br>com.apple.TimeMachine.2026-10-05-093011.local</div><div class="mk-fix"><div class="mk-pill">Remove local snapshots…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Spotlight index</b><span class="sz">1.2 GB</span></div><div class="txt"><span>The search index behind Spotlight. It's usually small; when it grows huge, rebuilding it often shrinks it. Search results are incomplete while it rebuilds.</span><div class="mk-fix"><div class="mk-pill">Rebuild the Spotlight index…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Simulators</b><span class="sz">27 GB</span></div><div class="txt"><span>iOS and other simulator runtimes, plus each simulator's apps and data. Xcode downloads a runtime again from Settings › Components when you need it.</span><div class="mk-det">iOS 26.4 runtime: 8.5 GB<br>iOS 26.2 runtime: 8.4 GB<br>14 simulators: 10 GB</div><div class="mk-fix"><div class="mk-pill">Delete iOS 26.4 (8.5 GB)…</div><div class="mk-pill">Delete iOS 26.2 (8.4 GB)…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Apple Intelligence and Siri models</b><span class="sz">3.3 GB</span></div><div class="txt"><span>On-device models macOS downloads for Apple Intelligence, Siri, dictation, and translation. Turning Apple Intelligence off in System Settings removes its models.</span><div class="mk-det">Siri Understanding: 2.0 GB<br>Siri TextToSpeech: 583 MB<br>Speech AutomaticSpeechRecognition: 428 MB<br>Photos MagicCleanup: 260 MB</div><div class="mk-fix"><div class="mk-pill">Open Apple Intelligence &amp; Siri settings…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Docker</b><span class="sz">6.1 GB</span></div><div class="txt"><span>Images, containers, volumes, and build cache, stored in one disk image. Docker's own prune command removes what nothing is using.</span><div class="mk-det">Images: 4.2 GB, 2.9 GB unused<br>Build Cache: 1.6 GB, 1.6 GB unused<br>Containers: 318 MB, 12 MB unused</div><div class="mk-fix"><div class="mk-pill">Prune unused Docker data…</div></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>Can I delete Apple Intelligence from my Mac?</summary><p>Not by deleting files. Its models live in a folder protected by System Integrity Protection. You can turn it off in System Settings › Apple Intelligence &amp; Siri, which lets macOS remove the models it downloaded for it.</p></details>
+          <details><summary>How much storage does Apple Intelligence use on a Mac?</summary><p>Apple says up to 8 GB on most supported devices and up to 14 GB on some newer ones. For macOS 26, Apple required 7 GB of available storage to turn it on. Storage settings counts it under System Data.</p></details>
+          <details><summary>Does turning off Apple Intelligence free up storage?</summary><p>It lets macOS remove the Apple Intelligence models, but Apple doesn&#x27;t say how quickly. Some Siri, dictation, and translation models stay because other features use them. Check Storage settings after a restart.</p></details>
+          <details><summary>Where does Apple Intelligence store its models?</summary><p>In /System/Library/AssetsV2, in folders that start with com_apple_MobileAsset_UAF. The language and image model folders are protected, so even Terminal can&#x27;t read their size.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/ai-models/ollama"><b>Ollama</b><span>ollama rm, where models are stored, and a full uninstall.</span></a>
+          <a class="glass" href="/what-is-system-data-on-mac"><b>What is System Data on Mac?</b><span>What&#x27;s inside it, how much is normal, and why it keeps growing.</span></a>
+          <a class="glass" href="/system-data"><b>How to clear System Data</b><span>The step-by-step guide, using only Apple&#x27;s own tools.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Can I delete Apple Intelligence from my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Not by deleting files. Its models live in a folder protected by System Integrity Protection. You can turn it off in System Settings \u203a Apple Intelligence & Siri, which lets macOS remove the models it downloaded for it."}}, {"@type": "Question", "name": "How much storage does Apple Intelligence use on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Apple says up to 8 GB on most supported devices and up to 14 GB on some newer ones. For macOS 26, Apple required 7 GB of available storage to turn it on. Storage settings counts it under System Data."}}, {"@type": "Question", "name": "Does turning off Apple Intelligence free up storage?", "acceptedAnswer": {"@type": "Answer", "text": "It lets macOS remove the Apple Intelligence models, but Apple doesn't say how quickly. Some Siri, dictation, and translation models stay because other features use them. Check Storage settings after a restart."}}, {"@type": "Question", "name": "Where does Apple Intelligence store its models?", "acceptedAnswer": {"@type": "Answer", "text": "In /System/Library/AssetsV2, in folders that start with com_apple_MobileAsset_UAF. The language and image model folders are protected, so even Terminal can't read their size."}}]}</script>
+</body>
+</html>

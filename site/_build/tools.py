@@ -726,7 +726,62 @@ rm -rf ~/Library/WebKit/com.electron.ollama</code></pre>
     ],
 }
 
-AI_TOOLS = [OLLAMA]
+# ------------------------------------------------------------------ Apple Intelligence
+# "how to delete apple intelligence on mac" 150, "delete apple intelligence storage" 90, "remove apple intelligence from mac" 60,
+# "can i delete apple intelligence from mac" 40, "how to get rid of apple intelligence storage" 30, "apple intelligence storage".
+# The settings labels come from SiriPreferenceExtension's English strings on macOS 26.6. Apple's storage figures come from
+# support.apple.com/en-us/121115 (September 2026). The UAF folder sizes are du on one Mac; the FM folders are SIP-protected.
+APPLE_INTELLIGENCE = {
+    "slug": "apple-intelligence",
+    "title": "How to delete Apple Intelligence on Mac: storage explained",
+    "description": "Can you delete Apple Intelligence from a Mac? How much storage it uses, how to turn it off in System Settings, and what's known about getting that space back.",
+    "h1": "How to delete Apple Intelligence on Mac, <em>honestly.</em>",
+    "lede": "You can't delete Apple Intelligence's files yourself, and you shouldn't try. You can turn it off. Here's what that does, what Apple says about the space, and what's still unclear.",
+    "tldr": "You can't delete Apple Intelligence's models by hand: they live in a protected system folder. To stop using it, open <strong>System Settings › Apple Intelligence &amp; Siri</strong>, turn off <strong>Apple Intelligence</strong>, and confirm <strong>Turn Off Apple Intelligence</strong>. Apple says it uses up to 8 GB on most supported devices. Turning it off lets macOS remove its models, but Apple doesn't document when, and some Siri and dictation models stay because other features use them.",
+    "card_title": "Apple Intelligence",
+    "card_blurb": "How much space it takes, and what turning it off does.",
+    "paths": [
+        ("Siri, speech, translation, Photos models", "/System/Library/AssetsV2/com_apple_MobileAsset_UAF_*", "3.3 GB readable"),
+        ("Apple's language and image models", "/System/Library/AssetsV2/com_apple_MobileAsset_UAF_FM_*", "Protected; can't be measured"),
+    ],
+    "html": """
+        <h2>Can you delete Apple Intelligence from a Mac?</h2>
+        <p>Not the way you delete an app. Apple Intelligence is part of macOS, and its models are downloaded into <code>/System/Library/AssetsV2</code>, which System Integrity Protection guards. Even Terminal gets “Operation not permitted” when it tries to read the folders that hold the language and image models. Disabling System Integrity Protection to get at them isn't worth it: Apple's own settings warn that Apple Intelligence and other services may stop working when it's off.</p>
+        <p>What you can do is turn Apple Intelligence off, which is the supported way to tell macOS you don't want it.</p>
+
+        <h2 style="margin-top:56px">How to turn off Apple Intelligence on Mac</h2>
+        <ol class="steps">
+          <li><b>Open the settings.</b> Choose <strong>Apple menu › System Settings</strong>, then click <strong>Apple Intelligence &amp; Siri</strong> in the sidebar. On a Mac that doesn't support Apple Intelligence, the pane is just called Siri.</li>
+          <li><b>Turn it off.</b> Click the <strong>Apple Intelligence</strong> switch.</li>
+          <li><b>Confirm.</b> macOS warns that features like Writing Tools won't be available and Siri will stop using Apple Intelligence. Click <strong>Turn Off Apple Intelligence</strong>.</li>
+        </ol>
+        <p>Those are the labels on macOS 26.6. You can turn it back on at any time; macOS downloads the models again.</p>
+
+        <h2 style="margin-top:56px">How much storage Apple Intelligence uses</h2>
+        <p>Apple's support page for this year's releases says Apple Intelligence uses up to 8 GB of storage on most supported iPhone, iPad, and Mac models, and up to 14 GB on some newer devices. For macOS 26, Apple asked for 7 GB of available storage before it would turn on.</p>
+        <p>Here's what we could measure on one Mac with an M4 Pro running macOS 26.6, with Apple Intelligence on:</p>
+        {{PATHS}}
+        <p>The readable folders are Siri understanding (1.9 GB), text to speech (556 MB), speech recognition (409 MB), and the Photos Clean Up model (248 MB), among others. The language and image models themselves sit in folders macOS won't let anything outside the system read, so their size isn't something we can show you. Storage settings counts all of it under System Data.</p>
+
+        <h2 style="margin-top:56px">Does turning it off free the space?</h2>
+        <p>It's meant to: turning Apple Intelligence off tells macOS it can remove the models it downloaded for it. What Apple doesn't document is when that happens, so don't expect the space back the moment you flip the switch. Check <strong>System Settings › General › Storage</strong> after a restart and a day of normal use.</p>
+        <p>You also won't get every byte back. Some of the readable folders above belong to Siri, dictation, and translation, which work without Apple Intelligence, so expect those to stay. If you need the room urgently, the faster wins are elsewhere: local Time Machine snapshots, caches, and other apps' AI models. See <a href="/system-data">how to clear System Data</a> and <a href="/free-up-space-on-mac">how to free up space on Mac</a>.</p>
+        <p>Running your own models too? <a href="/ai-models/ollama">Ollama's models</a> are usually far bigger than Apple's, and you can delete those yourself.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast shows these models in <strong>System Data › Apple Intelligence and Siri models</strong>, with the total size and the biggest folders it can read, by name. Its <strong>Open Apple Intelligence &amp; Siri settings…</strong> button takes you straight to the switch. It never touches the files itself. Then it keeps forecasting when your disk will be full, so you can see whether the space came back. It&#39;s free.</p>
+    """,
+    "mockup": "system-data",
+    "related": ["/ai-models/ollama", "/what-is-system-data-on-mac", "/system-data"],
+    "faqs": [
+        ("Can I delete Apple Intelligence from my Mac?", "Not by deleting files. Its models live in a folder protected by System Integrity Protection. You can turn it off in System Settings › Apple Intelligence & Siri, which lets macOS remove the models it downloaded for it."),
+        ("How much storage does Apple Intelligence use on a Mac?", "Apple says up to 8 GB on most supported devices and up to 14 GB on some newer ones. For macOS 26, Apple required 7 GB of available storage to turn it on. Storage settings counts it under System Data."),
+        ("Does turning off Apple Intelligence free up storage?", "It lets macOS remove the Apple Intelligence models, but Apple doesn't say how quickly. Some Siri, dictation, and translation models stay because other features use them. Check Storage settings after a restart."),
+        ("Where does Apple Intelligence store its models?", "In /System/Library/AssetsV2, in folders that start with com_apple_MobileAsset_UAF. The language and image model folders are protected, so even Terminal can't read their size."),
+    ],
+}
+
+AI_TOOLS = [OLLAMA, APPLE_INTELLIGENCE]
 
 AI_MODELS_HUB = {
     "path": "/ai-models",
