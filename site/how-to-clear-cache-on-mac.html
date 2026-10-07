@@ -93,6 +93,7 @@
           <li><b>Move the big folders to the Trash.</b> Start with apps you recognize. Move the folders inside Caches, never the Caches folder itself.</li>
           <li><b>Empty the Trash a day later.</b> Use your Mac as usual first. If an app acts up, put its folder back. Otherwise, empty the Trash and the space is yours.</li>
         </ol>
+        <p>A few apps keep their cache somewhere else. Microsoft Teams, for one, keeps it inside its own containers: see <a href="/clear-cache/teams">how to clear Teams cache on Mac</a>.</p>
         <p>Want to know what else is filling the disk before you start? <a href="/how-to-check-storage-on-mac">Check your Mac's storage</a> first; caches are often only part of the story.</p>
 
         <h2 style="margin-top:56px">Is it safe to delete cache files on Mac?</h2>
@@ -119,6 +120,7 @@ brew cleanup --prune=all</code></pre>
 <pre><code>docker builder prune
 docker system prune</code></pre>
         <p>For Xcode, quit it, then move the folders inside <code>~/Library/Developer/Xcode/DerivedData</code> to the Trash; Xcode rebuilds them on the next build. Folders in <code>~/Library/Developer/Xcode/iOS DeviceSupport</code> come back when you plug that device in again. Simulator runtimes are bigger still, and they count toward System Data; <a href="/system-data">the System Data guide</a> covers removing them with <code>xcrun simctl</code>.</p>
+        <p>Every tool has its own page with the real path on a Mac, its flags, and what rebuilds: <a href="/clear-cache/npm">npm</a>, <a href="/clear-cache/yarn">Yarn</a>, <a href="/clear-cache/pip">pip</a>, <a href="/clear-cache/homebrew">Homebrew</a>, <a href="/clear-cache/docker">Docker</a>, <a href="/clear-cache/xcode">Xcode</a>, and more in <a href="/clear-cache">clear cache by tool</a>.</p>
     
       </div></div>
     </section>

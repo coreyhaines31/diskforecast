@@ -90,8 +90,8 @@ pip cache purge</code></pre>
           Each tool downloads what it needs again on the next install.</li>
           <li><b>Prune Docker.</b> If you use Docker, its own command removes stopped containers, unused networks, dangling images, and build cache:
 <pre><code>docker system prune</code></pre>
-          Add <code>-a</code> to also remove images no container is using. You'll download them again the next time you need them.</li>
-          <li><b>Turn off Apple Intelligence, if you don't use it.</b> In <strong>System Settings › Apple Intelligence &amp; Siri</strong>, switch it off, and macOS can remove the on-device models. Turn it back on any time; they'll download again.</li>
+          Add <code>-a</code> to also remove images no container is using. You'll download them again the next time you need them. <a href="/clear-cache/docker">Docker system prune, explained</a> covers every flag.</li>
+          <li><b>Turn off Apple Intelligence, if you don't use it.</b> In <strong>System Settings › Apple Intelligence &amp; Siri</strong>, switch it off, and macOS can remove the on-device models. Turn it back on any time; they'll download again. <a href="/ai-models/apple-intelligence">What turning it off does</a> has the details.</li>
           <li><b>Rebuild the Spotlight index.</b> If it's grown large, rebuilding often shrinks it:
 <pre><code>sudo mdutil -E /</code></pre>
           Search results will be incomplete for a while as it re-indexes.</li>

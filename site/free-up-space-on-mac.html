@@ -79,7 +79,8 @@
         <h2 style="margin-top:56px">If you write code</h2>
         <p>Developer Macs fill up differently. Build folders like <code>node_modules</code>, Xcode's DerivedData, simulator runtimes, package manager caches, Docker images, and local AI models add up fast. To list the <code>node_modules</code> folders in your home folder by size:</p>
 <pre><code>find ~ -name node_modules -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
-        <p>Delete the ones in projects you haven't touched in a while; <code>npm install</code> brings them back. For Ollama models, <code>ollama list</code> shows what you have and <code>ollama rm &lt;model&gt;</code> removes one.</p>
+        <p>Delete the ones in projects you haven't touched in a while; <code>npm install</code> brings them back. For Ollama models, <code>ollama list</code> shows what you have and <code>ollama rm &lt;model&gt;</code> removes one; <a href="/ai-models">delete local AI models</a> covers Ollama, LM Studio, and Hugging Face.</p>
+        <p>Package managers and build tools keep caches of their own, and each has a command to clear it. <a href="/clear-cache">Clear cache by tool</a> has a page for npm, Docker, Xcode, pip, and six more.</p>
 
         <h2 style="margin-top:56px">Your startup disk is almost full: what to do now</h2>
         <p>When free space gets critically low, macOS shows a warning: “Your disk is almost full,” or on older versions, “Your startup disk is almost full.” Its <strong>Manage</strong> button opens Storage settings. Take it seriously. With too little room, apps can't save, updates won't install, Messages warns that incoming messages may be lost, and macOS can't grow swap when memory runs short.</p>
