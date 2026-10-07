@@ -361,6 +361,75 @@ PAGES = [
             """},
         ],
     },
+    # ------------------------------------------------------------------ Mole
+    # Targets "mole mac" (350/mo US), "mole mac cleaner" (200), and "mole cleaner" (50). Facts, checked 2026-10-06:
+    # github.com/tw93/Mole README and API (GPL-3.0, 69,455 stars, V1.58.0 on 2026-10-05), and mole.fit (the $19 app).
+    {
+        "slug": "mole",
+        "competitor": "Mole",
+        "title": "Mole Mac cleaner, compared with a free alternative",
+        "description": "Mole is a free, open-source Mac cleaner you run in Terminal, plus a $19 app. Disk Forecast is a free menu bar app that warns weeks before your disk fills.",
+        "eyebrow": "Mole alternative",
+        "h1": "The Mole Mac cleaner works in Terminal. Disk Forecast <em>works from the menu bar.</em>",
+        "lede": "Mole, by tw93, is one of the most popular Mac tools on GitHub, with about 69,000 stars. It's a free, open-source command-line cleaner, plus a separate paid Mac app. Disk Forecast overlaps with part of it, and adds the part Mole doesn't lead with: telling you when you'll run out.",
+        "tldr": "Pick Mole if you live in Terminal and want one command that cleans caches, uninstalls apps, and shows live system stats. Pick Disk Forecast if you want a menu bar countdown to a full disk, System Data explained with Apple's own fixes, and every cleanup sent to the Trash. Both are free, and they don't conflict.",
+        "card_title": "Mole",
+        "card_blurb": "The popular open-source cleaner you run in Terminal.",
+        "cta": "Know before it's full.",
+        "faqs": [
+            ("What is Mole for Mac?", "A command-line Mac cleaner by tw93 on GitHub. Its mo command cleans caches and logs, uninstalls apps with their leftovers, removes build folders, finds old installers, explores disk usage, and shows live system stats. It's licensed under GPL-3.0."),
+            ("Is Mole free?", "The command-line tool is free and open source under GPL-3.0. Mole for Mac, a separate native app, is $19 once for two Macs; scanning is free, and each paid tool works twice without a license."),
+            ("Is Mole safe?", "Its README describes path checks, protected system locations, a --dry-run preview for every command that deletes, a whitelist, and an operations log. mo analyze moves items to the Trash, while mo purge permanently deletes the build folders you confirm. Run --dry-run first."),
+            ("How do I install Mole?", "With Homebrew: brew install mole. It needs macOS 12 or later and runs on Apple silicon and Intel. The Homebrew formula installs the command-line tool only, not the paid app."),
+            ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+        ],
+        "sections": [
+            {"id": "why", "html": """
+        <h2>What Mole does well</h2>
+        <p>Mole puts several Mac utilities into one terminal command, <code>mo</code>. Its README says it combines “CleanMyMac, AppCleaner, DaisyDisk, and iStat Menus style workflows in a single terminal binary.”</p>
+        <ul>
+          <li><code>mo clean</code> clears caches, logs, temporary files, and leftovers from apps you've removed.</li>
+          <li><code>mo uninstall</code> removes an app together with its launch agents and preferences.</li>
+          <li><code>mo purge</code> finds build folders like <code>node_modules</code> and <code>target</code>, grouped by project.</li>
+          <li><code>mo analyze</code> is a disk explorer in the terminal, and <code>mo status</code> is a live dashboard of CPU, memory, disk, and network.</li>
+        </ul>
+        <p>It's careful for a cleaner. Every command that deletes takes <code>--dry-run</code>, you can whitelist caches you want to keep, and it logs what it did. It's open source under GPL-3.0, it ships often (version 1.58.0 came out on October 5, 2026), and it runs on macOS 12 or later, on Apple silicon and Intel.</p>
+        <h3>Where it stops</h3>
+        <p><strong>It runs when you run it.</strong> Mole is a tool you reach for. Nothing in the command-line tool watches the disk between runs, so the first sign of trouble is still macOS saying your disk is almost full.</p>
+        <p><strong>Not everything goes to the Trash.</strong> <code>mo analyze</code> moves what you pick to the Trash, but <code>mo purge</code> “permanently deletes only the items you confirm.” Disk Forecast sends everything it clears to the Trash, so you can change your mind until you empty it.</p>
+        <p><strong>A different first question.</strong> Mole starts with what it can clean. Disk Forecast starts with when you'll run out, then breaks System Data into local snapshots, simulators, the Spotlight index, Apple Intelligence and Siri models, and Docker, and runs Apple's own tool for each fix after showing you the command.</p>
+            """},
+            {"id": "compare", "lit": True, "html": """
+        <h2>Disk Forecast vs Mole</h2>
+        <p>Mole facts come from its GitHub README and releases, and from mole.fit, as of October 2026.</p>
+        {{TABLE}}
+        <h3>What Mole does better</h3>
+        <p>Breadth in one command. An uninstaller, a maintenance command that refreshes caches and system services, live system stats, and scripting from Terminal, Raycast, or Alfred. If you want one tool for all of it, Mole is a strong free choice.</p>
+        <h3>What Disk Forecast does better</h3>
+        <p>Warning you ahead of time, explaining every item in plain English, and making every cleanup reversible until you empty the Trash. It's a Mac app you never have to remember to run.</p>
+            """, "table": [
+                ("Price", "Free", "Free command-line tool; Mac app $19 once for 2 Macs"),
+                ("Where it runs", "Menu bar app", "Terminal, plus a separate paid app"),
+                ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
+                ("System Data broken down", "Every part, in plain English, with Apple's fixes", "—"),
+                ("Cleanup sorted by risk", "Yes", "—"),
+                ("Deletes go to the Trash", "Yes, always", "Some commands; purge deletes permanently"),
+                ("Preview before deleting", "Every item listed and explained", "Yes, with --dry-run"),
+                ("Uninstalls apps", "No", "Yes"),
+                ("Live CPU and memory stats", "No", "Yes"),
+                ("Source available", "Yes, on GitHub", "Yes, GPL-3.0 (command-line tool)"),
+            ]},
+            {"id": "switch", "html": """
+        <h2>Using them together</h2>
+        <ol class="steps">
+          <li><b>Install Disk Forecast.</b> <code>brew install --cask coreyhaines31/tap/diskforecast</code>, or download the app from GitHub.</li>
+          <li><b>Let it watch.</b> Free space shows in the menu bar right away, and the forecast appears after 3 days of history.</li>
+          <li><b>Clear what's safe when it's time.</b> “Safe to clear” is everything that rebuilds on its own: caches, logs, Xcode DerivedData, and build folders in projects you haven't touched in 30 days. It all goes to the Trash.</li>
+          <li><b>Keep Mole for the rest.</b> Uninstalling apps and checking system stats are Mole's jobs, not Disk Forecast's. Run its <code>--dry-run</code> first.</li>
+        </ol>
+            """},
+        ],
+    },
 ]
 
 HUB = {
