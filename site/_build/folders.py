@@ -196,7 +196,70 @@ MESSAGES = {
     ],
 }
 
-FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES]
+# ------------------------------------------------------------------ Dropbox
+# "dropbox taking up space on mac" 150 / KD 0, "dropbox files taking up space on mac" 80. Dropbox isn't installed on the
+# measuring Mac; ~/Library/CloudStorage holds Google Drive and iCloud Drive there. "Remove Download", "Download Now", and
+# "Keep Downloaded" are Finder's own File Provider strings. Dropbox's menu labels come from Dropbox's help, not this Mac.
+DROPBOX = {
+    "slug": "dropbox",
+    "title": "Dropbox taking up space on Mac: online-only, explained",
+    "description": "Why Dropbox takes up space on a Mac, where its folder lives in ~/Library/CloudStorage, and how to make files online-only so they stay in the cloud.",
+    "h1": "Dropbox taking up space on Mac, <em>and how to stop it.</em>",
+    "lede": "Dropbox can keep every file on your Mac, or only the ones you use. When it's taking up more space than you expect, it's almost always because files are downloaded. Here's how to tell, and how to send them back to the cloud.",
+    "tldr": "On current versions, Dropbox keeps its folder in <code>~/Library/CloudStorage</code>, using Apple's File Provider. Files can be <strong>online-only</strong>, which take almost no space, or <strong>available offline</strong>, which are fully downloaded. To reclaim space, Control-click big folders in Finder and make them online-only. Don't delete them: deleting a file in Dropbox deletes it from your Dropbox everywhere.",
+    "card_title": "Dropbox",
+    "card_blurb": "Online-only vs available offline, and where the folder lives.",
+    "finds_title": "Disk Forecast and Dropbox",
+    "paths": [
+        ("Dropbox, on Apple's File Provider", "~/Library/CloudStorage/Dropbox", "Not installed on the Mac we measured"),
+        ("Dropbox, older setups", "~/Dropbox", "An ordinary folder"),
+    ],
+    "html": """
+        <h2>Where Dropbox stores files on a Mac</h2>
+        <p>Dropbox for macOS now runs on File Provider, the same system iCloud Drive and Google Drive use. Its folder moved into your Library, and it shows in Finder's sidebar under <strong>Locations</strong>. Some Macs that installed Dropbox years ago still have it at <code>~/Dropbox</code> until Dropbox moves it.</p>
+        {{PATHS}}
+        <p>Dropbox isn't installed on the Mac this page was written on, so there's no measured size. That Mac's <code>CloudStorage</code> folder holds Google Drive and iCloud Drive, which work the same way.</p>
+
+        <h2 style="margin-top:56px">What online-only means in Dropbox</h2>
+        <ul>
+          <li><strong>Online-only</strong> files show in Finder with their full name and size, but only a placeholder is on your Mac. Opening one downloads it.</li>
+          <li><strong>Available offline</strong> files are fully downloaded and stay that way. They take their full size on disk.</li>
+          <li><strong>Files you've opened</strong> from online-only are downloaded too, and can stay on your Mac afterward.</li>
+        </ul>
+        <p>That last one is why Dropbox grows on a Mac where you set everything to online-only. Every file you open comes down, and a few big video or design files undo the setting.</p>
+        <div class="callout"><p><strong>Finder's size column doesn't tell you.</strong> Finder lists online-only files at their full size, even though they take almost nothing on disk. To see what's really downloaded, run <code>du -sh ~/Library/CloudStorage/Dropbox</code> in Terminal. macOS may ask Terminal for permission first.</p></div>
+
+        <h2 style="margin-top:56px">How to free up space from Dropbox on Mac</h2>
+        <ol class="steps">
+          <li><b>Find the big folders.</b> In Dropbox's folder, use <strong>View › as List</strong> and look for folders with a downloaded icon, not a cloud icon.</li>
+          <li><b>Make them online-only.</b> Control-click a folder and choose <strong>Make online-only</strong>. Depending on your version, Finder may show its own <strong>Remove Download</strong> instead; it does the same thing. The files stay in Dropbox, and download again when you open them.</li>
+          <li><b>Check the default.</b> Dropbox's settings decide whether new files start online-only or downloaded. If yours downloads everything, change it in the Dropbox app, or the space comes back as files sync.</li>
+        </ol>
+        <p>The menu labels in step 2 come from Dropbox's own help, not from a Mac running Dropbox, so yours may differ slightly. <strong>Download Now</strong> and <strong>Keep Downloaded</strong> are Finder's options for the other direction.</p>
+
+        <h2 style="margin-top:56px">What not to do</h2>
+        <ul>
+          <li><strong>Don't move files to the Trash to save space.</strong> Deleting a file in your Dropbox folder deletes it from Dropbox on every device. You can usually restore it from deleted files on dropbox.com, for a time that depends on your plan.</li>
+          <li><strong>Don't delete the CloudStorage folder.</strong> It's where every File Provider app keeps its files. Quit or uninstall the app that owns a folder instead.</li>
+          <li><strong>Don't pause syncing and forget.</strong> Paused files that haven't uploaded only exist on this Mac.</li>
+        </ul>
+        <p>iCloud Drive works the same way, with Apple's own setting to do it automatically: see <a href="/taking-up-space/icloud-drive">iCloud Drive taking up space</a>. Other big folders: <a href="/taking-up-space/messages">Messages</a> and <a href="/taking-up-space/developer-files">developer files</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast never scans Dropbox, or any cloud drive in <code>~/Library/CloudStorage</code>. Each one asks for its own permission, and their files mostly live online, so the app leaves them alone, with or without Full Disk Access. It won&#39;t make files online-only for you either: that&#39;s Dropbox&#39;s job. What it shows is your free space every hour and when you&#39;ll run out, so you&#39;ll see the space come back after you make folders online-only, and notice if it starts filling again. It&#39;s free.</p>
+    """,
+    "mockup": "forecast",
+    "related": ["/taking-up-space/icloud-drive", "/taking-up-space/messages", "/taking-up-space/developer-files"],
+    "faqs": [
+        ("Why is Dropbox taking up space on my Mac?", "Because some files are downloaded: folders set to available offline, and online-only files you've opened. Each takes its full size on disk. Make big folders online-only in Finder to send them back to the cloud."),
+        ("Where is the Dropbox folder on a Mac?", "On current versions, in ~/Library/CloudStorage/Dropbox, shown under Locations in Finder's sidebar. Older setups may still have it at ~/Dropbox."),
+        ("What's the difference between online-only and available offline in Dropbox?", "Online-only files are placeholders that download when you open them and take almost no space. Available offline files are fully downloaded and stay on your Mac."),
+        ("Will deleting Dropbox files free up space on my Mac?", "It will, but it deletes them from Dropbox on every device too. To reclaim space and keep the files, make them online-only instead."),
+        ("Why does Finder show Dropbox files at full size?", "Finder lists online-only files at the size they are in the cloud. Run du -sh on the Dropbox folder in Terminal to see how much is really downloaded."),
+    ],
+}
+
+FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX]
 
 TAKING_UP_SPACE_HUB = {
     "path": "/taking-up-space",
