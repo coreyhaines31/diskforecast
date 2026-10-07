@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clear Xcode cache on Mac: DerivedData, simulators, and more</title>
+  <meta name="description" content="How to clear Xcode cache on Mac: delete DerivedData, old device support, and simulator runtimes, what each rebuilds, and the archives you may want to keep.">
+  <link rel="canonical" href="https://diskforecast.com/clear-cache/xcode">
+  <meta property="og:title" content="Clear Xcode cache on Mac: DerivedData, simulators, and more">
+  <meta property="og:description" content="How to clear Xcode cache on Mac: delete DerivedData, old device support, and simulator runtimes, what each rebuilds, and the archives you may want to keep.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/clear-cache/xcode">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Clear Xcode cache on Mac: DerivedData, simulators, and more">
+  <meta name="twitter:description" content="How to clear Xcode cache on Mac: delete DerivedData, old device support, and simulator runtimes, what each rebuilds, and the archives you may want to keep.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>How to clear Xcode cache on Mac, <em>folder by folder.</em></h1>
+        <p class="lede">Xcode spreads its storage across several folders, and DerivedData usually isn't the biggest. Here's each one, what it holds, and what happens when you delete it.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Quit Xcode, then move the folders inside <code>~/Library/Developer/Xcode/DerivedData</code> to the Trash; Xcode rebuilds them on the next build. The bigger wins are usually simulator runtimes, which you delete in <strong>Xcode › Settings › Components</strong> or with <code>xcrun simctl runtime delete</code>, and folders in <code>iOS DeviceSupport</code> for devices you no longer plug in.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>Xcode storage: where it goes</h2>
+        <p>Here's every folder that grows as you use Xcode, measured on one developer Mac running Xcode 27 in October 2026:</p>
+                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
+            <tr><th scope="row">DerivedData</th><td><code>~/Library/Developer/Xcode/DerivedData</code></td><td>1.7 GB</td></tr>
+            <tr><th scope="row">Device support</th><td><code>~/Library/Developer/Xcode/iOS DeviceSupport</code></td><td>4.3 GB</td></tr>
+            <tr><th scope="row">Simulators and their apps</th><td><code>~/Library/Developer/CoreSimulator/Devices</code></td><td>10 GB, 22 simulators</td></tr>
+            <tr><th scope="row">Simulator runtimes</th><td>Managed by macOS; <code>xcrun simctl runtime list</code></td><td>15.7 GB, 2 iOS runtimes</td></tr>
+            <tr><th scope="row">Archives</th><td><code>~/Library/Developer/Xcode/Archives</code></td><td>None</td></tr>
+          </tbody></table></div></div>
+        <p>DerivedData was the smallest of the big ones. That's typical: it gets the attention, but simulators and device support usually take more. Check yours with <code>du -sh ~/Library/Developer/Xcode/* ~/Library/Developer/CoreSimulator</code>.</p>
+
+        <h2 style="margin-top:56px">How to delete DerivedData in Xcode</h2>
+        <p>DerivedData holds build products, intermediate files, and the index Xcode uses for code completion and search, one folder per project. It's always safe to delete. Xcode rebuilds it, and the cost is one slow build and a few minutes of indexing.</p>
+        <ol class="steps">
+          <li><b>For one project:</b> choose <strong>Product › Clean Build Folder</strong>, or press Shift-Command-K. That removes the project's build products, not its index.</li>
+          <li><b>For everything:</b> quit Xcode, open <code>~/Library/Developer/Xcode/DerivedData</code> in Finder with <strong>Go › Go to Folder</strong>, and move the folders inside it to the Trash.</li>
+          <li><b>To find the folder from Xcode:</b> <strong>Xcode › Settings › Locations</strong> shows the DerivedData path, with an arrow that opens it in Finder.</li>
+        </ol>
+
+        <h2 style="margin-top:56px">Device support, simulators, and archives</h2>
+        <ul>
+          <li><strong>Device support.</strong> When you plug in an iPhone, Apple Watch, or Apple TV, Xcode copies debug symbols for its OS version into <code>iOS DeviceSupport</code> (and <code>watchOS</code>, <code>tvOS</code>, or <code>visionOS DeviceSupport</code>). Each version is a few gigabytes, and old ones never leave. Delete folders for OS versions you no longer debug on; Xcode copies them again the next time that device connects.</li>
+          <li><strong>Simulator runtimes.</strong> Each iOS runtime is several gigabytes, and Xcode keeps old ones after updates. Delete them in <strong>Xcode › Settings › Components</strong>, or in Terminal:
+<pre><code>xcrun simctl runtime list
+xcrun simctl runtime delete &lt;identifier&gt;
+xcrun simctl delete unavailable</code></pre>
+          The last command removes simulators whose runtime is gone, which can't run anyway. Runtimes count toward System Data, not toward any folder you can see.</li>
+          <li><strong>Archives.</strong> Builds you archived for App Store or TestFlight, in <strong>Window › Organizer</strong>. They hold the symbols for reading crash reports from that release, so keep the ones for versions people still run.</li>
+        </ul>
+        <p>Simulators also keep caches in <code>~/Library/Developer/CoreSimulator/Caches</code>, which the Simulator rebuilds on its own. The simulators themselves, with every app you've installed on them, are in <code>CoreSimulator/Devices</code>; erase or delete ones you don't use from Xcode's <strong>Window › Devices and Simulators</strong>.</p>
+
+        <h2 style="margin-top:56px">How big Xcode gets</h2>
+        <p>Xcode itself is several gigabytes, and everything above comes on top. On the developer Mac measured here, the folders in the table added up to about 32 GB. A Mac that has followed iOS betas for a few years, with several devices plugged in, can easily pass 100 GB.</p>
+
+        <h2 style="margin-top:56px">Build folders outside Xcode</h2>
+        <p>Swift packages built from the command line keep their output in a <code>.build</code> folder beside <code>Package.swift</code>; <code>swift package clean</code> empties it, or delete the folder. Projects using CocoaPods have a <code>Pods</code> folder that <code>pod install</code> rebuilds. Packages Xcode resolves for an app project live in DerivedData, so clearing it clears them too.</p>
+        <p>For simulators in System Data, see <a href="/system-data">how to clear System Data</a>. Or browse <a href="/clear-cache">every tool's cache</a>, like <a href="/clear-cache/docker">Docker</a> and <a href="/clear-cache/homebrew">Homebrew</a>.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Disk Forecast finds this for you</h2>
+
+          <p>Disk Forecast lists each Xcode folder on its own row. Under <strong>Cleanup › Safe to clear</strong>: <strong>Xcode DerivedData</strong>, <strong>Xcode device support</strong> (iOS, watchOS, tvOS, and visionOS), and <strong>Simulator caches</strong>. Under <strong>Worth a look</strong>: <strong>Xcode archives</strong>, unchecked. Swift <code>.build</code> folders and CocoaPods show up under the build folder rows. Simulators are in <strong>System Data › Simulators</strong>, with each runtime&#39;s size and a button that runs <code>xcrun simctl runtime delete</code> after you confirm. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="stage glass">
+          <div class="mk mk-win" role="img" aria-label="The Disk Forecast Cleanup window, headed Reclaim space. Safe to clear, 12.4 GB, all checked: build folders in old projects, package manager caches, app caches, Xcode device support, Xcode DerivedData, and logs. Worth a look, 47 GB, unchecked: Ollama models, build folders in active projects, the Docker disk image, big downloads, and disk images and installers. The footer reads 12.4 GB selected, with Open Trash and Move to Trash buttons.">
+              <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">Cleanup</div></div>
+              <div class="mk-hdr"><div><b>Reclaim space</b><span>1,284,906 files measured in 9 s. Everything goes to the Trash first.</span></div><div class="mk-pill">Rescan</div></div>
+              <div class="mk-list">
+                <div class="mk-sec"><span>Safe to clear</span><span>12.4 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Build folders in old projects</b><span>node_modules, build, and package folders in projects you haven't changed in 30+ days. Reinstalling or rebuilding brings them back.</span></div><span class="sz">4.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Package manager caches</b><span>Downloads kept by npm, pnpm, Bun, Cargo, Gradle, pip, and friends so installs are faster. They fill back up as you install packages.</span></div><span class="sz">3.1 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>App caches</b><span>Files apps keep to load things faster. Apps recreate what they need. macOS's own caches are left alone.</span></div><span class="sz">2.2 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode device support</b><span>Debug symbols copied from devices you've plugged in. Xcode copies them again when you connect that device.</span></div><span class="sz">1.3 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode DerivedData</b><span>Xcode's build products and indexes. Xcode rebuilds them the next time you build.</span></div><span class="sz">812 MB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Logs</b><span>Records apps write about what they did. Useful for troubleshooting, then rarely read again.</span></div><span class="sz">402 MB</span></div>
+                <div class="mk-sec"><span>Worth a look</span><span>47 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Ollama models</b><span>Local AI models downloaded by Ollama. Running ollama pull downloads one again, and ollama rm removes a single model.</span></div><span class="sz">18 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Build folders in active projects</b><span>Build and package folders in projects you've changed recently. Safe to remove, but you'll wait for a reinstall or rebuild next time.</span></div><span class="sz">9.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><svg class="mk-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-2.5z"/></svg><div class="txt"><b>Docker disk image</b><span>Everything Docker stores: images, containers, and volumes, in one file. Reclaim space with Docker's own cleanup in System Data, not by deleting the file.</span><div class="mk-pill">Reclaim in System Data…</div></div><span class="sz">8.4 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Big downloads</b><span>Large files and folders in Downloads. Most were needed once.</span></div><span class="sz">5.9 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Disk images and installers</b><span>DMG, ISO, and PKG files. Once an app is installed, its installer is usually not needed.</span></div><span class="sz">4.7 GB</span></div>
+              </div>
+              <div class="mk-foot"><span>12.4 GB selected</span><div class="mk-pill">Open Trash</div><div class="mk-pill blue">Move to Trash…</div></div>
+            </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>How do I clear the Xcode cache?</summary><p>Quit Xcode and move the folders inside ~/Library/Developer/Xcode/DerivedData to the Trash. For one project, choose Product › Clean Build Folder. To reclaim more, delete old simulator runtimes in Xcode › Settings › Components and old folders in iOS DeviceSupport.</p></details>
+          <details><summary>Is it safe to delete DerivedData?</summary><p>Yes. It holds build products and the index, and Xcode rebuilds both. The next build is slower and indexing runs again, but no source code or settings are affected.</p></details>
+          <details><summary>Where is DerivedData on a Mac?</summary><p>In ~/Library/Developer/Xcode/DerivedData by default. Xcode › Settings › Locations shows the current path and can open it in Finder.</p></details>
+          <details><summary>Why does Xcode take so much storage?</summary><p>Simulator runtimes and device support files add up: each iOS runtime and each device OS version is several gigabytes, and Xcode keeps old ones after updates. DerivedData and archives add more.</p></details>
+          <details><summary>Can I delete iOS DeviceSupport folders?</summary><p>Yes. They&#x27;re debug symbols copied from devices you&#x27;ve connected. Xcode copies them again the next time you connect a device running that OS version.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/clear-cache/docker"><b>Docker</b><span>docker system prune, build cache, and the Docker.raw file.</span></a>
+          <a class="glass" href="/clear-cache/homebrew"><b>Homebrew</b><span>brew cleanup, --prune=all, and brew --cache.</span></a>
+          <a class="glass" href="/system-data"><b>How to clear System Data</b><span>The step-by-step guide, using only Apple&#x27;s own tools.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear the Xcode cache?", "acceptedAnswer": {"@type": "Answer", "text": "Quit Xcode and move the folders inside ~/Library/Developer/Xcode/DerivedData to the Trash. For one project, choose Product \u203a Clean Build Folder. To reclaim more, delete old simulator runtimes in Xcode \u203a Settings \u203a Components and old folders in iOS DeviceSupport."}}, {"@type": "Question", "name": "Is it safe to delete DerivedData?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It holds build products and the index, and Xcode rebuilds both. The next build is slower and indexing runs again, but no source code or settings are affected."}}, {"@type": "Question", "name": "Where is DerivedData on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Developer/Xcode/DerivedData by default. Xcode \u203a Settings \u203a Locations shows the current path and can open it in Finder."}}, {"@type": "Question", "name": "Why does Xcode take so much storage?", "acceptedAnswer": {"@type": "Answer", "text": "Simulator runtimes and device support files add up: each iOS runtime and each device OS version is several gigabytes, and Xcode keeps old ones after updates. DerivedData and archives add more."}}, {"@type": "Question", "name": "Can I delete iOS DeviceSupport folders?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. They're debug symbols copied from devices you've connected. Xcode copies them again the next time you connect a device running that OS version."}}]}</script>
+</body>
+</html>

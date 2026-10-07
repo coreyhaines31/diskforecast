@@ -396,6 +396,6 @@ section.tight { padding: clamp(56px, 8vw, 96px) 0 0; }
   .prose .compare th, .prose .compare td { padding: 11px 8px; }
   .prose .table-card { padding: 2px 8px; }
 }
-.prose :not(pre) > code { overflow-wrap: anywhere; }
+.prose :not(pre) > code, .tldr code { overflow-wrap: anywhere; }
 .mk-foot > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 760px) { .mk-foot { gap: 6px; } .mk-foot > span { font-size: 11.5px; } .mk-foot .mk-pill { padding: 4px 9px; font-size: 11px; } }

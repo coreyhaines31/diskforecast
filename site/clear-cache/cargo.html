@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>cargo clean: how to clear Cargo cache on Mac</title>
+  <meta name="description" content="How to clear Cargo cache on Mac: cargo clean for a project&#x27;s target folder, what ~/.cargo/registry holds, and the cleanup Cargo does on its own since 1.88.">
+  <link rel="canonical" href="https://diskforecast.com/clear-cache/cargo">
+  <meta property="og:title" content="cargo clean: how to clear Cargo cache on Mac">
+  <meta property="og:description" content="How to clear Cargo cache on Mac: cargo clean for a project&#x27;s target folder, what ~/.cargo/registry holds, and the cleanup Cargo does on its own since 1.88.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/clear-cache/cargo">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="cargo clean: how to clear Cargo cache on Mac">
+  <meta name="twitter:description" content="How to clear Cargo cache on Mac: cargo clean for a project&#x27;s target folder, what ~/.cargo/registry holds, and the cleanup Cargo does on its own since 1.88.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>cargo clean on Mac, <em>and what it misses.</em></h1>
+        <p class="lede">In Rust, the big folder is almost never the shared cache. It's the target folder in every project you've built. Here's how to clear each, and what Cargo now clears on its own.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Run <code>cargo clean</code> in a project to delete its <code>target</code> folder, which is usually the biggest thing Rust leaves on your disk. For the shared cache of downloaded crates, move <code>~/.cargo/registry/cache</code> and <code>~/.cargo/registry/src</code> to the Trash; Cargo downloads what it needs again. Leave <code>~/.cargo/bin</code> alone: that's where <code>cargo</code> and your installed tools live.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>Where Cargo keeps its cache on a Mac</h2>
+        <p>Cargo's home is <code>~/.cargo</code>, or wherever <code>CARGO_HOME</code> points. Build output doesn't go there: it goes in a <code>target</code> folder inside each project.</p>
+                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
+            <tr><th scope="row">Each project&#x27;s build output</th><td><code>your-project/target</code></td><td>Per project</td></tr>
+            <tr><th scope="row">Downloaded crates</th><td><code>~/.cargo/registry/cache</code></td><td>Not installed on the Mac we measured</td></tr>
+            <tr><th scope="row">Unpacked crate source</th><td><code>~/.cargo/registry/src</code></td><td>Not installed on the Mac we measured</td></tr>
+            <tr><th scope="row">Git dependencies</th><td><code>~/.cargo/git</code></td><td>Not installed on the Mac we measured</td></tr>
+          </tbody></table></div></div>
+        <p>Rust isn't installed on the Mac this page was written on, so there are no measured sizes here. Check yours with:</p>
+<pre><code>du -sh ~/.cargo/registry ~/.cargo/git 2>/dev/null
+find ~ -name target -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
+        <p>Not every folder named <code>target</code> is Rust's: check for a <code>Cargo.toml</code> beside it before you delete one.</p>
+
+        <h2 style="margin-top:56px">What cargo clean deletes</h2>
+<pre><code>cargo clean                  # the whole target folder
+cargo clean --release        # only target/release
+cargo clean --doc            # only target/doc
+cargo clean -p some-crate    # one package's artifacts</code></pre>
+        <p><code>cargo clean</code> removes compiled dependencies, incremental compilation data, and your binaries for that one project. It's safe: <code>cargo build</code> makes it all again, which can take minutes for a project with many dependencies. It doesn't touch <code>~/.cargo</code>.</p>
+        <p>Why <code>target</code> gets so big: it keeps separate builds for debug and release, for every target triple you build, and incremental data for every crate. Changing compiler versions or features adds more rather than replacing. A medium project's <code>target</code> folder is often several gigabytes, and tens of gigabytes isn't unusual.</p>
+
+        <h2 style="margin-top:56px">How to clear Cargo cache in ~/.cargo</h2>
+        <ul>
+          <li><strong><code>registry/cache</code>: safe.</strong> The compressed <code>.crate</code> file for every crate version you've downloaded.</li>
+          <li><strong><code>registry/src</code>: safe.</strong> Those crates unpacked. Cargo unpacks them again from the cache, or downloads them.</li>
+          <li><strong><code>git</code>: safe.</strong> Clones of dependencies that point at a git repository. Cargo clones them again.</li>
+          <li><strong><code>bin</code>: keep.</strong> <code>cargo</code>, <code>rustc</code> shims from rustup, and everything you installed with <code>cargo install</code>.</li>
+        </ul>
+        <p>Cargo has no stable command to clear its home folder, so moving those folders to the Trash is the usual way. Do it with no build running. Toolchains themselves live in <code>~/.rustup/toolchains</code>; remove old ones with <code>rustup toolchain uninstall</code>.</p>
+
+        <h2 style="margin-top:56px">How big the Cargo cache gets</h2>
+        <p>Less than it used to. Since Rust 1.88, Cargo cleans its own cache automatically: it removes downloaded files it hasn't used in three months, and unpacked files it hasn't used in one month. So <code>~/.cargo/registry</code> usually holds a gigabyte or two. The <code>target</code> folders are another story: nothing cleans those, so ten old projects can mean tens of gigabytes. <code>cargo-sweep</code>, a third-party tool, can remove only the stale parts of a <code>target</code> folder if you'd rather not rebuild from scratch.</p>
+        <p>Also writing Go? See <a href="/clear-cache/go">go clean -cache</a>. Or <a href="/clear-cache/gradle">Gradle</a>, and <a href="/clear-cache">every tool's cache</a>.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Disk Forecast finds this for you</h2>
+
+          <p>Disk Forecast finds <code>target</code> folders only where a <code>Cargo.toml</code> sits beside them, so a folder that just happens to be called target is never listed. They appear as Rust build folders under <strong>Cleanup › Safe to clear › Build folders in old projects</strong> after 30 days without changes, or under <strong>Build folders in active projects</strong> before that. <code>~/.cargo/registry</code> is under <strong>Package manager caches</strong>. Everything goes to the Trash. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="stage glass">
+          <div class="mk mk-win" role="img" aria-label="The Disk Forecast Cleanup window, headed Reclaim space. Safe to clear, 12.4 GB, all checked: build folders in old projects, package manager caches, app caches, Xcode device support, Xcode DerivedData, and logs. Worth a look, 47 GB, unchecked: Ollama models, build folders in active projects, the Docker disk image, big downloads, and disk images and installers. The footer reads 12.4 GB selected, with Open Trash and Move to Trash buttons.">
+              <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">Cleanup</div></div>
+              <div class="mk-hdr"><div><b>Reclaim space</b><span>1,284,906 files measured in 9 s. Everything goes to the Trash first.</span></div><div class="mk-pill">Rescan</div></div>
+              <div class="mk-list">
+                <div class="mk-sec"><span>Safe to clear</span><span>12.4 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Build folders in old projects</b><span>node_modules, build, and package folders in projects you haven't changed in 30+ days. Reinstalling or rebuilding brings them back.</span></div><span class="sz">4.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Package manager caches</b><span>Downloads kept by npm, pnpm, Bun, Cargo, Gradle, pip, and friends so installs are faster. They fill back up as you install packages.</span></div><span class="sz">3.1 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>App caches</b><span>Files apps keep to load things faster. Apps recreate what they need. macOS's own caches are left alone.</span></div><span class="sz">2.2 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode device support</b><span>Debug symbols copied from devices you've plugged in. Xcode copies them again when you connect that device.</span></div><span class="sz">1.3 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode DerivedData</b><span>Xcode's build products and indexes. Xcode rebuilds them the next time you build.</span></div><span class="sz">812 MB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Logs</b><span>Records apps write about what they did. Useful for troubleshooting, then rarely read again.</span></div><span class="sz">402 MB</span></div>
+                <div class="mk-sec"><span>Worth a look</span><span>47 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Ollama models</b><span>Local AI models downloaded by Ollama. Running ollama pull downloads one again, and ollama rm removes a single model.</span></div><span class="sz">18 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Build folders in active projects</b><span>Build and package folders in projects you've changed recently. Safe to remove, but you'll wait for a reinstall or rebuild next time.</span></div><span class="sz">9.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><svg class="mk-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-2.5z"/></svg><div class="txt"><b>Docker disk image</b><span>Everything Docker stores: images, containers, and volumes, in one file. Reclaim space with Docker's own cleanup in System Data, not by deleting the file.</span><div class="mk-pill">Reclaim in System Data…</div></div><span class="sz">8.4 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Big downloads</b><span>Large files and folders in Downloads. Most were needed once.</span></div><span class="sz">5.9 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Disk images and installers</b><span>DMG, ISO, and PKG files. Once an app is installed, its installer is usually not needed.</span></div><span class="sz">4.7 GB</span></div>
+              </div>
+              <div class="mk-foot"><span>12.4 GB selected</span><div class="mk-pill">Open Trash</div><div class="mk-pill blue">Move to Trash…</div></div>
+            </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>What does cargo clean do?</summary><p>It deletes the target folder of the current project: compiled dependencies, incremental data, and binaries. cargo build recreates it. It doesn&#x27;t touch ~/.cargo or other projects.</p></details>
+          <details><summary>How do I clear the Cargo cache?</summary><p>Move ~/.cargo/registry/cache, ~/.cargo/registry/src, and ~/.cargo/git to the Trash with no build running. Cargo downloads crates again as needed. Keep ~/.cargo/bin, which holds cargo and installed tools.</p></details>
+          <details><summary>Is it safe to delete the Rust target folder?</summary><p>Yes. It only holds build output, and cargo build makes it again. The next build of that project takes as long as a first build.</p></details>
+          <details><summary>Does Cargo clean its cache automatically?</summary><p>Since Rust 1.88, yes: Cargo removes downloaded files unused for three months and unpacked files unused for one month from its home folder. It never cleans target folders.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/clear-cache/go"><b>Go</b><span>go clean -cache, -modcache, and where GOCACHE lives.</span></a>
+          <a class="glass" href="/clear-cache/gradle"><b>Gradle</b><span>~/.gradle caches, wrapper downloads, and build folders.</span></a>
+          <a class="glass" href="/clear-cache/homebrew"><b>Homebrew</b><span>brew cleanup, --prune=all, and brew --cache.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does cargo clean do?", "acceptedAnswer": {"@type": "Answer", "text": "It deletes the target folder of the current project: compiled dependencies, incremental data, and binaries. cargo build recreates it. It doesn't touch ~/.cargo or other projects."}}, {"@type": "Question", "name": "How do I clear the Cargo cache?", "acceptedAnswer": {"@type": "Answer", "text": "Move ~/.cargo/registry/cache, ~/.cargo/registry/src, and ~/.cargo/git to the Trash with no build running. Cargo downloads crates again as needed. Keep ~/.cargo/bin, which holds cargo and installed tools."}}, {"@type": "Question", "name": "Is it safe to delete the Rust target folder?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It only holds build output, and cargo build makes it again. The next build of that project takes as long as a first build."}}, {"@type": "Question", "name": "Does Cargo clean its cache automatically?", "acceptedAnswer": {"@type": "Answer", "text": "Since Rust 1.88, yes: Cargo removes downloaded files unused for three months and unpacked files unused for one month from its home folder. It never cleans target folders."}}]}</script>
+</body>
+</html>

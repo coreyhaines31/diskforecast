@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clear Gradle cache on Mac: what to delete in ~/.gradle</title>
+  <meta name="description" content="How to clear Gradle cache on Mac: where ~/.gradle keeps dependencies and wrapper downloads, why to stop the daemon first, and what Gradle cleans on its own.">
+  <link rel="canonical" href="https://diskforecast.com/clear-cache/gradle">
+  <meta property="og:title" content="Clear Gradle cache on Mac: what to delete in ~/.gradle">
+  <meta property="og:description" content="How to clear Gradle cache on Mac: where ~/.gradle keeps dependencies and wrapper downloads, why to stop the daemon first, and what Gradle cleans on its own.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/clear-cache/gradle">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Clear Gradle cache on Mac: what to delete in ~/.gradle">
+  <meta name="twitter:description" content="How to clear Gradle cache on Mac: where ~/.gradle keeps dependencies and wrapper downloads, why to stop the daemon first, and what Gradle cleans on its own.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>How to clear Gradle cache on Mac, <em>without breaking builds.</em></h1>
+        <p class="lede">Gradle keeps downloaded dependencies, transformed jars, and a full copy of every Gradle version your projects' wrappers ask for. All of it lives in one folder, and most of it is safe to clear.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Stop the Gradle daemon with <code>./gradlew --stop</code>, then move <code>~/.gradle/caches</code> to the Trash. Gradle downloads dependencies again on the next build. For old Gradle versions, move folders you don't need out of <code>~/.gradle/wrapper/dists</code>. Leave <code>~/.gradle/gradle.properties</code> and <code>init.d</code> alone: those are your settings. Each project's own <code>build</code> folder clears with <code>./gradlew clean</code>.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>Gradle cache location on Mac</h2>
+        <p>Gradle keeps everything in its user home, <code>~/.gradle</code>, unless <code>GRADLE_USER_HOME</code> points somewhere else. The same folder serves the command line, Android Studio, and IntelliJ IDEA.</p>
+                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
+            <tr><th scope="row">Dependencies and transforms</th><td><code>~/.gradle/caches</code></td><td>Not installed on the Mac we measured</td></tr>
+            <tr><th scope="row">Gradle versions for the wrapper</th><td><code>~/.gradle/wrapper/dists</code></td><td>Not installed on the Mac we measured</td></tr>
+            <tr><th scope="row">Daemon logs</th><td><code>~/.gradle/daemon</code></td><td>Not installed on the Mac we measured</td></tr>
+            <tr><th scope="row">Each project&#x27;s build output</th><td><code>your-project/build</code></td><td>Per project</td></tr>
+          </tbody></table></div></div>
+        <p>Gradle isn't installed on the Mac this page was written on, so there are no measured sizes here. Check yours with:</p>
+<pre><code>du -sh ~/.gradle/* 2>/dev/null | sort -h</code></pre>
+
+        <h2 style="margin-top:56px">What's safe to delete in ~/.gradle</h2>
+        <ul>
+          <li><strong><code>caches</code>: safe.</strong> Downloaded dependencies in <code>modules-2</code>, transformed jars, the local build cache, and per-version script caches. Gradle downloads or rebuilds what it needs. The first build afterward is slow, and it needs a network connection.</li>
+          <li><strong><code>wrapper/dists</code>: safe, folder by folder.</strong> One full Gradle distribution for each version a project's wrapper asked for, each a hundred megabytes or more. Delete versions no current project uses; <code>./gradlew</code> downloads its version again if needed.</li>
+          <li><strong><code>daemon</code>: safe.</strong> Logs from background Gradle processes.</li>
+        </ul>
+        <p>Keep <code>gradle.properties</code> (often with signing keys or repository credentials) and <code>init.d</code> (init scripts). They aren't cache.</p>
+
+        <h2 style="margin-top:56px">How to clear Gradle cache, step by step</h2>
+        <ol class="steps">
+          <li><b>Stop the daemon.</b> Run <code>./gradlew --stop</code> in a project, or <code>gradle --stop</code>. Quit Android Studio too. A running daemon keeps files in the cache open.</li>
+          <li><b>Clear project build folders, if you want.</b> <code>./gradlew clean</code> deletes the current project's <code>build</code> folder.</li>
+          <li><b>Move the cache to the Trash.</b> In Terminal, <code>mv ~/.gradle/caches ~/.Trash/gradle-caches</code>, or open <code>~/.gradle</code> in Finder with <strong>Go › Go to Folder</strong>. It's hidden, so type the path.</li>
+          <li><b>Build once.</b> Run your usual build while online. If it succeeds, empty the Trash.</li>
+        </ol>
+        <p>To force fresh dependencies without deleting anything, <code>./gradlew build --refresh-dependencies</code> checks every dependency against its repository again. It's the better fix when one library looks stale.</p>
+
+        <h2 style="margin-top:56px">How big the Gradle cache gets</h2>
+        <p>On an Android developer's Mac, several gigabytes is normal, and 10 GB or more is common after a few years, because each Android Gradle Plugin and Gradle upgrade brings a new set of transformed files. Gradle cleans the cache on a schedule by default, removing downloaded files unused for 30 days and files it created itself after 7 days; since Gradle 8 you can change those limits in an init script. Old Gradle versions' folders still pile up when no project uses them anymore.</p>
+        <p>Android projects have more: the Android SDK in <code>~/Library/Android/sdk</code>, with system images for every emulator you've made, and the emulators themselves in <code>~/.android/avd</code>. Delete those from Android Studio's SDK Manager and Device Manager rather than Finder.</p>
+        <p>Also on the JVM? Maven keeps its downloads in <code>~/.m2/repository</code>. More caches: <a href="/clear-cache/cargo">Cargo</a>, <a href="/clear-cache/go">Go</a>, or <a href="/clear-cache">every tool</a>.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Disk Forecast finds this for you</h2>
+
+          <p>Disk Forecast lists <code>~/.gradle/caches</code> and <code>~/.gradle/wrapper/dists</code> under <strong>Cleanup › Safe to clear › Package manager caches</strong>. A project&#39;s <code>build</code> folder shows up as a Gradle build only when a <code>build.gradle</code> or <code>build.gradle.kts</code> sits beside it, so a random folder named build is never listed: under <strong>Build folders in old projects</strong> after 30 days without changes, or <strong>Build folders in active projects</strong> before that. Everything goes to the Trash. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="stage glass">
+          <div class="mk mk-win" role="img" aria-label="The Disk Forecast Cleanup window, headed Reclaim space. Safe to clear, 12.4 GB, all checked: build folders in old projects, package manager caches, app caches, Xcode device support, Xcode DerivedData, and logs. Worth a look, 47 GB, unchecked: Ollama models, build folders in active projects, the Docker disk image, big downloads, and disk images and installers. The footer reads 12.4 GB selected, with Open Trash and Move to Trash buttons.">
+              <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">Cleanup</div></div>
+              <div class="mk-hdr"><div><b>Reclaim space</b><span>1,284,906 files measured in 9 s. Everything goes to the Trash first.</span></div><div class="mk-pill">Rescan</div></div>
+              <div class="mk-list">
+                <div class="mk-sec"><span>Safe to clear</span><span>12.4 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Build folders in old projects</b><span>node_modules, build, and package folders in projects you haven't changed in 30+ days. Reinstalling or rebuilding brings them back.</span></div><span class="sz">4.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Package manager caches</b><span>Downloads kept by npm, pnpm, Bun, Cargo, Gradle, pip, and friends so installs are faster. They fill back up as you install packages.</span></div><span class="sz">3.1 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>App caches</b><span>Files apps keep to load things faster. Apps recreate what they need. macOS's own caches are left alone.</span></div><span class="sz">2.2 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode device support</b><span>Debug symbols copied from devices you've plugged in. Xcode copies them again when you connect that device.</span></div><span class="sz">1.3 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode DerivedData</b><span>Xcode's build products and indexes. Xcode rebuilds them the next time you build.</span></div><span class="sz">812 MB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Logs</b><span>Records apps write about what they did. Useful for troubleshooting, then rarely read again.</span></div><span class="sz">402 MB</span></div>
+                <div class="mk-sec"><span>Worth a look</span><span>47 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Ollama models</b><span>Local AI models downloaded by Ollama. Running ollama pull downloads one again, and ollama rm removes a single model.</span></div><span class="sz">18 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Build folders in active projects</b><span>Build and package folders in projects you've changed recently. Safe to remove, but you'll wait for a reinstall or rebuild next time.</span></div><span class="sz">9.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><svg class="mk-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-2.5z"/></svg><div class="txt"><b>Docker disk image</b><span>Everything Docker stores: images, containers, and volumes, in one file. Reclaim space with Docker's own cleanup in System Data, not by deleting the file.</span><div class="mk-pill">Reclaim in System Data…</div></div><span class="sz">8.4 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Big downloads</b><span>Large files and folders in Downloads. Most were needed once.</span></div><span class="sz">5.9 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Disk images and installers</b><span>DMG, ISO, and PKG files. Once an app is installed, its installer is usually not needed.</span></div><span class="sz">4.7 GB</span></div>
+              </div>
+              <div class="mk-foot"><span>12.4 GB selected</span><div class="mk-pill">Open Trash</div><div class="mk-pill blue">Move to Trash…</div></div>
+            </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>How do I clear the Gradle cache?</summary><p>Stop the daemon with ./gradlew --stop, quit Android Studio, then delete or move ~/.gradle/caches to the Trash. Gradle downloads dependencies again on the next build, which needs a network connection.</p></details>
+          <details><summary>Where is the Gradle cache located on a Mac?</summary><p>In ~/.gradle/caches, inside Gradle&#x27;s user home. Set GRADLE_USER_HOME to move it. Wrapper downloads of Gradle itself are in ~/.gradle/wrapper/dists.</p></details>
+          <details><summary>Is it safe to delete ~/.gradle?</summary><p>Mostly. caches, wrapper/dists, and daemon can all go. Keep gradle.properties and init.d if you have them: they&#x27;re your settings, and gradle.properties may hold credentials.</p></details>
+          <details><summary>Does ./gradlew clean clear the Gradle cache?</summary><p>No. It deletes the current project&#x27;s build folder. The shared cache in ~/.gradle/caches stays. To refetch dependencies without deleting the cache, use --refresh-dependencies.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/clear-cache/cargo"><b>Cargo</b><span>cargo clean, target folders, and ~/.cargo/registry.</span></a>
+          <a class="glass" href="/clear-cache/go"><b>Go</b><span>go clean -cache, -modcache, and where GOCACHE lives.</span></a>
+          <a class="glass" href="/clear-cache/xcode"><b>Xcode</b><span>DerivedData, device support, simulators, and archives.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I clear the Gradle cache?", "acceptedAnswer": {"@type": "Answer", "text": "Stop the daemon with ./gradlew --stop, quit Android Studio, then delete or move ~/.gradle/caches to the Trash. Gradle downloads dependencies again on the next build, which needs a network connection."}}, {"@type": "Question", "name": "Where is the Gradle cache located on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/.gradle/caches, inside Gradle's user home. Set GRADLE_USER_HOME to move it. Wrapper downloads of Gradle itself are in ~/.gradle/wrapper/dists."}}, {"@type": "Question", "name": "Is it safe to delete ~/.gradle?", "acceptedAnswer": {"@type": "Answer", "text": "Mostly. caches, wrapper/dists, and daemon can all go. Keep gradle.properties and init.d if you have them: they're your settings, and gradle.properties may hold credentials."}}, {"@type": "Question", "name": "Does ./gradlew clean clear the Gradle cache?", "acceptedAnswer": {"@type": "Answer", "text": "No. It deletes the current project's build folder. The shared cache in ~/.gradle/caches stays. To refetch dependencies without deleting the cache, use --refresh-dependencies."}}]}</script>
+</body>
+</html>
