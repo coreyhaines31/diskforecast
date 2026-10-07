@@ -1029,8 +1029,78 @@ tmutil deletelocalsnapshots 2026-10-05-093012</code></pre>
     "cta": "Know before it's full.",
 }
 
+# Targets "delete time machine snapshots" (80/mo US, KD 1), "how to delete time machine snapshots" (50), "time machine local
+# snapshots" (40), "time machine snapshots" (40), "delete local time machine snapshots" (40), and "tmutil deletelocalsnapshots" (20).
+# Commands from man tmutil on macOS 26.6. Only tmutil listlocalsnapshots / and listlocalsnapshotdates / were run (both empty;
+# Time Machine has no destination on this Mac), plus diskutil apfs listSnapshots, read-only.
+SNAPSHOTS = {
+    "path": "/time-machine-local-snapshots",
+    "title": "Time Machine local snapshots: how to delete them on Mac",
+    "description": "What Time Machine local snapshots are, how to list them with tmutil, how to delete one or all of them, and why they come back every hour while backups are on.",
+    "eyebrow": "Guide",
+    "h1": "Time Machine local snapshots, <em>and how to delete them.</em>",
+    "lede": "If you back up with Time Machine, your Mac quietly keeps snapshots of itself on its own disk. They're why deleted files don't free space right away, and often why System Data is huge. Here's how to see them and remove them.",
+    "tldr": "List them with <code>tmutil listlocalsnapshots /</code>. Delete one with <code>tmutil deletelocalsnapshots</code> and its date, like <code>2026-10-05-093012</code>, or all of them on the startup disk with <code>tmutil deletelocalsnapshots /</code>. Add <code>sudo</code> if macOS refuses. Your backups on the backup disk aren't touched. macOS removes each snapshot after 24 hours, or sooner when space runs low, and makes a new one every hour while automatic backups are on.",
+    "card_title": "Time Machine local snapshots",
+    "card_blurb": "List and delete them with tmutil, and why they come back.",
+    "footer": "Time Machine snapshots",
+    "related": ["/purgeable-space-mac", "/system-data", "/what-is-system-data-on-mac"],
+    "faqs": [
+        ("How do I delete Time Machine local snapshots?", "Run tmutil listlocalsnapshots / in Terminal, then tmutil deletelocalsnapshots with a date from the list, like 2026-10-05-093012. To delete every local snapshot on the startup disk, run tmutil deletelocalsnapshots /. Add sudo if macOS says you don't have permission."),
+        ("Is it safe to delete Time Machine local snapshots?", "Yes. They're extra copies on your Mac's own disk. Your backups on the Time Machine disk aren't touched. You lose the ability to restore from the last few hours while the backup disk is away."),
+        ("Why do Time Machine snapshots keep coming back?", "Time Machine takes a new local snapshot every hour while automatic backups are on. macOS removes each after 24 hours, or sooner when space runs low. Turning off automatic backups stops new ones."),
+        ("Can I turn off Time Machine local snapshots?", "Not on their own. The old tmutil disablelocal command no longer works on recent macOS. Turning off automatic backups stops them, along with the backups."),
+        ("Where are Time Machine local snapshots stored?", "On your startup disk, as APFS snapshots of the data volume. They aren't files in a folder, which is why Finder can't show them. tmutil listlocalsnapshots / lists them by name."),
+        ("Do local snapshots count as System Data?", "Yes. Storage settings counts them in System Data, and macOS counts them as purgeable, so Finder includes them in available space."),
+    ],
+    "html": """
+        <h2>What are Time Machine local snapshots?</h2>
+        <p>When Time Machine is set up, it takes a snapshot of your startup disk every hour and keeps it on that disk. A snapshot is a frozen view of every file as it was at that moment. It lets you restore something from this morning even when the backup drive is at home, and it gives Time Machine a consistent copy to back up from.</p>
+        <p>Snapshots are cheap to make, but they hold on to the past. Delete a 20 GB video after a snapshot was taken, and the snapshot still has it, so the space doesn't come back until that snapshot goes. That's the usual reason a Mac that “should” have free space doesn't.</p>
+        <ul>
+          <li><strong>How long they last.</strong> macOS removes each local snapshot after 24 hours, and sooner when space runs low.</li>
+          <li><strong>Where they're counted.</strong> In System Data in Storage settings, and as purgeable space, so Finder treats them as available.</li>
+          <li><strong>What they aren't.</strong> A backup. They're on the same disk as your files, so they can't save you from a failed drive.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">How to list local snapshots</h2>
+<pre><code>tmutil listlocalsnapshots /
+tmutil listlocalsnapshotdates /</code></pre>
+        <p>The first lists snapshots by name, like <code>com.apple.TimeMachine.2026-10-05-093012.local</code>. The second lists only the dates, in the <code>YYYY-MM-DD-HHMMSS</code> form the delete command takes. Both only read. On the Mac this guide was written on, Time Machine has no backup disk set up, and both came back empty: no backup disk, no local snapshots.</p>
+        <p>To see every APFS snapshot on the data volume, including ones other apps made, there's also <code>diskutil apfs listSnapshots /System/Volumes/Data</code>.</p>
+
+        <h2 style="margin-top:56px">How to delete Time Machine snapshots</h2>
+        <ol class="steps">
+          <li><b>Delete one.</b> Use a date from the list:
+<pre><code>tmutil deletelocalsnapshots 2026-10-05-093012</code></pre>
+          The manual says a date deletes the local snapshots with that date on all mounted disks.</li>
+          <li><b>Delete all of them on the startup disk.</b> Give it the disk instead of a date:
+<pre><code>tmutil deletelocalsnapshots /</code></pre></li>
+          <li><b>Or thin them by size.</b> Ask Time Machine to reclaim an amount, in bytes, with an urgency from 1 to 4. This asks for 10 GB at the highest urgency:
+<pre><code>tmutil thinlocalsnapshots / 10000000000 4</code></pre>
+          macOS picks which snapshots to remove to get there.</li>
+        </ol>
+        <p>If <code>tmutil</code> answers with a permissions error, run the same command with <code>sudo</code> in front and enter your password. Your backups on the Time Machine disk are separate, and none of these commands touch them.</p>
+
+        <h2 style="margin-top:56px">Why they come back</h2>
+        <p>Because Time Machine makes a new one every hour. Deleting snapshots reclaims space now; it doesn't change the schedule. Recent versions of macOS dropped the old <code>tmutil disablelocal</code> command, so there's no switch for local snapshots alone. You can:</p>
+        <ul>
+          <li><strong>Back up more often.</strong> Connect the backup disk regularly, and macOS has less reason to keep snapshots around.</li>
+          <li><strong>Let macOS handle it.</strong> When space runs low, it thins snapshots on its own. They're purgeable for a reason.</li>
+          <li><strong>Turn off automatic backups.</strong> In <strong>System Settings › General › Time Machine</strong>. No backups means no snapshots, which is a bad trade on most Macs.</li>
+        </ul>
+        <p>Snapshots are only one part of System Data. For the rest, see <a href="/system-data">how to clear System Data</a>, and for why Finder shows them as free space, <a href="/purgeable-space-mac">purgeable space on Mac</a>.</p>
+    """,
+    "shortcut": """
+          <h2>Disk Forecast and local snapshots</h2>
+          <p>Disk Forecast lists your local snapshots by name in its System Data window. Its <strong>Remove local snapshots…</strong> button shows you the exact <code>tmutil deletelocalsnapshots</code> command for each date, and runs it only after you confirm. If macOS refuses, it asks for your administrator password and runs the same commands. Your backups on the backup disk aren&#39;t touched. It&#39;s free.</p>
+    """,
+    "mockup": "system-data",
+    "cta": "Know before it's full.",
+}
+
 # In reading order: the hub and every footer list them this way.
-GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE]
+GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS]
 
 GUIDES_HUB = {
     "path": "/guides",
