@@ -1022,7 +1022,7 @@ BEST_FREE = {
     "html": """
         <h2>What a Mac cleaner should do</h2>
         <p>Modern Macs use APFS on an SSD. There's nothing to defragment, macOS manages its own memory and caches, and a Mac with 100 GB free runs the same as one with 300 GB free. Free space only matters when it's nearly gone.</p>
-        <p>So a good cleaner is a careful way to reclaim space, and it does three things:</p>
+        <p>So a good cleaner does three things:</p>
         <ul>
           <li><strong>Explains every item.</strong> “2.1 GB of caches” isn't enough. You should know which app made them and whether they rebuild.</li>
           <li><strong>Lets you undo.</strong> Files go to the Trash, not straight to oblivion.</li>
@@ -1030,13 +1030,13 @@ BEST_FREE = {
         </ul>
 
         <h2 style="margin-top:56px">What it can't promise</h2>
-        <p>The category loves two phrases: “speed up your Mac” and “remove junk.” On an SSD, clearing caches doesn't make a Mac faster; the next launch of each app is usually a little slower while its cache rebuilds. Memory “cleaners” free RAM that macOS was using on purpose. And much of what gets cleared is your apps' working files. Clear space because you need the room, not for a promised performance gain.</p>
+        <p>The category loves two phrases: “speed up your Mac” and “remove junk.” On an SSD, clearing caches doesn't make a Mac faster; the next launch of each app is usually a little slower while its cache rebuilds. And much of what gets cleared is your apps' working files. Clear space because you need the room, not for a promised performance gain.</p>
 
         <h2 style="margin-top:56px">The 6 best free Mac cleaners</h2>
         {{TABLE:picks}}
 
         <h3 style="margin-top:40px">1. Disk Forecast</h3>
-        <p>Free, source available, for macOS 14 or later. It shows free space in the menu bar and, after 3 days of history, when your disk will be full. Its cleanup list sorts what it finds into “Safe to clear,” like app caches, logs, Xcode DerivedData, and build folders in projects you haven't touched in 30 days, and “Worth a look,” like big downloads, disk images, AI models, and virtual machines. Every item has a one-line explanation, and everything goes to the Trash. Its System Data window explains snapshots, simulators, and the rest, and runs Apple's own tool for each fix after showing you the command. It doesn't draw a treemap, uninstall apps, or find duplicates.</p>
+        <p>Free, source available, for macOS 14 or later. It shows free space in the menu bar and, after 3 days of history, when your disk will be full. Its cleanup list sorts what it finds into “Safe to clear,” like caches, logs, and old build folders, and “Worth a look,” like big downloads, AI models, and virtual machines. Every item has a one-line explanation, and everything goes to the Trash. Its System Data window explains snapshots, simulators, and the rest, and runs Apple's own tool for each fix after showing you the command. It doesn't draw a treemap, uninstall apps, or find duplicates.</p>
 
         <h3>2. GrandPerspective</h3>
         <p>A free treemap of any folder or drive: every file a rectangle, sized by its space. It's open source under the GPL, updated in September 2026 for macOS 14 and later, and native on Apple silicon. It's free from its website, or $2.99 on the Mac App Store. It shows sizes, not meanings. <a href="/alternatives/grandperspective">GrandPerspective compared</a>.</p>
