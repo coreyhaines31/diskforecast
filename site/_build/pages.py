@@ -996,4 +996,88 @@ PRIVACY = {
 # Comparison and category pages that cover several apps at once. Each renders with the guide template;
 # its html can hold {{TABLE:name}} placeholders for the tables in its "tables". "in_guides" also lists it on /guides.
 # Competitor facts were checked against each vendor's site, store listing, GitHub, or the app itself in October 2026.
-ROUNDUPS = []
+# Targets "free mac cleaner" (500/mo US, KD 0), "best mac cleaner" (350), and "best free mac cleaner" (200).
+# "Speed up" and "junk" appear only as quoted category claims, to debunk them. Facts, checked 2026-10-06:
+# grandperspectiv.sourceforge.net (3.8.1, macOS 14+), omnigroup.com/more, github.com/tw93/Mole, freemacsoft.net/appcleaner (3.7, macOS 15+).
+BEST_FREE = {
+    "path": "/best-free-mac-cleaner",
+    "title": "Best free Mac cleaner: 6 honest picks for 2026",
+    "description": "The best free Mac cleaner apps for 2026, compared honestly: Disk Forecast, GrandPerspective, OmniDiskSweeper, Mole, AppCleaner, and macOS Storage settings.",
+    "eyebrow": "Roundup",
+    "h1": "The best free Mac cleaner <em>tells you what it deletes.</em>",
+    "lede": "Most Mac cleaner apps sell a feeling. Here's what a cleaner should actually do on a modern Mac, what it can't do, and six free options, each with what it's good at.",
+    "tldr": "On a Mac with an SSD, a cleaner is for one thing: reclaiming disk space when you need it. Pick one that explains every item, moves files to the Trash, and uses Apple's own tools for system files. Disk Forecast does all three and warns you before you run out. GrandPerspective and OmniDiskSweeper find big files, Mole cleans from Terminal, AppCleaner uninstalls apps, and Storage settings is already on your Mac.",
+    "card_title": "Best free Mac cleaner",
+    "card_blurb": "Six honest picks, and what a cleaner should and shouldn't do.",
+    "footer": "Best free Mac cleaner",
+    "in_guides": True,
+    "related": ["/is-cleanmymac-safe", "/disk-space-analyzer-mac", "/free-up-space-on-mac"],
+    "faqs": [
+        ("What is the best free Mac cleaner?", "It depends on the job. To reclaim space with an explanation of every item, and a warning before your disk fills, Disk Forecast. For a picture of a whole drive, GrandPerspective. For Terminal users, Mole. To uninstall apps, AppCleaner. All four are free."),
+        ("Do Mac cleaners actually work?", "They reclaim disk space, and that's real when you need room for an update, a project, or a backup. Claims that they make a Mac faster mostly don't hold up on an SSD: macOS manages its own memory and caches, and free space only matters when the disk is nearly full."),
+        ("Is it safe to use a free Mac cleaner?", "It is when the app explains what it deletes, moves files to the Trash, and uses Apple's tools for system files. Be wary of anything that deletes permanently without a preview, or asks for your password without saying why."),
+        ("Does macOS have a built-in cleaner?", "Sort of. System Settings › General › Storage shows what's using space and offers recommendations like Store in iCloud and Empty Trash Automatically. It doesn't explain System Data or developer files."),
+        ("Do I need CleanMyMac?", "Not for disk space. The free tools on this page cover reclaiming space. CleanMyMac bundles more, like malware scans and an app updater, on a subscription."),
+    ],
+    "html": """
+        <h2>What a Mac cleaner should do</h2>
+        <p>Modern Macs use APFS on an SSD. There's nothing to defragment, macOS manages its own memory and caches, and a Mac with 100 GB free runs the same as one with 300 GB free. Free space only matters when it's nearly gone.</p>
+        <p>So a good cleaner is a careful way to reclaim space, and it does three things:</p>
+        <ul>
+          <li><strong>Explains every item.</strong> “2.1 GB of caches” isn't enough. You should know which app made them and whether they rebuild.</li>
+          <li><strong>Lets you undo.</strong> Files go to the Trash, not straight to oblivion.</li>
+          <li><strong>Uses Apple's tools for system files.</strong> Local snapshots, simulators, and the Spotlight index each have their own command. A cleaner should run those, not delete folders under <code>/private/var</code>.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">What it can't promise</h2>
+        <p>The category loves two phrases: “speed up your Mac” and “remove junk.” On an SSD, clearing caches doesn't make a Mac faster; the next launch of each app is usually a little slower while its cache rebuilds. Memory “cleaners” free RAM that macOS was using on purpose. And much of what gets cleared is your apps' working files. Clear space because you need the room, not for a promised performance gain.</p>
+
+        <h2 style="margin-top:56px">The 6 best free Mac cleaners</h2>
+        {{TABLE:picks}}
+
+        <h3 style="margin-top:40px">1. Disk Forecast</h3>
+        <p>Free, source available, for macOS 14 or later. It shows free space in the menu bar and, after 3 days of history, when your disk will be full. Its cleanup list sorts what it finds into “Safe to clear,” like app caches, logs, Xcode DerivedData, and build folders in projects you haven't touched in 30 days, and “Worth a look,” like big downloads, disk images, AI models, and virtual machines. Every item has a one-line explanation, and everything goes to the Trash. Its System Data window explains snapshots, simulators, and the rest, and runs Apple's own tool for each fix after showing you the command. It doesn't draw a treemap, uninstall apps, or find duplicates.</p>
+
+        <h3>2. GrandPerspective</h3>
+        <p>A free treemap of any folder or drive: every file a rectangle, sized by its space. It's open source under the GPL, updated in September 2026 for macOS 14 and later, and native on Apple silicon. It's free from its website, or $2.99 on the Mac App Store. It shows sizes, not meanings. <a href="/alternatives/grandperspective">GrandPerspective compared</a>.</p>
+
+        <h3>3. OmniDiskSweeper</h3>
+        <p>The Omni Group's free column view of folder sizes, largest first, with a button to send what you pick to the Trash. It's quick to learn. Version 1.11 dates from 2018 and contains Intel code only, so on Apple silicon it runs through Rosetta 2. <a href="/alternatives/omnidisksweeper">OmniDiskSweeper compared</a>.</p>
+
+        <h3>4. Mole</h3>
+        <p>A free, open-source command-line cleaner by tw93, licensed under GPL-3.0. One command, <code>mo</code>, cleans caches, uninstalls apps, explores disk usage, and shows live system stats, with a <code>--dry-run</code> preview for anything that deletes. Note that <code>mo purge</code> deletes permanently. A separate Mac app costs $19. <a href="/alternatives/mole">Mole compared</a>.</p>
+
+        <h3>5. AppCleaner</h3>
+        <p>From FreeMacSoft, free with a donation option. Drop an app on its window, and it finds the files that app left around your Mac so you can remove them together. It's an uninstaller, and a good one. Version 3.7 needs macOS 15 or later.</p>
+
+        <h3>6. Storage settings in macOS</h3>
+        <p>Already on your Mac: <strong>System Settings › General › Storage</strong>. It sorts your disk by category, lets you delete large files and old iPhone backups, and offers a few recommendations. It can't tell you what's inside System Data; <a href="/system-data">the System Data guide</a> covers that.</p>
+
+        <h2 style="margin-top:56px">Paid cleaners, briefly</h2>
+        <p><strong>CleanMyMac</strong> is MacPaw's suite of cleanup, malware scanning, and app tools, sold as a subscription. <a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a> covers what it deletes and what it costs. <strong>DaisyDisk</strong> is a $9.99 analyzer that draws your disk as rings.</p>
+
+        <h2 style="margin-top:56px">How to choose</h2>
+        <ul>
+          <li><strong>You want a warning before the disk fills:</strong> Disk Forecast.</li>
+          <li><strong>You want to see a whole drive at once:</strong> GrandPerspective.</li>
+          <li><strong>You live in Terminal:</strong> Mole.</li>
+          <li><strong>You're removing an app:</strong> AppCleaner.</li>
+        </ul>
+    """,
+    "tables": {"picks": {"head": ["App", "Good at", "Price", "Apple silicon"], "min_width": 600, "rows": [
+        ("Disk Forecast", "Knowing when you'll run out, then reclaiming space safely", "Free", "Native"),
+        ("GrandPerspective", "A treemap of a whole drive", "Free, or $2.99 on the App Store", "Native"),
+        ("OmniDiskSweeper", "A plain list of folder sizes", "Free", "Intel only, through Rosetta 2"),
+        ("Mole", "Cleaning, uninstalling, and stats from Terminal", "Free; $19 for the Mac app", "Native"),
+        ("AppCleaner", "Removing an app and its leftover files", "Free", "—"),
+        ("Storage settings", "A first look, built into macOS", "Built in", "Native"),
+    ]}},
+    "shortcut": """
+          <h2>A cleaner that explains itself.</h2>
+          <p>Disk Forecast lists what&#39;s safe to clear, says what each item is, and moves it to the Trash after one confirm. Then it tells you when you&#39;ll need to do it again. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "cta": "Know before it's full.",
+}
+
+ROUNDUPS = [BEST_FREE]
