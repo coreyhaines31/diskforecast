@@ -96,11 +96,17 @@ def footer_alternatives():
     return f'      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a>{links}</nav>\n'
 
 
+def footer_guides():
+    """Every guide, linked from every footer for internal linking."""
+    links = "".join(f'<a href="{g["path"]}">{esc(g["footer"])}</a>' for g in GUIDES)
+    return f'      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a>{links}</nav>\n'
+
+
 def footer():
     return f'''  <footer>
     <div class="wrap">
-{footer_alternatives()}      <div class="footer-links"><span>© 2026 Corey Haines. <a href="{REPO}/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
-      <div class="footer-links"><a href="{REPO}">GitHub</a><a href="{REPO}/releases">Releases</a><a href="{REPO}/issues">Issues</a><a href="/system-data">Clear System Data</a><a href="/privacy">Privacy</a></div>
+{footer_guides()}{footer_alternatives()}      <div class="footer-links"><span>© 2026 Corey Haines. <a href="{REPO}/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="{REPO}">GitHub</a><a href="{REPO}/releases">Releases</a><a href="{REPO}/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
 '''
@@ -112,13 +118,13 @@ def homepage():
 
 
 def render_homepage_footer():
-    """The homepage is hand-written; keep its footer list in sync between the markers."""
+    """The homepage is hand-written; keep its footer lists in sync between the markers."""
     path = os.path.join(ROOT, "index.html")
     page = homepage()
     start, end = "<!-- alternatives -->\n", "<!-- /alternatives -->"
     i, j = page.index(start) + len(start), page.index(end)
     with open(path, "w") as f:
-        f.write(page[:i] + footer_alternatives() + "      " + page[j:])
+        f.write(page[:i] + footer_guides() + footer_alternatives() + "      " + page[j:])
 
 
 def homepage_schema():
