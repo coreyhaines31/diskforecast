@@ -357,8 +357,8 @@ def render_guides_hub():
       </div>
     </div>
     <section class="tight lit" style="padding-top:0">
-      <div class="wrap">
-        <div class="related">
+      <div class="wrap narrow">
+        <div class="related" style="grid-template-columns:1fr">
 {cards}        </div>
       </div>
     </section>
