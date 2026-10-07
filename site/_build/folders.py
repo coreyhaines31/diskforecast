@@ -71,7 +71,71 @@ ls -lh /private/var/vm/sleepimage</code></pre>
     ],
 }
 
-FOLDER_PAGES = [SLEEPIMAGE]
+# ------------------------------------------------------------------ iPhone backups
+# "where are iphone backups stored on mac" 500 / KD 0, "delete iphone backups on mac" 0, "ios backups mac" 0.
+# Labels: "Manage Backups…" and "Delete Backup" (AMPDevices), "iOS Files" and its subtitle (StorageManagement), and the
+# iOS Files extension's own paths (MobileSync/Backup, ~/Library/iTunes/iPhone Software Updates). No backups on this Mac.
+IPHONE_BACKUPS = {
+    "slug": "iphone-backups",
+    "title": "Where are iPhone backups stored on Mac? Find and delete",
+    "description": "Where iPhone and iPad backups are stored on a Mac, how to open the folder, and how to delete old backups in Finder or Storage settings without breaking any.",
+    "h1": "Where iPhone backups are stored on Mac, <em>and how to delete them.</em>",
+    "lede": "Every iPhone or iPad you've backed up to this Mac left a folder behind, often tens of gigabytes each. Here's where they are, and the two built-in ways to remove the ones you no longer need.",
+    "tldr": "iPhone and iPad backups are stored in <code>~/Library/Application Support/MobileSync/Backup</code>, one folder per backup. To delete one, open <strong>System Settings › General › Storage</strong>, click the info button next to <strong>iOS Files</strong>, select the backup, and click <strong>Delete</strong>. Or select the device in Finder's sidebar and click <strong>Manage Backups…</strong>. Delete whole backups, never files inside one.",
+    "card_title": "iPhone backups",
+    "card_blurb": "Where they're stored, and how to delete old ones safely.",
+    "finds_title": "Disk Forecast and iPhone backups",
+    "paths": [
+        ("Device backups", "~/Library/Application Support/MobileSync/Backup", "One folder per backup"),
+        ("iPhone software updates", "~/Library/iTunes/iPhone Software Updates", "Only if you've restored a device"),
+    ],
+    "html": """
+        <h2>Where are iPhone backups stored on Mac?</h2>
+        <p>When you back up an iPhone or iPad to your Mac, through Finder or, on older versions of macOS, iTunes, the backup goes in your Library folder:</p>
+        {{PATHS}}
+        <p>Each backup is a folder named with a long device identifier, not the device's name, so you can't tell them apart by looking. Inside are thousands of files with hashed names. That's normal: a backup only makes sense to the Mac that restores it. The Mac this page was written on has never backed up a phone, so there's no size to show. Expect a backup to be roughly the size of what's on the device, minus what's already in iCloud, like iCloud Photos.</p>
+        <p>To open the folder in Finder, choose <strong>Go › Go to Folder</strong>, paste the path, and press Return. Terminal is different: macOS guards this folder, so <code>ls</code> and <code>du</code> answer “Operation not permitted” unless Terminal has Full Disk Access in <strong>System Settings › Privacy &amp; Security</strong>.</p>
+
+        <h2 style="margin-top:56px">How to delete iPhone backups on Mac</h2>
+        <p>There are two ways to do it. Both show which device each backup belongs to and when it was made, which the folder itself won't.</p>
+        <h3>In Storage settings</h3>
+        <ol class="steps">
+          <li><b>Open Storage settings.</b> Choose <strong>Apple menu › System Settings › General › Storage</strong> and wait for it to finish calculating.</li>
+          <li><b>Open iOS Files.</b> Click the info button next to <strong>iOS Files</strong>. macOS describes it as device backups and software updates you can erase to free storage space.</li>
+          <li><b>Delete what you don't need.</b> Select a backup, click <strong>Delete</strong>, and confirm. The space comes back right away; nothing goes to the Trash.</li>
+        </ol>
+        <h3>In Finder</h3>
+        <ol class="steps">
+          <li><b>Connect the device.</b> Plug it in, or use Wi-Fi if you've set that up, and select it under <strong>Locations</strong> in Finder's sidebar.</li>
+          <li><b>Open Manage Backups.</b> On the <strong>General</strong> tab, click <strong>Manage Backups…</strong>. You'll see every backup on this Mac, with its device name and date.</li>
+          <li><b>Delete one.</b> Select it, click <strong>Delete Backup</strong>, and confirm.</li>
+        </ol>
+        <div class="callout"><p><strong>Don't delete files inside a backup.</strong> Remove whole backups, with one of the methods above. A backup missing some of its files won't restore, and you'll only find out when you need it.</p></div>
+
+        <h2 style="margin-top:56px">Which backups are safe to delete?</h2>
+        <ul>
+          <li><strong>Backups of devices you no longer own.</strong> If the phone was sold, traded in, or replaced, its backup is only useful for digging up something old.</li>
+          <li><strong>Backups you also have in iCloud.</strong> If the device backs up to iCloud (on the iPhone, <strong>Settings › [your name] › iCloud › iCloud Backup</strong>), the copy on your Mac is a second one.</li>
+          <li><strong>Old software updates.</strong> The iOS Files list includes downloaded update files, used when you restore or update a device from the Mac. Finder downloads them again when it needs one.</li>
+        </ul>
+        <p>Keep at least one recent backup of any device you still use and don't back up to iCloud. Encrypted backups also hold saved passwords and Health data, so make sure you have a newer one before you remove an old encrypted backup.</p>
+        <p>More folders that fill a Mac quietly: <a href="/taking-up-space/messages">Messages attachments</a>, <a href="/taking-up-space/icloud-drive">iCloud Drive</a>, and the full checklist in <a href="/free-up-space-on-mac">how to free up space on Mac</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast never deletes iPhone backups, and it doesn&#39;t list them as something to clear: deleting the wrong one isn&#39;t a mistake you can rebuild from. Without Full Disk Access, it skips the MobileSync folder entirely, the same way Terminal is blocked. With Full Disk Access, it measures the folder, and if it&#39;s one of your biggest, it shows up under <strong>Taking the most space</strong> in the menu, one click from Finder. Delete backups with Storage settings or Finder&#39;s Manage Backups. It&#39;s free.</p>
+    """,
+    "mockup": "menu",
+    "related": ["/taking-up-space/messages", "/taking-up-space/icloud-drive", "/free-up-space-on-mac"],
+    "faqs": [
+        ("Where are iPhone backups stored on a Mac?", "In ~/Library/Application Support/MobileSync/Backup, one folder per backup, named with the device's identifier. Open it in Finder with Go › Go to Folder. Terminal needs Full Disk Access to read it."),
+        ("How do I delete old iPhone backups on my Mac?", "Open System Settings › General › Storage, click the info button next to iOS Files, select the backup, and click Delete. Or select the device in Finder's sidebar, click Manage Backups…, and click Delete Backup."),
+        ("Is it safe to delete iPhone backups on a Mac?", "Yes, for backups you don't need: devices you no longer own, or ones that also back up to iCloud. Keep a recent backup of any device you still use, and delete whole backups, never the files inside one."),
+        ("Why is iOS Files so big in Storage settings?", "It includes every device backup on this Mac, plus downloaded iPhone and iPad software updates. Each backup can be tens of gigabytes, and old ones stay until you delete them."),
+        ("Can I move iPhone backups to an external drive?", "Finder has no setting for it; backups always go to the MobileSync folder on your startup disk. Backing the device up to iCloud instead keeps it off your Mac."),
+    ],
+}
+
+FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS]
 
 TAKING_UP_SPACE_HUB = {
     "path": "/taking-up-space",

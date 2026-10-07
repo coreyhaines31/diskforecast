@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Where are iPhone backups stored on Mac? Find and delete</title>
+  <meta name="description" content="Where iPhone and iPad backups are stored on a Mac, how to open the folder, and how to delete old backups in Finder or Storage settings without breaking any.">
+  <link rel="canonical" href="https://diskforecast.com/taking-up-space/iphone-backups">
+  <meta property="og:title" content="Where are iPhone backups stored on Mac? Find and delete">
+  <meta property="og:description" content="Where iPhone and iPad backups are stored on a Mac, how to open the folder, and how to delete old backups in Finder or Storage settings without breaking any.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/taking-up-space/iphone-backups">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Where are iPhone backups stored on Mac? Find and delete">
+  <meta name="twitter:description" content="Where iPhone and iPad backups are stored on a Mac, how to open the folder, and how to delete old backups in Finder or Storage settings without breaking any.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>Where iPhone backups are stored on Mac, <em>and how to delete them.</em></h1>
+        <p class="lede">Every iPhone or iPad you've backed up to this Mac left a folder behind, often tens of gigabytes each. Here's where they are, and the two built-in ways to remove the ones you no longer need.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>iPhone and iPad backups are stored in <code>~/Library/Application Support/MobileSync/Backup</code>, one folder per backup. To delete one, open <strong>System Settings › General › Storage</strong>, click the info button next to <strong>iOS Files</strong>, select the backup, and click <strong>Delete</strong>. Or select the device in Finder's sidebar and click <strong>Manage Backups…</strong>. Delete whole backups, never files inside one.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>Where are iPhone backups stored on Mac?</h2>
+        <p>When you back up an iPhone or iPad to your Mac, through Finder or, on older versions of macOS, iTunes, the backup goes in your Library folder:</p>
+                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
+            <tr><th scope="row">Device backups</th><td><code>~/Library/Application Support/MobileSync/Backup</code></td><td>One folder per backup</td></tr>
+            <tr><th scope="row">iPhone software updates</th><td><code>~/Library/iTunes/iPhone Software Updates</code></td><td>Only if you&#x27;ve restored a device</td></tr>
+          </tbody></table></div></div>
+        <p>Each backup is a folder named with a long device identifier, not the device's name, so you can't tell them apart by looking. Inside are thousands of files with hashed names. That's normal: a backup only makes sense to the Mac that restores it. The Mac this page was written on has never backed up a phone, so there's no size to show. Expect a backup to be roughly the size of what's on the device, minus what's already in iCloud, like iCloud Photos.</p>
+        <p>To open the folder in Finder, choose <strong>Go › Go to Folder</strong>, paste the path, and press Return. Terminal is different: macOS guards this folder, so <code>ls</code> and <code>du</code> answer “Operation not permitted” unless Terminal has Full Disk Access in <strong>System Settings › Privacy &amp; Security</strong>.</p>
+
+        <h2 style="margin-top:56px">How to delete iPhone backups on Mac</h2>
+        <p>There are two ways to do it. Both show which device each backup belongs to and when it was made, which the folder itself won't.</p>
+        <h3>In Storage settings</h3>
+        <ol class="steps">
+          <li><b>Open Storage settings.</b> Choose <strong>Apple menu › System Settings › General › Storage</strong> and wait for it to finish calculating.</li>
+          <li><b>Open iOS Files.</b> Click the info button next to <strong>iOS Files</strong>. macOS describes it as device backups and software updates you can erase to free storage space.</li>
+          <li><b>Delete what you don't need.</b> Select a backup, click <strong>Delete</strong>, and confirm. The space comes back right away; nothing goes to the Trash.</li>
+        </ol>
+        <h3>In Finder</h3>
+        <ol class="steps">
+          <li><b>Connect the device.</b> Plug it in, or use Wi-Fi if you've set that up, and select it under <strong>Locations</strong> in Finder's sidebar.</li>
+          <li><b>Open Manage Backups.</b> On the <strong>General</strong> tab, click <strong>Manage Backups…</strong>. You'll see every backup on this Mac, with its device name and date.</li>
+          <li><b>Delete one.</b> Select it, click <strong>Delete Backup</strong>, and confirm.</li>
+        </ol>
+        <div class="callout"><p><strong>Don't delete files inside a backup.</strong> Remove whole backups, with one of the methods above. A backup missing some of its files won't restore, and you'll only find out when you need it.</p></div>
+
+        <h2 style="margin-top:56px">Which backups are safe to delete?</h2>
+        <ul>
+          <li><strong>Backups of devices you no longer own.</strong> If the phone was sold, traded in, or replaced, its backup is only useful for digging up something old.</li>
+          <li><strong>Backups you also have in iCloud.</strong> If the device backs up to iCloud (on the iPhone, <strong>Settings › [your name] › iCloud › iCloud Backup</strong>), the copy on your Mac is a second one.</li>
+          <li><strong>Old software updates.</strong> The iOS Files list includes downloaded update files, used when you restore or update a device from the Mac. Finder downloads them again when it needs one.</li>
+        </ul>
+        <p>Keep at least one recent backup of any device you still use and don't back up to iCloud. Encrypted backups also hold saved passwords and Health data, so make sure you have a newer one before you remove an old encrypted backup.</p>
+        <p>More folders that fill a Mac quietly: <a href="/taking-up-space/messages">Messages attachments</a>, <a href="/taking-up-space/icloud-drive">iCloud Drive</a>, and the full checklist in <a href="/free-up-space-on-mac">how to free up space on Mac</a>.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Disk Forecast and iPhone backups</h2>
+
+          <p>Disk Forecast never deletes iPhone backups, and it doesn&#39;t list them as something to clear: deleting the wrong one isn&#39;t a mistake you can rebuild from. Without Full Disk Access, it skips the MobileSync folder entirely, the same way Terminal is blocked. With Full Disk Access, it measures the folder, and if it&#39;s one of your biggest, it shows up under <strong>Taking the most space</strong> in the menu, one click from Finder. Delete backups with Storage settings or Finder&#39;s Manage Backups. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="desk mk" role="img" aria-label="The Mac menu bar showing 142 GB free, with the Disk Forecast menu open: 142 GB free of 494 GB, Full in about 41 days, the five folders taking the most space, and Safe to clear: 12.4 GB.">
+          <div class="mk-menubar">
+            <div class="l"><svg class="apple" viewBox="0 0 14 17"><path d="M11.6 9c0-2 1.6-2.9 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7-.6 0-1.6-.7-2.6-.7C3.4 4.4 2 5.2 1.3 6.6c-1.5 2.6-.4 6.4 1 8.5.7 1 1.5 2.1 2.6 2.1 1 0 1.4-.7 2.7-.7 1.2 0 1.6.7 2.6.7 1.1 0 1.8-1 2.5-2 .8-1.1 1.1-2.2 1.1-2.3 0 0-2.2-.8-2.2-3.4zM9.6 3c.6-.7 1-1.6.9-2.6-.8 0-1.8.6-2.4 1.3-.5.6-1 1.6-.9 2.5.9.1 1.8-.5 2.4-1.2z"/></svg><b>Finder</b><span>File</span><span>Edit</span></div>
+            <div class="r">
+              <span class="item on"><svg viewBox="0 0 24 24"><path d="M5.5 9.5 7.3 5.6A2 2 0 0 1 9.1 4.5h5.8a2 2 0 0 1 1.8 1.1l1.8 3.9"/><rect x="3.5" y="9.5" width="17" height="9" rx="2.2"/><path d="M8.5 14h.01M11 14h.01M13.5 14h.01M16 14h.01"/></svg>142 GB</span>
+              <svg viewBox="0 0 24 24" class="hide-sm"><path d="M2.5 9.5a14 14 0 0 1 19 0M5.6 13a9.5 9.5 0 0 1 12.8 0M8.8 16.4a5 5 0 0 1 6.4 0"/><circle cx="12" cy="19.5" r="0.8" fill="currentColor"/></svg>
+              <svg viewBox="0 0 24 24"><rect x="2" y="7.5" width="18" height="9" rx="2.5"/><path d="M22 10.5v3"/><rect x="4" y="9.5" width="11" height="5" rx="1" fill="currentColor" stroke="none"/></svg>
+              <svg viewBox="0 0 24 24" class="hide-sm"><rect x="3" y="4.5" width="18" height="6.5" rx="3.25"/><rect x="3" y="13" width="18" height="6.5" rx="3.25"/><circle cx="16.5" cy="7.75" r="1.6" fill="currentColor"/><circle cx="7.5" cy="16.25" r="1.6" fill="currentColor"/></svg>
+              <span>Mon 9:41 AM</span>
+            </div>
+          </div>
+          <div class="mk-nsmenu">
+            <div class="mk-item dim"><span class="t">142 GB free of 494 GB</span></div>
+            <div class="mk-item dim"><span class="t">Full in ~41 days</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-label">Taking the most space</div>
+            <div class="mk-item"><span class="t">~/Library</span><span class="v">88 GB</span></div>
+            <div class="mk-item"><span class="t">~/code</span><span class="v">61 GB</span></div>
+            <div class="mk-item"><span class="t">~/Movies</span><span class="v">39 GB</span></div>
+            <div class="mk-item"><span class="t">~/Downloads</span><span class="v">24 GB</span></div>
+            <div class="mk-item"><span class="t">~/Pictures</span><span class="v">20 GB</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-item hl"><span class="t">Safe to clear: 12.4 GB…</span></div>
+            <div class="mk-item"><span class="t">Open Cleanup…</span></div>
+            <div class="mk-item"><span class="t">System Data…</span></div>
+            <div class="mk-item"><span class="t">Rescan</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-item"><span class="t">Settings…</span><span class="k">⌘,</span></div>
+            <div class="mk-item"><span class="t">Check for Updates…</span></div>
+            <div class="mk-item"><span class="t">Quit Disk Forecast</span><span class="k">⌘Q</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>Where are iPhone backups stored on a Mac?</summary><p>In ~/Library/Application Support/MobileSync/Backup, one folder per backup, named with the device&#x27;s identifier. Open it in Finder with Go › Go to Folder. Terminal needs Full Disk Access to read it.</p></details>
+          <details><summary>How do I delete old iPhone backups on my Mac?</summary><p>Open System Settings › General › Storage, click the info button next to iOS Files, select the backup, and click Delete. Or select the device in Finder&#x27;s sidebar, click Manage Backups…, and click Delete Backup.</p></details>
+          <details><summary>Is it safe to delete iPhone backups on a Mac?</summary><p>Yes, for backups you don&#x27;t need: devices you no longer own, or ones that also back up to iCloud. Keep a recent backup of any device you still use, and delete whole backups, never the files inside one.</p></details>
+          <details><summary>Why is iOS Files so big in Storage settings?</summary><p>It includes every device backup on this Mac, plus downloaded iPhone and iPad software updates. Each backup can be tens of gigabytes, and old ones stay until you delete them.</p></details>
+          <details><summary>Can I move iPhone backups to an external drive?</summary><p>Finder has no setting for it; backups always go to the MobileSync folder on your startup disk. Backing the device up to iCloud instead keeps it off your Mac.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/free-up-space-on-mac"><b>How to free up space on Mac</b><span>The complete checklist, from emptying the Trash to System Data.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a><a href="/taking-up-space">What&#x27;s taking up space</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Where are iPhone backups stored on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In ~/Library/Application Support/MobileSync/Backup, one folder per backup, named with the device's identifier. Open it in Finder with Go \u203a Go to Folder. Terminal needs Full Disk Access to read it."}}, {"@type": "Question", "name": "How do I delete old iPhone backups on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Open System Settings \u203a General \u203a Storage, click the info button next to iOS Files, select the backup, and click Delete. Or select the device in Finder's sidebar, click Manage Backups\u2026, and click Delete Backup."}}, {"@type": "Question", "name": "Is it safe to delete iPhone backups on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, for backups you don't need: devices you no longer own, or ones that also back up to iCloud. Keep a recent backup of any device you still use, and delete whole backups, never the files inside one."}}, {"@type": "Question", "name": "Why is iOS Files so big in Storage settings?", "acceptedAnswer": {"@type": "Answer", "text": "It includes every device backup on this Mac, plus downloaded iPhone and iPad software updates. Each backup can be tens of gigabytes, and old ones stay until you delete them."}}, {"@type": "Question", "name": "Can I move iPhone backups to an external drive?", "acceptedAnswer": {"@type": "Answer", "text": "Finder has no setting for it; backups always go to the MobileSync folder on your startup disk. Backing the device up to iCloud instead keeps it off your Mac."}}]}</script>
+</body>
+</html>
