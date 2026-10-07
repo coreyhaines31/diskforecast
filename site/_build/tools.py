@@ -82,7 +82,132 @@ docker volume prune                 # unused anonymous volumes only</code></pre>
     ],
 }
 
-CACHE_TOOLS = [DOCKER]
+# ------------------------------------------------------------------ npm
+# "npm cache clean" 400, "clear npm cache" 300, "how to clear npm cache" 150, "npm cache location" 60.
+NPM = {
+    "slug": "npm",
+    "title": "npm cache clean: how to clear npm cache on Mac",
+    "description": "How to clear npm cache on Mac with npm cache clean --force, where the npm cache is located, why it never shrinks, and the npx folder it doesn't clear.",
+    "h1": "How to clear npm cache on Mac, <em>and what it keeps.</em>",
+    "lede": "npm keeps a copy of every package version it has ever downloaded, and it never deletes any of them on its own. Here's where that lives on a Mac and how to reclaim it.",
+    "tldr": "Run <code>npm cache clean --force</code>. It empties <code>~/.npm/_cacache</code>, where npm keeps every package it has downloaded. Your projects and their <code>node_modules</code> folders aren't touched, and npm downloads packages again as you install them. It doesn't clear the npx cache: move <code>~/.npm/_npx</code> to the Trash for that.",
+    "card_title": "npm",
+    "card_blurb": "npm cache clean --force, the npx folder, and node_modules.",
+    "paths": [
+        ("Package cache", "~/.npm/_cacache", "19 GB"),
+        ("Packages run with npx", "~/.npm/_npx", "4.8 GB"),
+        ("Debug logs", "~/.npm/_logs", "Small"),
+    ],
+    "html": """
+        <h2>npm cache location on Mac</h2>
+        <p>On a Mac, npm's cache folder is <code>~/.npm</code>, a hidden folder in your home folder. To confirm where yours is:</p>
+<pre><code>npm config get cache</code></pre>
+        {{PATHS}}
+        <p>Sizes are from one developer Mac in October 2026: 23 GB in all. It's one folder per user, so every Node version you install with nvm, fnm, or Homebrew shares it. To move it, run <code>npm config set cache /path/to/folder</code>, or set the <code>npm_config_cache</code> environment variable.</p>
+
+        <h2 style="margin-top:56px">What npm cache clean deletes</h2>
+        <p><code>_cacache</code> is a content-addressable store: the tarball and metadata for every package version npm has fetched, checked against its hash every time it's read. Clearing it is safe. Nothing in your projects depends on it; it only saves downloads.</p>
+        <ul>
+          <li><strong>What rebuilds:</strong> the next <code>npm install</code> downloads what it needs and puts it back in the cache.</li>
+          <li><strong>What you lose:</strong> offline installs. <code>--offline</code> and <code>--prefer-offline</code> only work for packages that are cached.</li>
+          <li><strong>What stays:</strong> <code>_npx</code>, <code>_logs</code>, your <code>~/.npmrc</code> settings, and every <code>node_modules</code> folder.</li>
+        </ul>
+        <p>npm's own documentation says the cache is self-healing: corrupted data is detected and fetched again. So clearing it rarely fixes an install error. Its real use is reclaiming disk space, which is why npm makes you add <code>--force</code>.</p>
+
+        <h2 style="margin-top:56px">npm cache commands</h2>
+<pre><code>npm config get cache                   # where the cache is
+du -sh ~/.npm/_cacache ~/.npm/_npx     # how big it is
+npm cache verify                       # check it and garbage-collect unneeded data
+npm cache clean --force                # empty _cacache</code></pre>
+        <ul>
+          <li><strong><code>npm cache verify</code></strong> is the gentle option. It checks every entry and removes data nothing points to anymore. It reclaims some space, not most.</li>
+          <li><strong><code>npm cache clean --force</code></strong> deletes everything in <code>_cacache</code>. Without <code>--force</code>, npm refuses and explains why.</li>
+          <li><strong>The npx cache</strong> holds whole installs of every package you've run with <code>npx</code>, one folder per package. Quit anything running through npx, then move <code>~/.npm/_npx</code> to the Trash. npx downloads a package again the next time you run it.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">How big the npm cache gets</h2>
+        <p>npm never deletes cached data on its own, so the cache only grows. Every new version of every dependency, across every project, adds to it. A few gigabytes is normal after a year; on the developer Mac above, it reached 19 GB, plus 4.8 GB of npx installs. If you've never cleared it, it's likely one of the biggest folders in your home folder.</p>
+
+        <h2 style="margin-top:56px">node_modules: usually the bigger folder</h2>
+        <p>The cache is one folder. <code>node_modules</code> is one per project, and a single Next.js app can have hundreds of megabytes in it. To list them by size:</p>
+<pre><code>find ~ -name node_modules -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
+        <p>Delete the ones in projects you haven't worked on in a while. <code>npm install</code> brings them back from the lockfile, and <code>npm ci</code> deletes and reinstalls them from scratch. If you use pnpm, its shared store at <code>~/Library/pnpm/store</code> is the equivalent of the npm cache: <code>pnpm store prune</code> removes packages no project uses. On the same Mac, it held 12 GB.</p>
+        <p>Using Yarn instead? See <a href="/clear-cache/yarn">how to clear Yarn cache</a>. All the others: <a href="/clear-cache">clear cache by tool</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast lists <code>~/.npm/_cacache</code> and <code>~/.npm/_npx</code> as separate entries under <strong>Cleanup › Safe to clear › Package manager caches</strong>, next to the pnpm store and Bun&#39;s cache. Your <code>node_modules</code> folders show up too, only where a <code>package.json</code> sits beside them: under <strong>Build folders in old projects</strong> if the project hasn&#39;t changed in 30 days, or <strong>Build folders in active projects</strong> if it has. Everything goes to the Trash. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/clear-cache/yarn", "/clear-cache/docker", "/clear-cache/homebrew"],
+    "faqs": [
+        ("How do I clear the npm cache?", "Run npm cache clean --force. It empties ~/.npm/_cacache, and npm downloads packages again as you install them. npm requires --force because its cache is self-healing and rarely needs clearing for any reason other than disk space."),
+        ("Where is the npm cache located on a Mac?", "In ~/.npm, a hidden folder in your home folder. The package cache is ~/.npm/_cacache and npx installs are in ~/.npm/_npx. Run npm config get cache to confirm the location on your Mac."),
+        ("Is it safe to delete the npm cache?", "Yes. It's only a store of downloaded packages; no project depends on it. The next npm install downloads what it needs, so it takes longer once and offline installs stop working until the cache refills."),
+        ("Does npm cache clean delete node_modules?", "No. It only empties ~/.npm/_cacache. Each project's node_modules folder stays until you delete it yourself. They're often bigger in total than the cache, and npm install brings them back."),
+        ("Why is my npm cache so big?", "npm never deletes cached data on its own. Every version of every package you've installed, across every project and Node version, stays in it. npx adds a full install for each package you run in ~/.npm/_npx."),
+    ],
+}
+
+# ------------------------------------------------------------------ Yarn
+# "yarn cache clean" 100, "clear yarn cache" 70, "yarn cache location".
+YARN = {
+    "slug": "yarn",
+    "title": "Yarn cache clean: clear Yarn cache on Mac, for every version",
+    "description": "How to clear Yarn cache on Mac for Yarn 1 and Yarn Berry: where each keeps its cache, what yarn cache clean --all removes, and the folder not to delete.",
+    "h1": "Yarn cache clean on Mac, <em>for every Yarn.</em>",
+    "lede": "Yarn 1 and Yarn 2 and later keep their caches in different places and clear them with different flags. Start by finding out which one a project uses.",
+    "tldr": "For Yarn 1 (classic), run <code>yarn cache clean</code>; its cache is <code>~/Library/Caches/Yarn</code> on a Mac. For Yarn 2 and later (Berry), run <code>yarn cache clean --all</code> inside a project to clear both the shared cache in <code>~/.yarn/berry/cache</code> and that project's cache. If a project commits <code>.yarn/cache</code> to git, leave that folder alone.",
+    "card_title": "Yarn",
+    "card_blurb": "yarn cache clean for Yarn 1 and Berry, and where each cache lives.",
+    "paths": [
+        ("Yarn 1 cache", "~/Library/Caches/Yarn/v6", "424 MB"),
+        ("Yarn Berry shared cache", "~/.yarn/berry/cache", "Not present on the Mac we measured"),
+        ("Yarn Berry project cache", "your-project/.yarn/cache", "Per project"),
+    ],
+    "html": """
+        <h2>Yarn cache location on Mac</h2>
+        <p>First, check which Yarn a project runs. Inside the project folder:</p>
+<pre><code>yarn --version</code></pre>
+        <p>1.x is classic Yarn. 2.x, 3.x, or 4.x is Berry, usually pinned by the <code>packageManager</code> field in <code>package.json</code>, so one Mac can run both. Each keeps its cache in a different place:</p>
+        {{PATHS}}
+        <p>Sizes are from one developer Mac in October 2026, which only had classic Yarn caches. To print the location yourself, use <code>yarn cache dir</code> for Yarn 1, or <code>yarn config get cacheFolder</code> inside a Berry project. Yarn 4 uses the shared cache by default; Yarn 2 and 3 keep a cache per project unless <code>enableGlobalCache</code> is on.</p>
+
+        <h2 style="margin-top:56px">How to clear Yarn cache</h2>
+        <h3>Yarn 1 (classic)</h3>
+<pre><code>yarn cache list               # what's cached
+yarn cache clean              # everything
+yarn cache clean lodash       # one package</code></pre>
+        <h3>Yarn 2 and later (Berry)</h3>
+<pre><code>yarn cache clean              # this project's cache
+yarn cache clean --mirror     # the shared cache in ~/.yarn/berry/cache
+yarn cache clean --all        # both</code></pre>
+        <p>Run Berry's commands from inside a Berry project, since that's where Yarn decides which version to use. In Yarn 4, plain <code>yarn cache clean</code> may have little to clear because packages go to the shared cache; <code>--all</code> is the one that reclaims space.</p>
+
+        <h2 style="margin-top:56px">Is it safe to clear Yarn cache?</h2>
+        <p>Yes, with one exception. The cache only holds package archives, and the next <code>yarn install</code> fetches what's missing. Your lockfile decides what gets installed, so nothing changes about your dependencies.</p>
+        <div class="callout"><p><strong>The exception: zero-installs.</strong> Some Berry projects commit <code>.yarn/cache</code> to git so a fresh clone runs without an install. In those, the folder is part of the repository. Deleting it shows up as hundreds of changed files. Check <code>git status</code> before you touch it.</p></div>
+
+        <h2 style="margin-top:56px">How big the Yarn cache gets</h2>
+        <p>Like npm, Yarn keeps every version you've downloaded. Classic Yarn also keeps unpacked copies, so it grows faster than you'd expect. On the developer Mac above, it was 424 MB, which is small because most projects there use npm and pnpm. On a Mac that's used Yarn for years, a few gigabytes is common.</p>
+
+        <h2 style="margin-top:56px">What about node_modules?</h2>
+        <p>Projects using classic Yarn, or Berry with <code>nodeLinker: node-modules</code>, have a <code>node_modules</code> folder in each project, and those usually add up to more than the cache. Delete them in old projects; <code>yarn install</code> brings them back. Berry's default Plug'n'Play mode has no <code>node_modules</code> at all: it reads packages straight from the cache, which is why the cache matters more there.</p>
+        <p>Also clearing npm? See <a href="/clear-cache/npm">npm cache clean</a>. Or browse <a href="/clear-cache">every tool's cache</a>.</p>
+    """,
+    "finds": """
+          <p>Classic Yarn&#39;s cache is in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>Yarn</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>. Berry&#39;s shared cache in <code>~/.yarn/berry/cache</code> isn&#39;t listed; clear it with <code>yarn cache clean --mirror</code>. <code>node_modules</code> folders next to a <code>package.json</code> show up under <strong>Build folders in old projects</strong> or <strong>Build folders in active projects</strong>, depending on when you last changed the project. Everything goes to the Trash. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/clear-cache/npm", "/clear-cache/homebrew", "/clear-cache/docker"],
+    "faqs": [
+        ("How do I clear the Yarn cache?", "For Yarn 1, run yarn cache clean. For Yarn 2 and later, run yarn cache clean --all inside a project to clear the shared cache and that project's cache. Check which you have with yarn --version."),
+        ("Where is the Yarn cache located on a Mac?", "Yarn 1 uses ~/Library/Caches/Yarn; run yarn cache dir to confirm. Yarn 2 and later use ~/.yarn/berry/cache for the shared cache and .yarn/cache inside each project."),
+        ("What's the difference between yarn cache clean and yarn cache clean --all?", "In Yarn 2 and later, yarn cache clean removes the current project's cache, --mirror removes the shared cache, and --all removes both. In Yarn 1, yarn cache clean removes the whole cache."),
+        ("Is it safe to delete the Yarn cache?", "Yes, unless the project commits .yarn/cache to git for zero-installs. Then the folder is part of the repository. Otherwise, yarn install downloads what's missing."),
+    ],
+}
+
+CACHE_TOOLS = [DOCKER, NPM, YARN]
 
 CLEAR_CACHE_HUB = {
     "path": "/clear-cache",
