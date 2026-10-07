@@ -339,11 +339,111 @@ pip cache purge</code></pre>
           <h2>Or do it in one window.</h2>
           <p>Disk Forecast breaks System Data into the parts above, explains each one, and runs Apple&#39;s own tool for each fix after you confirm. It&#39;s free.</p>
     """,
+    "card_title": "How to clear System Data",
+    "card_blurb": "The step-by-step guide, using only Apple's own tools.",
+    "footer": "Clear System Data",
     "mockup": "system-data",
     "cta": "Know before it's full.",
 }
 
-GUIDES = [SYSTEM_DATA]
+# Targets "how to clear cache on mac" (17,000/mo US, KD 1), plus "clear cache on mac", "how to clear cache and cookies on mac",
+# "how to clear cache on macbook air/pro", and "is it safe to delete cache files on mac". Most searchers mean the browser.
+CACHE = {
+    "path": "/how-to-clear-cache-on-mac",
+    "title": "How to clear cache on Mac: Safari, Chrome, and app caches",
+    "description": "How to clear cache on Mac: Safari, Chrome, and Firefox in under a minute, then app caches in ~/Library/Caches and developer caches like npm and Xcode.",
+    "eyebrow": "Guide",
+    "h1": "How to clear cache on Mac, <em>safely.</em>",
+    "lede": "Most people mean the browser cache, so that comes first: Safari, Chrome, and Firefox, each in under a minute. Then the caches that take real disk space: your apps, macOS itself, and developer tools.",
+    "tldr": "In Safari, turn on <strong>Settings › Advanced › Show features for web developers</strong>, then choose <strong>Develop › Empty Caches</strong>. In Chrome, press Command-Shift-Delete, check <strong>Cached images and files</strong>, and click <strong>Delete data</strong>. For app caches, quit the app and move its folder in <code>~/Library/Caches</code> to the Trash. Leave macOS's own caches alone.",
+    "card_title": "How to clear cache on Mac",
+    "card_blurb": "Safari, Chrome, and Firefox first, then app and developer caches.",
+    "footer": "Clear cache on Mac",
+    "related": ["/free-up-space-on-mac", "/how-to-check-storage-on-mac", "/system-data"],
+    "faqs": [
+        ("How do I clear cache on a MacBook Air or MacBook Pro?", "The same way as on any Mac. MacBook Air, MacBook Pro, iMac, and Mac mini all run macOS, so the Safari, Chrome, Firefox, and ~/Library/Caches steps in this guide work on each one."),
+        ("Is it safe to delete cache files on Mac?", "For the caches in your own Library folder, yes. A cache is a copy an app can make again, so the cost is a slower first launch while it rebuilds. Quit the app first, move the folders inside ~/Library/Caches to the Trash, and keep the Caches folder itself."),
+        ("Is it safe to delete all cache files on Mac?", "Not all at once, and not the system ones. Your own app caches are fine to clear with the apps quit. Leave /Library/Caches and /System/Library/Caches to macOS, and never delete the Caches folder itself."),
+        ("Will clearing the cache sign me out or delete my passwords?", "Clearing the browser cache won't. Clearing cookies signs you out of most sites. Saved passwords live in your keychain, which the Passwords app shows on macOS 15 and later, not in any cache."),
+        ("Why does the cache come back after I clear it?", "Because that's its job. Apps and browsers rebuild their caches as you use them, so clearing them reclaims space for a while rather than for good. Disk Forecast shows how fast your disk is filling, so you know when it's worth doing again."),
+        ("Will clearing cache fix a slow Mac?", "Rarely. Clearing a browser cache can fix a site that loads wrong, and clearing an app's cache can fix an app that misbehaves. On an SSD, free space only matters to how a Mac runs when the disk is nearly full."),
+    ],
+    "html": """
+        <h2>How to clear browser cache on Mac</h2>
+        <p>Your browser cache holds copies of images, scripts, and pages from sites you've visited, so they load faster next time. Clearing it fixes pages that look stale or broken, and usually reclaims a few hundred megabytes to a couple of gigabytes. It doesn't sign you out. Cookies do that, and they're a separate checkbox.</p>
+
+        <h3>Safari</h3>
+        <ol class="steps">
+          <li><b>Show the Develop menu.</b> Choose <strong>Safari › Settings › Advanced</strong> and turn on <strong>Show features for web developers</strong>. Older versions of Safari call it Show Develop menu in menu bar.</li>
+          <li><b>Empty the cache.</b> Choose <strong>Develop › Empty Caches</strong>, or press Option-Command-E. Your history, cookies, and logins stay put.</li>
+        </ol>
+
+        <h3>Chrome</h3>
+        <ol class="steps">
+          <li><b>Open Delete browsing data.</b> Press Command-Shift-Delete, or choose <strong>Chrome › Delete Browsing Data</strong>. Older versions call it Clear Browsing Data.</li>
+          <li><b>Pick the cache only.</b> Set <strong>Time range</strong> to <strong>All time</strong>, check <strong>Cached images and files</strong>, and uncheck the rest unless you want those gone too.</li>
+          <li><b>Click Delete data.</b> Chrome keeps your logins as long as cookies stay unchecked.</li>
+        </ol>
+
+        <h3>Firefox</h3>
+        <ol class="steps">
+          <li><b>Open Clear Data.</b> Choose <strong>Firefox › Settings › Privacy &amp; Security</strong>, scroll to <strong>Cookies and Site Data</strong>, and click <strong>Clear Data</strong>.</li>
+          <li><b>Pick cached files.</b> Check <strong>Temporary cached files and pages</strong> (older versions say Cached Web Content), uncheck cookies, and click <strong>Clear</strong>.</li>
+        </ol>
+
+        <h2 style="margin-top:56px">How to clear cache and cookies on Mac</h2>
+        <p>Clearing cookies signs you out of most sites, so do it on purpose: a site that keeps misbehaving, a Mac you're handing to someone else, or a clean start.</p>
+        <ul>
+          <li><strong>Safari:</strong> choose <strong>Safari › Clear History</strong>, pick <strong>all history</strong>, and click <strong>Clear History</strong>. That removes history, cookies, and cached data together. To keep your history, use <strong>Safari › Settings › Privacy › Manage Website Data</strong> and click <strong>Remove All</strong> instead.</li>
+          <li><strong>Chrome:</strong> in Delete browsing data, check both <strong>Cookies and other site data</strong> and <strong>Cached images and files</strong>.</li>
+          <li><strong>Firefox:</strong> in Clear Data, check both <strong>Cookies and site data</strong> and <strong>Temporary cached files and pages</strong>.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">How to clear app caches on Mac</h2>
+        <p>Every app keeps its cache in your Library folder, and this is where the gigabytes usually are. On the Mac this guide was written on, <code>~/Library/Caches</code> held 17 GB. Chrome's disk cache lives here too, in the <code>Google</code> folder, alongside folders like <code>Homebrew</code>, <code>pip</code>, and <code>com.spotify.client</code>.</p>
+        <ol class="steps">
+          <li><b>Quit the apps whose caches you'll clear.</b> A running app can rewrite its cache while you work, or trip over it when it disappears.</li>
+          <li><b>Open the Caches folder.</b> In Finder, choose <strong>Go › Go to Folder</strong> (Command-Shift-G), type <code>~/Library/Caches</code>, and press Return.</li>
+          <li><b>Sort by size.</b> Choose <strong>View › as List</strong>, then <strong>View › Show View Options</strong> and turn on <strong>Calculate all sizes</strong>. Click the Size column.</li>
+          <li><b>Move the big folders to the Trash.</b> Start with apps you recognize. Move the folders inside Caches, never the Caches folder itself.</li>
+          <li><b>Empty the Trash a day later.</b> Use your Mac as usual first. If an app acts up, put its folder back. Otherwise, empty the Trash and the space is yours.</li>
+        </ol>
+        <p>Want to know what else is filling the disk before you start? <a href="/how-to-check-storage-on-mac">Check your Mac's storage</a> first; caches are often only part of the story.</p>
+
+        <h2 style="margin-top:56px">Is it safe to delete cache files on Mac?</h2>
+        <p>For the caches in your own Library folder, yes. A cache is, by definition, a copy an app can make again. The cost is time: the app is slower the first time it rebuilds, and a music or video app may download things again.</p>
+        <ul>
+          <li><strong>Clear the contents, not the folder.</strong> Leave <code>~/Library/Caches</code> itself in place. Apps expect it to exist.</li>
+          <li><strong>Skip Apple's folders.</strong> Folders that start with <code>com.apple.</code> belong to macOS and Apple's apps. macOS manages them and rebuilds them right away, so you gain little.</li>
+          <li><strong>Don't expect it to last.</strong> Caches refill as you use your apps. Clear them when you need the room or an app misbehaves, not as a weekly chore.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">System caches: leave them to macOS</h2>
+        <p>macOS keeps its own caches in <code>/Library/Caches</code> and <code>/System/Library/Caches</code>. Leave both alone. The system folder is protected by System Integrity Protection, and on most Macs <code>/Library/Caches</code> is small anyway; on the Mac this guide was written on, it was 7 MB.</p>
+        <p>If you suspect a bad system cache, start up in safe mode, which Apple says deletes some system caches as part of its checks. On a Mac with Apple silicon, shut down, press and hold the power button until the startup options appear, select your disk, then hold Shift and click <strong>Continue in Safe Mode</strong>. Restart normally afterward, and macOS rebuilds what it needs.</p>
+
+        <h2 style="margin-top:56px">Developer caches: npm, Docker, and Xcode</h2>
+        <p>If you write code, this is where cache gets big. Package managers keep every version they've ever downloaded, and Xcode keeps build products for every project you've opened. On the Mac this guide was written on, npm's cache alone was 23 GB.</p>
+        <p>Each tool clears its own cache, and downloads what it needs again on the next install:</p>
+<pre><code>npm cache clean --force
+pnpm store prune
+yarn cache clean
+pip cache purge
+brew cleanup --prune=all</code></pre>
+        <p>Docker keeps images and build cache inside its disk image. Its own command removes what nothing is using:</p>
+<pre><code>docker builder prune
+docker system prune</code></pre>
+        <p>For Xcode, quit it, then move the folders inside <code>~/Library/Developer/Xcode/DerivedData</code> to the Trash; Xcode rebuilds them on the next build. Folders in <code>~/Library/Developer/Xcode/iOS DeviceSupport</code> come back when you plug that device in again. Simulator runtimes are bigger still, and they count toward System Data; <a href="/system-data">the System Data guide</a> covers removing them with <code>xcrun simctl</code>.</p>
+    """,
+    "shortcut": """
+          <h2>Or reclaim every cache in one window.</h2>
+          <p>Disk Forecast finds app caches, package manager caches, Xcode DerivedData and device support, and logs, and explains each one. They rebuild themselves, so they come checked. macOS&#39;s own caches are left alone, and everything goes to the Trash. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "cta": "Know before it's full.",
+}
+
+GUIDES = [SYSTEM_DATA, CACHE]
 
 # ---------------------------------------------------------------------- Privacy
 PRIVACY = {
