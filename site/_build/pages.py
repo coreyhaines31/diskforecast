@@ -1157,4 +1157,74 @@ ANALYZER = {
     "cta": "Know before it's full.",
 }
 
-ROUNDUPS = [BEST_FREE, ANALYZER]
+# Targets "is cleanmymac safe" (150/mo US, KD 0), "cleanmymac review" (250), and "is cleanmymac worth it" (40).
+# Facts, checked 2026-10-06: the CleanMyMac Mac App Store listing (id1339170533: version 5.7.1, in-app prices, features),
+# macpaw.com/cleanmymac ("Notarized by Apple", "from $3.33/month"), macpaw.com/how-to/is-cleanmymac-safe, macworld.com/article/352922
+# (the July 2025 price change), and the 5.7.1 DMG from download.macpaw.com (Gatekeeper: Notarized Developer ID, MacPaw Way Ltd; arm64 + x86_64).
+# macpaw.com/store returns 403 to scripts, so the table uses App Store prices. Keep it fair: no claims beyond these sources.
+CLEANMYMAC_SAFE = {
+    "path": "/is-cleanmymac-safe",
+    "title": "Is CleanMyMac safe? An honest review for 2026",
+    "description": "Is CleanMyMac safe? It's notarized and made by MacPaw, so it isn't malware. Here's what it deletes, what it costs in 2026, and what you can do for free.",
+    "eyebrow": "Review",
+    "h1": "Is CleanMyMac safe? <em>Yes. Here's what it costs.</em>",
+    "lede": "CleanMyMac comes up in every thread about a full Mac, usually next to someone asking whether it's safe. It is. Here's what it is, what it deletes, what it costs, and when a free tool does the same job.",
+    "tldr": "CleanMyMac is safe to install. It's made by MacPaw, it's sold on the Mac App Store, and the app from MacPaw's site is signed and notarized by Apple. It removes caches, logs, app leftovers, and the files you pick, after you review them. It's a subscription: on the Mac App Store, $39.99 a year, or $65.99 a year for Plus. If you mostly want disk space back, free tools do that part.",
+    "card_title": "Is CleanMyMac safe?",
+    "card_blurb": "What it deletes, what it costs in 2026, and the free options.",
+    "footer": "Is CleanMyMac safe?",
+    "related": ["/alternatives/cleanmymac", "/best-free-mac-cleaner", "/free-up-space-on-mac"],
+    "faqs": [
+        ("Is CleanMyMac safe to use?", "Yes. It's made by MacPaw, sold on the Mac App Store, and the version on MacPaw's site is signed and notarized by Apple. As with any cleaner, review what it selects before you click, because some of it, like language files or mail attachments, you may want to keep."),
+        ("Is CleanMyMac a virus or malware?", "No. Apple notarizes the app MacPaw distributes, which means Apple scanned it for known malware, and the Mac App Store version passes Apple's review. Fake cleaner pop-ups on websites are a different thing."),
+        ("Is CleanMyMac worth it?", "If you use most of the suite, like the malware scans, the app updater, and the uninstaller, it can be. If you mainly open it because your disk is full, free tools reclaim the same space without a yearly fee."),
+        ("How much is CleanMyMac?", "On the Mac App Store as of October 2026: $9.99 a month or $39.99 a year, Plus at $15.99 a month or $65.99 a year, and a one-time CleanMyMac X purchase at $89.99. MacPaw's own site advertises plans from $3.33 a month. Prices vary by region and change over time."),
+        ("Is there a free version of CleanMyMac?", "There's a free trial, and the App Store download itself is free, with plans sold as in-app purchases. The free options on this page cover disk space without a subscription."),
+        ("Can I use CleanMyMac and Disk Forecast together?", "Yes. They don't conflict. Disk Forecast only moves files to the Trash when you ask it to."),
+    ],
+    "html": """
+        <h2>Is CleanMyMac malware?</h2>
+        <p>No. CleanMyMac is made by MacPaw, a long-running Mac developer, and it's sold on the Mac App Store, where apps go through Apple's review. We also downloaded version 5.7.1 from MacPaw's site in October 2026: it's signed with MacPaw's Developer ID and notarized by Apple, which means Apple scanned it for known malware before it could run. It runs natively on Apple silicon and Intel, and needs macOS 11 or later.</p>
+        <p>Most of the doubt comes from the category. Fake cleaner pop-ups and scary “your Mac is infected” warnings on websites have nothing to do with MacPaw, but they make every cleaner look suspect.</p>
+
+        <h2 style="margin-top:56px">What CleanMyMac deletes</h2>
+        <p>MacPaw says its cleanup targets “cache files, outdated logs, broken downloads, unused language files, application leftovers,” and stays away from “core macOS system files, user documents, and files needed for macOS operation.” A Safety Database of rules and exceptions decides what's eligible, and you review the results and can deselect anything before it's removed.</p>
+        <p>The rest of the suite, per its App Store listing: malware scans powered by Moonlock, background process management, an uninstaller and app updater, cloud storage cleanup, and a finder for duplicates, similar photos, and large files.</p>
+        <h3>What to watch for</h3>
+        <ul>
+          <li><strong>Review before you click.</strong> Caches rebuild on their own. Language files, mail attachments, and leftovers from an app you still use are worth a second look.</li>
+          <li><strong>Know where files go.</strong> We couldn't confirm from MacPaw's materials whether cleanup moves files to the Trash or removes them outright, so treat it as permanent until you've checked.</li>
+          <li><strong>Read the performance claims carefully.</strong> MacPaw's site says it can “make your slow Mac fast again.” On an SSD, clearing caches doesn't make a Mac faster, and free space only matters when the disk is nearly full. Managing background processes can help a Mac that's genuinely overloaded, but so can Activity Monitor, which is built in.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">What CleanMyMac costs</h2>
+        {{TABLE:prices}}
+        <p>Prices are from the Mac App Store listing on October 6, 2026, in US dollars. MacPaw's own site advertises plans “from $3.33/month,” and Macworld reported direct prices of $47.50 a year for Basic and $71.40 for Plus after MacPaw's July 2025 price change. There's a free trial. Check MacPaw's store for the plans in your region.</p>
+
+        <h2 style="margin-top:56px">Is CleanMyMac worth it?</h2>
+        <p>It depends on how much of it you use. If you want malware scans, an app updater, an uninstaller, and cleanup in one polished app with a company and a support team behind it, the yearly price buys that. If you opened it because the disk was full, you'd be paying every year for the one part free tools already cover.</p>
+
+        <h2 style="margin-top:56px">What you can do for free</h2>
+        <ul>
+          <li><strong>Storage settings.</strong> <strong>System Settings › General › Storage</strong> shows what's using space and lets you delete large files and old backups. <a href="/free-up-space-on-mac">The free up space checklist</a> goes step by step.</li>
+          <li><strong>Disk Forecast.</strong> A free menu bar app that tells you when your disk will be full, lists what's safe to clear with an explanation of each item, and moves it to the Trash. Its System Data window runs Apple's own tools after showing you the command. It doesn't scan for malware or uninstall apps.</li>
+          <li><strong>AppCleaner.</strong> A free uninstaller from FreeMacSoft that removes an app along with its leftover files.</li>
+        </ul>
+        <p>More options, including GrandPerspective and Mole, are in <a href="/best-free-mac-cleaner">the best free Mac cleaner roundup</a>, and <a href="/alternatives/cleanmymac">CleanMyMac compared with Disk Forecast</a> goes feature by feature.</p>
+    """,
+    "tables": {"prices": {"head": ["Plan", "Price on the Mac App Store"], "rows": [
+        ("CleanMyMac, monthly", "$9.99"),
+        ("CleanMyMac, yearly", "$39.99"),
+        ("CleanMyMac Plus, monthly", "$15.99"),
+        ("CleanMyMac Plus, yearly", "$65.99"),
+        ("CleanMyMac X, one-time purchase", "$89.99"),
+    ]}},
+    "shortcut": """
+          <h2>Reclaim space without a subscription.</h2>
+          <p>Disk Forecast lists what&#39;s safe to clear, explains every item, and moves it to the Trash after one confirm. It&#39;s free, and the source is on GitHub.</p>
+    """,
+    "mockup": "cleanup",
+    "cta": "Reclaim space, free.",
+}
+
+ROUNDUPS = [BEST_FREE, ANALYZER, CLEANMYMAC_SAFE]
