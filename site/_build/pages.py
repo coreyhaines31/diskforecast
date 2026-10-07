@@ -261,9 +261,13 @@ HUB = {
     """,
 }
 
-# ---------------------------------------------------------------------- System Data guide
+# ---------------------------------------------------------------------- Guides
+# Each guide renders with the same template: TL;DR, prose, a shortcut section with one homepage mockup,
+# its FAQ (also its FAQPage JSON-LD), related guides, and the download CTA.
+# Keyword research: ~/code/diskforecast/docs/seo/keywords-2026-10-06.md, section 1.
+
 # Targets "how to clear system data on mac" (3,500/mo US, KD 0), plus "how to delete system data on mac" and "system data mac".
-GUIDE = {
+SYSTEM_DATA = {
     "path": "/system-data",
     "title": "How to clear System Data on Mac, safely",
     "description": "What's inside System Data on your Mac, which parts you can safely reclaim, and how to clear System Data step by step using only Apple's own tools.",
@@ -335,7 +339,11 @@ pip cache purge</code></pre>
           <h2>Or do it in one window.</h2>
           <p>Disk Forecast breaks System Data into the parts above, explains each one, and runs Apple&#39;s own tool for each fix after you confirm. It&#39;s free.</p>
     """,
+    "mockup": "system-data",
+    "cta": "Know before it's full.",
 }
+
+GUIDES = [SYSTEM_DATA]
 
 # ---------------------------------------------------------------------- Privacy
 PRIVACY = {

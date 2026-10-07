@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Renders site/alternatives/*.html, the alternatives hub, /system-data, and /privacy from pages.py,
+"""Renders site/alternatives/*.html, the alternatives hub, the guides, and /privacy from pages.py,
 and rewrites the homepage footer list and JSON-LD between their <!-- alternatives --> and <!-- schema --> markers.
 
     python3 site/_build/render.py
@@ -11,7 +11,7 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
-from pages import GUIDE, HUB, PAGES, PRIVACY  # noqa: E402
+from pages import GUIDES, HUB, PAGES, PRIVACY  # noqa: E402
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 SITE = "https://diskforecast.com"
@@ -278,8 +278,24 @@ def render_hub():
         f.write(body)
 
 
-def render_guide():
-    g = GUIDE
+def related_guides(g):
+    """Cards for the guides this one points to, by path."""
+    if not g.get("related"):
+        return ""
+    by_path = {q["path"]: q for q in GUIDES}
+    cards = "".join(f'          <a class="glass" href="{q["path"]}"><b>{esc(q["card_title"])}</b><span>{esc(q["card_blurb"])}</span></a>\n'
+                    for q in (by_path[path] for path in g["related"]))
+    return f'''    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+{cards}        </div>
+      </div>
+    </section>
+'''
+
+
+def render_guide(g):
     body = f'''{head(g["title"], g["description"], g["path"])}{nav()}  <main>
     <div class="sub-hero">
       <div class="wrap narrow">
@@ -303,11 +319,11 @@ def render_guide():
           </div>
         </div>
         <div class="stage glass">
-          {mockup("system-data")}
+          {mockup(g["mockup"])}
         </div>
       </div>
     </section>
-{faq_block(g["faqs"])}{cta("Know before it's full.")}  </main>
+{faq_block(g["faqs"])}{related_guides(g)}{cta(g["cta"])}  </main>
 {footer()}{faq_schema(g["faqs"])}
 </body>
 </html>
@@ -339,6 +355,7 @@ if __name__ == "__main__":
     render_hub()
     render_homepage_footer()
     render_homepage_schema()
-    render_guide()
+    for g in GUIDES:
+        render_guide(g)
     render_privacy()
-    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + system-data guide + privacy")
+    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + {len(GUIDES)} guides + privacy")
