@@ -259,7 +259,66 @@ DROPBOX = {
     ],
 }
 
-FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX]
+# ------------------------------------------------------------------ iCloud Drive
+# "icloud drive taking up space on mac" 100 / KD 0, "why is icloud drive taking up space on my mac" 60. "Optimize Mac Storage"
+# is Apple's setting name (AOSUI's iCloud Drive nib) and the only place "optimize" appears. "Remove Download", "Download Now",
+# "Keep Downloaded" (Finder), "iCloud Drive" Storage category (StorageUI), and the turn-off prompt (iCloudQuotaUI) are
+# macOS 26.6 strings. iCloud Drive is off on the measuring Mac, so no size and no folder listing.
+ICLOUD_DRIVE = {
+    "slug": "icloud-drive",
+    "title": "iCloud Drive taking up space on Mac: why and what to do",
+    "description": "Why iCloud Drive takes up space on your Mac when your files are in iCloud, and how Optimize Mac Storage and Remove Download move them back off your disk.",
+    "h1": "iCloud Drive taking up space on Mac, <em>explained.</em>",
+    "lede": "Your files are in iCloud, so why is your Mac full of them? Because iCloud Drive also keeps downloaded copies on the Mac, and by default, it can keep all of them. Here's how to see it and how to send them back.",
+    "tldr": "iCloud Drive keeps a downloaded copy of every file you open or save, and without <strong>Optimize Mac Storage</strong> it keeps them all. Turn that setting on in <strong>System Settings › [your name] › iCloud</strong>, and macOS removes downloads of older files when space runs low. To reclaim space now, Control-click big files or folders in iCloud Drive and choose <strong>Remove Download</strong>. Don't delete them: that deletes them from iCloud too.",
+    "card_title": "iCloud Drive",
+    "card_blurb": "Optimize Mac Storage, Remove Download, and why it uses space.",
+    "finds_title": "Disk Forecast and iCloud Drive",
+    "paths": [
+        ("iCloud Drive in Finder's sidebar", "~/Library/Mobile Documents", "iCloud Drive was off on the Mac we measured"),
+        ("Desktop and Documents, if stored in iCloud", "~/Desktop and ~/Documents", "Same rules as iCloud Drive"),
+    ],
+    "html": """
+        <h2>Why is iCloud Drive taking up space on my Mac?</h2>
+        <p>iCloud Drive is a sync service, not just storage somewhere else. Files you save there go to iCloud and stay on your Mac. Files you open from another device are downloaded and stay too. Unless you tell macOS otherwise, nothing ever leaves. So a 200 GB iCloud plan can mean close to 200 GB on your Mac.</p>
+        {{PATHS}}
+        <p>Finder shows it as <strong>iCloud Drive</strong> in the sidebar; the files behind it are in your Library, in a folder macOS guards. Storage settings gives it its own category, <strong>iCloud Drive</strong>. If you've turned on <strong>Desktop &amp; Documents Folders</strong> for iCloud Drive, those two folders follow the same rules.</p>
+        <p>Three things decide how much of it sits on your disk:</p>
+        <ul>
+          <li><strong>Optimize Mac Storage is off.</strong> Then macOS keeps a full copy of everything in iCloud Drive on your Mac.</li>
+          <li><strong>Files you've opened.</strong> Opening a cloud-only file downloads it, and it stays until macOS or you remove the download.</li>
+          <li><strong>Keep Downloaded.</strong> On recent versions, Finder can pin a file or folder so it's never removed. Pinned items always use their full size.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Optimize Mac Storage for iCloud Drive</h2>
+        <ol class="steps">
+          <li><b>Open iCloud settings.</b> Choose <strong>Apple menu › System Settings</strong>, click your name at the top of the sidebar, then click <strong>iCloud</strong>.</li>
+          <li><b>Find iCloud Drive's options.</b> On recent versions, the switch is inside <strong>Drive</strong> (called iCloud Drive on some versions). On macOS 14, it's at the bottom of the iCloud pane.</li>
+          <li><b>Turn on Optimize Mac Storage.</b> macOS then keeps recent files on your Mac and removes the downloads of older ones when space is needed. They stay in iCloud, and download again when you open them.</li>
+        </ol>
+        <p>Downloads macOS can remove this way count as purgeable, which is why Finder may show more space available than you expect. <a href="/purgeable-space-mac">Purgeable space</a> explains how that works.</p>
+
+        <h2 style="margin-top:56px">How to remove iCloud Drive downloads now</h2>
+        <p>Optimize Mac Storage waits until space runs low. To reclaim it today, open iCloud Drive in Finder, choose <strong>View › as List</strong>, and find big files or folders. Control-click one and choose <strong>Remove Download</strong>. The file stays in iCloud Drive with a cloud icon, and <strong>Download Now</strong> brings it back.</p>
+        <div class="callout"><p><strong>Remove Download, not Move to Trash.</strong> Deleting a file in iCloud Drive deletes it from iCloud and every device. It goes to Recently Deleted in iCloud Drive first, so you can get it back for a while.</p></div>
+        <p>Turning iCloud Drive off is the bluntest option. macOS asks whether to keep your files on this Mac or remove them from it; your files stay in iCloud Drive either way. Pick remove, and your Mac only has what you copy out first.</p>
+        <p>Dropbox and Google Drive work much the same way: see <a href="/taking-up-space/dropbox">Dropbox taking up space</a>. Also worth a look: <a href="/taking-up-space/messages">Messages attachments</a> and <a href="/taking-up-space/iphone-backups">iPhone backups</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast never downloads iCloud files to measure them, and never removes them. Without Full Disk Access, it skips the iCloud Drive folder. With it, the folder is measured by what&#39;s really on disk, so cloud-only files count as nothing and downloaded ones count in full. Downloads macOS can remove on its own are part of the <strong>Purgeable space</strong> row in its System Data window, which explains why Finder counts them as free. It&#39;s free.</p>
+    """,
+    "mockup": "system-data",
+    "related": ["/taking-up-space/dropbox", "/purgeable-space-mac", "/taking-up-space/messages"],
+    "faqs": [
+        ("Why is iCloud Drive taking up space on my Mac?", "Because iCloud Drive keeps downloaded copies of files on your Mac. Without Optimize Mac Storage, it keeps every file. Files you open from iCloud download too, and stay until their download is removed."),
+        ("How do I stop iCloud Drive from using storage on my Mac?", "Turn on Optimize Mac Storage in System Settings › [your name] › iCloud, so macOS removes downloads of older files when space is low. To reclaim space now, Control-click big files in iCloud Drive and choose Remove Download."),
+        ("What does Remove Download do in iCloud Drive?", "It deletes the copy on your Mac and keeps the file in iCloud Drive, shown with a cloud icon. Download Now, or opening the file, brings it back."),
+        ("Does deleting files from iCloud Drive free up space on my Mac?", "Yes, but it also deletes them from iCloud and your other devices. Use Remove Download to free space on your Mac and keep the files."),
+        ("What does Optimize Mac Storage do?", "When it's on, macOS keeps recent iCloud Drive files on your Mac and removes downloads of older ones when space is needed. The files stay in iCloud and download again when you open them."),
+    ],
+}
+
+FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX, ICLOUD_DRIVE]
 
 TAKING_UP_SPACE_HUB = {
     "path": "/taking-up-space",
