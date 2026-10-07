@@ -216,6 +216,62 @@ pip install --no-cache-dir torch  # install without reading or writing the cache
     ],
 }
 
+# ------------------------------------------------------------------ Teams
+# "clear teams cache mac" 250. Teams isn't installed on the measuring Mac, so there's no measured size.
+TEAMS = {
+    "slug": "teams",
+    "title": "Clear Teams cache on Mac: the new Microsoft Teams app",
+    "description": "How to clear Teams cache on Mac for the new Microsoft Teams app: the two folders Microsoft names, what you lose, and when clearing it won't help at all.",
+    "h1": "How to clear Teams cache on Mac, <em>the right way.</em>",
+    "lede": "Microsoft's own steps for the new Teams on Mac, done with the Trash instead of a permanent delete, and the problems Microsoft says clearing the cache won't fix.",
+    "tldr": "Quit Teams with Command-Q. Then move two folders to the Trash: <code>~/Library/Group Containers/UBF8T346G9.com.microsoft.teams</code> and <code>~/Library/Containers/com.microsoft.teams2</code>. Those are the folders Microsoft names for the new Teams on Mac. Open Teams again; the first launch is slower while it rebuilds. Your chats and files live in Microsoft 365, so they aren't affected.",
+    "card_title": "Microsoft Teams",
+    "card_blurb": "The two folders Microsoft names for the new Teams on Mac.",
+    "paths": [
+        ("New Teams, shared data", "~/Library/Group Containers/UBF8T346G9.com.microsoft.teams", "Not installed on the Mac we measured"),
+        ("New Teams, app container", "~/Library/Containers/com.microsoft.teams2", "Not installed on the Mac we measured"),
+        ("Classic Teams", "~/Library/Application Support/Microsoft/Teams", "Not installed on the Mac we measured"),
+    ],
+    "html": """
+        <h2>Where the Teams cache lives on a Mac</h2>
+        <p>The new Teams app doesn't keep its cache in <code>~/Library/Caches</code> like most apps. It keeps it inside its own containers, mixed in with its settings and logs:</p>
+        {{PATHS}}
+        <p>If <code>~/Library/Containers/com.microsoft.teams2</code> exists, you have the new Teams. The classic app's folder only matters if you still have the old app. To see how much space yours uses:</p>
+<pre><code>du -sh ~/Library/Group\\ Containers/UBF8T346G9.com.microsoft.teams ~/Library/Containers/com.microsoft.teams2</code></pre>
+        <p>The first time, macOS may ask whether Terminal can access data from other apps. Allow it, or the numbers will be incomplete.</p>
+
+        <h2 style="margin-top:56px">How to clear Teams cache on Mac, step by step</h2>
+        <ol class="steps">
+          <li><b>Quit Teams completely.</b> Press Command-Q in Teams, or right-click its Dock icon and choose <strong>Quit</strong>. Closing the window isn't enough.</li>
+          <li><b>Trash the group container.</b> In Finder, choose <strong>Go › Go to Folder</strong>, type <code>~/Library/Group Containers</code>, and move <code>UBF8T346G9.com.microsoft.teams</code> to the Trash.</li>
+          <li><b>Trash the app container.</b> Go to <code>~/Library/Containers</code> and move the new Teams container to the Trash. Finder may list it by name, as Microsoft Teams, instead of <code>com.microsoft.teams2</code>.</li>
+          <li><b>Open Teams.</b> It rebuilds both folders. The first launch takes longer, and you may need to sign in again.</li>
+          <li><b>Empty the Trash later.</b> Once Teams works the way you want, empty the Trash to reclaim the space.</li>
+        </ol>
+        <p>Microsoft's article gives the same two folders as Terminal commands using <code>rm -rf</code>, which deletes them permanently. The Finder steps above do the same job and leave you a way back.</p>
+        <p>Using Teams in a browser instead? Then its cache is your browser's: see <a href="/how-to-clear-cache-on-mac">how to clear cache on Mac</a> for Safari, Chrome, and Firefox.</p>
+
+        <h2 style="margin-top:56px">What clearing the Teams cache deletes</h2>
+        <p>Cached images and web content, local settings, and Teams' diagnostic logs. Your messages, channels, meetings, and files are stored in Microsoft 365, and Teams downloads what it needs again.</p>
+        <p>Microsoft is specific about when not to do it. For missing messages, chat history that won't load, a missing team or channel, or wrong notifications and unread counts, clearing the cache doesn't help, and it deletes the logs IT needs to find the cause. It's a targeted fix for problems with the app itself: Teams that won't open, won't sign in, or shows stale content after a change.</p>
+
+        <h2 style="margin-top:56px">How big the Teams cache gets</h2>
+        <p>Microsoft doesn't publish a typical size, and we couldn't measure it: Teams isn't installed on the Mac this page was written on. It grows with use, since it holds web content and logs, so check yours with the <code>du</code> command above before deciding it's worth clearing. If it's only a few hundred megabytes, clearing it won't change much on your disk.</p>
+        <p>More caches, one tool at a time: <a href="/clear-cache/xcode">Xcode</a>, <a href="/clear-cache/docker">Docker</a>, or <a href="/clear-cache">the full list</a>.</p>
+    """,
+    "finds": """
+          <p>Here&#39;s the honest answer: Disk Forecast doesn&#39;t list the Teams cache. Its <strong>App caches</strong> row covers <code>~/Library/Caches</code>, and Teams keeps its cache in its own containers instead. What Disk Forecast does show is where your space went, with <code>~/Library</code> in its <strong>Taking the most space</strong> list, and when your disk will be full at the rate it&#39;s filling. It&#39;s free.</p>
+    """,
+    "mockup": "menu",
+    "related": ["/how-to-clear-cache-on-mac", "/clear-cache/xcode", "/clear-cache/docker"],
+    "faqs": [
+        ("How do I clear Teams cache on a Mac?", "Quit Teams with Command-Q, then move ~/Library/Group Containers/UBF8T346G9.com.microsoft.teams and ~/Library/Containers/com.microsoft.teams2 to the Trash. Those are the folders Microsoft names for the new Teams. Open Teams again and it rebuilds them."),
+        ("Will clearing the Teams cache delete my chats?", "No. Messages, channels, meetings, and files are stored in Microsoft 365, not in the cache. You may need to sign in again, and local settings reset."),
+        ("Where is the Teams cache on a Mac?", "For the new Teams, in ~/Library/Group Containers/UBF8T346G9.com.microsoft.teams and ~/Library/Containers/com.microsoft.teams2. The classic app used ~/Library/Application Support/Microsoft/Teams."),
+        ("Should I clear the Teams cache if messages are missing?", "No. Microsoft says clearing the cache doesn't fix missing messages, chat history that won't load, or wrong unread counts, and it deletes the logs needed to find the cause. Contact your IT team instead."),
+    ],
+}
+
 # ------------------------------------------------------------------ Yarn
 # "yarn cache clean" 100, "clear yarn cache" 70, "yarn cache location".
 YARN = {
@@ -334,7 +390,7 @@ du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
     ],
 }
 
-CACHE_TOOLS = [DOCKER, NPM, PIP, YARN, HOMEBREW]
+CACHE_TOOLS = [DOCKER, NPM, PIP, TEAMS, YARN, HOMEBREW]
 
 CLEAR_CACHE_HUB = {
     "path": "/clear-cache",
