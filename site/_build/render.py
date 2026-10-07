@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Renders site/alternatives/*.html, the alternatives hub, the guides, and /privacy from pages.py,
+the per-tool pages under /clear-cache and /ai-models and their hubs from tools.py,
 rewrites the homepage footer list and JSON-LD between their <!-- alternatives --> and <!-- schema --> markers,
 and writes sitemap.xml.
 
@@ -13,6 +14,9 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 from pages import GUIDES, GUIDES_HUB, HUB, PAGES, PRIVACY  # noqa: E402
+from tools import GUIDE_HUBS, SECTIONS  # noqa: E402
+
+TOOLS = [t for _, tools in SECTIONS for t in tools]
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 SITE = "https://diskforecast.com"
@@ -98,7 +102,7 @@ def footer_alternatives():
 
 def footer_guides():
     """Every guide, linked from every footer for internal linking."""
-    links = "".join(f'<a href="{g["path"]}">{esc(g["footer"])}</a>' for g in GUIDES)
+    links = "".join(f'<a href="{g["path"]}">{esc(g["footer"])}</a>' for g in GUIDES + GUIDE_HUBS)
     return f'      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a>{links}</nav>\n'
 
 
@@ -294,8 +298,8 @@ def render_hub():
 
 
 def related_guides(g):
-    """Cards for the guides this one points to, by path."""
-    by_path = {q["path"]: q for q in GUIDES}
+    """Cards for the guides, hubs, and tool pages this one points to, by path."""
+    by_path = {q["path"]: q for q in GUIDES + GUIDE_HUBS + TOOLS}
     related = [by_path[path] for path in g.get("related", []) if path in by_path]
     if not related:
         return ""
@@ -347,7 +351,7 @@ def render_guide(g):
 
 def render_guides_hub():
     d = GUIDES_HUB
-    cards = "".join(f'          <a class="glass" href="{g["path"]}"><b>{esc(g["card_title"])}</b><span>{esc(g["card_blurb"])}</span></a>\n' for g in GUIDES)
+    cards = "".join(f'          <a class="glass" href="{g["path"]}"><b>{esc(g["card_title"])}</b><span>{esc(g["card_blurb"])}</span></a>\n' for g in GUIDES + GUIDE_HUBS)
     body = f'''{head(d["title"], d["description"], d["path"])}{nav()}  <main>
     <div class="sub-hero">
       <div class="wrap narrow">
@@ -369,8 +373,59 @@ def render_guides_hub():
     write(d["path"], body)
 
 
+def paths_table(rows):
+    """Where a tool keeps its files, and how big each was on the Mac we measured."""
+    out = ['        <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">',
+           '          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>']
+    for what, where, size in rows:
+        loc = where if "<" in where else f"<code>{esc(where)}</code>"
+        out.append(f'            <tr><th scope="row">{esc(what)}</th><td>{loc}</td><td>{esc(size)}</td></tr>')
+    out.append('          </tbody></table></div></div>')
+    return "\n".join(out)
+
+
+def render_tool(t):
+    """A per-tool page is a guide: the TL;DR answers it, the shortcut names the Disk Forecast row."""
+    render_guide({**t, "eyebrow": t.get("eyebrow", "Guide"), "cta": t.get("cta", "Know before it's full."),
+                  "html": t["html"].replace("{{PATHS}}", paths_table(t["paths"])),
+                  "shortcut": f"          <h2>Disk Forecast finds this for you</h2>\n{t['finds']}"})
+
+
+def render_tool_hub(d, tools):
+    """A hub lists its tool pages as cards, then short prose, an FAQ, and the CTA."""
+    cards = "".join(f'          <a class="glass" href="{t["path"]}"><b>{esc(t["card_title"])}</b><span>{esc(t["card_blurb"])}</span></a>\n' for t in tools)
+    body = f'''{head(d["title"], d["description"], d["path"])}{nav()}  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guides</div>
+        <h1>{d["h1"]}</h1>
+        <p class="lede">{d["lede"]}</p>
+      </div>
+    </div>
+    <section class="tight lit" style="padding-top:0">
+      <div class="wrap narrow">
+        <div class="related">
+{cards}        </div>
+      </div>
+    </section>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+{d["html"]}
+      </div></div>
+    </section>
+{faq_block(d["faqs"])}{cta(d["cta"])}  </main>
+{footer()}{faq_schema(d["faqs"])}
+</body>
+</html>
+'''
+    write(d["path"] + "/index", body)
+
+
 def render_sitemap():
-    paths = ["/", GUIDES_HUB["path"]] + [g["path"] for g in GUIDES] + ["/alternatives"] + [f"/alternatives/{p['slug']}" for p in PAGES] + [PRIVACY["path"]]
+    paths = ["/", GUIDES_HUB["path"]] + [g["path"] for g in GUIDES]
+    for hub, tools in SECTIONS:
+        paths += [hub["path"]] + [t["path"] for t in tools]
+    paths += ["/alternatives"] + [f"/alternatives/{p['slug']}" for p in PAGES] + [PRIVACY["path"]]
     urls = "".join(f"  <url><loc>{SITE}{p}</loc></url>\n" for p in paths)
     with open(os.path.join(ROOT, "sitemap.xml"), "w") as f:
         f.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
@@ -402,7 +457,12 @@ if __name__ == "__main__":
     render_homepage_schema()
     for g in GUIDES:
         render_guide(g)
+    for hub, tools in SECTIONS:
+        for t in tools:
+            render_tool(t)
+        render_tool_hub(hub, tools)
     render_guides_hub()
     render_privacy()
     render_sitemap()
-    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + {len(GUIDES)} guides and their hub + privacy + sitemap")
+    print(f"rendered {len(PAGES)} pages + hub + homepage footer and schema + {len(GUIDES)} guides and their hub"
+          f" + {len(TOOLS)} tool pages and {len(SECTIONS)} hubs + privacy + sitemap")
