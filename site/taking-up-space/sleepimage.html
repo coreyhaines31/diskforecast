@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sleepimage on Mac: what it is and why to leave it</title>
+  <meta name="description" content="What the sleepimage file in /private/var/vm is, how hibernatemode decides its size, how to check yours, and why deleting it gains you little or nothing.">
+  <link rel="canonical" href="https://diskforecast.com/taking-up-space/sleepimage">
+  <meta property="og:title" content="Sleepimage on Mac: what it is and why to leave it">
+  <meta property="og:description" content="What the sleepimage file in /private/var/vm is, how hibernatemode decides its size, how to check yours, and why deleting it gains you little or nothing.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/taking-up-space/sleepimage">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sleepimage on Mac: what it is and why to leave it">
+  <meta name="twitter:description" content="What the sleepimage file in /private/var/vm is, how hibernatemode decides its size, how to check yours, and why deleting it gains you little or nothing.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>Sleepimage on Mac, <em>explained.</em></h1>
+        <p class="lede">It's a single file macOS writes when your Mac goes to sleep, and it's one of the first big files people find when they go looking. Here's what it does, how big it gets, and why it's not worth deleting.</p>
+        <div class="tldr glass"><h2>The short version</h2><p><code>/private/var/vm/sleepimage</code> is where macOS saves a copy of memory when your Mac sleeps, so nothing is lost if the battery runs out. On the MacBook Pro this page was written on, it was 2 GB. Deleting it gains nothing: macOS writes it again the next time the Mac sleeps. The only way to keep it gone is to change <code>hibernatemode</code>, which trades away that safety net.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>What is sleepimage on a Mac?</h2>
+        <p>When a Mac sleeps, it keeps memory powered so it can wake in a second. Laptops also write a copy of that memory to disk, in case the battery dies while the lid is closed. That copy is the sleep image. If power runs out, the Mac restores from it on the next start, with your apps and windows as you left them.</p>
+        <p>It lives at <code>/private/var/vm/sleepimage</code>. <code>/var</code> is a shortcut to <code>/private/var</code>, so <code>pmset</code> calls it <code>/var/vm/sleepimage</code>. It belongs to the system, only root can read it, and Finder doesn't show the folder unless you go looking.</p>
+                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
+            <tr><th scope="row">Sleep image</th><td><code>/private/var/vm/sleepimage</code></td><td>2 GB, with 48 GB of memory</td></tr>
+            <tr><th scope="row">Swap files</th><td><code>/System/Volumes/VM</code></td><td>20 GB, 19 files</td></tr>
+          </tbody></table></div></div>
+        <p>Sizes are from one MacBook Pro with an M4 Pro and 48 GB of memory, running macOS 26.6. The sleep image there was 2 GB. Swap is a different thing: memory macOS moves to disk while the Mac is awake. On recent versions of macOS it has its own volume, <code>/System/Volumes/VM</code>, and it shrinks after a restart.</p>
+
+        <h2 style="margin-top:56px">Hibernatemode: how to check yours</h2>
+        <p>Whether macOS writes a sleep image depends on one power setting. To see yours, run this in Terminal. It only reads the setting:</p>
+<pre><code>pmset -g | grep hibernatemode
+ls -lh /private/var/vm/sleepimage</code></pre>
+        <p>Apple's <code>pmset</code> manual lists three values:</p>
+        <ul>
+          <li><strong>0</strong>, the default on desktops. Memory isn't copied to disk, and a power cut while asleep loses whatever wasn't saved.</li>
+          <li><strong>3</strong>, the default on laptops. Memory stays powered and a copy goes to disk too. The Mac wakes from memory unless power ran out.</li>
+          <li><strong>25</strong>, true hibernation. Memory is written to disk and powered off: slower to sleep and wake, easier on the battery.</li>
+        </ul>
+        <p>The MacBook Pro above reports <code>hibernatemode 3</code>, and <code>standby 1</code>, which means it also hibernates on its own after sleeping for a while.</p>
+
+        <h2 style="margin-top:56px">Can you delete sleepimage?</h2>
+        <p>You can, with administrator rights, but it doesn't reclaim anything for long. In mode 3 or 25, macOS writes the file again the next time your Mac sleeps, so the space comes back within the hour. Deleting it while it's in use is the risky part: if the Mac then loses power asleep, there's no image to restore from.</p>
+        <p>To keep it gone for good, you'd have to change the setting. The <code>pmset</code> manual says that to stop hibernation images completely, <code>hibernatemode</code>, <code>standby</code>, and <code>autopoweroff</code> all have to be 0. The manual itself says “please use caution” next to these settings. On a laptop, the cost is real: a flat battery in your bag means a cold start and any unsaved work gone. For 2 GB on a modern Mac, we don't think it's worth it, and this page doesn't give the commands to do it.</p>
+        <div class="callout"><p><strong>When it is worth a look.</strong> If your sleep image is many times bigger than 2 GB, check <code>pmset -g</code> for a <code>hibernatefile</code> someone moved, or a mode other than the default. Restoring the default is safer than deleting the file.</p></div>
+
+        <h2 style="margin-top:56px">Why is sleepimage so big?</h2>
+        <p>It has to hold what was in memory, so its size depends on your Mac and how much memory is in use. On the Apple silicon MacBook Pro above, it was 2 GB with 48 GB of memory. Older Intel Macs often had one close to the size of their memory, which is why forum threads talk about 8 or 16 GB files. Either way, it's usually not the biggest thing on your disk. Storage settings doesn't name it, so if you're hunting a big System Data number, local snapshots and simulators are better bets. <a href="/system-data">How to clear System Data</a> covers those.</p>
+        <p>Other folders that fill up without asking: <a href="/taking-up-space/iphone-backups">iPhone backups</a>, <a href="/taking-up-space/messages">Messages attachments</a>, and the rest on <a href="/taking-up-space">what's taking up space</a>.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Disk Forecast and the sleepimage</h2>
+
+          <p>Disk Forecast doesn&#39;t list the sleep image, and it won&#39;t offer to delete it. It scans your home folder, and <code>/private/var/vm</code> isn&#39;t in it. What it does show is the number that matters: your free space, checked every hour, and after 3 days, a forecast like “Full in ~41 days.” If a 2 GB file decides whether you make it to Friday, the forecast tells you weeks ahead. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="chart-card glass" role="img" aria-label="Chart of free space since September 5: it falls from about 229 GB to 142 GB today, with a jump after a cleanup in late September. A dashed forecast line continues to zero around November 15, inside a shaded range of likely outcomes.">
+          <div class="chart-top"><b>Macintosh HD</b><span>Free space, last 30 days and forecast</span></div>
+          <div class="chart">
+            <svg viewBox="0 0 640 240" preserveAspectRatio="none" aria-hidden="true">
+              <g class="grid"><line x1="0" y1="60.8" x2="640" y2="60.8"/><line x1="0" y1="145.4" x2="640" y2="145.4"/></g>
+              <path class="cone" d="M256 109.8 L546.1 230 L640 230 L640 218 Z"/>
+              <path class="area" d="M0.0 36.2 L8.5 39.6 L17.1 42.9 L25.6 44.8 L34.1 48.9 L42.7 51.0 L51.2 54.3 L59.7 57.9 L68.3 59.9 L76.8 63.8 L85.3 66.0 L93.9 69.7 L102.4 72.6 L110.9 74.9 L119.5 77.0 L128.0 81.4 L136.5 84.2 L145.1 71.1 L153.6 73.4 L162.1 77.1 L170.7 80.4 L179.2 82.2 L187.7 87.1 L196.3 88.4 L204.8 92.5 L213.3 95.8 L221.9 98.8 L230.4 101.4 L238.9 103.3 L247.5 107.5 L256.0 109.8 L256 230 L0 230 Z"/>
+              <path class="hist" d="M0.0 36.2 L8.5 39.6 L17.1 42.9 L25.6 44.8 L34.1 48.9 L42.7 51.0 L51.2 54.3 L59.7 57.9 L68.3 59.9 L76.8 63.8 L85.3 66.0 L93.9 69.7 L102.4 72.6 L110.9 74.9 L119.5 77.0 L128.0 81.4 L136.5 84.2 L145.1 71.1 L153.6 73.4 L162.1 77.1 L170.7 80.4 L179.2 82.2 L187.7 87.1 L196.3 88.4 L204.8 92.5 L213.3 95.8 L221.9 98.8 L230.4 101.4 L238.9 103.3 L247.5 107.5 L256.0 109.8" vector-effect="non-scaling-stroke"/>
+              <path class="proj" d="M256 109.8 L605.9 230" vector-effect="non-scaling-stroke"/>
+              <line class="zero" x1="0" y1="230" x2="640" y2="230" vector-effect="non-scaling-stroke"/>
+            </svg>
+            <span class="chip" style="left:40%;top:45.75%">Today · 142 GB</span>
+            <span class="chip warn" style="left:94.67%;top:95.83%">Nov 15 · full</span>
+            <i class="dotmark" style="left:40%;top:45.75%"></i>
+            <i class="dotmark end" style="left:94.67%;top:95.83%"></i>
+          </div>
+          <div class="axis" aria-hidden="true"><span style="left:2%">Sep 5</span><span style="left:34.67%">Oct 1</span><span style="left:76%">Nov 1</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>What is sleepimage on Mac?</summary><p>It&#x27;s the file at /private/var/vm/sleepimage where macOS saves a copy of memory when the Mac sleeps. If the battery runs out while it&#x27;s asleep, the Mac restores your apps and windows from it.</p></details>
+          <details><summary>Can I delete sleepimage on my Mac?</summary><p>You can, but it doesn&#x27;t reclaim anything for long: macOS writes it again the next time the Mac sleeps. Stopping it for good means setting hibernatemode, standby, and autopoweroff to 0, which removes the safety net if the battery dies while asleep.</p></details>
+          <details><summary>Why is my sleepimage file so big?</summary><p>It holds a copy of memory, so it grows with how much memory your Mac has and uses. On an Apple silicon MacBook Pro with 48 GB of memory, it was 2 GB. Older Intel Macs often had one about the size of their memory.</p></details>
+          <details><summary>How do I check my Mac&#x27;s hibernatemode?</summary><p>Run pmset -g | grep hibernatemode in Terminal. 0 is the desktop default, 3 is the laptop default, and 25 is full hibernation. The command only reads the setting.</p></details>
+          <details><summary>Is sleepimage the same as swap?</summary><p>No. Swap is memory moved to disk while the Mac is awake, and on recent macOS it lives on its own volume, /System/Volumes/VM. The sleep image is written when the Mac goes to sleep.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/system-data"><b>How to clear System Data</b><span>The step-by-step guide, using only Apple&#x27;s own tools.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a><a href="/taking-up-space">What&#x27;s taking up space</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is sleepimage on Mac?", "acceptedAnswer": {"@type": "Answer", "text": "It's the file at /private/var/vm/sleepimage where macOS saves a copy of memory when the Mac sleeps. If the battery runs out while it's asleep, the Mac restores your apps and windows from it."}}, {"@type": "Question", "name": "Can I delete sleepimage on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "You can, but it doesn't reclaim anything for long: macOS writes it again the next time the Mac sleeps. Stopping it for good means setting hibernatemode, standby, and autopoweroff to 0, which removes the safety net if the battery dies while asleep."}}, {"@type": "Question", "name": "Why is my sleepimage file so big?", "acceptedAnswer": {"@type": "Answer", "text": "It holds a copy of memory, so it grows with how much memory your Mac has and uses. On an Apple silicon MacBook Pro with 48 GB of memory, it was 2 GB. Older Intel Macs often had one about the size of their memory."}}, {"@type": "Question", "name": "How do I check my Mac's hibernatemode?", "acceptedAnswer": {"@type": "Answer", "text": "Run pmset -g | grep hibernatemode in Terminal. 0 is the desktop default, 3 is the laptop default, and 25 is full hibernation. The command only reads the setting."}}, {"@type": "Question", "name": "Is sleepimage the same as swap?", "acceptedAnswer": {"@type": "Answer", "text": "No. Swap is memory moved to disk while the Mac is awake, and on recent macOS it lives on its own volume, /System/Volumes/VM. The sleep image is written when the Mac goes to sleep."}}]}</script>
+</body>
+</html>

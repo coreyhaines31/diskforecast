@@ -12,7 +12,66 @@
 # "speed up", or "junk"; say "reclaim" and "explain". Say "free, source available", never "open source". No em dashes.
 # Subheads list 1 or 3 items, never 2.
 
-FOLDER_PAGES = []
+# ------------------------------------------------------------------ sleepimage
+# "sleepimage" 600 / KD 2, "sleepimage mac" 10, "delete sleepimage" 0. Facts: pmset -g (hibernatemode 3, hibernatefile
+# /var/vm/sleepimage), ls -l /private/var/vm, man pmset, ls /System/Volumes/VM, diskutil apfs list. Nothing was changed.
+SLEEPIMAGE = {
+    "slug": "sleepimage",
+    "title": "Sleepimage on Mac: what it is and why to leave it",
+    "description": "What the sleepimage file in /private/var/vm is, how hibernatemode decides its size, how to check yours, and why deleting it gains you little or nothing.",
+    "h1": "Sleepimage on Mac, <em>explained.</em>",
+    "lede": "It's a single file macOS writes when your Mac goes to sleep, and it's one of the first big files people find when they go looking. Here's what it does, how big it gets, and why it's not worth deleting.",
+    "tldr": "<code>/private/var/vm/sleepimage</code> is where macOS saves a copy of memory when your Mac sleeps, so nothing is lost if the battery runs out. On the MacBook Pro this page was written on, it was 2 GB. Deleting it gains nothing: macOS writes it again the next time the Mac sleeps. The only way to keep it gone is to change <code>hibernatemode</code>, which trades away that safety net.",
+    "card_title": "sleepimage",
+    "card_blurb": "The hibernation file in /private/var/vm, and why it comes back.",
+    "finds_title": "Disk Forecast and the sleepimage",
+    "paths": [
+        ("Sleep image", "/private/var/vm/sleepimage", "2 GB, with 48 GB of memory"),
+        ("Swap files", "/System/Volumes/VM", "20 GB, 19 files"),
+    ],
+    "html": """
+        <h2>What is sleepimage on a Mac?</h2>
+        <p>When a Mac sleeps, it keeps memory powered so it can wake in a second. Laptops also write a copy of that memory to disk, in case the battery dies while the lid is closed. That copy is the sleep image. If power runs out, the Mac restores from it on the next start, with your apps and windows as you left them.</p>
+        <p>It lives at <code>/private/var/vm/sleepimage</code>. <code>/var</code> is a shortcut to <code>/private/var</code>, so <code>pmset</code> calls it <code>/var/vm/sleepimage</code>. It belongs to the system, only root can read it, and Finder doesn't show the folder unless you go looking.</p>
+        {{PATHS}}
+        <p>Sizes are from one MacBook Pro with an M4 Pro and 48 GB of memory, running macOS 26.6. The sleep image there was 2 GB. Swap is a different thing: memory macOS moves to disk while the Mac is awake. On recent versions of macOS it has its own volume, <code>/System/Volumes/VM</code>, and it shrinks after a restart.</p>
+
+        <h2 style="margin-top:56px">Hibernatemode: how to check yours</h2>
+        <p>Whether macOS writes a sleep image depends on one power setting. To see yours, run this in Terminal. It only reads the setting:</p>
+<pre><code>pmset -g | grep hibernatemode
+ls -lh /private/var/vm/sleepimage</code></pre>
+        <p>Apple's <code>pmset</code> manual lists three values:</p>
+        <ul>
+          <li><strong>0</strong>, the default on desktops. Memory isn't copied to disk, and a power cut while asleep loses whatever wasn't saved.</li>
+          <li><strong>3</strong>, the default on laptops. Memory stays powered and a copy goes to disk too. The Mac wakes from memory unless power ran out.</li>
+          <li><strong>25</strong>, true hibernation. Memory is written to disk and powered off: slower to sleep and wake, easier on the battery.</li>
+        </ul>
+        <p>The MacBook Pro above reports <code>hibernatemode 3</code>, and <code>standby 1</code>, which means it also hibernates on its own after sleeping for a while.</p>
+
+        <h2 style="margin-top:56px">Can you delete sleepimage?</h2>
+        <p>You can, with administrator rights, but it doesn't reclaim anything for long. In mode 3 or 25, macOS writes the file again the next time your Mac sleeps, so the space comes back within the hour. Deleting it while it's in use is the risky part: if the Mac then loses power asleep, there's no image to restore from.</p>
+        <p>To keep it gone for good, you'd have to change the setting. The <code>pmset</code> manual says that to stop hibernation images completely, <code>hibernatemode</code>, <code>standby</code>, and <code>autopoweroff</code> all have to be 0. The manual itself says “please use caution” next to these settings. On a laptop, the cost is real: a flat battery in your bag means a cold start and any unsaved work gone. For 2 GB on a modern Mac, we don't think it's worth it, and this page doesn't give the commands to do it.</p>
+        <div class="callout"><p><strong>When it is worth a look.</strong> If your sleep image is many times bigger than 2 GB, check <code>pmset -g</code> for a <code>hibernatefile</code> someone moved, or a mode other than the default. Restoring the default is safer than deleting the file.</p></div>
+
+        <h2 style="margin-top:56px">Why is sleepimage so big?</h2>
+        <p>It has to hold what was in memory, so its size depends on your Mac and how much memory is in use. On the Apple silicon MacBook Pro above, it was 2 GB with 48 GB of memory. Older Intel Macs often had one close to the size of their memory, which is why forum threads talk about 8 or 16 GB files. Either way, it's usually not the biggest thing on your disk. Storage settings doesn't name it, so if you're hunting a big System Data number, local snapshots and simulators are better bets. <a href="/system-data">How to clear System Data</a> covers those.</p>
+        <p>Other folders that fill up without asking: <a href="/taking-up-space/iphone-backups">iPhone backups</a>, <a href="/taking-up-space/messages">Messages attachments</a>, and the rest on <a href="/taking-up-space">what's taking up space</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast doesn&#39;t list the sleep image, and it won&#39;t offer to delete it. It scans your home folder, and <code>/private/var/vm</code> isn&#39;t in it. What it does show is the number that matters: your free space, checked every hour, and after 3 days, a forecast like “Full in ~41 days.” If a 2 GB file decides whether you make it to Friday, the forecast tells you weeks ahead. It&#39;s free.</p>
+    """,
+    "mockup": "forecast",
+    "related": ["/taking-up-space/iphone-backups", "/taking-up-space/messages", "/system-data"],
+    "faqs": [
+        ("What is sleepimage on Mac?", "It's the file at /private/var/vm/sleepimage where macOS saves a copy of memory when the Mac sleeps. If the battery runs out while it's asleep, the Mac restores your apps and windows from it."),
+        ("Can I delete sleepimage on my Mac?", "You can, but it doesn't reclaim anything for long: macOS writes it again the next time the Mac sleeps. Stopping it for good means setting hibernatemode, standby, and autopoweroff to 0, which removes the safety net if the battery dies while asleep."),
+        ("Why is my sleepimage file so big?", "It holds a copy of memory, so it grows with how much memory your Mac has and uses. On an Apple silicon MacBook Pro with 48 GB of memory, it was 2 GB. Older Intel Macs often had one about the size of their memory."),
+        ("How do I check my Mac's hibernatemode?", "Run pmset -g | grep hibernatemode in Terminal. 0 is the desktop default, 3 is the laptop default, and 25 is full hibernation. The command only reads the setting."),
+        ("Is sleepimage the same as swap?", "No. Swap is memory moved to disk while the Mac is awake, and on recent macOS it lives on its own volume, /System/Volumes/VM. The sleep image is written when the Mac goes to sleep."),
+    ],
+}
+
+FOLDER_PAGES = [SLEEPIMAGE]
 
 TAKING_UP_SPACE_HUB = {
     "path": "/taking-up-space",
