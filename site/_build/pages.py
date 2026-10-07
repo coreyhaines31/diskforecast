@@ -735,3 +735,9 @@ PRIVACY = {
         <p>Open an issue on <a href="https://github.com/coreyhaines31/diskforecast/issues">GitHub</a>. The source is public, so you can check every claim on this page yourself.</p>
     """,
 }
+
+# ---------------------------------------------------------------------- Roundups
+# Comparison and category pages that cover several apps at once. Each renders with the guide template;
+# its html can hold {{TABLE:name}} placeholders for the tables in its "tables". "in_guides" also lists it on /guides.
+# Competitor facts were checked against each vendor's site, store listing, GitHub, or the app itself in October 2026.
+ROUNDUPS = []
