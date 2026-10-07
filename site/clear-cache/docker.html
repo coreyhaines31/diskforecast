@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docker system prune: clear Docker cache on Mac</title>
+  <meta name="description" content="What docker system prune deletes, how to clear Docker build cache, where Docker.raw lives on a Mac, and why Finder shows it far bigger than it is.">
+  <link rel="canonical" href="https://diskforecast.com/clear-cache/docker">
+  <meta property="og:title" content="Docker system prune: clear Docker cache on Mac">
+  <meta property="og:description" content="What docker system prune deletes, how to clear Docker build cache, where Docker.raw lives on a Mac, and why Finder shows it far bigger than it is.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/clear-cache/docker">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Docker system prune: clear Docker cache on Mac">
+  <meta name="twitter:description" content="What docker system prune deletes, how to clear Docker build cache, where Docker.raw lives on a Mac, and why Finder shows it far bigger than it is.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>Docker system prune on Mac, <em>explained.</em></h1>
+        <p class="lede">On a Mac, everything Docker stores sits inside one disk image. Here's how to see what's in it, what each prune command removes, and why you should never delete the file itself.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Run <code>docker system prune</code>. It asks first, then removes stopped containers, networks no container uses, dangling images, and unused build cache. Add <code>-a</code> to also remove every image no container is using. Volumes stay unless you add <code>--volumes</code>, and volumes hold data, like your local databases. Docker Desktop keeps all of it in one file, <code>Docker.raw</code>, so reclaim space with Docker's commands, never by deleting that file.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>Where Docker stores data on a Mac</h2>
+        <p>Docker Desktop runs Linux in a small virtual machine, and that machine's disk is a single file. Every image you pull, every container, every volume, and all your build cache live inside it.</p>
+                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
+            <tr><th scope="row">The disk image</th><td><code>~/Library/Containers/com.docker.docker/Data/vms/0/data/Docker.raw</code></td><td>29 GB on disk</td></tr>
+            <tr><th scope="row">Images, containers, volumes, build cache</th><td>Inside Docker.raw; <code>docker system df</code> lists them</td><td>27.4 GB of images, 15.4 GB unused</td></tr>
+          </tbody></table></div></div>
+        <p>Sizes are from one developer Mac in October 2026. Two commands tell you what's really there:</p>
+<pre><code>docker system df
+du -h ~/Library/Containers/com.docker.docker/Data/vms/0/data/Docker.raw</code></pre>
+        <p><code>docker system df</code> breaks usage into images, containers, local volumes, and build cache, with a RECLAIMABLE column for what nothing is using. Add <code>-v</code> for a line per image and volume.</p>
+        <div class="callout"><p><strong>Why Finder shows a huge number.</strong> <code>Docker.raw</code> is a sparse file: its listed size is the most it may grow to, not what it uses. On the Mac above, Finder and <code>ls</code> showed 926 GB while <code>du</code> showed 29 GB. Trust <code>du</code>, or Docker's own numbers.</p></div>
+
+        <h2 style="margin-top:56px">What docker system prune deletes</h2>
+        <p>By default, <code>docker system prune</code> removes:</p>
+        <ul>
+          <li><strong>Stopped containers.</strong> Anything you ran and didn't remove. Running containers stay.</li>
+          <li><strong>Unused networks.</strong> Networks no container is attached to.</li>
+          <li><strong>Dangling images.</strong> Untagged layers left behind when you rebuild or pull a newer tag. Tagged images stay.</li>
+          <li><strong>Unused build cache.</strong> Layers BuildKit saved to make the next build faster.</li>
+        </ul>
+        <p>Is it safe? For the default command, yes. Everything it removes can be pulled or rebuilt; the cost is a slower next build. Two flags change that. <code>-a</code> removes every image no container uses, so you'll download them again. <code>--volumes</code> removes unused anonymous volumes, and a volume may be the only copy of a local database. Use it only when you know what's in them.</p>
+
+        <h2 style="margin-top:56px">How to clear Docker cache, flag by flag</h2>
+<pre><code>docker system prune                 # stopped containers, unused networks, dangling images, build cache
+docker system prune -a              # plus every image no container uses
+docker system prune --volumes       # plus unused anonymous volumes (data)
+docker builder prune                # build cache only
+docker builder prune -a             # all build cache, not just dangling
+docker image prune -a               # unused images only
+docker volume prune                 # unused anonymous volumes only</code></pre>
+        <ul>
+          <li><strong><code>-f</code></strong> skips the confirmation prompt. Leave it off when you type the command yourself.</li>
+          <li><strong><code>--filter "until=24h"</code></strong> keeps anything created in the last day, which is handy when you want old layers gone but today's builds kept.</li>
+          <li><strong><code>docker builder prune</code></strong> is the answer to “clear Docker cache” when you mean build cache. It leaves images and containers alone.</li>
+        </ul>
+        <p>If you really want to start over, Docker Desktop's <strong>Troubleshoot</strong> screen has <strong>Clean / Purge data</strong>, which erases every image, container, and volume. That's the supported way to empty <code>Docker.raw</code>.</p>
+
+        <h2 style="margin-top:56px">How much disk space Docker uses</h2>
+        <p>It depends on what you pull. A few base images and a database take a few gigabytes; a year of rebuilding multi-stage images can take tens. On the developer Mac above, Docker held 27.4 GB of images, and 15.4 GB of that was unused by any container. Volumes were 2.8 GB, half of it unused.</p>
+        <p>The file grows up to the disk limit set in Docker Desktop's <strong>Settings › Resources</strong>. Changing that limit can make Docker Desktop recreate the disk image, which erases everything in it, so read its warning before you apply. Prune first; Docker Desktop hands the freed space back to macOS, though <code>du</code> can take a few minutes to show it.</p>
+
+        <h2 style="margin-top:56px">Don't delete Docker.raw</h2>
+        <p>Moving <code>Docker.raw</code> to the Trash deletes every image, container, and volume at once, and Docker Desktop makes a new empty one. If that's what you want, use <strong>Clean / Purge data</strong> instead, so Docker does it cleanly.</p>
+        <p>Docker is also one of the usual reasons <a href="/what-is-system-data-on-mac">System Data</a> looks huge in Storage settings. More caches: <a href="/clear-cache">every tool's cache, one page each</a>.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Disk Forecast finds this for you</h2>
+
+          <p>Disk Forecast lists Docker under <strong>Cleanup › Worth a look › Docker disk image</strong>, sized by what the file really uses. It never moves that file to the Trash. Its <strong>Reclaim in System Data…</strong> button opens the <strong>Docker</strong> row in System Data, which shows images, containers, volumes, and build cache, each with how much is unused. <strong>Prune unused Docker data…</strong> shows you <code>docker system prune -f</code> and runs it only after you confirm. Volumes, running containers, and tagged images stay. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="stage glass">
+          <div class="mk mk-win" role="img" aria-label="The Disk Forecast System Data window, titled System Data, explained. It lists purgeable space, three local Time Machine snapshots, the Spotlight index, simulators with two iOS runtimes, Apple Intelligence and Siri models, and Docker, each with a plain explanation and, except purgeable space, a button that runs the owning tool's own fix.">
+            <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">System Data</div></div>
+            <div class="mk-hdr"><div><b>System Data, explained</b><span>What macOS files under System Data in Storage settings, and how to reclaim it with Apple's and each tool's own commands. Nothing runs until you confirm.</span></div><div class="mk-pill">Refresh</div></div>
+            <div class="mk-list">
+                <div class="mk-srow"><div class="top"><b>Purgeable space</b><span class="sz">24 GB</span></div><div class="txt"><span>Space macOS is holding for caches, iCloud copies, and snapshots. It's already counted as free, and macOS gives it back on its own when an app needs room.</span></div></div>
+                <div class="mk-srow"><div class="top"><b>Local Time Machine snapshots</b><span class="sz note">3 snapshots</span></div><div class="txt"><span>Hourly copies Time Machine keeps on this Mac between backups. macOS counts them as purgeable and removes them after 24 hours or when space runs low.</span><div class="mk-det">com.apple.TimeMachine.2026-10-05-073012.local<br>com.apple.TimeMachine.2026-10-05-083008.local<br>com.apple.TimeMachine.2026-10-05-093011.local</div><div class="mk-fix"><div class="mk-pill">Remove local snapshots…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Spotlight index</b><span class="sz">1.2 GB</span></div><div class="txt"><span>The search index behind Spotlight. It's usually small; when it grows huge, rebuilding it often shrinks it. Search results are incomplete while it rebuilds.</span><div class="mk-fix"><div class="mk-pill">Rebuild the Spotlight index…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Simulators</b><span class="sz">27 GB</span></div><div class="txt"><span>iOS and other simulator runtimes, plus each simulator's apps and data. Xcode downloads a runtime again from Settings › Components when you need it.</span><div class="mk-det">iOS 26.4 runtime: 8.5 GB<br>iOS 26.2 runtime: 8.4 GB<br>14 simulators: 10 GB</div><div class="mk-fix"><div class="mk-pill">Delete iOS 26.4 (8.5 GB)…</div><div class="mk-pill">Delete iOS 26.2 (8.4 GB)…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Apple Intelligence and Siri models</b><span class="sz">3.3 GB</span></div><div class="txt"><span>On-device models macOS downloads for Apple Intelligence, Siri, dictation, and translation. Turning Apple Intelligence off in System Settings removes its models.</span><div class="mk-det">Siri Understanding: 2.0 GB<br>Siri TextToSpeech: 583 MB<br>Speech AutomaticSpeechRecognition: 428 MB<br>Photos MagicCleanup: 260 MB</div><div class="mk-fix"><div class="mk-pill">Open Apple Intelligence &amp; Siri settings…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Docker</b><span class="sz">6.1 GB</span></div><div class="txt"><span>Images, containers, volumes, and build cache, stored in one disk image. Docker's own prune command removes what nothing is using.</span><div class="mk-det">Images: 4.2 GB, 2.9 GB unused<br>Build Cache: 1.6 GB, 1.6 GB unused<br>Containers: 318 MB, 12 MB unused</div><div class="mk-fix"><div class="mk-pill">Prune unused Docker data…</div></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>What does docker system prune do?</summary><p>It removes stopped containers, networks no container uses, dangling images, and unused build cache, after asking you to confirm. With -a it also removes every image no container is using, and with --volumes it removes unused anonymous volumes.</p></details>
+          <details><summary>Is docker system prune safe?</summary><p>The default command is. Everything it removes can be pulled or rebuilt, so the cost is time on your next build. Be careful with --volumes: a volume may hold the only copy of a local database.</p></details>
+          <details><summary>How do I clear Docker build cache?</summary><p>Run docker builder prune to remove dangling build cache, or docker builder prune -a to remove all of it. Images and containers aren&#x27;t touched. The next build takes longer while BuildKit rebuilds its cache.</p></details>
+          <details><summary>Where is Docker.raw on a Mac, and can I delete it?</summary><p>It&#x27;s at ~/Library/Containers/com.docker.docker/Data/vms/0/data/Docker.raw. Don&#x27;t delete it: it holds every image, container, and volume. Use docker system prune, or Clean / Purge data in Docker Desktop&#x27;s Troubleshoot screen.</p></details>
+          <details><summary>Why is Docker taking up so much space on my Mac?</summary><p>Images pile up as you pull and rebuild, and build cache grows with every build. Run docker system df to see which. Finder can also show Docker.raw at its maximum size, because it&#x27;s a sparse file; du shows what it really uses.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/system-data"><b>How to clear System Data</b><span>The step-by-step guide, using only Apple&#x27;s own tools.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/clear-cache">Clear cache by tool</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does docker system prune do?", "acceptedAnswer": {"@type": "Answer", "text": "It removes stopped containers, networks no container uses, dangling images, and unused build cache, after asking you to confirm. With -a it also removes every image no container is using, and with --volumes it removes unused anonymous volumes."}}, {"@type": "Question", "name": "Is docker system prune safe?", "acceptedAnswer": {"@type": "Answer", "text": "The default command is. Everything it removes can be pulled or rebuilt, so the cost is time on your next build. Be careful with --volumes: a volume may hold the only copy of a local database."}}, {"@type": "Question", "name": "How do I clear Docker build cache?", "acceptedAnswer": {"@type": "Answer", "text": "Run docker builder prune to remove dangling build cache, or docker builder prune -a to remove all of it. Images and containers aren't touched. The next build takes longer while BuildKit rebuilds its cache."}}, {"@type": "Question", "name": "Where is Docker.raw on a Mac, and can I delete it?", "acceptedAnswer": {"@type": "Answer", "text": "It's at ~/Library/Containers/com.docker.docker/Data/vms/0/data/Docker.raw. Don't delete it: it holds every image, container, and volume. Use docker system prune, or Clean / Purge data in Docker Desktop's Troubleshoot screen."}}, {"@type": "Question", "name": "Why is Docker taking up so much space on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Images pile up as you pull and rebuild, and build cache grows with every build. Run docker system df to see which. Finder can also show Docker.raw at its maximum size, because it's a sparse file; du shows what it really uses."}}]}</script>
+</body>
+</html>
