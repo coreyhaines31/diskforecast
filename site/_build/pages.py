@@ -266,26 +266,29 @@ HUB = {
 # its FAQ (also its FAQPage JSON-LD), related guides, and the download CTA.
 # Keyword research: ~/code/diskforecast/docs/seo/keywords-2026-10-06.md, section 1.
 
-# Targets "how to clear system data on mac" (3,500/mo US, KD 0), plus "how to delete system data on mac" and "system data mac".
+# Targets "how to clear system data on mac" (3,500/mo US, KD 0), plus "how to delete/reduce/get rid of system data on mac" and
+# "system data mac". What it is and why it's big live at /what-is-system-data-on-mac.
 SYSTEM_DATA = {
     "path": "/system-data",
-    "title": "How to clear System Data on Mac, safely",
-    "description": "What's inside System Data on your Mac, which parts you can safely reclaim, and how to clear System Data step by step using only Apple's own tools.",
+    "title": "How to clear System Data on Mac (and reduce it safely)",
+    "description": "How to clear, reduce, and delete System Data on Mac step by step with Apple's own tools: snapshots, simulators, caches, Docker, and what to leave alone.",
     "eyebrow": "Guide",
-    "h1": "How to clear System Data on your Mac.",
+    "h1": "How to clear System Data on Mac.",
     "lede": "System Data is the gray bar in Storage settings that keeps growing and won't say why. Here's what's inside it, which parts you can reclaim, and the exact steps, using only Apple's own tools.",
     "tldr": "System Data is a catch-all, not one thing. The big parts are usually local Time Machine snapshots, Xcode simulator runtimes, caches, and purgeable space. Restart first, then check snapshots and simulators: that's where the most space hides. Leave purgeable space alone, since macOS frees it on its own, and never delete folders under /System or /private/var by hand.",
     "faqs": [
-        ("Why is System Data so big on my Mac?", "Because it's where macOS counts everything it doesn't file under a named category. Local Time Machine snapshots alone can take 30 to 60 GB, and Xcode simulator runtimes, caches, the Spotlight index, Apple Intelligence models, and Docker's disk image all land there too."),
+        ("Why is System Data so big on my Mac?", "Because it's where macOS counts everything it doesn't file under a named category, and the What is System Data on Mac guide explains each part. Local Time Machine snapshots alone can take 30 to 60 GB, and Xcode simulator runtimes, caches, the Spotlight index, Apple Intelligence models, and Docker's disk image all land there too."),
         ("Is it safe to delete System Data?", "Some of it. Caches, old simulator runtimes, and local Time Machine snapshots can be removed with Apple's own tools. Purgeable space should be left for macOS to manage, and you should never delete files under /System or /private/var by hand."),
         ("Why does System Data keep coming back?", "Most of it is supposed to. Caches refill as you use apps, Time Machine makes a new local snapshot every hour, and Spotlight rebuilds its index. Clearing it buys room; it doesn't stop the growth. That's why a forecast helps."),
         ("Does restarting reduce System Data?", "Often, a little. A restart clears temporary files and swap, and gives Storage settings a chance to recalculate. It's the free first step."),
+        ("How do I get rid of System Data on my Mac?", "Not all at once, and not for good. Remove local Time Machine snapshots with tmutil, delete simulator runtimes you don't use with xcrun simctl, clear caches, and prune Docker. Each step uses the owning tool, and most of System Data comes back slowly as you use your Mac."),
+        ("How do I reduce System Data on Mac without breaking anything?", "Stick to the steps that use Apple's or each tool's own commands, and leave purgeable space, /System, and /private/var alone. Back up to Time Machine regularly so local snapshots don't pile up, and remove old simulator runtimes after Xcode updates."),
         ("Can an app clear System Data for me?", "Disk Forecast breaks System Data into its parts, explains each in plain English, and runs Apple's own tool for each fix after you confirm. It's free, with the source on GitHub."),
     ],
     "html": """
         <h2>First, look at what you have</h2>
         <p>Open <strong>System Settings › General › Storage</strong>. The colored bar at the top splits your disk into categories, and System Data is usually the gray slice near the end. Hover over it to see its size.</p>
-        <p>Storage settings won't tell you what's inside, and its number can lag behind reality. Give it a minute after opening, and don't panic if it jumps around.</p>
+        <p>Storage settings won't tell you what's inside, and its number can lag behind reality. Give it a minute after opening, and don't panic if it jumps around. For what counts as System Data, how much is normal, and why it grows, see <a href="/what-is-system-data-on-mac">what is System Data on Mac</a>.</p>
         <div class="callout"><p><strong>What System Data is not.</strong> It isn't your documents, photos, or apps, which have their own categories. And it isn't “wasted.” Most of it is macOS doing its job, just more of it than you'd like.</p></div>
 
         <h2 style="margin-top:56px">What's inside System Data</h2>
@@ -299,7 +302,7 @@ SYSTEM_DATA = {
           <li><strong>Docker and virtual machines.</strong> Docker keeps its images and build cache in one large disk image, and VM apps do something similar.</li>
         </ul>
 
-        <h2 style="margin-top:56px">How to clear it, step by step</h2>
+        <h2 style="margin-top:56px">How to clear System Data on Mac, step by step</h2>
         <p>In order of how much space each step usually frees for the least risk. Commands go in Terminal. Read each one before you run it.</p>
         <ol class="steps">
           <li><b>Restart your Mac.</b> It clears temporary files and swap, and Storage settings recalculates. Free, and sometimes enough.</li>
@@ -327,6 +330,15 @@ pip cache purge</code></pre>
           <li><b>Leave purgeable space alone.</b> macOS frees it the moment something needs the room. Apps that “free” it for you are only doing what macOS would have done anyway.</li>
         </ol>
 
+        <h2 style="margin-top:56px">How to reduce System Data and keep it down</h2>
+        <p>You can't get rid of System Data for good. Most of it is macOS and your tools doing their jobs, and it comes back as you work. You can slow it down:</p>
+        <ul>
+          <li><strong>Back up to Time Machine regularly.</strong> Local snapshots pile up on a laptop that rarely sees its backup drive. Regular backups let macOS clear them.</li>
+          <li><strong>Clean up after Xcode updates.</strong> Each update tends to bring a new simulator runtime and leave the old one behind. Run <code>xcrun simctl runtime list</code> after updating and delete the ones you don't test on.</li>
+          <li><strong>Watch the trend, not the total.</strong> A big System Data that holds steady is fine. One that grows a gigabyte a day needs a look before your disk is full, not after.</li>
+        </ul>
+        <p>If System Data isn't your biggest category, the rest of the disk is the better place to start: <a href="/free-up-space-on-mac">the free up space checklist</a> covers everything else, and <a href="/how-to-clear-cache-on-mac">how to clear cache on Mac</a> covers caches in detail.</p>
+
         <h2 style="margin-top:56px">What not to touch</h2>
         <ul>
           <li><strong>Anything under /System.</strong> It's on a sealed, read-only volume for a reason.</li>
@@ -342,6 +354,7 @@ pip cache purge</code></pre>
     "card_title": "How to clear System Data",
     "card_blurb": "The step-by-step guide, using only Apple's own tools.",
     "footer": "Clear System Data",
+    "related": ["/what-is-system-data-on-mac", "/free-up-space-on-mac", "/how-to-clear-cache-on-mac"],
     "mockup": "system-data",
     "cta": "Know before it's full.",
 }
