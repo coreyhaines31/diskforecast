@@ -178,7 +178,7 @@ PAGES = [
           <li><b>Install Disk Forecast.</b> <code>brew install --cask coreyhaines31/tap/diskforecast</code>, or download the app from GitHub.</li>
           <li><b>Clear what's safe.</b> The menu shows a “Safe to clear” total. Click it, confirm, and it all goes to the Trash.</li>
           <li><b>Look at System Data.</b> Snapshots, simulators, the Spotlight index: each one explained, each fix confirmed first.</li>
-          <li><b>Decide on the subscription.</b> If storage was the reason you paid, you can let it lapse. MacPaw's account page handles cancellation.</li>
+          <li><b>Decide on your plan.</b> If storage was the reason you subscribed, you can let it lapse. App Store subscriptions are canceled in your Apple Account settings, and MacPaw's account page handles ones bought directly.</li>
         </ol>
             """},
         ],
@@ -508,7 +508,7 @@ HUB = {
         ("A cleaner and system stats in Terminal", "Mole"),
         ("Just to remove an app and its leftovers", "AppCleaner"),
         ("Duplicates, compression, and a Windows license too", "DiskBuddy"),
-        ("A broad suite of Mac tools on a subscription", "CleanMyMac"),
+        ("A broad suite of Mac tools, by the year or once", "CleanMyMac"),
         ("To know when you'll run out, before you do", "Disk Forecast"),
         ("System Data explained and fixed with Apple's own tools", "Disk Forecast"),
     ],
@@ -516,7 +516,7 @@ HUB = {
     "html": """
         <h2>How we compare</h2>
         <p>Every page here draws on the competitor's own site, store listing, and release posts as of October 2026, and says plainly what the other app does better. Where we couldn't confirm a feature either way, the table shows “—” instead of guessing. If something is out of date, <a href="https://github.com/coreyhaines31/diskforecast/issues">open an issue</a> and we'll fix it.</p>
-        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, now a subscription. <strong>Mole</strong> is the open-source cleaner for Terminal. <strong>OmniDiskSweeper</strong> and <strong>Disk Inventory X</strong> are the free classics, both Intel only and unchanged for years. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
+        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, from $39.99 a year or $89.99 once. <strong>Mole</strong> is the open-source cleaner for Terminal. <strong>OmniDiskSweeper</strong> and <strong>Disk Inventory X</strong> are the free classics, both Intel only and unchanged for years. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
         <p>To see them all at once, start with <a href="/alternatives/compare">every app side by side</a>. Coming from Windows? <a href="/alternatives/windirstat-mac">WinDirStat for Mac</a> covers what runs here.</p>
     """,
 }
@@ -1021,7 +1021,7 @@ BEST_FREE = {
         ("Do Mac cleaners actually work?", "They reclaim disk space, and that's real when you need room for an update, a project, or a backup. Claims that they make a Mac faster mostly don't hold up on an SSD: macOS manages its own memory and caches, and free space only matters when the disk is nearly full."),
         ("Is it safe to use a free Mac cleaner?", "It is when the app explains what it deletes, moves files to the Trash, and uses Apple's tools for system files. Be wary of anything that deletes permanently without a preview, or asks for your password without saying why."),
         ("Does macOS have a built-in cleaner?", "Sort of. System Settings › General › Storage shows what's using space and offers recommendations like Store in iCloud and Empty Trash Automatically. It doesn't explain System Data or developer files."),
-        ("Do I need CleanMyMac?", "Not for disk space. The free tools on this page cover reclaiming space. CleanMyMac bundles more, like malware scans and an app updater, on a subscription."),
+        ("Do I need CleanMyMac?", "Not for disk space. The free tools on this page cover reclaiming space. CleanMyMac bundles more, like malware scans and an app updater, from $39.99 a year."),
     ],
     "html": """
         <h2>What a Mac cleaner should do</h2>
@@ -1058,7 +1058,7 @@ BEST_FREE = {
         <p>Already on your Mac: <strong>System Settings › General › Storage</strong>. It sorts your disk by category, lets you delete large files and old iPhone backups, and offers a few recommendations. It can't tell you what's inside System Data; <a href="/system-data">the System Data guide</a> covers that.</p>
 
         <h2 style="margin-top:56px">Paid cleaners, briefly</h2>
-        <p><strong>CleanMyMac</strong> is MacPaw's suite of cleanup, malware scanning, and app tools, sold as a subscription. <a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a> covers what it deletes and what it costs. <strong>DaisyDisk</strong> is a $9.99 analyzer that draws your disk as rings.</p>
+        <p><strong>CleanMyMac</strong> is MacPaw's suite of cleanup, malware scanning, and app tools, from $39.99 a year or $89.99 once. <a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a> covers what it deletes and what it costs. <strong>DaisyDisk</strong> is a $9.99 analyzer that draws your disk as rings.</p>
 
         <h2 style="margin-top:56px">How to choose</h2>
         <ul>
@@ -1173,7 +1173,7 @@ CLEANMYMAC_SAFE = {
     "eyebrow": "Review",
     "h1": "Is CleanMyMac safe? <em>Yes. Here's what it costs.</em>",
     "lede": "CleanMyMac comes up in every thread about a full Mac, usually next to someone asking whether it's safe. It is. Here's what it is, what it deletes, what it costs, and when a free tool does the same job.",
-    "tldr": "CleanMyMac is safe to install. It's made by MacPaw, it's sold on the Mac App Store, and the app from MacPaw's site is signed and notarized by Apple. It removes caches, logs, app leftovers, and the files you pick, after you review them. It's a subscription: on the Mac App Store, $39.99 a year, or $65.99 a year for Plus. If you mostly want disk space back, free tools do that part.",
+    "tldr": "CleanMyMac is safe to install. It's made by MacPaw, it's sold on the Mac App Store, and the app from MacPaw's site is signed and notarized by Apple. It removes caches, logs, app leftovers, and the files you pick, after you review them. On the Mac App Store it's $39.99 a year, $65.99 a year for Plus, or $89.99 once for CleanMyMac X. If you mostly want disk space back, free tools do that part.",
     "card_title": "Is CleanMyMac safe?",
     "card_blurb": "What it deletes, what it costs in 2026, and the free options.",
     "footer": "Is CleanMyMac safe?",
@@ -1181,7 +1181,7 @@ CLEANMYMAC_SAFE = {
     "faqs": [
         ("Is CleanMyMac safe to use?", "Yes. It's made by MacPaw, sold on the Mac App Store, and the version on MacPaw's site is signed and notarized by Apple. As with any cleaner, review what it selects before you click, because some of it, like language files or mail attachments, you may want to keep."),
         ("Is CleanMyMac a virus or malware?", "No. Apple notarizes the app MacPaw distributes, which means Apple scanned it for known malware, and the Mac App Store version passes Apple's review. Fake cleaner pop-ups on websites are a different thing."),
-        ("Is CleanMyMac worth it?", "If you use most of the suite, like the malware scans, the app updater, and the uninstaller, it can be. If you mainly open it because your disk is full, free tools reclaim the same space without a yearly fee."),
+        ("Is CleanMyMac worth it?", "If you use most of the suite, like the malware scans, the app updater, and the uninstaller, it can be. If you mainly open it because your disk is full, free tools reclaim the same space for nothing."),
         ("How much is CleanMyMac?", "On the Mac App Store as of October 2026: $9.99 a month or $39.99 a year, Plus at $15.99 a month or $65.99 a year, and a one-time CleanMyMac X purchase at $89.99. MacPaw's own site advertises plans from $3.33 a month. Prices vary by region and change over time."),
         ("Is there a free version of CleanMyMac?", "There's a free trial, and the App Store download itself is free, with plans sold as in-app purchases. The free options on this page cover disk space without a subscription."),
         ("Can I use CleanMyMac and Disk Forecast together?", "Yes. They don't conflict. Disk Forecast only moves files to the Trash when you ask it to."),
@@ -1206,7 +1206,7 @@ CLEANMYMAC_SAFE = {
         <p>Prices are from the Mac App Store listing on October 6, 2026, in US dollars. MacPaw's own site advertises plans “from $3.33/month,” and Macworld reported direct prices of $47.50 a year for Basic and $71.40 for Plus after MacPaw's July 2025 price change. There's a free trial. Check MacPaw's store for the plans in your region.</p>
 
         <h2 style="margin-top:56px">Is CleanMyMac worth it?</h2>
-        <p>It depends on how much of it you use. If you want malware scans, an app updater, an uninstaller, and cleanup in one polished app with a company and a support team behind it, the yearly price buys that. If you opened it because the disk was full, you'd be paying every year for the one part free tools already cover.</p>
+        <p>It depends on how much of it you use. If you want malware scans, an app updater, an uninstaller, and cleanup in one polished app with a company and a support team behind it, the price buys that. If you opened it because the disk was full, you'd be paying for the one part free tools already cover.</p>
 
         <h2 style="margin-top:56px">What you can do for free</h2>
         <ul>
@@ -1241,13 +1241,13 @@ COMPARE = {
     "eyebrow": "Comparison",
     "h1": "DaisyDisk vs CleanMyMac, <em>and every other Mac disk app.</em>",
     "lede": "One table for every Mac storage app we've compared, then a short, fair answer for the matchups people search for most.",
-    "tldr": "DaisyDisk is the best picture of your disk, for $9.99 once. CleanMyMac is a subscription suite where disk cleanup is one part of many. GrandPerspective is the free treemap. OmniDiskSweeper is a free size list that hasn't changed since 2018. Disk Forecast is free, and it's built around the question the others don't lead with: when will your disk be full?",
+    "tldr": "DaisyDisk is the best picture of your disk, for $9.99 once. CleanMyMac is a paid suite, from $39.99 a year or $89.99 once, where disk cleanup is one part of many. GrandPerspective is the free treemap. OmniDiskSweeper is a free size list that hasn't changed since 2018. Disk Forecast is free, and it's built around the question the others don't lead with: when will your disk be full?",
     "card_title": "Every app, side by side",
     "card_blurb": "DaisyDisk vs CleanMyMac, and every other matchup, in one table.",
     "footer": "Compare all apps",
     "related": ["/disk-space-analyzer-mac", "/best-free-mac-cleaner", "/is-cleanmymac-safe"],
     "faqs": [
-        ("Which is better, DaisyDisk or CleanMyMac?", "They do different jobs. DaisyDisk shows what's on your disk as an interactive picture, for $9.99 once. CleanMyMac is a subscription suite with cleanup, malware scans, and app tools. For seeing and clearing disk space alone, DaisyDisk is the better buy."),
+        ("Which is better, DaisyDisk or CleanMyMac?", "They do different jobs. DaisyDisk shows what's on your disk as an interactive picture, for $9.99 once. CleanMyMac is a paid suite with cleanup, malware scans, and app tools, from $39.99 a year or $89.99 once. For seeing and clearing disk space alone, DaisyDisk is the better buy."),
         ("Is DaisyDisk better than GrandPerspective?", "DaisyDisk is more polished and easier to explore, and it costs $9.99. GrandPerspective draws a plainer treemap for free, and its source is open. Both are maintained and run natively on Apple silicon."),
         ("Should I use OmniDiskSweeper or DaisyDisk?", "On an Apple silicon Mac, DaisyDisk: it's native and updated in 2026. OmniDiskSweeper is free but hasn't been updated since 2018 and runs through Rosetta 2. If you want free and current, try GrandPerspective or Disk Forecast."),
         ("Which Mac disk apps are free?", "Disk Forecast, GrandPerspective, OmniDiskSweeper, Disk Inventory X, and Mole's command-line tool are free, and WizTreeMac is free for personal use. DaisyDisk, DiskBuddy, and CleanMyMac are paid."),
@@ -1260,7 +1260,7 @@ COMPARE = {
 
         <h2 style="margin-top:56px">DaisyDisk vs CleanMyMac</h2>
         <p>These two get compared because both help when a Mac is full, but they're different kinds of app. <strong>DaisyDisk</strong> is an analyzer. It scans a disk, draws it as rings you click through, and lets you drag what you don't want to a collector to delete. It costs $9.99 once, and it's sold on the Mac App Store and directly. The App Store build can't see hidden and system files; the direct one can.</p>
-        <p><strong>CleanMyMac</strong> is MacPaw's suite. Disk cleanup is one part, alongside malware scans, an uninstaller and app updater, and a finder for duplicates and large files. It's a subscription: $39.99 a year on the Mac App Store, or $65.99 for Plus.</p>
+        <p><strong>CleanMyMac</strong> is MacPaw's suite. Disk cleanup is one part, alongside malware scans, an uninstaller and app updater, and a finder for duplicates and large files. On the Mac App Store it's $39.99 a year, $65.99 for Plus, or $89.99 once for CleanMyMac X.</p>
         <p><strong>Pick DaisyDisk</strong> if you want to see where the space went and decide for yourself, and pay once. <strong>Pick CleanMyMac</strong> if you'll use most of the suite. If you only need the disk space back, both are optional: <a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a> lists the free routes.</p>
 
         <h2 style="margin-top:56px">DaisyDisk vs GrandPerspective</h2>
@@ -1277,7 +1277,7 @@ COMPARE = {
     "tables": {"all": {"head": ["App", "Price", "How it shows your disk", "Apple silicon", "Latest version", "Source available"], "min_width": 760, "rows": [
         ("Disk Forecast", "Free", "Sorted lists, each item explained, plus a forecast", "Native", "Actively developed", "Yes, on GitHub"),
         ("DaisyDisk", "$9.99 one-time", "Interactive rings", "Native", "4.34.2, July 2026", "No"),
-        ("CleanMyMac", "$39.99 a year on the App Store", "—", "Native", "5.7.1, October 2026", "No"),
+        ("CleanMyMac", "From $39.99 a year, or $89.99 once (App Store)", "—", "Native", "5.7.1, October 2026", "No"),
         ("GrandPerspective", "Free, or $2.99 on the App Store", "Treemap", "Native", "3.8.1, September 2026", "Yes, GPL"),
         ("OmniDiskSweeper", "Free", "Columns sorted by size", "Intel only", "1.11, 2018", "—"),
         ("Disk Inventory X", "Free", "Treemap", "Intel only", "1.3, December 2019", "Yes, GPL"),
