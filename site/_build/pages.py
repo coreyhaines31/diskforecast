@@ -430,6 +430,69 @@ PAGES = [
             """},
         ],
     },
+    # ------------------------------------------------------------------ Disk Inventory X
+    # Targets "disk inventory x" (300/mo US, KD 0), "disk inventory x alternative", and "disk inventory x apple silicon".
+    # Facts, checked 2026-10-06: derlien.com and its release notes (1.3 on 2019-12-08; 1.2 "64 Bit (Intel only)";
+    # 1.3 "still not signed nor notarized"), and the 1.3 app itself (lipo: x86_64 only; Gatekeeper: not signed at all).
+    {
+        "slug": "disk-inventory-x",
+        "competitor": "Disk Inventory X",
+        "title": "Disk Inventory X on Apple silicon, and a free alternative",
+        "description": "Disk Inventory X was last updated in 2019, is Intel only, and isn't notarized. Here's how it runs on Apple silicon today, and the free tools that replace it.",
+        "eyebrow": "Disk Inventory X alternative",
+        "h1": "Disk Inventory X stopped in 2019. <em>Your Mac didn't.</em>",
+        "lede": "Disk Inventory X was the treemap a lot of Mac users learned on. Its last release, 1.3, came out on December 8, 2019, before the first Apple silicon Macs shipped. Here's what that means on a Mac today, and which free tools have taken its place.",
+        "tldr": "Disk Inventory X 1.3 is Intel only and was never signed or notarized, so on Apple silicon it runs through Rosetta 2 and needs a manual override to open. GrandPerspective is the free, maintained treemap that replaces it. Disk Forecast is the free app that tells you when your disk will be full and what's safe to clear.",
+        "card_title": "Disk Inventory X",
+        "card_blurb": "The treemap many Mac users learned on. Last updated in 2019.",
+        "cta": "Know before it's full.",
+        "faqs": [
+            ("Does Disk Inventory X work on Apple silicon?", "Version 1.3 contains Intel code only, so an Apple silicon Mac runs it through Rosetta 2, which Apple says stays available as a general-purpose tool through macOS 27. The app isn't signed or notarized, so macOS blocks it until you allow it in System Settings › Privacy & Security."),
+            ("Is Disk Inventory X still updated?", "Its release notes list 1.3, from December 8, 2019, as the latest version, and its website lists macOS 10.13 to 10.15. We couldn't find anything newer."),
+            ("Is Disk Inventory X free?", "Yes. It's free and released under the GPL, with a donation link on its website."),
+            ("What's the best Disk Inventory X alternative?", "For the same kind of treemap, GrandPerspective: free, open source, and updated in September 2026 for macOS 14 and later. For a forecast and a cleanup list that explains each item, Disk Forecast, also free."),
+            ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+        ],
+        "sections": [
+            {"id": "why", "html": """
+        <h2>What Disk Inventory X did well</h2>
+        <p>Disk Inventory X showed a whole drive as a treemap, with a list of file kinds beside it, so you could see at a glance that most of the disk was video, or one giant disk image. It was free, released under the GPL, and for years it was the first app people recommended when a Mac filled up. It's the Mac cousin of KDirStat and WinDirStat, and its website still links to both.</p>
+        <h3>Where it is now</h3>
+        <p><strong>No release since 2019.</strong> Its release notes list 1.3, from December 8, 2019, as the latest version. The notes for 1.2 say it became 64-bit, “Intel only.”</p>
+        <p><strong>Intel code only.</strong> We checked the 1.3 app: it contains Intel code and nothing else. An Apple silicon Mac runs it through Rosetta 2, and Apple says Rosetta stays available as a general-purpose tool through macOS 27.</p>
+        <p><strong>Not signed or notarized.</strong> The 1.3 release notes say so, and Gatekeeper agrees: it rejects the app as unsigned. You can still open it by allowing it in System Settings › Privacy & Security, but that overrides a safety check for an app that hasn't been updated in years.</p>
+        <p><strong>Built for older macOS.</strong> Its website lists macOS 10.13 to 10.15. Anything newer is up to you to test.</p>
+            """},
+            {"id": "compare", "lit": True, "html": """
+        <h2>Disk Forecast vs Disk Inventory X</h2>
+        <p>Disk Inventory X facts come from its website, its release notes, and the 1.3 app itself, checked in October 2026.</p>
+        {{TABLE}}
+        <h3>What Disk Inventory X does better</h3>
+        <p>The treemap with a file-kind legend, which made it easy to see what type of file was filling a drive. If that's what you miss, GrandPerspective draws the same kind of map and is still maintained.</p>
+        <h3>What Disk Forecast does better</h3>
+        <p>It's current. It runs natively on Apple silicon and Intel, it's signed and notarized, it warns you before your disk fills, and it explains what each item is and whether it's safe to clear.</p>
+            """, "table": [
+                ("Price", "Free", "Free"),
+                ("Latest version", "Actively developed", "1.3, December 2019"),
+                ("Apple silicon", "Native", "Intel only, runs through Rosetta 2"),
+                ("Signed and notarized", "Yes", "No"),
+                ("Supported macOS", "14 or later", "10.13 to 10.15, per its website"),
+                ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
+                ("How it shows your disk", "Lists sorted by size, each item explained", "A treemap with a file-kind legend"),
+                ("System Data broken down", "Every part, with Apple's fixes", "—"),
+                ("Source available", "Yes, on GitHub", "Yes, GPL"),
+            ]},
+            {"id": "switch", "html": """
+        <h2>Replacing it</h2>
+        <ol class="steps">
+          <li><b>Install Disk Forecast.</b> <code>brew install --cask coreyhaines31/tap/diskforecast</code>, or download the app from GitHub.</li>
+          <li><b>Start with Safe to clear.</b> Caches, logs, and build folders in old projects, each explained, sent to the Trash after one confirm.</li>
+          <li><b>Get your treemap back.</b> <a href="/alternatives/grandperspective">GrandPerspective</a> is free, open source, native on Apple silicon, and updated in September 2026. It's the closest thing to Disk Inventory X that's still maintained.</li>
+          <li><b>Remove the old app.</b> Drag Disk Inventory X from Applications to the Trash, and you're no longer overriding Gatekeeper to open it.</li>
+        </ol>
+            """},
+        ],
+    },
 ]
 
 HUB = {
