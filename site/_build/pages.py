@@ -963,8 +963,74 @@ WHAT_IS = {
     "cta": "Know before it's full.",
 }
 
+# Targets "purgeable space mac" (200/mo US, KD 2), "mac purgeable space" (150), "how to clear purgeable space on mac" (100),
+# "what is purgeable space on mac" (100), "macos purgeable space" (100), "remove purgeable space mac" (70), and
+# "what does purgeable mean on mac" (60). Measured on this Mac with df and URLResourceValues (available vs important usage).
+PURGEABLE = {
+    "path": "/purgeable-space-mac",
+    "title": "Purgeable space on Mac: what it is and how to clear it",
+    "description": "What purgeable space on Mac is, why Finder counts it as available, how macOS frees it on its own, and how to clear it when a tool needs real free space.",
+    "eyebrow": "Guide",
+    "h1": "Purgeable space on Mac, <em>explained.</em>",
+    "lede": "Finder says you have plenty of room. Terminal says you're nearly full. Both are right, and the difference is purgeable space: storage macOS has already promised to give back.",
+    "tldr": "Purgeable space is storage used by files macOS can delete on its own when it needs room: local Time Machine snapshots, downloaded copies of iCloud files, and caches. Finder and Storage settings count it as available, because macOS frees it the moment an app asks. You rarely need to clear it. When a tool insists on real free space, restart, then delete local snapshots with <code>tmutil</code>.",
+    "card_title": "Purgeable space on Mac",
+    "card_blurb": "What it is, why Finder counts it as free, and when to clear it.",
+    "footer": "Purgeable space",
+    "related": ["/time-machine-local-snapshots", "/what-is-system-data-on-mac", "/how-to-check-storage-on-mac"],
+    "faqs": [
+        ("What is purgeable space on Mac?", "Storage used by files macOS can delete by itself when it needs room, because they can be recreated or downloaded again: local Time Machine snapshots, downloaded copies of iCloud files, and caches. Finder counts it as available."),
+        ("What does purgeable mean on a Mac?", "That macOS may remove the file without asking when space runs low. Purgeable files are in use until then, but macOS has already decided they're expendable."),
+        ("How do I clear purgeable space on my Mac?", "You usually don't need to: macOS frees it when an app needs room. If a tool demands real free space, restart, delete local Time Machine snapshots with tmutil deletelocalsnapshots, and use Remove Download on big iCloud Drive files."),
+        ("Why is purgeable space so large on my Mac?", "Usually local Time Machine snapshots, or iCloud files downloaded with Optimize Mac Storage on. macOS doesn't list what's in it. On one Mac with no snapshots at all, it was still over 200 GB."),
+        ("Why does Finder show more free space than Terminal?", "Finder counts purgeable space as available, and df counts only space that's free right now. On one Mac, df showed 32 GB available while macOS counted 270 GB available for important files."),
+        ("Is it safe to remove purgeable space?", "It's safe, but it rarely helps. macOS removes it as soon as something needs the room. Deleting it early only means downloading or rebuilding those files sooner."),
+    ],
+    "html": """
+        <h2>What is purgeable space on Mac?</h2>
+        <p>Some files on your Mac exist for convenience. They can be recreated, or downloaded again, so macOS marks them as purgeable: it may delete them, without asking, when it needs the room. Purgeable space is the total of those files. The idea arrived in macOS Sierra in 2016, alongside the storage recommendations Storage settings still shows.</p>
+        <p>On a typical Mac, three things make up most of it:</p>
+        <ul>
+          <li><strong>Local Time Machine snapshots.</strong> Hourly snapshots of your disk, kept between backups. They can hold tens of gigabytes of files you've already deleted.</li>
+          <li><strong>Downloaded iCloud files.</strong> With Optimize Mac Storage on, the copies of iCloud Drive files on your Mac can be removed and downloaded again later.</li>
+          <li><strong>Caches.</strong> Some caches, from apps and from macOS itself, are marked as safe to delete under pressure.</li>
+        </ul>
+        <p>macOS doesn't publish a list of what it counts, and it doesn't show you one either.</p>
+
+        <h2 style="margin-top:56px">Why Finder counts purgeable space as available</h2>
+        <p>Finder and Storage settings show available space as free space plus purgeable space. That's on purpose: if you copy a big file, macOS makes room by purging, so in practice the space is yours. Terminal's <code>df</code> shows only what's free right now. To see both:</p>
+<pre><code>df -h /System/Volumes/Data</code></pre>
+        <p>Then compare its <strong>Avail</strong> column with Finder: choose <strong>Go › Computer</strong>, select <strong>Macintosh HD</strong>, and press Command-I. On the Mac this guide was written on, <code>df</code> showed 32 GB available while macOS counted 270 GB available for important files. That's about 235 GB of purgeable space, with no Time Machine snapshots on the disk at all.</p>
+
+        <h2 style="margin-top:56px">How macOS reclaims it</h2>
+        <p>When an app asks for more space than is free, a background service in macOS deletes purgeable files until there's enough, starting with what's least useful. Local snapshots go oldest first, iCloud downloads are removed, and caches are cleared. It usually happens within seconds, and you won't see it.</p>
+        <p>Time Machine's own tool shows the mechanism. <code>tmutil thinlocalsnapshots</code> takes an amount to reclaim and an urgency from 1 to 4, which is how macOS asks for space with more or less force.</p>
+
+        <h2 style="margin-top:56px">How to clear purgeable space on Mac</h2>
+        <p>Most of the time, don't. It's already counted as free, and deleting it early only means downloading or rebuilding those files sooner. Clear it when a tool reads raw free space and refuses to run, like a large installer, a virtual machine asking for a fixed-size disk, or a script that checks <code>df</code>.</p>
+        <ol class="steps">
+          <li><b>Restart.</b> Temporary files and swap are cleared, and macOS takes the chance to purge.</li>
+          <li><b>Delete local Time Machine snapshots.</b> They're usually the biggest part. List them, then delete by date:
+<pre><code>tmutil listlocalsnapshots /
+tmutil deletelocalsnapshots 2026-10-05-093012</code></pre>
+          <a href="/time-machine-local-snapshots">Time Machine local snapshots</a> has every command and what each removes.</li>
+          <li><b>Remove iCloud downloads.</b> In iCloud Drive, Control-click big files or folders and choose <strong>Remove Download</strong>. See <a href="/taking-up-space/icloud-drive">iCloud Drive taking up space</a>.</li>
+        </ol>
+        <p>What you can't do is empty purgeable space with a single button. macOS doesn't offer one. Apps that promise to remove it usually fill the disk with a temporary file until macOS purges, which macOS would have done anyway the moment you needed the room.</p>
+
+        <h2 style="margin-top:56px">Where local snapshots fit in</h2>
+        <p>On a Mac that backs up with Time Machine, snapshots are often most of the purgeable space, and also the part that makes System Data look huge in Storage settings. They're also the only part you can list and delete by name. If your purgeable number grows overnight and drops after a backup, snapshots are why. For the rest of System Data, see <a href="/what-is-system-data-on-mac">what is System Data on Mac</a>.</p>
+    """,
+    "shortcut": """
+          <h2>Disk Forecast and purgeable space</h2>
+          <p>Disk Forecast shows purgeable space as the first row of its System Data window, sized the way macOS reports it: what&#39;s available for important files, minus what&#39;s free right now. There&#39;s no button to clear it, on purpose, since macOS frees it when it&#39;s needed. Its free-space number counts purgeable space as available, like Finder, so the forecast doesn&#39;t cry wolf. The snapshots row next to it lists each snapshot and removes them with <code>tmutil</code> after you confirm. It&#39;s free.</p>
+    """,
+    "mockup": "system-data",
+    "cta": "Know before it's full.",
+}
+
 # In reading order: the hub and every footer list them this way.
-GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA]
+GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE]
 
 GUIDES_HUB = {
     "path": "/guides",
