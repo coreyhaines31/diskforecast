@@ -612,7 +612,82 @@ CHECK = {
     "cta": "Know before it's full.",
 }
 
-GUIDES = [SYSTEM_DATA, CACHE, FREE_UP, CHECK]
+# Targets "what is system data on mac" (3,600/mo US, KD 1), plus "why is system data so big mac", "system data on mac is huge",
+# "how much system data is normal on mac", and "why does system data keep increasing on mac". The how-to lives at /system-data.
+WHAT_IS = {
+    "path": "/what-is-system-data-on-mac",
+    "title": "What is System Data on Mac? A plain-English explanation",
+    "description": "What System Data on Mac is, how much is normal, why it gets so big and keeps increasing, and how it relates to the old Other storage category.",
+    "eyebrow": "Guide",
+    "h1": "What is System Data on Mac, <em>really?</em>",
+    "lede": "It's the gray slice in Storage settings that's bigger than you expect and won't say why. Here's what's in it, how much is normal, and why it keeps growing.",
+    "tldr": "System Data is macOS's catch-all: everything Storage settings can't file under a named category like Applications, Documents, or Photos. On most Macs it's mostly local Time Machine snapshots, caches, simulator runtimes, Docker and virtual machine disk images, Apple Intelligence models, and the Spotlight index. Tens of gigabytes is common. It keeps increasing because most of what's in it grows as you use your Mac.",
+    "card_title": "What is System Data on Mac?",
+    "card_blurb": "What's inside it, how much is normal, and why it keeps growing.",
+    "footer": "What is System Data",
+    "related": ["/system-data", "/free-up-space-on-mac", "/how-to-check-storage-on-mac"],
+    "faqs": [
+        ("What is System Data in Mac storage?", "It's the category in System Settings › General › Storage for everything macOS doesn't file under a named category. That includes local Time Machine snapshots, caches, logs, simulator runtimes, virtual machine and Docker disk images, Apple Intelligence models, and the Spotlight index."),
+        ("How much System Data is normal on a Mac?", "Apple doesn't publish a number. Tens of gigabytes is common on a Mac that's been in use for a while. Past 100 GB, look for local Time Machine snapshots, Xcode simulator runtimes, Docker, or virtual machines."),
+        ("Why is my System Data so high on Mac?", "Usually one of three things: local Time Machine snapshots waiting for a backup, developer tools like Xcode simulators and Docker, or caches that grew over months. Purgeable space can also make it look bigger than the space you'd actually get back."),
+        ("Why does System Data keep increasing?", "Because most of what's in it is supposed to grow. Time Machine takes a new local snapshot every hour, caches refill as you use apps, and Xcode and Docker add runtimes and images with each update. Clearing it reclaims space; it doesn't stop the growth."),
+        ("Is System Data the same as Other storage?", "Yes, more or less. macOS Big Sur and earlier called the catch-all category Other. Apple renamed it System Data in macOS Monterey. Either way, it doesn't include macOS itself, which has its own category."),
+        ("Can I delete System Data?", "Not with one button, and not by deleting folders under /System. You reclaim it one part at a time with Apple's own tools: tmutil for snapshots, xcrun simctl for simulators, and so on. The System Data guide walks through each step."),
+    ],
+    "html": """
+        <h2>What System Data is</h2>
+        <p>Open <strong>System Settings › General › Storage</strong> and the bar at the top splits your disk into categories: Applications, Documents, Photos, Messages, macOS, and more. Each named category is something macOS can recognize and count. <strong>System Data is everything else.</strong> It's a catch-all, not a single folder, which is why Storage settings can't show you what's inside it the way it can for Documents.</p>
+        <p>It's also not the operating system. macOS itself has its own category, simply called macOS, on recent versions. System Data is what builds up around it: files macOS, your apps, and your tools create while you use the Mac.</p>
+        <div class="callout"><p><strong>The short definition.</strong> System Data is space used by files that aren't apps, aren't your documents or media, and aren't macOS itself. Most of it is temporary, rebuildable, or both.</p></div>
+
+        <h2 style="margin-top:56px">What's inside System Data on Mac</h2>
+        <ul>
+          <li><strong>Local Time Machine snapshots.</strong> If you back up with Time Machine, macOS keeps hourly snapshots on your Mac between backups, so you can restore files even when the backup drive isn't connected. They're the most common reason System Data is huge.</li>
+          <li><strong>Purgeable space.</strong> Space macOS has already marked as reclaimable, like iCloud files it can download again. It frees it on its own when something needs the room.</li>
+          <li><strong>Caches and logs.</strong> Copies apps keep so they don't have to download or rebuild things, plus records of what they did. Some land in named categories, but much of it counts here.</li>
+          <li><strong>Simulators and runtimes.</strong> If you've installed Xcode, each iOS, watchOS, or visionOS simulator runtime can take several gigabytes.</li>
+          <li><strong>Docker and virtual machines.</strong> Docker keeps all its images, containers, and build cache in one disk image. Parallels, UTM, and VMware save whole computers as single files.</li>
+          <li><strong>Apple Intelligence and Siri models.</strong> On Macs that support it, the on-device models take several gigabytes.</li>
+          <li><strong>The Spotlight index.</strong> The database behind search. Usually small, occasionally not.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">How much System Data is normal on a Mac?</h2>
+        <p>Apple doesn't publish a number, and it varies a lot with how you use your Mac. As a rough guide:</p>
+        <ul>
+          <li><strong>A Mac used for everyday work:</strong> often 10 to 40 GB, mostly caches, snapshots, and models.</li>
+          <li><strong>A developer's Mac:</strong> often 50 to 150 GB, because simulator runtimes, Docker, and build caches all count here.</li>
+          <li><strong>Over 100 GB on a Mac that isn't used for development:</strong> look at local Time Machine snapshots first, especially on a laptop that's rarely connected to its backup drive.</li>
+        </ul>
+        <p>What matters more than the size is the trend. A big System Data that holds steady is fine. A small one that grows a gigabyte a day isn't.</p>
+
+        <h2 style="margin-top:56px">Why is System Data so big on my Mac?</h2>
+        <p>When System Data on a Mac is huge, it's almost always one of these:</p>
+        <ol class="steps">
+          <li><b>Snapshots waiting for a backup.</b> macOS counts local snapshots as purgeable and removes them after 24 hours or when space runs low, but until then Storage settings may show them as tens of gigabytes. Check with <code>tmutil listlocalsnapshots /</code> in Terminal.</li>
+          <li><b>Developer tools.</b> Xcode downloads a new simulator runtime with most updates and keeps the old ones. Docker's disk image grows with every image you pull or build.</li>
+          <li><b>Files Storage settings can't place.</b> App data in <code>~/Library</code> that isn't clearly a document, like a chat app's local database, or a game's downloaded content, often lands in System Data.</li>
+        </ol>
+        <p>Purgeable space can also make System Data look bigger than it is: space macOS would give back the moment you needed it is still drawn in the bar. <a href="/how-to-check-storage-on-mac">How to check Mac storage</a> explains why different tools show different numbers.</p>
+
+        <h2 style="margin-top:56px">Why does System Data keep increasing on Mac?</h2>
+        <p>Because most of what's in it is designed to grow. Time Machine takes a new local snapshot every hour. Caches refill as you browse and use apps. Spotlight indexes every new file. Xcode adds runtimes, Docker adds images, and macOS downloads new models with updates. Clearing System Data reclaims space, but it doesn't change the pace it comes back at.</p>
+        <p>That's why it helps to watch the trend instead of the total. If System Data and everything else together fill your disk by 2 GB a week, you have months. If it's 2 GB a day, you have a problem, and it's better to know before macOS warns you that your disk is almost full.</p>
+
+        <h2 style="margin-top:56px">System Data vs the old “Other” storage</h2>
+        <p>If you remember a big gray “Other” in About This Mac, it's the same idea. macOS Big Sur and earlier called the catch-all category Other. Apple renamed it System Data in macOS Monterey; what it holds didn't change much. On macOS 13 and later, both live in <strong>System Settings › General › Storage</strong> instead of About This Mac.</p>
+
+        <h2 style="margin-top:56px">Can you delete System Data?</h2>
+        <p>Parts of it, safely, with Apple's own tools. There's no single button, and you should never delete folders under <code>/System</code> or <code>/private/var</code> by hand. The usual order is: restart, remove local snapshots with <code>tmutil</code>, delete simulator runtimes you don't use with <code>xcrun simctl</code>, clear caches, and prune Docker. <a href="/system-data">How to clear System Data on Mac</a> has every step and command.</p>
+    """,
+    "shortcut": """
+          <h2>See your own System Data, explained.</h2>
+          <p>Disk Forecast breaks System Data on your Mac into its parts, sizes each one, says what it is, and runs Apple&#39;s own fix when you confirm. Then it forecasts when your disk will be full, so the growth never surprises you. It&#39;s free.</p>
+    """,
+    "mockup": "system-data",
+    "cta": "Know before it's full.",
+}
+
+GUIDES = [SYSTEM_DATA, CACHE, FREE_UP, CHECK, WHAT_IS]
 
 # ---------------------------------------------------------------------- Privacy
 PRIVACY = {
