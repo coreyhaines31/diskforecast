@@ -61,6 +61,28 @@ open -a "Disk Forecast"
 
 **Or download:** get `DiskForecast-<version>.dmg` from [Releases](https://github.com/coreyhaines31/diskforecast/releases/latest), open it, and drag **Disk Forecast** to **Applications**. Then open it from Applications.
 
+**Or ask your coding agent.** Paste this into Claude Code, Codex, or another agent that can run commands on your Mac:
+
+```text
+Install Disk Forecast, a free macOS menu bar app (https://github.com/coreyhaines31/diskforecast), on this Mac:
+
+1. Check that macOS is 14 or later with `sw_vers -productVersion`. If it's older, stop and tell me.
+2. If Homebrew is installed (`command -v brew`), run:
+   brew install --cask coreyhaines31/tap/diskforecast
+   Otherwise, install the latest release from GitHub:
+   url=$(curl -fsSL https://api.github.com/repos/coreyhaines31/diskforecast/releases/latest | grep -o 'https://[^"]*\.dmg' | head -1)
+   curl -fsSL -o /tmp/DiskForecast.dmg "$url"
+   mnt=$(mktemp -d) && hdiutil attach -nobrowse -quiet /tmp/DiskForecast.dmg -mountpoint "$mnt"
+   cp -R "$mnt/Disk Forecast.app" /Applications/ && hdiutil detach -quiet "$mnt" && rm /tmp/DiskForecast.dmg
+3. Check it's notarized: `spctl --assess --type exec -v "/Applications/Disk Forecast.app"` should say "Notarized Developer ID".
+4. Open it: `open -a "Disk Forecast"`.
+5. Open the Full Disk Access settings for me:
+   open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+   Then tell me to turn on Disk Forecast there (it's optional), and that its drive icon with my free space is now in the menu bar.
+
+Don't change any other settings and don't delete anything.
+```
+
 The app is signed with a Developer ID and notarized by Apple, so it opens without warnings. It updates itself through [Sparkle](https://sparkle-project.org). It isn't on the App Store because the App Store's sandbox can't measure the whole disk.
 
 ## First run
