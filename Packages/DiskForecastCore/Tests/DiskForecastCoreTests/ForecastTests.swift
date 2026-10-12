@@ -56,6 +56,34 @@ struct ForecastTests {
         #expect(result == nil)
     }
 
+    @Test func oneBigDropDoesNotSetTheTrend() {
+        // A real Mac: a 220 GB drop in one day, then space slowly coming back.
+        let result = Forecast.daysUntilFull(
+            history: history(freeGB: [283, 271, 230, 6, 12, 13, 16, 19]),
+            currentFreeBytes: 19 * gigabyte, now: now, calendar: calendar
+        )
+        #expect(result == nil)
+    }
+
+    @Test func keepsTheSteadyPaceAroundOneBigDrop() throws {
+        let days = try #require(Forecast.daysUntilFull(
+            history: history(freeGB: [100, 98, 96, 40, 38, 36]),
+            currentFreeBytes: 36 * gigabyte, now: now, calendar: calendar
+        ))
+        #expect(abs(days - 18) < 0.01)
+    }
+
+    @Test func spreadsAChangeOverMissedDays() throws {
+        // Readings two days apart still count as a 2 GB a day pace.
+        var history = UsageHistory()
+        for (offset, free) in [(-6, Int64(100)), (-4, 96), (-2, 92), (0, 88)] {
+            let date = calendar.date(byAdding: .day, value: offset, to: now)!
+            history.record(freeBytes: free * gigabyte, capacityBytes: 1_000 * gigabyte, at: date, calendar: calendar)
+        }
+        let rate = try #require(Forecast.bytesPerDay(history: history, now: now, calendar: calendar))
+        #expect(abs(rate + 2 * Double(gigabyte)) < 1)
+    }
+
     @Test func phrasesDays() {
         #expect(Forecast.phrase(days: 0.4) == "Full within a day")
         #expect(Forecast.phrase(days: 41.2) == "Full in ~41 days")
