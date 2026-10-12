@@ -141,7 +141,7 @@ def homepage_schema():
            "operatingSystem": "macOS 14 or later", "applicationCategory": "UtilitiesApplication",
            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
            "downloadUrl": DOWNLOAD, "url": f"{SITE}/", "image": f"{SITE}/images/icon.png",
-           "author": {"@type": "Person", "name": "Corey Haines"}, "softwareVersion": "1.0.0"}
+           "author": {"@type": "Person", "name": "Corey Haines"}}
     return f'  <script type="application/ld+json">{json.dumps(app)}</script>\n  {faq_schema(faqs)}\n'
 
 
