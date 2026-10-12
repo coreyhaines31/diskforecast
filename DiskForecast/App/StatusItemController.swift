@@ -1,5 +1,6 @@
 import AppKit
 import DiskForecastCore
+import SwiftUI
 
 /// The menu bar item: free space as its title, and the menu built fresh each time it opens.
 @MainActor
@@ -11,6 +12,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private weak var openMenu: NSMenu?
     var openCleanup: () -> Void = {}
     var openSystemData: () -> Void = {}
+    var openForecast: () -> Void = {}
     var grantAccess: () -> Void = {}
     var openSettings: () -> Void = {}
 
@@ -58,6 +60,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         menu.removeAllItems()
         menu.addItem(label("\(Bytes.format(disk.freeBytes)) free of \(Bytes.format(disk.capacityBytes))"))
         menu.addItem(label(disk.forecastPhrase))
+        addChart(to: menu)
         menu.addItem(.separator())
         addConsumers(to: menu)
         addReclaim(to: menu)
@@ -70,6 +73,20 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         updates.isEnabled = updater.canCheck
         menu.addItem(updates)
         menu.addItem(ClosureMenuItem("Quit \(Brand.name)", keyEquivalent: "q") { NSApp.terminate(nil) })
+    }
+
+    /// The last 30 days as a small chart, once there are two days to draw. Clicking it opens
+    /// the Forecast window.
+    private func addChart(to menu: NSMenu) {
+        guard disk.history.samples.count >= 2 else { return }
+        let view = NSHostingView(rootView: MenuForecastView(disk: disk) { [weak self, weak menu] in
+            menu?.cancelTracking()
+            self?.openForecast()
+        })
+        view.frame.size = view.fittingSize
+        let item = NSMenuItem()
+        item.view = view
+        menu.addItem(item)
     }
 
     private func addConsumers(to menu: NSMenu) {
@@ -110,6 +127,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         }
         menu.addItem(ClosureMenuItem("Open Cleanup…") { [weak self] in self?.openCleanup() })
         menu.addItem(ClosureMenuItem("System Data…") { [weak self] in self?.openSystemData() })
+        menu.addItem(ClosureMenuItem("Forecast…") { [weak self] in self?.openForecast() })
         menu.addItem(ClosureMenuItem("Rescan") { [scan] in scan.scan() })
     }
 
