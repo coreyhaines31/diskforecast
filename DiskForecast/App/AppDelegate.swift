@@ -22,6 +22,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         SystemDataView(model: self.systemDataModel)
     }
 
+    private lazy var forecastWindow = HostedWindow(title: "Forecast", size: NSSize(width: 680, height: 520)) {
+        ForecastView(disk: self.disk)
+    }
+
     static var supportFolder: URL {
         URL.applicationSupportDirectory.appending(path: Brand.supportFolderName)
     }
@@ -31,6 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItemController = StatusItemController(disk: disk, scan: scan, updater: updater)
         statusItemController?.openCleanup = { [weak self] in self?.cleanupWindow.show() }
         statusItemController?.openSystemData = { [weak self] in self?.systemDataWindow.show() }
+        statusItemController?.openForecast = { [weak self] in self?.forecastWindow.show() }
         disk.onChange = { [weak self] in self?.statusItemController?.update() }
         scan.onChange = { [weak self] in self?.statusItemController?.update() }
         statusItemController?.grantAccess = { [weak self] in self?.onboardingWindow.show() }
