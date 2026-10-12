@@ -2,14 +2,16 @@ import Foundation
 
 /// When the disk will run out of space if it keeps filling at its recent pace.
 public enum Forecast {
-    public static let windowDays = 30
+    public static let windowDays = 14
     public static let minimumDays = 3
+    /// Less than 100 MB a day is noise, not a trend.
+    static let noiseBytesPerDay = 100_000_000.0
 
-    /// Days until free space reaches zero, from a straight-line fit of the last 30 days of free
-    /// space. Nil without enough history, or when free space isn't shrinking.
-    public static func daysUntilFull(
+    /// How much free space changes on a typical day lately: the median of the day-to-day changes
+    /// over the last two weeks, so one big download or cleanup doesn't set the trend. Negative
+    /// means the disk is filling. Nil without enough history.
+    public static func bytesPerDay(
         history: UsageHistory,
-        currentFreeBytes: Int64,
         now: Date = Date(),
         calendar: Calendar = .current
     ) -> Double? {
@@ -18,18 +20,28 @@ public enum Forecast {
         }
         let recent = history.samples.filter { $0.day >= start }
         guard recent.count >= minimumDays else { return nil }
+        let rates = zip(recent, recent.dropFirst()).compactMap { earlier, later -> Double? in
+            let days = later.day.timeIntervalSince(earlier.day) / 86_400
+            guard days > 0 else { return nil }
+            return Double(later.freeBytes - earlier.freeBytes) / days
+        }.sorted()
+        guard !rates.isEmpty else { return nil }
+        let middle = rates.count / 2
+        return rates.count.isMultiple(of: 2) ? (rates[middle - 1] + rates[middle]) / 2 : rates[middle]
+    }
 
-        let points = recent.map { (x: $0.day.timeIntervalSince(start) / 86_400, y: Double($0.freeBytes)) }
-        let count = Double(points.count)
-        let meanX = points.map(\.x).reduce(0, +) / count
-        let meanY = points.map(\.y).reduce(0, +) / count
-        let covariance = points.map { ($0.x - meanX) * ($0.y - meanY) }.reduce(0, +)
-        let variance = points.map { ($0.x - meanX) * ($0.x - meanX) }.reduce(0, +)
-        guard variance > 0 else { return nil }
-        let bytesPerDay = covariance / variance
-        // Less than 100 MB a day is noise, not a trend.
-        guard bytesPerDay < -100_000_000 else { return nil }
-        return Double(currentFreeBytes) / -bytesPerDay
+    /// Days until free space reaches zero at the recent pace. Nil without enough history, or
+    /// when free space isn't shrinking.
+    public static func daysUntilFull(
+        history: UsageHistory,
+        currentFreeBytes: Int64,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> Double? {
+        guard let rate = bytesPerDay(history: history, now: now, calendar: calendar),
+              rate < -noiseBytesPerDay
+        else { return nil }
+        return Double(currentFreeBytes) / -rate
     }
 
     /// "Full in ~41 days", rounded the way people say it.
