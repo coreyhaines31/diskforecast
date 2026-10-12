@@ -31,6 +31,9 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         update()
     }
 
+    /// The menu bar button, for the README demo.
+    var button: NSStatusBarButton? { statusItem.button }
+
     func update() {
         guard let button = statusItem.button else { return }
         switch Preferences.menuBarDisplay {
