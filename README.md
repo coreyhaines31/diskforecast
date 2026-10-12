@@ -27,11 +27,11 @@ It's a free alternative to DiskBuddy, DaisyDisk, and CleanMyMac for the job they
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset=".github/images/forecast-dark.png">
-    <img src=".github/images/forecast-light.png" width="49%" alt="The Forecast window: a 30-day chart of free space falling toward a projected full date of Nov 11, and What changed since Sep 12, with ~/Library up 22 GB, ~/Downloads up 14 GB, and ~/.ollama up 14 GB">
+    <img src=".github/images/forecast-light.png" width="49%" align="top" alt="The Forecast window: a 30-day chart of free space falling toward a projected full date of Nov 11, and What changed since Sep 12, with ~/Library up 22 GB, ~/Downloads up 14 GB, and ~/.ollama up 14 GB">
   </picture>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset=".github/images/cleanup-dark.png">
-    <img src=".github/images/cleanup-light.png" width="49%" alt="The Cleanup window: Safe to clear lists Xcode DerivedData, Xcode device support, build folders in old projects, app caches, package manager caches, and logs, each with a plain explanation; Worth a look lists Ollama models and disk images, unchecked">
+    <img src=".github/images/cleanup-light.png" width="49%" align="top" alt="The Cleanup window: Safe to clear lists Xcode DerivedData, Xcode device support, build folders in old projects, app caches, package manager caches, and logs, each with a plain explanation; Worth a look lists Ollama models and disk images, unchecked">
   </picture>
 </p>
 
