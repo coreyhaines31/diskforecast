@@ -3,6 +3,7 @@ import SwiftUI
 /// The small chart at the top of the menu: the last 30 days and the forecast, no axes.
 struct MenuForecastView: View {
     let disk: DiskStatus
+    let grewMost: (name: String, bytes: Int64)?
     let open: () -> Void
 
     var body: some View {
@@ -18,6 +19,14 @@ struct MenuForecastView: View {
                     Text("Open Forecast…").foregroundStyle(Color.accentColor)
                 }
                 .font(.caption)
+                if let grewMost {
+                    HStack(spacing: 4) {
+                        Text("Grew most this week:").foregroundStyle(.secondary)
+                        Text(grewMost.name).lineLimit(1).truncationMode(.middle)
+                        DeltaText(delta: grewMost.bytes)
+                    }
+                    .font(.caption)
+                }
             }
         }
         .padding(.horizontal, 14)
