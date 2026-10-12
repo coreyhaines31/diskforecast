@@ -24,14 +24,16 @@ public struct FolderSnapshot: Codable, Sendable, Equatable {
 
     public init(tree: ScanTree, freeBytes: Int64, at date: Date, calendar: Calendar = .current) {
         var folders: [String: Int64] = [:]
-        var queue: [(node: Int, path: String, depth: Int)] = tree.children.isEmpty ? [] : [(0, "", 0)]
-        while let (node, path, depth) = queue.popLast() {
-            guard depth < Self.maxDepth else { continue }
+        func record(under node: Int, path: String, depth: Int) {
+            guard depth < Self.maxDepth else { return }
             for child in tree.children[node].map(Int.init) where tree.totalBytes[child] >= Self.minimumBytes {
                 let childPath = path.isEmpty ? tree.names[child] : path + "/" + tree.names[child]
                 folders[childPath] = tree.totalBytes[child]
-                queue.append((child, childPath, depth + 1))
+                record(under: child, path: childPath, depth: depth + 1)
             }
+        }
+        if !tree.children.isEmpty {
+            record(under: 0, path: "", depth: 0)
         }
         self.init(
             day: calendar.startOfDay(for: date), homeBytes: tree.totalSize, freeBytes: freeBytes, folders: folders
