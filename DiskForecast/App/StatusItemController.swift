@@ -11,6 +11,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private weak var openMenu: NSMenu?
     var openCleanup: () -> Void = {}
     var openSystemData: () -> Void = {}
+    var openForecast: () -> Void = {}
     var grantAccess: () -> Void = {}
     var openSettings: () -> Void = {}
 
@@ -110,6 +111,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         }
         menu.addItem(ClosureMenuItem("Open Cleanup…") { [weak self] in self?.openCleanup() })
         menu.addItem(ClosureMenuItem("System Data…") { [weak self] in self?.openSystemData() })
+        menu.addItem(ClosureMenuItem("Forecast…") { [weak self] in self?.openForecast() })
         menu.addItem(ClosureMenuItem("Rescan") { [scan] in scan.scan() })
     }
 
