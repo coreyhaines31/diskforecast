@@ -56,6 +56,33 @@ struct FolderSnapshotTests {
         #expect(allNew)
     }
 
+    @Test func storeKeepsOneSnapshotADayAndFindsTheBaseline() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "America/Los_Angeles")!
+        let folder = FileManager.default.temporaryDirectory.appending(path: "DiskForecastTests-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let store = FolderSnapshotStore(folder: folder, calendar: calendar)
+        let today = calendar.startOfDay(for: day)
+        func on(_ offset: Int, free: Int64) -> FolderSnapshot {
+            let date = calendar.date(byAdding: .day, value: offset, to: today)!
+            return FolderSnapshot(day: date, homeBytes: 0, freeBytes: free, folders: [:])
+        }
+        try store.save(on(-130, free: 1))  // older than four months
+        try store.save(on(-10, free: 2))
+        try store.save(on(-3, free: 3))
+        try store.save(on(0, free: 4))
+        try store.save(on(0, free: 5))  // same day replaces
+
+        #expect(store.latest()?.freeBytes == 5)
+        let sinceTwoWeeks = calendar.date(byAdding: .day, value: -14, to: today)!
+        let sinceFiveDays = calendar.date(byAdding: .day, value: -5, to: today)!
+        #expect(store.baseline(since: sinceTwoWeeks)?.freeBytes == 2)
+        #expect(store.baseline(since: sinceFiveDays)?.freeBytes == 3)
+        #expect(store.baseline(since: today) == nil)
+        let files = try FileManager.default.contentsOfDirectory(atPath: folder.path)
+        #expect(files.count == 3)
+    }
+
     @Test func attributesGrowthOutsideTheHomeFolder() {
         let old = FolderSnapshot(day: day, homeBytes: 500 * gigabyte, freeBytes: 230 * gigabyte, folders: [:])
         let new = FolderSnapshot(day: day, homeBytes: 590 * gigabyte, freeBytes: 6 * gigabyte, folders: [:])
