@@ -59,6 +59,15 @@ final class DiskStatus {
     }
 
     func refresh() {
+        #if DEBUG
+        if DemoMode.isOn {
+            capacityBytes = Demo.capacityBytes
+            freeBytes = Demo.freeBytes
+            purgeableBytes = 6_000_000_000
+            onChange?()
+            return
+        }
+        #endif
         let keys: Set<URLResourceKey> = [
             .volumeTotalCapacityKey, .volumeAvailableCapacityKey, .volumeAvailableCapacityForImportantUsageKey
         ]

@@ -64,7 +64,7 @@
             <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .67.42l1.88 3.81 4.2.61a.75.75 0 0 1 .42 1.28l-3.04 2.97.72 4.19a.75.75 0 0 1-1.09.79L8 12.35l-3.76 1.97a.75.75 0 0 1-1.09-.79l.72-4.19L.83 6.37a.75.75 0 0 1 .42-1.28l4.2-.61L7.33.67A.75.75 0 0 1 8 .25z"/></svg>
             <span><span data-stars-count>0</span> <span data-stars-label>stars</span> on GitHub</span>
           </a>
-          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code> · <a href="#agent-install">Install with Claude Code or Codex</a></p>
         </div>
 
         <!-- mockup:menu -->
@@ -81,7 +81,7 @@
           </div>
           <div class="mk-nsmenu">
             <div class="mk-item dim"><span class="t">142 GB free of 494 GB</span></div>
-            <div class="mk-item dim"><span class="t">Full in ~41 days</span></div>
+            <div class="mk-item dim"><span class="t">Full in ~41 days · using 3.5 GB a day</span></div>
             <div class="mk-sep"></div>
             <div class="mk-label">Taking the most space</div>
             <div class="mk-item"><span class="t">~/Library</span><span class="v">88 GB</span></div>
@@ -267,6 +267,30 @@
             <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg aria-hidden="true"><use href="#i-github"/></svg>View source code</a>
           </div>
           <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+          <details class="agent-install" id="agent-install">
+            <summary>Or install it with Claude Code or Codex</summary>
+            <p>Paste this into a coding agent that can run commands on your Mac.</p>
+            <div class="prompt">
+              <button type="button" class="copy-prompt" data-copy="agent-prompt">Copy</button>
+              <pre id="agent-prompt">Install Disk Forecast, a free macOS menu bar app (https://github.com/coreyhaines31/diskforecast), on this Mac:
+
+1. Check that macOS is 14 or later with `sw_vers -productVersion`. If it's older, stop and tell me.
+2. If Homebrew is installed (`command -v brew`), run:
+   brew install --cask coreyhaines31/tap/diskforecast
+   Otherwise, install the latest release from GitHub:
+   url=$(curl -fsSL https://api.github.com/repos/coreyhaines31/diskforecast/releases/latest | grep -o 'https://[^"]*\.dmg' | head -1)
+   curl -fsSL -o /tmp/DiskForecast.dmg "$url"
+   mnt=$(mktemp -d) &amp;&amp; hdiutil attach -nobrowse -quiet /tmp/DiskForecast.dmg -mountpoint "$mnt"
+   cp -R "$mnt/Disk Forecast.app" /Applications/ &amp;&amp; hdiutil detach -quiet "$mnt" &amp;&amp; rm /tmp/DiskForecast.dmg
+3. Check it's notarized: `spctl --assess --type exec -v "/Applications/Disk Forecast.app"` should say "Notarized Developer ID".
+4. Open it: `open -a "Disk Forecast"`.
+5. Open the Full Disk Access settings for me:
+   open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+   Then tell me to turn on Disk Forecast there (it's optional), and that its drive icon with my free space is now in the menu bar.
+
+Don't change any other settings and don't delete anything.</pre>
+            </div>
+          </details>
         </div>
       </div>
     </section>
@@ -297,8 +321,29 @@
       } catch (_) { /* offline or rate-limited: leave the fallback text */ }
     })();
   </script>
+  <script>
+    // Open the agent install prompt when a link points at it.
+    const openAgentInstall = () => {
+      if (location.hash === "#agent-install") document.getElementById("agent-install").open = true;
+    };
+    addEventListener("hashchange", openAgentInstall);
+    openAgentInstall();
+    // Copy the agent install prompt. Falls back to selecting it when the clipboard is unavailable.
+    document.querySelectorAll("[data-copy]").forEach(button => {
+      button.addEventListener("click", async () => {
+        const source = document.getElementById(button.dataset.copy);
+        try {
+          await navigator.clipboard.writeText(source.textContent);
+          button.textContent = "Copied";
+          setTimeout(() => { button.textContent = "Copy"; }, 2000);
+        } catch (_) {
+          getSelection().selectAllChildren(source);
+        }
+      });
+    });
+  </script>
   <!-- schema -->
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Disk Forecast", "operatingSystem": "macOS 14 or later", "applicationCategory": "UtilitiesApplication", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "downloadUrl": "https://github.com/coreyhaines31/diskforecast/releases/latest", "url": "https://diskforecast.com/", "image": "https://diskforecast.com/images/icon.png", "author": {"@type": "Person", "name": "Corey Haines"}, "softwareVersion": "1.0.0"}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Disk Forecast", "operatingSystem": "macOS 14 or later", "applicationCategory": "UtilitiesApplication", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "downloadUrl": "https://github.com/coreyhaines31/diskforecast/releases/latest", "url": "https://diskforecast.com/", "image": "https://diskforecast.com/images/icon.png", "author": {"@type": "Person", "name": "Corey Haines"}}</script>
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is it safe?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Files it clears go to the Trash, where you can put them back. Safe to clear only holds things that rebuild themselves, like caches and build folders. System Data fixes run Apple's own tools, and every one asks you first."}}, {"@type": "Question", "name": "Does it delete anything?", "acceptedAnswer": {"@type": "Answer", "text": "Not on its own. Files move to the Trash, and the space comes back when you empty it. The exceptions are System Data fixes, like removing local Time Machine snapshots: Apple's own tool does the work, and only after you confirm."}}, {"@type": "Question", "name": "Why does it want Full Disk Access?", "acceptedAnswer": {"@type": "Answer", "text": "It doesn't need it. Everything works with your home folder. Full Disk Access lets it measure the folders macOS guards, like Mail, Messages, iCloud Drive, and other apps' containers. Without it, their space shows up as unexplained."}}, {"@type": "Question", "name": "What is System Data?", "acceptedAnswer": {"@type": "Answer", "text": "The catch-all bar in Storage settings for everything macOS doesn't file under a named category: local Time Machine snapshots, purgeable space, simulator runtimes, caches, Apple Intelligence models, the Spotlight index. The guide walks through each one."}}, {"@type": "Question", "name": "How accurate is the forecast?", "acceptedAnswer": {"@type": "Answer", "text": "It's a trend, not a promise, which is why it says \u201c~\u201d. It follows the typical day-to-day change in free space over the last two weeks, so one big download or cleanup doesn't throw it off. It appears after 3 days of history and says how fast space is changing: \u201cFull in ~41 days \u00b7 using 3.5 GB a day\u201d, \u201cSteady\u201d, or \u201cFree space growing\u201d. When space is low, it says so whatever the trend."}}, {"@type": "Question", "name": "Why not the App Store?", "acceptedAnswer": {"@type": "Answer", "text": "App Store apps run in a sandbox that can't see most of your disk, so a disk tool there can't measure System Data or run Apple's fixes. Disk Forecast is signed and notarized by Apple, and installs from GitHub or Homebrew."}}, {"@type": "Question", "name": "Is it really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, at home or at work. No account, no trial, no subscription. The source is on GitHub, so you can read exactly how it counts and what it moves to the Trash."}}]}</script>
   <!-- /schema -->
 </body>

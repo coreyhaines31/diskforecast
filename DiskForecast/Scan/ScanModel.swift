@@ -57,6 +57,17 @@ final class ScanModel {
 
     func scan() {
         guard !isScanning else { return }
+        #if DEBUG
+        if DemoMode.isOn {
+            result = Demo.scan(home: home)
+            items = Demo.cleanupItems(home: home)
+            scannedWithFullDiskAccess = true
+            finishedAt = Date()
+            state = .done
+            onChange?()
+            return
+        }
+        #endif
         generation += 1
         let generation = generation
         let fullAccess = FullDiskAccess.isGranted
