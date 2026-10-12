@@ -36,6 +36,16 @@ struct ForecastChart: View {
                 PointMark(x: .value("Day", today.date), y: .value("Free", today.gigabytes))
                     .foregroundStyle(Color.accentColor)
                     .symbolSize(compact ? 18 : 44)
+                    .annotation(position: .top, alignment: .trailing, spacing: 3) {
+                        if compact { valueLabel(today) }
+                    }
+            }
+            // Without axes, the compact chart labels where the line starts so its scale reads.
+            if compact, let first = series.history.first, first.date != series.history.last?.date {
+                PointMark(x: .value("Day", first.date), y: .value("Free", first.gigabytes))
+                    .foregroundStyle(Color.accentColor)
+                    .symbolSize(12)
+                    .annotation(position: .top, alignment: .leading, spacing: 3) { valueLabel(first) }
             }
             if !compact, let lowest = series.lowest, lowest.date != series.history.last?.date {
                 PointMark(x: .value("Day", lowest.date), y: .value("Free", lowest.gigabytes))
@@ -50,9 +60,8 @@ struct ForecastChart: View {
                     .foregroundStyle(.red)
                     .symbolSize(compact ? 18 : 44)
                     .annotation(position: .top, alignment: .trailing, spacing: 4) {
-                        if !compact {
-                            Text("Full").font(.caption.weight(.semibold)).foregroundStyle(.red)
-                        }
+                        Text("Full").font(compact ? .caption2.weight(.semibold) : .caption.weight(.semibold))
+                            .foregroundStyle(.red)
                     }
             }
         }
@@ -66,7 +75,9 @@ struct ForecastChart: View {
                 }
             }
         }
-        .chartPlotStyle { plot in plot.padding(.trailing, compact ? 4 : 12) }
+        .chartPlotStyle { plot in
+            plot.padding(.trailing, compact ? 4 : 12).padding(.top, compact ? 16 : 0)
+        }
         .chartYAxis {
             if !compact {
                 AxisMarks(position: .leading) { value in
@@ -80,5 +91,11 @@ struct ForecastChart: View {
             }
         }
         .accessibilityLabel("Free space over time")
+    }
+
+    private func valueLabel(_ point: ForecastSeries.Point) -> some View {
+        Text(Bytes.format(Int64(point.gigabytes * 1_000_000_000)))
+            .font(.caption2.monospacedDigit())
+            .foregroundStyle(.secondary)
     }
 }

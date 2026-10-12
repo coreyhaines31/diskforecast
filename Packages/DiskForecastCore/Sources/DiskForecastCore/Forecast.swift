@@ -44,6 +44,39 @@ public enum Forecast {
         return Double(currentFreeBytes) / -rate
     }
 
+    /// Which way free space is heading lately.
+    public enum Outlook: Equatable, Sendable {
+        /// Not enough readings yet; the forecast is ready after this many more days.
+        case learning(daysToGo: Int)
+        case filling(daysUntilFull: Double, bytesPerDay: Double)
+        /// Changing by less than 100 MB on a typical day.
+        case steady
+        case gaining(bytesPerDay: Double)
+    }
+
+    public static func outlook(
+        history: UsageHistory,
+        currentFreeBytes: Int64,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> Outlook {
+        guard let rate = bytesPerDay(history: history, now: now, calendar: calendar) else {
+            let start = calendar.date(byAdding: .day, value: -windowDays, to: calendar.startOfDay(for: now)) ?? now
+            let days = history.samples.filter { $0.day >= start }.count
+            return .learning(daysToGo: max(1, minimumDays - days))
+        }
+        if rate < -noiseBytesPerDay {
+            return .filling(daysUntilFull: Double(currentFreeBytes) / -rate, bytesPerDay: rate)
+        }
+        return rate > noiseBytesPerDay ? .gaining(bytesPerDay: rate) : .steady
+    }
+
+    /// Whether the disk is low on space whatever the trend: under 10% free, or under 20 GB.
+    public static func isLow(freeBytes: Int64, capacityBytes: Int64) -> Bool {
+        guard capacityBytes > 0 else { return false }
+        return Double(freeBytes) < Double(capacityBytes) * 0.1 || freeBytes < 20_000_000_000
+    }
+
     /// "Full in ~41 days", rounded the way people say it.
     public static func phrase(days: Double) -> String {
         switch days {

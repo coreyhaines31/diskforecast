@@ -84,6 +84,25 @@ struct ForecastTests {
         #expect(abs(rate + 2 * Double(gigabyte)) < 1)
     }
 
+    @Test func describesTheOutlook() {
+        func outlook(_ freeGB: [Int64]) -> Forecast.Outlook {
+            Forecast.outlook(
+                history: history(freeGB: freeGB), currentFreeBytes: (freeGB.last ?? 0) * gigabyte,
+                now: now, calendar: calendar
+            )
+        }
+        #expect(outlook([100]) == .learning(daysToGo: 2))
+        #expect(outlook([100, 100, 100]) == .steady)
+        #expect(outlook([90, 95, 100]) == .gaining(bytesPerDay: 5 * Double(gigabyte)))
+        #expect(outlook([100, 98, 96]) == .filling(daysUntilFull: 48, bytesPerDay: -2 * Double(gigabyte)))
+    }
+
+    @Test func flagsLowSpaceWhateverTheTrend() {
+        #expect(Forecast.isLow(freeBytes: 17 * gigabyte, capacityBytes: 995 * gigabyte))
+        #expect(Forecast.isLow(freeBytes: 15 * gigabyte, capacityBytes: 128 * gigabyte))
+        #expect(!Forecast.isLow(freeBytes: 102 * gigabyte, capacityBytes: 995 * gigabyte))
+    }
+
     @Test func phrasesDays() {
         #expect(Forecast.phrase(days: 0.4) == "Full within a day")
         #expect(Forecast.phrase(days: 41.2) == "Full in ~41 days")
