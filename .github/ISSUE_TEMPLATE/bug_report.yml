@@ -1,0 +1,54 @@
+name: Bug report
+description: Something isn't working, or a number looks wrong
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this. Check [Troubleshooting](https://github.com/coreyhaines31/diskforecast#troubleshooting) first, since it covers the common questions (menu bar icon missing, sizes that differ from Finder, space not freed after a cleanup).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead. A screenshot of the menu or window helps.
+    validations:
+      required: true
+  - type: input
+    id: app-version
+    attributes:
+      label: Disk Forecast version
+      description: Shown in Settings › General.
+      placeholder: "1.2.1"
+    validations:
+      required: true
+  - type: input
+    id: macos-version
+    attributes:
+      label: macOS version
+      placeholder: "macOS 26.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: full-disk-access
+    attributes:
+      label: Full Disk Access
+      description: Shown in Settings › Scanning.
+      options:
+        - "On"
+        - "Off (home folder only)"
+        - "Not sure"
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install it?
+      options:
+        - Homebrew
+        - DMG from GitHub Releases
+        - Built from source
+  - type: textarea
+    id: sizes
+    attributes:
+      label: For a size that looks wrong
+      description: Which folder, what Disk Forecast shows, and what Finder's Get Info shows for it.

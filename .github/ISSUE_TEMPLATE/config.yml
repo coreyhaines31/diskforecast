@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: First-run guide and troubleshooting
+    url: https://github.com/coreyhaines31/diskforecast#first-run
+    about: How to install, grant Full Disk Access, and read the forecast.
+  - name: How to clear System Data on a Mac
+    url: https://diskforecast.com/system-data
+    about: A step-by-step guide to what's in System Data and what's safe to reclaim.
