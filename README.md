@@ -20,6 +20,23 @@ Disk Forecast sits in your menu bar and shows how much space is free. After a fe
 
 It's a free alternative to DiskBuddy, DaisyDisk, and CleanMyMac for the job they're most often bought for: getting disk space back.
 
+<p align="center">
+  <img src=".github/images/menu-light.png" width="420" alt="The Disk Forecast menu: 142 GB free of 494 GB, full in about 30 days at 4.7 GB a day, a chart of free space with a dashed forecast line, the five folders taking the most space, and Safe to clear: 36 GB">
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/images/forecast-dark.png">
+    <img src=".github/images/forecast-light.png" width="49%" alt="The Forecast window: a 30-day chart of free space falling toward a projected full date of Nov 11, and What changed since Sep 12, with ~/Library up 22 GB, ~/Downloads up 14 GB, and ~/.ollama up 14 GB">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/images/cleanup-dark.png">
+    <img src=".github/images/cleanup-light.png" width="49%" alt="The Cleanup window: Safe to clear lists Xcode DerivedData, Xcode device support, build folders in old projects, app caches, package manager caches, and logs, each with a plain explanation; Worth a look lists Ollama models and disk images, unchecked">
+  </picture>
+</p>
+
+<p align="center"><sub>Shown with sample data.</sub></p>
+
 ## What it does
 
 - **Forecasts when your disk fills.** Free space is checked every hour and saved once a day. The forecast follows your typical daily change over the last two weeks, so one big download or cleanup doesn't throw it off.
