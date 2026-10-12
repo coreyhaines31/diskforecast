@@ -32,8 +32,15 @@ struct ForecastView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("\(Bytes.format(disk.freeBytes)) free")
                         .font(.system(size: 28, weight: .semibold))
-                    Text("of \(Bytes.format(disk.capacityBytes)) · \(disk.forecastPhrase)")
+                    Text("of \(Bytes.format(disk.capacityBytes))")
                         .foregroundStyle(.secondary)
+                    if let warning = disk.lowSpaceWarning {
+                        Label(warning, systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                            .padding(.top, 4)
+                    }
+                    Text(disk.forecastPhrase)
+                        .padding(.top, disk.lowSpaceWarning == nil ? 4 : 0)
                 }
                 Spacer()
                 Picker("Range", selection: $range) {
