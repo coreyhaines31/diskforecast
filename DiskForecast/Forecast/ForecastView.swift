@@ -19,7 +19,11 @@ struct ForecastView: View {
     }
 
     let disk: DiskStatus
+    let scan: ScanModel
+    let snapshots: FolderSnapshotStore
+    let openSystemData: () -> Void
     @State private var range = Range.month
+    @State private var comparison: SnapshotComparison?
 
     var body: some View {
         let series = ForecastSeries(disk: disk, days: range.rawValue)
@@ -50,16 +54,22 @@ struct ForecastView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ForecastChart(series: series)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(maxWidth: .infinity, minHeight: 200, idealHeight: 240, maxHeight: 280)
                 facts(series)
             }
+            WhatChangedView(comparison: comparison, home: scan.home, openSystemData: openSystemData)
+                .frame(maxHeight: .infinity, alignment: .top)
             Text(Self.footnote)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(24)
-        .frame(minWidth: 560, minHeight: 440)
+        .frame(minWidth: 560, minHeight: 640)
+        .task(id: "\(range.rawValue)-\(scan.finishedAt?.timeIntervalSince1970 ?? 0)") {
+            let start = series.start
+            comparison = SnapshotComparison(store: snapshots, since: start)
+        }
     }
 
     private func facts(_ series: ForecastSeries) -> some View {
@@ -75,7 +85,7 @@ struct ForecastView: View {
 
     private static let footnote = "Free space is checked every hour and saved once a day. The forecast follows "
         + "the typical daily change over the last two weeks, so one big download or cleanup doesn't set it. "
-        + "Your history stays on this Mac."
+        + "Folder sizes are saved after each scan to show what changed. Your history stays on this Mac."
 
     private static func lowestText(_ point: ForecastSeries.Point) -> String {
         let bytes = Bytes.format(Int64(point.gigabytes * 1_000_000_000))
