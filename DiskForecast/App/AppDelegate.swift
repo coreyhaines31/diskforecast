@@ -22,8 +22,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         SystemDataView(model: self.systemDataModel)
     }
 
-    private lazy var forecastWindow = HostedWindow(title: "Forecast", size: NSSize(width: 680, height: 520)) {
-        ForecastView(disk: self.disk)
+    private lazy var snapshots = FolderSnapshotStore(folder: Self.supportFolder.appending(path: "Snapshots"))
+    private lazy var forecastWindow = HostedWindow(title: "Forecast", size: NSSize(width: 680, height: 760)) {
+        ForecastView(disk: self.disk, scan: self.scan, snapshots: self.snapshots) { self.systemDataWindow.show() }
     }
 
     static var supportFolder: URL {
@@ -32,12 +33,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.registerDefaults()
-        statusItemController = StatusItemController(disk: disk, scan: scan, updater: updater)
+        statusItemController = StatusItemController(disk: disk, scan: scan, snapshots: snapshots, updater: updater)
         statusItemController?.openCleanup = { [weak self] in self?.cleanupWindow.show() }
         statusItemController?.openSystemData = { [weak self] in self?.systemDataWindow.show() }
         statusItemController?.openForecast = { [weak self] in self?.forecastWindow.show() }
         disk.onChange = { [weak self] in self?.statusItemController?.update() }
         scan.onChange = { [weak self] in self?.statusItemController?.update() }
+        scan.onFinished = { [weak self] result in self?.recordSnapshot(of: result) }
         statusItemController?.grantAccess = { [weak self] in self?.onboardingWindow.show() }
         statusItemController?.openSettings = { [weak self] in self?.settingsWindow.show() }
         NotificationCenter.default.addObserver(
@@ -62,6 +64,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         ) { [weak self] _ in
             MainActor.assumeIsolated { self?.disk.refresh() }
         }
+    }
+
+    /// Saves today's folder sizes, so later scans can say what grew.
+    private func recordSnapshot(of result: ScanResult) {
+        disk.refresh()
+        try? snapshots.save(FolderSnapshot(tree: result.tree, freeBytes: disk.freeBytes, at: Date()))
     }
 
     /// Polls while onboarding is open, since granting access in System Settings posts nothing.

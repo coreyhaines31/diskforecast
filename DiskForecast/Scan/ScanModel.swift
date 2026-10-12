@@ -21,6 +21,8 @@ final class ScanModel {
     private(set) var pendingFolders: [String] = []
     private var generation = 0
     var onChange: (() -> Void)?
+    /// Called with each complete result, including after a separately measured folder is added.
+    var onFinished: ((ScanResult) -> Void)?
 
     private var scanner: DiskScanner?
     private var progressTimer: Timer?
@@ -95,6 +97,7 @@ final class ScanModel {
         scanner = nil
         self.result = result
         scannedWithFullDiskAccess = fullAccess
+        onFinished?(result)
         finishedAt = Date()
         await rebuildItems()
         state = .done
@@ -107,8 +110,10 @@ final class ScanModel {
             try? await Task.sleep(for: .milliseconds(500))
         }
         guard generation == self.generation, let result else { return }
-        self.result = result.grafting(branch)
+        let grafted = result.grafting(branch)
+        self.result = grafted
         pendingFolders.removeAll { $0 == folder }
+        onFinished?(grafted)
         await rebuildItems()
         onChange?()
     }

@@ -8,6 +8,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let disk: DiskStatus
     private let scan: ScanModel
+    private let snapshots: FolderSnapshotStore
     private let updater: Updater
     private weak var openMenu: NSMenu?
     var openCleanup: () -> Void = {}
@@ -16,9 +17,10 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     var grantAccess: () -> Void = {}
     var openSettings: () -> Void = {}
 
-    init(disk: DiskStatus, scan: ScanModel, updater: Updater) {
+    init(disk: DiskStatus, scan: ScanModel, snapshots: FolderSnapshotStore, updater: Updater) {
         self.disk = disk
         self.scan = scan
+        self.snapshots = snapshots
         self.updater = updater
         super.init()
         let menu = NSMenu()
@@ -79,10 +81,11 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     /// the Forecast window.
     private func addChart(to menu: NSMenu) {
         guard disk.history.samples.count >= 2 else { return }
-        let view = NSHostingView(rootView: MenuForecastView(disk: disk) { [weak self, weak menu] in
+        let open = { [weak self, weak menu] in
             menu?.cancelTracking()
             self?.openForecast()
-        })
+        }
+        let view = NSHostingView(rootView: MenuForecastView(disk: disk, open: open))
         view.frame.size = view.fittingSize
         let item = NSMenuItem()
         item.view = view

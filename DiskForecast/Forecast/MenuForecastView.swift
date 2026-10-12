@@ -19,6 +19,9 @@ struct MenuForecastView: View {
                 }
                 .font(.caption)
             }
+                    .font(.caption)
+                }
+            }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
