@@ -26,17 +26,28 @@ final class DiskStatus {
         capacityBytes > 0 ? Double(freeBytes) / Double(capacityBytes) : 0
     }
 
-    var daysUntilFull: Double? {
-        Forecast.daysUntilFull(history: history, currentFreeBytes: freeBytes)
+    var outlook: Forecast.Outlook {
+        Forecast.outlook(history: history, currentFreeBytes: freeBytes)
     }
 
+    /// Where free space is heading, in words: "Full in ~41 days · using 3.5 GB a day".
     var forecastPhrase: String {
-        if let days = daysUntilFull { return Forecast.phrase(days: days) }
-        let recentDays = history.samples.filter { $0.day > Date().addingTimeInterval(-30 * 86_400) }.count
-        if recentDays < Forecast.minimumDays {
-            return "Forecast ready after \(Forecast.minimumDays) days of history"
+        switch outlook {
+        case .learning(let days):
+            "Forecast ready in \(days) day\(days == 1 ? "" : "s")"
+        case .filling(let days, let bytesPerDay):
+            "\(Forecast.phrase(days: days)) · using \(Bytes.format(Int64(-bytesPerDay))) a day"
+        case .steady:
+            "Steady · about the same free space each day"
+        case .gaining(let bytesPerDay):
+            "Free space growing ~\(Bytes.format(Int64(bytesPerDay))) a day"
         }
-        return "Not filling up"
+    }
+
+    /// "Low on space: 2% free" when space is tight, whichever way it's heading.
+    var lowSpaceWarning: String? {
+        guard Forecast.isLow(freeBytes: freeBytes, capacityBytes: capacityBytes) else { return nil }
+        return "Low on space: \(max(1, Int((percentFree * 100).rounded())))% free"
     }
 
     func start() {

@@ -61,6 +61,13 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private func rebuild(_ menu: NSMenu) {
         menu.removeAllItems()
         menu.addItem(label("\(Bytes.format(disk.freeBytes)) free of \(Bytes.format(disk.capacityBytes))"))
+        if let warning = disk.lowSpaceWarning {
+            let item = ClosureMenuItem("\(warning). Reclaim space…") { [weak self] in self?.openCleanup() }
+            let symbol = NSImage.SymbolConfiguration(paletteColors: [.systemOrange])
+            item.image = NSImage(systemSymbolName: "exclamationmark.triangle.fill", accessibilityDescription: nil)?
+                .withSymbolConfiguration(symbol)
+            menu.addItem(item)
+        }
         menu.addItem(label(disk.forecastPhrase))
         addChart(to: menu)
         menu.addItem(.separator())
