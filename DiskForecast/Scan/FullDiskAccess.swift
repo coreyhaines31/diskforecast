@@ -4,6 +4,9 @@ import AppKit
 /// the home folder macOS doesn't guard, so it never sets off a stream of permission prompts.
 enum FullDiskAccess {
     static var isGranted: Bool {
+        #if DEBUG
+        if DemoMode.isOn { return true }
+        #endif
         // A file only readable with Full Disk Access; opening it never prompts.
         let probe = URL.homeDirectory.appending(path: "Library/Application Support/com.apple.TCC/TCC.db").path
         let descriptor = open(probe, O_RDONLY)

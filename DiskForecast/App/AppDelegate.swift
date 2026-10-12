@@ -28,11 +28,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     static var supportFolder: URL {
-        URL.applicationSupportDirectory.appending(path: Brand.supportFolderName)
+        #if DEBUG
+        if DemoMode.isOn { return DemoMode.supportFolder }
+        #endif
+        return URL.applicationSupportDirectory.appending(path: Brand.supportFolderName)
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.registerDefaults()
+        #if DEBUG
+        if DemoMode.isOn { DemoMode.prepare(home: scan.home) }
+        #endif
         statusItemController = StatusItemController(disk: disk, scan: scan, snapshots: snapshots, updater: updater)
         statusItemController?.openCleanup = { [weak self] in self?.cleanupWindow.show() }
         statusItemController?.openSystemData = { [weak self] in self?.systemDataWindow.show() }
@@ -59,12 +65,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         ) { [weak self] _ in
             MainActor.assumeIsolated { self?.checkAccess() }
         }
+        #if DEBUG
+        if DemoMode.isOn { showForDemo() }
+        #endif
         NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didWakeNotification, object: nil, queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated { self?.disk.refresh() }
         }
     }
+
+    #if DEBUG
+    /// Opens what the README image needs once the demo data is loaded.
+    private func showForDemo() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [self] in
+            switch DemoMode.show {
+            case "menu":
+                DemoMode.captureAndQuit(windowTitled: nil)
+                statusItemController?.button?.performClick(nil)
+            case "forecast":
+                forecastWindow.show()
+                DemoMode.captureAndQuit(windowTitled: "Forecast")
+            case "cleanup":
+                cleanupWindow.show()
+                DemoMode.captureAndQuit(windowTitled: "Cleanup")
+            default: break
+            }
+        }
+    }
+    #endif
 
     /// Saves today's folder sizes, so later scans can say what grew.
     private func recordSnapshot(of result: ScanResult) {

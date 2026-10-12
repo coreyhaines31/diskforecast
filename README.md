@@ -20,6 +20,23 @@ Disk Forecast sits in your menu bar and shows how much space is free. After a fe
 
 It's a free alternative to DiskBuddy, DaisyDisk, and CleanMyMac for the job they're most often bought for: getting disk space back.
 
+<p align="center">
+  <img src=".github/images/menu-light.png" width="420" alt="The Disk Forecast menu: 142 GB free of 494 GB, full in about 30 days at 4.7 GB a day, a chart of free space with a dashed forecast line, the five folders taking the most space, and Safe to clear: 36 GB">
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/images/forecast-dark.png">
+    <img src=".github/images/forecast-light.png" width="49%" alt="The Forecast window: a 30-day chart of free space falling toward a projected full date of Nov 11, and What changed since Sep 12, with ~/Library up 22 GB, ~/Downloads up 14 GB, and ~/.ollama up 14 GB">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/images/cleanup-dark.png">
+    <img src=".github/images/cleanup-light.png" width="49%" alt="The Cleanup window: Safe to clear lists Xcode DerivedData, Xcode device support, build folders in old projects, app caches, package manager caches, and logs, each with a plain explanation; Worth a look lists Ollama models and disk images, unchecked">
+  </picture>
+</p>
+
+<p align="center"><sub>Shown with sample data.</sub></p>
+
 ## What it does
 
 - **Forecasts when your disk fills.** Free space is checked every hour and saved once a day. The forecast follows your typical daily change over the last two weeks, so one big download or cleanup doesn't throw it off.
@@ -43,6 +60,28 @@ open -a "Disk Forecast"
 ```
 
 **Or download:** get `DiskForecast-<version>.dmg` from [Releases](https://github.com/coreyhaines31/diskforecast/releases/latest), open it, and drag **Disk Forecast** to **Applications**. Then open it from Applications.
+
+**Or ask your coding agent.** Paste this into Claude Code, Codex, or another agent that can run commands on your Mac:
+
+```text
+Install Disk Forecast, a free macOS menu bar app (https://github.com/coreyhaines31/diskforecast), on this Mac:
+
+1. Check that macOS is 14 or later with `sw_vers -productVersion`. If it's older, stop and tell me.
+2. If Homebrew is installed (`command -v brew`), run:
+   brew install --cask coreyhaines31/tap/diskforecast
+   Otherwise, install the latest release from GitHub:
+   url=$(curl -fsSL https://api.github.com/repos/coreyhaines31/diskforecast/releases/latest | grep -o 'https://[^"]*\.dmg' | head -1)
+   curl -fsSL -o /tmp/DiskForecast.dmg "$url"
+   mnt=$(mktemp -d) && hdiutil attach -nobrowse -quiet /tmp/DiskForecast.dmg -mountpoint "$mnt"
+   cp -R "$mnt/Disk Forecast.app" /Applications/ && hdiutil detach -quiet "$mnt" && rm /tmp/DiskForecast.dmg
+3. Check it's notarized: `spctl --assess --type exec -v "/Applications/Disk Forecast.app"` should say "Notarized Developer ID".
+4. Open it: `open -a "Disk Forecast"`.
+5. Open the Full Disk Access settings for me:
+   open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+   Then tell me to turn on Disk Forecast there (it's optional), and that its drive icon with my free space is now in the menu bar.
+
+Don't change any other settings and don't delete anything.
+```
 
 The app is signed with a Developer ID and notarized by Apple, so it opens without warnings. It updates itself through [Sparkle](https://sparkle-project.org). It isn't on the App Store because the App Store's sandbox can't measure the whole disk.
 
