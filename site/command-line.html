@@ -55,7 +55,7 @@
       <div class="wrap narrow"><div class="prose">
 
         <h2>The commands</h2>
-                <div class="table-card glass"><div class="table-scroll"><table class="compare">
+                <div class="table-card glass"><div class="table-scroll"><table class="compare" style="min-width:640px">
           <thead><tr><th scope="col">Command</th><th scope="col">What it does</th></tr></thead><tbody>
             <tr><th scope="row"><code>diskforecast status</code></th><td>Free space, the forecast, a low-space warning, and how much is safe to clear</td></tr>
             <tr><th scope="row"><code>diskforecast changes --days 30</code></th><td>Which folders grew or shrank, down to the subfolder, and how much changed outside your home folder</td></tr>
@@ -80,7 +80,7 @@ sudo ln -sf "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast" /usr/l
 
         <h2 style="margin-top:56px">Let your agent use it</h2>
         <p>Paste this into Claude Code or Codex, or add it to your <code>CLAUDE.md</code> or <code>AGENTS.md</code> so it applies every time:</p>
-<pre><code>When my Mac is low on disk space, use the `diskforecast` command (run `diskforecast --help`). Start with `diskforecast status` and `diskforecast changes --days 30` to explain what's filling the disk, then `diskforecast cleanup` to see what can be reclaimed. Show me what you'd move and ask before running `diskforecast trash &lt;id&gt; --yes`. Never delete files directly.</code></pre>
+<pre class="wrap"><code>When my Mac is low on disk space, use the `diskforecast` command (run `diskforecast --help`). Start with `diskforecast status` and `diskforecast changes --days 30` to explain what's filling the disk, then `diskforecast cleanup` to see what can be reclaimed. Show me what you'd move and ask before running `diskforecast trash &lt;id&gt; --yes`. Never delete files directly.</code></pre>
         <p>Then ask in plain words: “why is my disk almost full?”, “what grew this month?”, or “clear what's safe, but show me first.”</p>
 
         <h2 style="margin-top:56px">Why it's safe to hand to an agent</h2>

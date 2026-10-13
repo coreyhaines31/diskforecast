@@ -1553,7 +1553,7 @@ sudo ln -sf "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast" /usr/l
 
         <h2 style="margin-top:56px">Let your agent use it</h2>
         <p>Paste this into Claude Code or Codex, or add it to your <code>CLAUDE.md</code> or <code>AGENTS.md</code> so it applies every time:</p>
-<pre><code>When my Mac is low on disk space, use the `diskforecast` command (run `diskforecast --help`). Start with `diskforecast status` and `diskforecast changes --days 30` to explain what's filling the disk, then `diskforecast cleanup` to see what can be reclaimed. Show me what you'd move and ask before running `diskforecast trash &lt;id&gt; --yes`. Never delete files directly.</code></pre>
+<pre class="wrap"><code>When my Mac is low on disk space, use the `diskforecast` command (run `diskforecast --help`). Start with `diskforecast status` and `diskforecast changes --days 30` to explain what's filling the disk, then `diskforecast cleanup` to see what can be reclaimed. Show me what you'd move and ask before running `diskforecast trash &lt;id&gt; --yes`. Never delete files directly.</code></pre>
         <p>Then ask in plain words: “why is my disk almost full?”, “what grew this month?”, or “clear what's safe, but show me first.”</p>
 
         <h2 style="margin-top:56px">Why it's safe to hand to an agent</h2>
@@ -1571,7 +1571,7 @@ du -sh ~/* 2&gt;/dev/null | sort -h   # folders in your home folder, biggest las
 tmutil listlocalsnapshots /       # local Time Machine snapshots</code></pre>
         <p><a href="/how-to-check-storage-on-mac">How to check Mac storage</a> explains each one, and why <code>df</code> and Finder can disagree.</p>
     """,
-    "tables": {"commands": {"head": ["Command", "What it does"], "rows": [
+    "tables": {"commands": {"head": ["Command", "What it does"], "min_width": 640, "rows": [
         ("<code>diskforecast status</code>", "Free space, the forecast, a low-space warning, and how much is safe to clear"),
         ("<code>diskforecast changes --days 30</code>", "Which folders grew or shrank, down to the subfolder, and how much changed outside your home folder"),
         ("<code>diskforecast cleanup</code>", "What you can reclaim, grouped into Safe to clear and Worth a look, with an ID and explanation for each"),
