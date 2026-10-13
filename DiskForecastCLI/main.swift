@@ -104,7 +104,9 @@ func sendLaunchingApp(_ request: CLIRequest) -> CLIResponse {
         Thread.sleep(forTimeInterval: 0.2)
         if let response = send(request) { return response }
     }
-    fail("Disk Forecast opened but didn't answer. Check that it's running in the menu bar.")
+    // Usually a copy from before 1.3 that's still running, like after `brew reinstall`.
+    fail("Disk Forecast didn't answer. If you just installed or updated it, quit it from the menu bar "
+        + "and open it again.")
 }
 
 /// "~/code/api" for paths in the home folder.
