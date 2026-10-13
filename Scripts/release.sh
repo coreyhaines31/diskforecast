@@ -75,6 +75,11 @@ xcodebuild -exportArchive -archivePath "$BUILD/DiskForecast.xcarchive" \
   "${AUTH_ARGS[@]}" | quiet
 APP="$BUILD/export/$APP_NAME.app"
 codesign --verify --deep --strict --verbose=1 "$APP"
+# The Homebrew cask links this onto the PATH.
+if ! "$APP/Contents/MacOS/diskforecast" --version | grep -qx "$VERSION"; then
+  echo "✗ The exported app is missing the diskforecast command, or it reports the wrong version" >&2
+  exit 1
+fi
 
 echo "▶ Notarizing the app"
 ditto -c -k --keepParent "$APP" "$BUILD/app.zip"
@@ -121,5 +126,10 @@ TAP="$BUILD/homebrew-tap"
 gh repo clone coreyhaines31/homebrew-tap "$TAP" -- --quiet --depth 1
 SHA=$(shasum -a 256 "$DMG" | cut -d' ' -f1)
 sed -i '' -e "s/^  version \".*\"/  version \"$VERSION\"/" -e "s/^  sha256 \".*\"/  sha256 \"$SHA\"/" "$TAP/Casks/$CASK.rb"
+if ! grep -q '^  binary ' "$TAP/Casks/$CASK.rb"; then
+  sed -i '' '/^  app "Disk Forecast.app"$/a\
+  binary "#{appdir}/Disk Forecast.app/Contents/MacOS/diskforecast"
+' "$TAP/Casks/$CASK.rb"
+fi
 git -C "$TAP" commit -qam "$CASK $VERSION" && git -C "$TAP" push -q
 echo "✓ Released $APP_NAME $VERSION"

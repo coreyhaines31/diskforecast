@@ -1,9 +1,9 @@
 import Foundation
 
-enum Bytes {
+public enum Bytes {
     /// "142 GB" or "8.4 GB", counted the way Finder counts (1 GB = 1,000,000,000 bytes), with a
     /// decimal only where it carries meaning.
-    static func format(_ bytes: Int64) -> String {
+    public static func format(_ bytes: Int64) -> String {
         let units = ["bytes", "KB", "MB", "GB", "TB", "PB"]
         var value = Double(bytes)
         var unit = 0

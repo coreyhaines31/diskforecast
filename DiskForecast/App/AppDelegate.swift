@@ -27,6 +27,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         ForecastView(disk: self.disk, scan: self.scan, snapshots: self.snapshots) { self.systemDataWindow.show() }
     }
 
+    private var cliServer: CLIServer?
+
     static var supportFolder: URL {
         #if DEBUG
         if DemoMode.isOn { return DemoMode.supportFolder }
@@ -54,6 +56,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             MainActor.assumeIsolated { self?.statusItemController?.update() }
         }
         disk.start()
+        startCLIServer()
         if FullDiskAccess.isGranted || Preferences.onboardingDone {
             scan.start()
         } else {
@@ -73,6 +76,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         ) { [weak self] _ in
             MainActor.assumeIsolated { self?.disk.refresh() }
         }
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        cliServer?.stop()
+    }
+
+    /// Answers the `diskforecast` command.
+    private func startCLIServer() {
+        #if DEBUG
+        if DemoMode.isOn { return }
+        #endif
+        let commands = CLICommands(disk: disk, scan: scan, snapshots: snapshots) { [weak self] window in
+            switch window {
+            case .forecast: self?.forecastWindow.show()
+            case .cleanup: self?.cleanupWindow.show()
+            case .systemData: self?.systemDataWindow.show()
+            case .settings: self?.settingsWindow.show()
+            }
+        }
+        cliServer = CLIServer { commands.handle($0) }
+        cliServer?.start()
     }
 
     #if DEBUG
