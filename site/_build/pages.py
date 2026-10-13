@@ -768,7 +768,7 @@ FREE_UP = {
         <h2 style="margin-top:56px">If you write code</h2>
         <p>Developer Macs fill up differently. Build folders like <code>node_modules</code>, Xcode's DerivedData, simulator runtimes, package manager caches, Docker images, and local AI models add up fast. To list the <code>node_modules</code> folders in your home folder by size:</p>
 <pre><code>find ~ -name node_modules -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
-        <p>Delete the ones in projects you haven't touched in a while; <code>npm install</code> brings them back. For Ollama models, <code>ollama list</code> shows what you have and <code>ollama rm &lt;model&gt;</code> removes one; <a href="/ai-models">delete local AI models</a> covers Ollama, LM Studio, and Hugging Face.</p>
+        <p>Delete the ones in projects you haven't touched in a while; <code>npm install</code> brings them back. For <a href="/ai-models/ollama">Ollama models</a>, <code>ollama list</code> shows what you have and <code>ollama rm &lt;model&gt;</code> removes one; <a href="/ai-models">delete local AI models</a> covers Ollama, LM Studio, and Hugging Face.</p>
         <p>Package managers and build tools keep caches of their own, and each has a command to clear it. <a href="/clear-cache">Clear cache by tool</a> has a page for npm, Docker, Xcode, pip, and six more, and <a href="/taking-up-space/developer-files">developer files taking up space</a> covers DerivedData, simulators, node_modules, and Docker.raw on one page.</p>
         <p>Not sure which folder is the big one? <a href="/taking-up-space">What's taking up space</a> goes folder by folder, including the <a href="/taking-up-space/sleepimage">sleepimage</a> file people often find first.</p>
 

@@ -392,7 +392,7 @@ def render_guide(g):
         {staged(g["mockup"])}
       </div>
     </section>
-{faq_block(g["faqs"])}{related_guides(g)}{cta(g["cta"])}  </main>
+{faq_block(g["faqs"])}{related_guides(g)}{g.get("more", "")}{cta(g["cta"])}  </main>
 {footer()}{faq_schema(g["faqs"])}
 </body>
 </html>
@@ -436,13 +436,26 @@ def paths_table(rows):
     return "\n".join(out)
 
 
-def render_tool(t):
+def more_in(hub, tools, current):
+    """Every other page in the same section, as a compact list, so each one is linked from all its siblings."""
+    links = "".join(f'<a href="{t["path"]}">{esc(t["card_title"])}</a>' for t in tools if t["path"] != current["path"])
+    if not links:
+        return ""
+    return f'''    <section class="tight">
+      <div class="wrap narrow">
+        <nav class="more-links" aria-label="{esc(hub["card_title"])}"><a class="label" href="{hub["path"]}">{esc(hub["card_title"])}</a>{links}</nav>
+      </div>
+    </section>
+'''
+
+
+def render_tool(t, more=""):
     """A per-tool page is a guide: the TL;DR answers it, the shortcut names the Disk Forecast row.
     Pages where the app does less can title that section themselves with "finds_title"."""
     finds_title = t.get("finds_title", "Disk Forecast finds this for you")
     render_guide({**t, "eyebrow": t.get("eyebrow", "Guide"), "cta": t.get("cta", "Know before it's full."),
                   "html": t["html"].replace("{{PATHS}}", paths_table(t["paths"])),
-                  "shortcut": f"          <h2>{finds_title}</h2>\n{t['finds']}"})
+                  "shortcut": f"          <h2>{finds_title}</h2>\n{t['finds']}", "more": more})
 
 
 def render_tool_hub(d, tools):
@@ -515,7 +528,7 @@ if __name__ == "__main__":
         render_guide(g)
     for hub, tools in SECTIONS:
         for t in tools:
-            render_tool(t)
+            render_tool(t, more_in(hub, tools, t))
         render_tool_hub(hub, tools)
     render_guides_hub()
     render_privacy()
