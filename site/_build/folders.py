@@ -453,7 +453,62 @@ PHOTOS = {
     ],
 }
 
-FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX, ICLOUD_DRIVE, DEVELOPER_FILES, PHOTOS]
+# ------------------------------------------------------------------ Mail
+# "how to clear mail storage on mac" 150/mo US (KD 0), "how to delete mail storage on mac" 150 (KD 0), "mail taking up
+# storage on mac" 20. ~/Library/Mail and ~/Library/Containers/com.apple.mail are guarded (Terminal: "Operation not
+# permitted" on the measuring Mac), and Disk Forecast skips them without Full Disk Access.
+MAIL = {
+    "slug": "mail",
+    "title": "Mail taking up space on Mac: how to clear Mail storage",
+    "description": "Why Apple Mail takes up space on a Mac, where it keeps messages and attachments, and how to clear Mail storage without losing mail you want to keep.",
+    "h1": "Mail taking up space on Mac, <em>and how to clear it.</em>",
+    "lede": "Apple Mail keeps a copy of your messages and their attachments on the Mac, for every account, for years. Here's where that lives and how to shrink it without losing mail.",
+    "tldr": "Mail keeps messages in <code>~/Library/Mail</code> and attachments you've opened in <code>Mail Downloads</code>. To clear Mail storage, set <strong>Download Attachments</strong> to <strong>Recent</strong> or <strong>None</strong> in <strong>Mail › Settings › Accounts</strong>, delete large messages you don't need and erase deleted items, and remove accounts you no longer use. Don't delete files in the Mail folder by hand.",
+    "card_title": "Mail",
+    "card_blurb": "Where messages and attachments live, and how to shrink them.",
+    "finds_title": "Disk Forecast and Mail",
+    "paths": [
+        ("Messages and attachments", "~/Library/Mail", "Guarded by macOS; measure it in Storage settings"),
+        ("Attachments you've opened", "~/Library/Containers/com.apple.mail/Data/Library/Mail Downloads", "Copies, safe to clear"),
+    ],
+    "html": """
+        <h2>Why Mail takes up so much space on Mac</h2>
+        <p>Mail downloads your messages so you can read them offline and search them fast. With an IMAP account like iCloud, Gmail, or Outlook, the mail also stays on the server, so the Mac's copy is a convenience, not the only one. With years of mail and attachments across several accounts, it adds up to gigabytes.</p>
+        {{PATHS}}
+        <p>macOS guards both folders: on the Mac this page was written on, Terminal got “Operation not permitted” trying to read them. Check Mail's size in <strong>System Settings › General › Storage</strong>.</p>
+
+        <h2 style="margin-top:56px">How to clear Mail storage on Mac</h2>
+        <h3>Download fewer attachments</h3>
+        <ol class="steps">
+          <li><b>Open Mail settings.</b> In Mail, choose <strong>Mail › Settings</strong>, then click <strong>Accounts</strong>.</li>
+          <li><b>Pick an account.</b> Select it, then click <strong>Account Information</strong>.</li>
+          <li><b>Change Download Attachments.</b> Choose <strong>Recent</strong> or <strong>None</strong> instead of <strong>All</strong>. Attachments download when you open them.</li>
+        </ol>
+        <h3>Delete large messages</h3>
+        <p>In a mailbox, choose <strong>View › Sort By › Size</strong> to put the biggest messages at the top. Delete the ones you don't need, then choose <strong>Mailbox › Erase Deleted Items</strong> so they're gone from the Mac too.</p>
+        <h3>Clear Mail Downloads</h3>
+        <p>When you open an attachment, Mail saves a copy in <strong>Mail Downloads</strong>. The originals stay in the messages, so these copies are safe to remove. In Finder, choose <strong>Go › Go to Folder</strong>, paste <code>~/Library/Containers/com.apple.mail/Data/Library/Mail Downloads</code>, and move what's inside to the Trash.</p>
+        <h3>Remove accounts you don't use</h3>
+        <p>An old work account can be most of Mail's space. Remove it in <strong>System Settings › Internet Accounts</strong>, or turn off Mail for it there. With IMAP, the mail stays on the server.</p>
+
+        <h2 style="margin-top:56px">Is it safe to delete the Mail folder?</h2>
+        <p>No. Mail keeps an index of every message in <code>~/Library/Mail</code>. Delete files there by hand and Mail can lose track of messages or rebuild for a long time. For POP accounts, the Mac's copy may be the only one. Use the steps above instead. For other folders that grow on their own, see <a href="/taking-up-space/messages">Messages</a>, <a href="/taking-up-space/photos">Photos</a>, and <a href="/taking-up-space">everything else taking up space</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast won&#39;t delete mail: Mail keeps track of every message. Without Full Disk Access, it skips <code>~/Library/Mail</code> entirely, so it never sets off a permission prompt. With Full Disk Access, it measures the folder, and if Mail is one of your biggest, it shows under <strong>Taking the most space</strong> in the menu. It&#39;s free.</p>
+    """,
+    "mockup": "menu",
+    "related": ["/taking-up-space/messages", "/free-up-space-on-mac", "/how-to-check-storage-on-mac"],
+    "faqs": [
+        ("Why is Mail taking up so much storage on my Mac?", "Mail keeps a local copy of every message and, by default, every attachment, for every account. Years of mail across several accounts can reach many gigabytes."),
+        ("How do I reduce Mail storage on a Mac?", "In Mail › Settings › Accounts › Account Information, set Download Attachments to Recent or None. Then delete large messages, erase deleted items, clear Mail Downloads, and remove accounts you don't use."),
+        ("Where does Apple Mail store attachments?", "Inside ~/Library/Mail with the messages. Attachments you've opened are also copied to Mail Downloads, in ~/Library/Containers/com.apple.mail/Data/Library/Mail Downloads."),
+        ("Can I delete the Mail Downloads folder?", "You can delete the files in it. They're copies of attachments you opened, and the originals stay in the messages."),
+        ("If I remove a mail account from my Mac, do I lose my email?", "Not with IMAP accounts like iCloud, Gmail, or Outlook: the mail stays on the server, and only the Mac's copy goes. With a POP account, the Mac may hold the only copy, so back it up first."),
+    ],
+}
+
+FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX, ICLOUD_DRIVE, DEVELOPER_FILES, PHOTOS, MAIL]
 
 TAKING_UP_SPACE_HUB = {
     "path": "/taking-up-space",
