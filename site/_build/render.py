@@ -6,10 +6,12 @@ and writes sitemap.xml.
 
     python3 site/_build/render.py
 """
+import datetime
 import html
 import json
 import os
 import re
+import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -528,12 +530,24 @@ def render_tool_hub(d, tools):
     write(d["path"] + "/index", body)
 
 
+def last_modified(path):
+    """The day a page's file last changed: today if it has changes not yet committed, else its last commit."""
+    name = "index.html" if path == "/" else path.strip("/") + ".html"
+    if not os.path.exists(os.path.join(ROOT, name)):
+        name = path.strip("/") + "/index.html"
+    git = ["git", "-C", ROOT]
+    if subprocess.run(git + ["diff", "--quiet", "HEAD", "--", name]).returncode != 0:
+        return datetime.date.today().isoformat()
+    day = subprocess.run(git + ["log", "-1", "--format=%cs", "--", name], capture_output=True, text=True).stdout.strip()
+    return day or datetime.date.today().isoformat()
+
+
 def render_sitemap():
     paths = ["/", GUIDES_HUB["path"]] + [g["path"] for g in GUIDES]
     for hub, tools in SECTIONS:
         paths += [hub["path"]] + [t["path"] for t in tools]
     paths += ["/alternatives"] + [f"/alternatives/{p['slug']}" for p in PAGES] + [r["path"] for r in ROUNDUPS] + [PRIVACY["path"]]
-    urls = "".join(f"  <url><loc>{SITE}{p}</loc></url>\n" for p in paths)
+    urls = "".join(f"  <url><loc>{SITE}{p}</loc><lastmod>{last_modified(p)}</lastmod></url>\n" for p in paths)
     with open(os.path.join(ROOT, "sitemap.xml"), "w") as f:
         f.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
 
