@@ -257,7 +257,47 @@ def cta(text):
 '''
 
 
+def page_names():
+    """Short names for breadcrumbs, by path."""
+    names = {"/guides": "Guides", "/alternatives": "Alternatives", PRIVACY["path"]: "Privacy"}
+    for g in GUIDES + GUIDE_HUBS + TOOLS + ROUNDUPS:
+        names[g["path"]] = g["card_title"]
+    for p in PAGES:
+        names[f"/alternatives/{p['slug']}"] = p["card_title"]
+    return names
+
+
+def breadcrumb_schema(path):
+    """Home, then the section a page sits in, then the page itself."""
+    names = page_names()
+    if path.startswith("/alternatives/") or (path in [r["path"] for r in ROUNDUPS if not r.get("in_guides")]):
+        trail = ["/alternatives", path]
+    elif path.count("/") == 2:
+        trail = ["/" + path.split("/")[1], path]
+    elif path in ("/guides", "/alternatives", PRIVACY["path"]):
+        trail = [path]
+    else:
+        trail = ["/guides", path]
+    items = [{"@type": "ListItem", "position": 1, "name": "Disk Forecast", "item": f"{SITE}/"}]
+    items += [{"@type": "ListItem", "position": i + 2, "name": names.get(p, p), "item": f"{SITE}{p}"}
+              for i, p in enumerate(trail)]
+    data = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": items}
+    return f'<script type="application/ld+json">{json.dumps(data)}</script>'
+
+
+def collection_schema(path, title, cards):
+    """A hub page and the pages it lists."""
+    data = {"@context": "https://schema.org", "@type": "CollectionPage", "name": title, "url": f"{SITE}{path}",
+            "mainEntity": {"@type": "ItemList", "itemListElement": [
+                {"@type": "ListItem", "position": i + 1, "name": name, "url": f"{SITE}{href}"}
+                for i, (name, href) in enumerate(cards)]}}
+    return f'<script type="application/ld+json">{json.dumps(data)}</script>\n'
+
+
 def write(path, body):
+    """Writes the page and adds its breadcrumb trail. "/x/index" is the page at "/x"."""
+    url = path[:-len("/index")] if path.endswith("/index") else path
+    body = body.replace("</body>", breadcrumb_schema(url) + "\n</body>", 1)
     out = os.path.join(ROOT, path.strip("/") + ".html")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w") as f:
@@ -340,11 +380,10 @@ def render_hub():
       </div></div>
     </section>
 {cta(HUB["cta"])}  </main>
-{footer()}</body>
+{footer()}{collection_schema(path, HUB["title"], [(q["card_title"], f"/alternatives/{q['slug']}") for q in PAGES] + [(r["card_title"], r["path"]) for r in ROUNDUPS])}</body>
 </html>
 '''
-    with open(os.path.join(ROOT, "alternatives", "index.html"), "w") as f:
-        f.write(body)
+    write("/alternatives/index", body)
 
 
 def related_guides(g):
@@ -419,7 +458,7 @@ def render_guides_hub():
       </div>
     </section>
 {cta(d["cta"])}  </main>
-{footer()}</body>
+{footer()}{collection_schema(d["path"], d["title"], [(g["card_title"], g["path"]) for g in listed])}</body>
 </html>
 '''
     write(d["path"], body)
@@ -482,6 +521,7 @@ def render_tool_hub(d, tools):
     </section>
 {faq_block(d["faqs"])}{cta(d["cta"])}  </main>
 {footer()}{faq_schema(d["faqs"])}
+{collection_schema(d["path"], d["title"], [(t["card_title"], t["path"]) for t in tools])}
 </body>
 </html>
 '''
