@@ -129,7 +129,7 @@ Click the menu bar item:
 
 ## Command line
 
-The `diskforecast` command reads the forecast, what changed, and the cleanup list from Terminal, so you, a script, or an AI agent like Claude Code or Codex can answer "why is my disk full?" and reclaim space without clicking through the menu.
+The `diskforecast` command reads the forecast, what changed, and the cleanup list from Terminal, so you, a script, or an AI agent like Claude Code or Codex can answer "why is my disk full?" and reclaim space without clicking through the menu. There's a friendlier walkthrough at [diskforecast.com/command-line](https://diskforecast.com/command-line).
 
 ```sh
 diskforecast status                 # free space, the forecast, and what's safe to clear
