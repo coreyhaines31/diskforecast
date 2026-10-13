@@ -1,3 +1,4 @@
+import DiskForecastCore
 import SwiftUI
 
 struct SystemDataView: View {
