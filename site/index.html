@@ -216,6 +216,42 @@ Don't change any other settings and don't delete anything.</pre>
       </div>
     </section>
 
+    <section id="agents" class="lit">
+      <div class="wrap">
+        <div class="cli-split">
+          <div>
+            <h2>Or just ask your agent.</h2>
+            <p>Disk Forecast comes with a <code>diskforecast</code> command, so Claude Code and Codex can answer “why is my disk full?” for you. They see the same forecast, history, and cleanup list you do, and they show you what they&#39;d clear before anything goes to the Trash.</p>
+            <ul class="cli-asks">
+              <li><span>“When will my Mac run out of space?”</span><code>diskforecast status</code></li>
+              <li><span>“What filled up my disk this month?”</span><code>diskforecast changes --days 30</code></li>
+              <li><span>“Clear what&#39;s safe, but show me first.”</span><code>diskforecast trash xcode-derived-data package-caches</code></li>
+            </ul>
+            <a class="link" href="https://github.com/coreyhaines31/diskforecast#command-line">Every command, and a line for your CLAUDE.md</a>
+          </div>
+          <div class="cli-term" role="img" aria-label="Claude Code in a terminal. You ask why your disk is almost full. It runs diskforecast changes for the last 30 days, which shows the iOS simulators up 15 GB and Ollama models up 14 GB, then diskforecast cleanup, and answers that 36 GB is safe to clear and asks before moving it to the Trash.">
+            <div class="bar"><span><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span>claude — ~</span></div>
+<pre><span class="p">›</span> My disk is almost full. What happened?
+
+<span class="ok">⏺</span> Bash(diskforecast changes --days 30)
+  <span class="c">⎿</span> What changed from Sep 13 to Oct 13:
+       +22 GB   ~/Library
+         +15 GB   Developer/CoreSimulator
+       +14 GB   ~/.ollama
+       +14 GB   ~/Downloads/macOS Installer.dmg <span class="c">(new)</span>
+
+<span class="ok">⏺</span> Bash(diskforecast cleanup)
+  <span class="c">⎿</span> Safe to clear: 36 GB · Worth a look: 33 GB
+
+<span class="ok">⏺</span> Most of it is iOS simulators (+15 GB) and a new
+  Ollama model (+14 GB). 36 GB is safe to clear:
+  Xcode DerivedData, device support, and caches.
+  Want me to move it to the Trash?</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="careful" class="lit">
       <div class="wrap">
         <div class="head center">
