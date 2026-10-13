@@ -513,17 +513,17 @@ FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX, ICLOUD_DRIVE, DEV
 TAKING_UP_SPACE_HUB = {
     "path": "/taking-up-space",
     "title": "What's taking up space on Mac: folder by folder",
-    "description": "The folders that quietly fill a Mac: the sleep image, iPhone backups, Messages, Dropbox, iCloud Drive, and developer files, with what's safe to remove.",
+    "description": "The folders that quietly fill a Mac: Photos, Mail, Messages, iPhone backups, cloud drives, the sleep image, and developer files, with what's safe to remove.",
     "h1": "What's taking up space on your Mac, <em>folder by folder.</em>",
     "lede": "Some of the biggest folders on a Mac are ones you never open. Each page says where one lives, why it grows, and how to reclaim it with the tool that owns it.",
     "card_title": "What's taking up space",
-    "card_blurb": "Sleep image, iPhone backups, Messages, cloud drives, and dev files.",
+    "card_blurb": "Photos, Mail, Messages, iPhone backups, cloud drives, and dev files.",
     "footer": "What's taking up space",
     "cta": "Know before it's full.",
     "html": """
         <h2>Where to look first</h2>
         <p>Open <strong>System Settings › General › Storage</strong> and find the biggest category. Messages, iOS Files, and iCloud Drive each have their own row there, with an info button that lists what's inside. Other folders on these pages, like the sleep image and developer files, don't get a row. They're counted in System Data or Documents, or not named at all.</p>
-        <p>A rule that holds for every folder here: remove things with the app that made them. Finder deletes iPhone backups, Messages deletes old attachments, Dropbox and iCloud Drive turn files online-only, and Xcode and Docker have their own commands. Deleting the raw files by hand works for some of them and breaks others, and each page says which. For the categories themselves, see <a href="/how-to-check-storage-on-mac">how to check Mac storage</a> and <a href="/what-is-system-data-on-mac">what System Data is</a>.</p>
+        <p>A rule that holds for every folder here: remove things with the app that made them. Finder deletes iPhone backups, Messages deletes old attachments, Photos and Mail have their own storage settings, Dropbox and iCloud Drive turn files online-only, and Xcode and Docker have their own commands. Deleting the raw files by hand works for some of them and breaks others, and each page says which. For the categories themselves, see <a href="/how-to-check-storage-on-mac">how to check Mac storage</a> and <a href="/what-is-system-data-on-mac">what System Data is</a>.</p>
     """,
     "faqs": [
         ("How do I see what's taking up space on my Mac?", "Open System Settings › General › Storage and wait for the bar to finish. Click the info button next to a category to see its files. For folders Storage settings doesn't name, sort your home folder by size in Finder with Calculate all sizes turned on."),
