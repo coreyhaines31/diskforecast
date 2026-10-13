@@ -494,6 +494,72 @@ PAGES = [
             """},
         ],
     },
+    # ------------------------------------------------------------------ OnyX
+    # Targets "onyx mac" (1,000/mo US, KD 24) and "onyx mac cleaner" (600, KD 11), checked 2026-10-13.
+    # Facts, checked 2026-10-13 on titanium-software.fr/en/onyx.html: free with donations; one build per macOS version
+    # (5.0.6 for Tahoe 26, 4.8.5 for Sequoia 15, 4.6.2 for Sonoma 14, 5.1.1 for macOS 27, Apple silicon only, Oct 11, 2026);
+    # "using a version intended for an earlier OS is not recommended"; the feature list quoted below.
+    {
+        "slug": "onyx",
+        "competitor": "OnyX",
+        "title": "OnyX for Mac, compared with a free disk space app",
+        "description": "OnyX is the free Mac maintenance utility from Titanium Software. Here's what it cleans, and how Disk Forecast differs: a free app that warns before your disk fills.",
+        "eyebrow": "OnyX alternative",
+        "h1": "OnyX maintains your Mac. Disk Forecast <em>watches its disk.</em>",
+        "lede": "OnyX, from Titanium Software, has been a free Mac maintenance utility for more than twenty years. People often install it to get disk space back. It can clear caches and logs, but space is one job among many for OnyX, and the only job for Disk Forecast.",
+        "tldr": "Use OnyX if you want a free, deep set of maintenance tasks: verifying system files, rebuilding databases and indexes, hidden settings, and cache cleaning, all in one app. Use Disk Forecast if what you want is disk space: a countdown in the menu bar, which folders grew, a cleanup list that explains every item, and everything sent to the Trash. Both are free, and they don't conflict.",
+        "card_title": "OnyX",
+        "card_blurb": "The free maintenance utility people install to clean up.",
+        "footer": "OnyX alternative",
+        "cta": "Know before it's full.",
+        "faqs": [
+            ("What is OnyX for Mac?", "A free maintenance utility from Titanium Software. Its site describes it as a tool to verify the structure of the system files, perform cleaning and maintenance tasks, uninstall applications, configure hidden settings in the Finder, Dock, Safari, and other Apple apps, delete caches, and rebuild databases and indexes."),
+            ("Is OnyX free?", "Yes. OnyX is free, and Titanium Software accepts donations."),
+            ("Which version of OnyX do I need?", "The one built for your macOS version. As of October 2026, that's OnyX 5.0.6 for macOS Tahoe 26, 4.8.5 for Sequoia 15, 4.6.2 for Sonoma 14, and 5.1.1 for macOS 27. Titanium Software says using a version meant for an earlier macOS is not recommended."),
+            ("Does OnyX free up disk space?", "Some. Clearing caches and logs reclaims space for a while, until apps rebuild their caches. It doesn't show which folders are taking the most space, or which ones grew, so for space it works best alongside an app that does."),
+            ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+        ],
+        "sections": [
+            {"id": "why", "html": """
+        <h2>What OnyX does well</h2>
+        <p>OnyX has been around since the early days of Mac OS X, and Titanium Software still builds a separate version for each macOS release, back to 10.2. Its own description lists what it does: “verify the structure of the system files; perform cleaning and computer maintenance tasks; uninstall applications; configure parameters in the Finder, Dock, Safari, and some Apple applications; delete caches; remove certain problematic folders and files; rebuild various databases and indexes.”</p>
+        <p>That's a lot of capability for free, and it's useful when something on a Mac is misbehaving: a Spotlight index that won't finish, a Launch Services database that shows duplicate “Open With” entries, a cache that's gone bad. Most of those tasks need your administrator password, which is normal for tools that touch system files.</p>
+        <h3>Where it stops</h3>
+        <p><strong>Space is a side effect.</strong> Clearing caches and logs reclaims some space, and apps rebuild their caches as you use them. We couldn't find a view in OnyX's own materials that shows which folders take the most space or which ones grew.</p>
+        <p><strong>It runs when you run it.</strong> OnyX is a tool you open when you think of it. Nothing tells you ahead of time that the disk is filling, so the first warning is still macOS saying your disk is almost full.</p>
+        <p><strong>One version per macOS.</strong> Titanium Software builds OnyX for each release and says not to use one meant for an earlier macOS. After a macOS upgrade, get the matching OnyX before you run it.</p>
+            """},
+            {"id": "compare", "lit": True, "html": """
+        <h2>Disk Forecast vs OnyX</h2>
+        <p>OnyX facts come from Titanium Software's site as of October 13, 2026.</p>
+        {{TABLE}}
+        <h3>What OnyX does better</h3>
+        <p>Maintenance. Verifying system files, rebuilding databases and indexes, running macOS's maintenance tasks, and changing hidden settings are OnyX's job, and Disk Forecast does none of it.</p>
+        <h3>What Disk Forecast does better</h3>
+        <p>Disk space. It warns you weeks before the disk fills, shows which folders grew and when, explains every item it lists in plain English, and sends what you clear to the Trash, so you can change your mind until you empty it.</p>
+            """, "table": [
+                ("Price", "Free", "Free, with donations"),
+                ("Where it runs", "Menu bar app", "Window app, opened when needed"),
+                ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
+                ("Shows the folders taking the most space", "Yes", "—"),
+                ("Clears caches and logs", "Yes, each one explained", "Yes"),
+                ("Deletes go to the Trash", "Yes, always", "—"),
+                ("Rebuilds databases and indexes", "No", "Yes"),
+                ("Hidden settings for Finder, Dock, and Safari", "No", "Yes"),
+                ("Versions", "One app for macOS 14 and later", "A separate build for each macOS"),
+                ("Source available", "Yes, on GitHub", "—"),
+            ]},
+            {"id": "switch", "html": """
+        <h2>Using them together</h2>
+        <ol class="steps">
+          <li><b>Install Disk Forecast.</b> <code>brew install --cask coreyhaines31/tap/diskforecast</code>, or download the app from GitHub.</li>
+          <li><b>Let it watch.</b> Free space shows in the menu bar right away, and the forecast appears after 3 days of history.</li>
+          <li><b>Reclaim space with it when it's time.</b> “Safe to clear” is everything that rebuilds on its own: caches, logs, Xcode DerivedData, and build folders in projects you haven't touched in 30 days. It all goes to the Trash.</li>
+          <li><b>Keep OnyX for maintenance.</b> When something misbehaves, like Spotlight or the “Open With” menu, OnyX's rebuild tasks are the right tool. Use the version built for your macOS.</li>
+        </ol>
+            """},
+        ],
+    },
 ]
 
 HUB = {
@@ -508,6 +574,7 @@ HUB = {
         ("Windows' WizTree, on a Mac", "WizTreeMac"),
         ("A cleaner and system stats in Terminal", "Mole"),
         ("Just to remove an app and its leftovers", "AppCleaner"),
+        ("Free maintenance: rebuild indexes, hidden settings", "OnyX"),
         ("Duplicates, compression, and a Windows license too", "DiskBuddy"),
         ("A broad suite of Mac tools, by the year or once", "CleanMyMac"),
         ("To know when you'll run out, before you do", "Disk Forecast"),
@@ -517,7 +584,7 @@ HUB = {
     "html": """
         <h2>How we compare</h2>
         <p>Every page here draws on the competitor's own site, store listing, and release posts as of October 2026, and says plainly what the other app does better. Where we couldn't confirm a feature either way, the table shows “—” instead of guessing. If something is out of date, <a href="https://github.com/coreyhaines31/diskforecast/issues">open an issue</a> and we'll fix it.</p>
-        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, from $39.99 a year or $89.99 once. <strong>Mole</strong> is the open-source cleaner for Terminal. <strong>OmniDiskSweeper</strong> and <strong>Disk Inventory X</strong> are the free classics, both Intel only and unchanged for years. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
+        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, from $39.99 a year or $89.99 once. <strong>Mole</strong> is the open-source cleaner for Terminal. <strong>OnyX</strong> is the free maintenance utility. <strong>OmniDiskSweeper</strong> and <strong>Disk Inventory X</strong> are the free classics, both Intel only and unchanged for years. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
         <p>To see them all at once, start with <a href="/alternatives/compare">every app side by side</a>. Coming from Windows? <a href="/alternatives/windirstat-mac">WinDirStat for Mac</a> covers what runs here.</p>
     """,
 }
