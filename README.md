@@ -80,7 +80,7 @@ Install Disk Forecast, a free macOS menu bar app (https://github.com/coreyhaines
 4. Open it: `open -a "Disk Forecast"`.
 5. Open the Full Disk Access settings for me:
    open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
-   Then tell me to turn on Disk Forecast there (it's optional), and that its drive icon with my free space is now in the menu bar.
+   Then tell me to turn on Disk Forecast there (it's optional), that its drive icon with my free space is now in the menu bar, and that from now on I can ask you why my disk is filling up or what's safe to clear. You'll use the `diskforecast` command (see `diskforecast --help`; if it isn't on the PATH, it's at "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast").
 
 Don't change any other settings and don't delete anything.
 ```

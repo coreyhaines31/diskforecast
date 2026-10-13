@@ -84,7 +84,7 @@
 4. Open it: `open -a "Disk Forecast"`.
 5. Open the Full Disk Access settings for me:
    open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
-   Then tell me to turn on Disk Forecast there (it's optional), and that its drive icon with my free space is now in the menu bar.
+   Then tell me to turn on Disk Forecast there (it's optional), that its drive icon with my free space is now in the menu bar, and that from now on I can ask you why my disk is filling up or what's safe to clear. You'll use the `diskforecast` command (see `diskforecast --help`; if it isn't on the PATH, it's at "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast").
 
 Don't change any other settings and don't delete anything.</pre>
             </div>
@@ -216,6 +216,42 @@ Don't change any other settings and don't delete anything.</pre>
       </div>
     </section>
 
+    <section id="agents" class="lit">
+      <div class="wrap">
+        <div class="cli-split">
+          <div>
+            <h2>Or just ask your agent.</h2>
+            <p>Disk Forecast comes with a <code>diskforecast</code> command, so Claude Code and Codex can answer “why is my disk full?” for you. They see the same forecast, history, and cleanup list you do, and they show you what they&#39;d clear before anything goes to the Trash.</p>
+            <ul class="cli-asks">
+              <li><span>“When will my Mac run out of space?”</span><code>diskforecast status</code></li>
+              <li><span>“What filled up my disk this month?”</span><code>diskforecast changes --days 30</code></li>
+              <li><span>“Clear what&#39;s safe, but show me first.”</span><code>diskforecast trash xcode-derived-data package-caches</code></li>
+            </ul>
+            <a class="link" href="https://github.com/coreyhaines31/diskforecast#command-line">Every command, and a line for your CLAUDE.md</a>
+          </div>
+          <div class="cli-term" role="img" aria-label="Claude Code in a terminal. You ask why your disk is almost full. It runs diskforecast changes for the last 30 days, which shows the iOS simulators up 15 GB and Ollama models up 14 GB, then diskforecast cleanup, and answers that 36 GB is safe to clear and asks before moving it to the Trash.">
+            <div class="bar"><span><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span>claude — ~</span></div>
+<pre><span class="p">›</span> My disk is almost full. What happened?
+
+<span class="ok">⏺</span> Bash(diskforecast changes --days 30)
+  <span class="c">⎿</span> What changed from Sep 13 to Oct 13:
+       +22 GB   ~/Library
+         +15 GB   Developer/CoreSimulator
+       +14 GB   ~/.ollama
+       +14 GB   ~/Downloads/macOS Installer.dmg <span class="c">(new)</span>
+
+<span class="ok">⏺</span> Bash(diskforecast cleanup)
+  <span class="c">⎿</span> Safe to clear: 36 GB · Worth a look: 33 GB
+
+<span class="ok">⏺</span> Most of it is iOS simulators (+15 GB) and a new
+  Ollama model (+14 GB). 36 GB is safe to clear:
+  Xcode DerivedData, device support, and caches.
+  Want me to move it to the Trash?</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="careful" class="lit">
       <div class="wrap">
         <div class="head center">
@@ -274,6 +310,7 @@ Don't change any other settings and don't delete anything.</pre>
           <details><summary>Why does it want Full Disk Access?</summary><p>It doesn&#39;t need it. Everything works with your home folder. Full Disk Access lets it measure the folders macOS guards, like Mail, Messages, iCloud Drive, and other apps&#39; containers. Without it, their space shows up as unexplained.</p></details>
           <details><summary>What is System Data?</summary><p>The catch-all bar in Storage settings for everything macOS doesn&#39;t file under a named category: local Time Machine snapshots, purgeable space, simulator runtimes, caches, Apple Intelligence models, the Spotlight index. <a href="/system-data">The guide</a> walks through each one.</p></details>
           <details><summary>How accurate is the forecast?</summary><p>It&#39;s a trend, not a promise, which is why it says “~”. It follows the typical day-to-day change in free space over the last two weeks, so one big download or cleanup doesn&#39;t throw it off. It appears after 3 days of history and says how fast space is changing: “Full in ~41 days · using 3.5 GB a day”, “Steady”, or “Free space growing”. When space is low, it says so whatever the trend.</p></details>
+          <details><summary>Can my AI agent use it?</summary><p>Yes. Disk Forecast comes with a <code>diskforecast</code> command, so Claude Code, Codex, or any agent that runs commands can check the forecast, see which folders grew, and list what&#39;s safe to clear. It can only move things on the cleanup list, only to the Trash, and shows what it would move until it&#39;s told <code>--yes</code>. Homebrew puts the command on your PATH. <a href="https://github.com/coreyhaines31/diskforecast#command-line">Every command</a>.</p></details>
           <details><summary>Why not the App Store?</summary><p>App Store apps run in a sandbox that can&#39;t see most of your disk, so a disk tool there can&#39;t measure System Data or run Apple&#39;s fixes. Disk Forecast is signed and notarized by Apple, and installs from GitHub or Homebrew.</p></details>
           <details><summary>Is it really free?</summary><p>Yes, at home or at work. No account, no trial, no subscription. The source is on GitHub, so you can read exactly how it counts and what it moves to the Trash.</p></details>
         </div>
@@ -310,7 +347,7 @@ Don't change any other settings and don't delete anything.</pre>
 4. Open it: `open -a "Disk Forecast"`.
 5. Open the Full Disk Access settings for me:
    open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
-   Then tell me to turn on Disk Forecast there (it's optional), and that its drive icon with my free space is now in the menu bar.
+   Then tell me to turn on Disk Forecast there (it's optional), that its drive icon with my free space is now in the menu bar, and that from now on I can ask you why my disk is filling up or what's safe to clear. You'll use the `diskforecast` command (see `diskforecast --help`; if it isn't on the PATH, it's at "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast").
 
 Don't change any other settings and don't delete anything.</pre>
             </div>
@@ -369,7 +406,7 @@ Don't change any other settings and don't delete anything.</pre>
   </script>
   <!-- schema -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Disk Forecast", "operatingSystem": "macOS 14 or later", "applicationCategory": "UtilitiesApplication", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "downloadUrl": "https://github.com/coreyhaines31/diskforecast/releases/latest", "url": "https://diskforecast.com/", "image": "https://diskforecast.com/images/icon.png", "author": {"@type": "Person", "name": "Corey Haines"}}</script>
-  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is it safe?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Files it clears go to the Trash, where you can put them back. Safe to clear only holds things that rebuild themselves, like caches and build folders. System Data fixes run Apple's own tools, and every one asks you first."}}, {"@type": "Question", "name": "Does it delete anything?", "acceptedAnswer": {"@type": "Answer", "text": "Not on its own. Files move to the Trash, and the space comes back when you empty it. The exceptions are System Data fixes, like removing local Time Machine snapshots: Apple's own tool does the work, and only after you confirm."}}, {"@type": "Question", "name": "Why does it want Full Disk Access?", "acceptedAnswer": {"@type": "Answer", "text": "It doesn't need it. Everything works with your home folder. Full Disk Access lets it measure the folders macOS guards, like Mail, Messages, iCloud Drive, and other apps' containers. Without it, their space shows up as unexplained."}}, {"@type": "Question", "name": "What is System Data?", "acceptedAnswer": {"@type": "Answer", "text": "The catch-all bar in Storage settings for everything macOS doesn't file under a named category: local Time Machine snapshots, purgeable space, simulator runtimes, caches, Apple Intelligence models, the Spotlight index. The guide walks through each one."}}, {"@type": "Question", "name": "How accurate is the forecast?", "acceptedAnswer": {"@type": "Answer", "text": "It's a trend, not a promise, which is why it says \u201c~\u201d. It follows the typical day-to-day change in free space over the last two weeks, so one big download or cleanup doesn't throw it off. It appears after 3 days of history and says how fast space is changing: \u201cFull in ~41 days \u00b7 using 3.5 GB a day\u201d, \u201cSteady\u201d, or \u201cFree space growing\u201d. When space is low, it says so whatever the trend."}}, {"@type": "Question", "name": "Why not the App Store?", "acceptedAnswer": {"@type": "Answer", "text": "App Store apps run in a sandbox that can't see most of your disk, so a disk tool there can't measure System Data or run Apple's fixes. Disk Forecast is signed and notarized by Apple, and installs from GitHub or Homebrew."}}, {"@type": "Question", "name": "Is it really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, at home or at work. No account, no trial, no subscription. The source is on GitHub, so you can read exactly how it counts and what it moves to the Trash."}}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is it safe?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Files it clears go to the Trash, where you can put them back. Safe to clear only holds things that rebuild themselves, like caches and build folders. System Data fixes run Apple's own tools, and every one asks you first."}}, {"@type": "Question", "name": "Does it delete anything?", "acceptedAnswer": {"@type": "Answer", "text": "Not on its own. Files move to the Trash, and the space comes back when you empty it. The exceptions are System Data fixes, like removing local Time Machine snapshots: Apple's own tool does the work, and only after you confirm."}}, {"@type": "Question", "name": "Why does it want Full Disk Access?", "acceptedAnswer": {"@type": "Answer", "text": "It doesn't need it. Everything works with your home folder. Full Disk Access lets it measure the folders macOS guards, like Mail, Messages, iCloud Drive, and other apps' containers. Without it, their space shows up as unexplained."}}, {"@type": "Question", "name": "What is System Data?", "acceptedAnswer": {"@type": "Answer", "text": "The catch-all bar in Storage settings for everything macOS doesn't file under a named category: local Time Machine snapshots, purgeable space, simulator runtimes, caches, Apple Intelligence models, the Spotlight index. The guide walks through each one."}}, {"@type": "Question", "name": "How accurate is the forecast?", "acceptedAnswer": {"@type": "Answer", "text": "It's a trend, not a promise, which is why it says \u201c~\u201d. It follows the typical day-to-day change in free space over the last two weeks, so one big download or cleanup doesn't throw it off. It appears after 3 days of history and says how fast space is changing: \u201cFull in ~41 days \u00b7 using 3.5 GB a day\u201d, \u201cSteady\u201d, or \u201cFree space growing\u201d. When space is low, it says so whatever the trend."}}, {"@type": "Question", "name": "Can my AI agent use it?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Disk Forecast comes with a diskforecast command, so Claude Code, Codex, or any agent that runs commands can check the forecast, see which folders grew, and list what's safe to clear. It can only move things on the cleanup list, only to the Trash, and shows what it would move until it's told --yes. Homebrew puts the command on your PATH."}}, {"@type": "Question", "name": "Why not the App Store?", "acceptedAnswer": {"@type": "Answer", "text": "App Store apps run in a sandbox that can't see most of your disk, so a disk tool there can't measure System Data or run Apple's fixes. Disk Forecast is signed and notarized by Apple, and installs from GitHub or Homebrew."}}, {"@type": "Question", "name": "Is it really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, at home or at work. No account, no trial, no subscription. The source is on GitHub, so you can read exactly how it counts and what it moves to the Trash."}}]}</script>
   <!-- /schema -->
 </body>
 </html>
