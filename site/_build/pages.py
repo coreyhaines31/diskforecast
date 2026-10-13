@@ -503,7 +503,7 @@ PAGES = [
         "slug": "onyx",
         "competitor": "OnyX",
         "title": "OnyX for Mac, compared with a free disk space app",
-        "description": "OnyX is the free Mac maintenance utility from Titanium Software. Here's what it cleans, and how Disk Forecast differs: a free app that warns before your disk fills.",
+        "description": "OnyX is the free Mac maintenance utility from Titanium Software. What it cleans, and how Disk Forecast differs: a free app that warns before disks fill.",
         "eyebrow": "OnyX alternative",
         "h1": "OnyX maintains your Mac. Disk Forecast <em>watches its disk.</em>",
         "lede": "OnyX, from Titanium Software, has been a free Mac maintenance utility for more than twenty years. People often install it to get disk space back. It can clear caches and logs, but space is one job among many for OnyX, and the only job for Disk Forecast.",
@@ -1313,7 +1313,7 @@ TRASH = {
 STORAGE_SIZE = {
     "path": "/is-256gb-enough-for-mac",
     "title": "Is 256GB enough for a MacBook? Real numbers for 2026",
-    "description": "Is 256 GB enough for a MacBook Air or Mac? What macOS, apps, and caches really take, who's fine with 256 GB, who needs 512 GB or more, and how to tell from your own Mac.",
+    "description": "Is 256GB enough for a MacBook Air? What macOS, apps, and caches really take, who's fine with 256GB, and who needs 512GB or more, with numbers from a real Mac.",
     "eyebrow": "Guide",
     "h1": "Is 256 GB enough for a Mac? <em>It depends on how fast you fill it.</em>",
     "lede": "For email, documents, the web, and photos kept in iCloud, yes. For coding, video, music, local AI, or games, it fills up fast. Here's what really takes the space, measured on a real Mac, and how to tell which group you're in.",
@@ -1388,7 +1388,7 @@ STORAGE_SIZE = {
 OTHER_STORAGE = {
     "path": "/other-storage-mac",
     "title": "Other storage on Mac: what it is and how to delete it",
-    "description": "What happened to Other storage on Mac, what was in it, and how to clear it now that macOS calls it System Data. Safe steps for macOS Monterey and later, and for Big Sur.",
+    "description": "What happened to Other storage on Mac, what was in it, and how to clear it now that macOS calls it System Data, with safe steps for Monterey and later.",
     "eyebrow": "Guide",
     "h1": "Other storage on Mac <em>is now called System Data.</em>",
     "lede": "If you're looking for “Other” in your Mac's storage bar and can't find it, it was renamed. If you can still see it, your Mac runs macOS Big Sur or earlier. Either way, here's what's in it and how to reclaim it safely.",
@@ -1518,7 +1518,7 @@ MEMORY_VS_STORAGE = {
 COMMAND_LINE = {
     "path": "/command-line",
     "title": "Disk Forecast command line: disk space for AI agents",
-    "description": "The diskforecast command: check when your Mac's disk will be full, see which folders grew, and reclaim space from Terminal, or let Claude Code or Codex do it for you.",
+    "description": "The diskforecast command: see when your Mac's disk will be full, which folders grew, and what to reclaim, from Terminal or through Claude Code or Codex.",
     "eyebrow": "For AI agents",
     "h1": "Check and reclaim disk space <em>from Terminal, or from your agent.</em>",
     "lede": "Disk Forecast comes with a <code>diskforecast</code> command. You, a script, or an AI agent like Claude Code or Codex can get the forecast, see what grew, and move what's safe to clear to the Trash, using the same data as the menu bar.",
