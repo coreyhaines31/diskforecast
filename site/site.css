@@ -444,3 +444,4 @@ section.tight { padding: clamp(56px, 8vw, 96px) 0 0; }
 .more-links .label { font-weight: 600; color: var(--ink); margin-right: 6px; }
 .more-links a:not(.label) { color: var(--ink-2); background: var(--glass); box-shadow: var(--glass-shadow); border-radius: 999px; padding: 5px 12px; text-decoration: none; }
 .more-links a:not(.label):hover { color: var(--accent); }
+.cli-stage { max-width: 720px; margin: 0 auto; }

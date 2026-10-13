@@ -166,6 +166,8 @@ def mockup(name):
 
 def staged(name):
     """App windows sit on a glass stage, like on the homepage; the menu bar and chart bring their own frame."""
+    if name == "cli":
+        return f'<div class="cli-stage">\n          {mockup(name)}\n        </div>'
     if name in ("system-data", "cleanup"):
         return f'<div class="stage glass">\n          {mockup(name)}\n        </div>'
     return mockup(name)

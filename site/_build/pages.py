@@ -1511,7 +1511,83 @@ MEMORY_VS_STORAGE = {
     "cta": "Know before it's full.",
 }
 
-GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS, TRASH, STORAGE_SIZE, OTHER_STORAGE, MEMORY_VS_STORAGE]
+# ------------------------------------------------------------------ Command line
+# No measurable search volume ("check disk space mac terminal", "du command mac", "claude code disk space" are all 0 in
+# Ahrefs US, 2026-10-13). It's the page AI answers, agents, the homepage, and the README point to for the diskforecast
+# command (shipped in 1.3.0). Commands and output match DiskForecastCLI/main.swift.
+COMMAND_LINE = {
+    "path": "/command-line",
+    "title": "Disk Forecast command line: disk space for AI agents",
+    "description": "The diskforecast command: check when your Mac's disk will be full, see which folders grew, and reclaim space from Terminal, or let Claude Code or Codex do it for you.",
+    "eyebrow": "For AI agents",
+    "h1": "Check and reclaim disk space <em>from Terminal, or from your agent.</em>",
+    "lede": "Disk Forecast comes with a <code>diskforecast</code> command. You, a script, or an AI agent like Claude Code or Codex can get the forecast, see what grew, and move what's safe to clear to the Trash, using the same data as the menu bar.",
+    "tldr": "Install Disk Forecast with Homebrew and the <code>diskforecast</code> command is on your PATH. <code>diskforecast status</code> shows free space and the forecast, <code>diskforecast changes --days 30</code> shows which folders grew, and <code>diskforecast cleanup</code> lists what can be reclaimed. <code>diskforecast trash &lt;id&gt;</code> shows what it would move, and <code>--yes</code> moves it to the Trash. Add <code>--json</code> to any command.",
+    "card_title": "Command line",
+    "card_blurb": "The diskforecast command, for you, scripts, and AI agents.",
+    "footer": "Command line",
+    "related": ["/how-to-check-storage-on-mac", "/free-up-space-on-mac", "/how-to-clear-cache-on-mac"],
+    "faqs": [
+        ("How do I install the diskforecast command?", "Install Disk Forecast with Homebrew: brew install --cask coreyhaines31/tap/diskforecast. Homebrew links the command onto your PATH. If you installed from the DMG, link it once with sudo ln -sf \"/Applications/Disk Forecast.app/Contents/MacOS/diskforecast\" /usr/local/bin/diskforecast."),
+        ("Can Claude Code or Codex use Disk Forecast?", "Yes. Any agent that runs shell commands can. Ask it why your disk is filling up, or add a line to your CLAUDE.md or AGENTS.md telling it to use diskforecast when space is low."),
+        ("Can an agent delete my files with it?", "No. diskforecast trash only moves items that are on Disk Forecast's cleanup list, only to the Trash, and only shows what it would move until it's given --yes. Nothing is deleted until you empty the Trash yourself."),
+        ("Does the command need the app running?", "It talks to the Disk Forecast app, and opens it in the background if it isn't running. The app keeps the history the forecast is built from."),
+        ("How do I check disk space on a Mac from Terminal without an app?", "df -h / shows free space on the startup disk, and du -sh ~/* | sort -h lists the folders in your home folder by size. They show the current state, not how fast it's changing."),
+    ],
+    "html": """
+        <h2>The commands</h2>
+        {{TABLE:commands}}
+        <p>Add <code>--json</code> to any command for output a script or agent can parse. If Disk Forecast isn't running, the command opens it in the background first.</p>
+<pre><code>$ diskforecast status
+142 GB free of 494 GB (29% free)
+Full in ~30 days · using 4.7 GB a day
+Safe to clear: 36 GB. See it with: diskforecast cleanup</code></pre>
+
+        <h2 style="margin-top:56px">Install it</h2>
+        <p>Homebrew installs the app and links the command for you:</p>
+<pre><code>brew install --cask coreyhaines31/tap/diskforecast</code></pre>
+        <p>If you installed Disk Forecast from the DMG, link the command once:</p>
+<pre><code>sudo mkdir -p /usr/local/bin
+sudo ln -sf "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast" /usr/local/bin/diskforecast</code></pre>
+        <p>It needs Disk Forecast 1.3 or later, on macOS 14 Sonoma or later.</p>
+
+        <h2 style="margin-top:56px">Let your agent use it</h2>
+        <p>Paste this into Claude Code or Codex, or add it to your <code>CLAUDE.md</code> or <code>AGENTS.md</code> so it applies every time:</p>
+<pre><code>When my Mac is low on disk space, use the `diskforecast` command (run `diskforecast --help`). Start with `diskforecast status` and `diskforecast changes --days 30` to explain what's filling the disk, then `diskforecast cleanup` to see what can be reclaimed. Show me what you'd move and ask before running `diskforecast trash &lt;id&gt; --yes`. Never delete files directly.</code></pre>
+        <p>Then ask in plain words: “why is my disk almost full?”, “what grew this month?”, or “clear what's safe, but show me first.”</p>
+
+        <h2 style="margin-top:56px">Why it's safe to hand to an agent</h2>
+        <ul>
+          <li><strong>Only what's on the list.</strong> <code>trash</code> takes item IDs and paths from the cleanup list, and refuses everything else, including your Documents, Desktop, and anything outside your home folder.</li>
+          <li><strong>Preview first.</strong> Without <code>--yes</code>, it only shows what it would move and how much space that is.</li>
+          <li><strong>Trash, never gone.</strong> Everything goes to the Trash. You decide when to empty it.</li>
+          <li><strong>Private.</strong> The command talks to the app over a socket only your user account can open, and nothing leaves your Mac.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Without the app: built-in Terminal commands</h2>
+        <p>macOS has its own tools for a quick look. They show the disk right now, not where it's heading:</p>
+<pre><code>df -h /                          # free space on the startup disk
+du -sh ~/* 2&gt;/dev/null | sort -h   # folders in your home folder, biggest last
+tmutil listlocalsnapshots /       # local Time Machine snapshots</code></pre>
+        <p><a href="/how-to-check-storage-on-mac">How to check Mac storage</a> explains each one, and why <code>df</code> and Finder can disagree.</p>
+    """,
+    "tables": {"commands": {"head": ["Command", "What it does"], "rows": [
+        ("<code>diskforecast status</code>", "Free space, the forecast, a low-space warning, and how much is safe to clear"),
+        ("<code>diskforecast changes --days 30</code>", "Which folders grew or shrank, down to the subfolder, and how much changed outside your home folder"),
+        ("<code>diskforecast cleanup</code>", "What you can reclaim, grouped into Safe to clear and Worth a look, with an ID and explanation for each"),
+        ("<code>diskforecast trash &lt;id or path&gt;</code>", "Shows what would move to the Trash; add <code>--yes</code> to move it"),
+        ("<code>diskforecast scan --wait</code>", "Measures your home folder again and waits until it's done"),
+        ("<code>diskforecast open forecast</code>", "Opens a window: forecast, cleanup, system-data, or settings"),
+    ]}},
+    "shortcut": """
+          <h2>What it looks like with an agent</h2>
+          <p>Ask Claude Code why your disk is full. It reads the forecast and what changed, and tells you what&#39;s safe to clear before it moves anything.</p>
+    """,
+    "mockup": "cli",
+    "cta": "Know before it's full.",
+}
+
+GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS, TRASH, STORAGE_SIZE, OTHER_STORAGE, MEMORY_VS_STORAGE, COMMAND_LINE]
 
 GUIDES_HUB = {
     "path": "/guides",
