@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Where are photos stored on Mac, and why they take up space</title>
+  <meta name="description" content="Where Photos keeps your pictures on a Mac, why the library takes up space even with iCloud Photos, and how to shrink it or move it to an external drive.">
+  <link rel="canonical" href="https://diskforecast.com/taking-up-space/photos">
+  <meta property="og:title" content="Where are photos stored on Mac, and why they take up space">
+  <meta property="og:description" content="Where Photos keeps your pictures on a Mac, why the library takes up space even with iCloud Photos, and how to shrink it or move it to an external drive.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/taking-up-space/photos">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Where are photos stored on Mac, and why they take up space">
+  <meta name="twitter:description" content="Where Photos keeps your pictures on a Mac, why the library takes up space even with iCloud Photos, and how to shrink it or move it to an external drive.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>Where photos are stored on Mac, <em>and how to make them take less space.</em></h1>
+        <p class="lede">Every photo in the Photos app lives inside one big file in your Pictures folder. Here's where it is, why it can stay big even with iCloud Photos on, and the safe ways to make it smaller.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Photos keeps everything in <code>~/Pictures/Photos Library.photoslibrary</code>, a package that looks like one file. With iCloud Photos, turn on <strong>Optimize Mac Storage</strong> in <strong>Photos › Settings › iCloud</strong> so originals stay in iCloud when space is tight. Without it, empty <strong>Recently Deleted</strong>, delete videos you don't need, or move the whole library to an external drive. Don't delete files inside the library in Finder.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>Where are photos stored on a Mac?</h2>
+        <p>Photos keeps your pictures, videos, edits, and its own database in one library, in your Pictures folder. In Finder it looks like a single file, but it's a package: a folder macOS shows as one item.</p>
+                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
+            <tr><th scope="row">Your Photos library</th><td><code>~/Pictures/Photos Library.photoslibrary</code></td><td>Guarded by macOS; measure it in Storage settings</td></tr>
+            <tr><th scope="row">Other libraries you&#x27;ve made</th><td><code>Wherever you saved them, often ~/Pictures</code></td><td>One library is the System Photo Library</td></tr>
+          </tbody></table></div></div>
+        <p>To get a photo out as an ordinary file, select it in Photos and choose <strong>File › Export</strong>. You can see inside the library with <strong>Show Package Contents</strong>, but don't move or delete anything there: Photos keeps a database of every file, and changing them by hand can damage the library. On the Mac this page was written on, Terminal got “Operation not permitted” trying to read the library, so check its size in <strong>System Settings › General › Storage</strong>, under <strong>Photos</strong>.</p>
+
+        <h2 style="margin-top:56px">Why Photos takes up space even with iCloud</h2>
+        <p>iCloud Photos has two settings, in <strong>Photos › Settings › iCloud</strong>:</p>
+        <ul>
+          <li><strong>Download Originals to this Mac</strong> keeps every full-size photo and video on the Mac. The library is as big as your whole collection.</li>
+          <li><strong>Optimize Mac Storage</strong> keeps smaller versions on the Mac and the originals in iCloud, and downloads an original when you open it. It only frees space when the Mac needs it, so a library can stay big while there's room.</li>
+        </ul>
+        <p>So if Download Originals is on, iCloud isn't saving you any space on the Mac. Videos, Live Photos, and anything in a Shared Library count too.</p>
+
+        <h2 style="margin-top:56px">How to make the Photos library smaller</h2>
+        <h3>Optimize Mac Storage</h3>
+        <ol class="steps">
+          <li><b>Open Photos settings.</b> In Photos, choose <strong>Photos › Settings</strong>, then click <strong>iCloud</strong>.</li>
+          <li><b>Choose Optimize Mac Storage.</b> You need iCloud Photos on and enough iCloud storage for your whole library.</li>
+        </ol>
+        <h3>Empty Recently Deleted</h3>
+        <p>Deleted photos stay in <strong>Recently Deleted</strong>, in the Photos sidebar, for 30 days. They still take space until then. Open it, select what you're sure about, and delete them for good.</p>
+        <h3>Delete the biggest videos</h3>
+        <p>Videos take far more space than photos. In the Photos sidebar, open <strong>Media Types › Videos</strong> to see only videos, and delete the ones you don't need, then empty Recently Deleted.</p>
+        <h3>Move the library to an external drive</h3>
+        <ol class="steps">
+          <li><b>Quit Photos</b> and connect a drive formatted as APFS or Mac OS Extended.</li>
+          <li><b>Copy the library.</b> Drag <strong>Photos Library</strong> from Pictures to the drive.</li>
+          <li><b>Open the copy.</b> Hold Option while you open Photos, then choose the library on the drive.</li>
+          <li><b>Make it the System Photo Library</b> in <strong>Photos › Settings › General</strong> if you use iCloud Photos.</li>
+          <li><b>Delete the old one</b> only after you've checked the new one opens and looks complete.</li>
+        </ol>
+        <p>The drive has to be connected whenever you use Photos. For other folders that grow on their own, see <a href="/taking-up-space/icloud-drive">iCloud Drive</a>, <a href="/taking-up-space/messages">Messages</a>, and <a href="/taking-up-space">everything else taking up space</a>.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Disk Forecast and Photos</h2>
+
+          <p>Disk Forecast never touches your Photos library: Photos keeps track of every file in it. Without Full Disk Access, it skips the library entirely, so it never sets off a permission prompt. With Full Disk Access, it measures it, and if Pictures is one of your biggest folders, it shows under <strong>Taking the most space</strong> in the menu. Its <strong>What changed</strong> list then shows how fast it grows. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="desk mk" role="img" aria-label="The Mac menu bar showing 142 GB free, with the Disk Forecast menu open: 142 GB free of 494 GB, Full in about 41 days, the five folders taking the most space, and Safe to clear: 12.4 GB.">
+          <div class="mk-menubar">
+            <div class="l"><svg class="apple" viewBox="0 0 14 17"><path d="M11.6 9c0-2 1.6-2.9 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7-.6 0-1.6-.7-2.6-.7C3.4 4.4 2 5.2 1.3 6.6c-1.5 2.6-.4 6.4 1 8.5.7 1 1.5 2.1 2.6 2.1 1 0 1.4-.7 2.7-.7 1.2 0 1.6.7 2.6.7 1.1 0 1.8-1 2.5-2 .8-1.1 1.1-2.2 1.1-2.3 0 0-2.2-.8-2.2-3.4zM9.6 3c.6-.7 1-1.6.9-2.6-.8 0-1.8.6-2.4 1.3-.5.6-1 1.6-.9 2.5.9.1 1.8-.5 2.4-1.2z"/></svg><b>Finder</b><span>File</span><span>Edit</span></div>
+            <div class="r">
+              <span class="item on"><svg viewBox="0 0 24 24"><path d="M5.5 9.5 7.3 5.6A2 2 0 0 1 9.1 4.5h5.8a2 2 0 0 1 1.8 1.1l1.8 3.9"/><rect x="3.5" y="9.5" width="17" height="9" rx="2.2"/><path d="M8.5 14h.01M11 14h.01M13.5 14h.01M16 14h.01"/></svg>142 GB</span>
+              <svg viewBox="0 0 24 24" class="hide-sm"><path d="M2.5 9.5a14 14 0 0 1 19 0M5.6 13a9.5 9.5 0 0 1 12.8 0M8.8 16.4a5 5 0 0 1 6.4 0"/><circle cx="12" cy="19.5" r="0.8" fill="currentColor"/></svg>
+              <svg viewBox="0 0 24 24"><rect x="2" y="7.5" width="18" height="9" rx="2.5"/><path d="M22 10.5v3"/><rect x="4" y="9.5" width="11" height="5" rx="1" fill="currentColor" stroke="none"/></svg>
+              <svg viewBox="0 0 24 24" class="hide-sm"><rect x="3" y="4.5" width="18" height="6.5" rx="3.25"/><rect x="3" y="13" width="18" height="6.5" rx="3.25"/><circle cx="16.5" cy="7.75" r="1.6" fill="currentColor"/><circle cx="7.5" cy="16.25" r="1.6" fill="currentColor"/></svg>
+              <span>Mon 9:41 AM</span>
+            </div>
+          </div>
+          <div class="mk-nsmenu">
+            <div class="mk-item dim"><span class="t">142 GB free of 494 GB</span></div>
+            <div class="mk-item dim"><span class="t">Full in ~41 days · using 3.5 GB a day</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-label">Taking the most space</div>
+            <div class="mk-item"><span class="t">~/Library</span><span class="v">88 GB</span></div>
+            <div class="mk-item"><span class="t">~/code</span><span class="v">61 GB</span></div>
+            <div class="mk-item"><span class="t">~/Movies</span><span class="v">39 GB</span></div>
+            <div class="mk-item"><span class="t">~/Downloads</span><span class="v">24 GB</span></div>
+            <div class="mk-item"><span class="t">~/Pictures</span><span class="v">20 GB</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-item hl"><span class="t">Safe to clear: 12.4 GB…</span></div>
+            <div class="mk-item"><span class="t">Open Cleanup…</span></div>
+            <div class="mk-item"><span class="t">System Data…</span></div>
+            <div class="mk-item"><span class="t">Rescan</span></div>
+            <div class="mk-sep"></div>
+            <div class="mk-item"><span class="t">Settings…</span><span class="k">⌘,</span></div>
+            <div class="mk-item"><span class="t">Check for Updates…</span></div>
+            <div class="mk-item"><span class="t">Quit Disk Forecast</span><span class="k">⌘Q</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>Where are photos stored on a Mac?</summary><p>In the Photos library, at ~/Pictures/Photos Library.photoslibrary. It looks like one file in Finder, but it&#x27;s a package holding every photo, video, and edit. Use File › Export in Photos to get a photo out as a normal file.</p></details>
+          <details><summary>Why are photos taking up space on my Mac when I use iCloud?</summary><p>Probably because Download Originals to this Mac is on, in Photos › Settings › iCloud. That keeps every full-size original on the Mac. Choose Optimize Mac Storage instead, and originals stay in iCloud when the Mac needs space.</p></details>
+          <details><summary>Can I delete the Photos library to free up space?</summary><p>Only if every photo is safely somewhere else, like iCloud Photos or a backup, and you&#x27;ve checked. With iCloud Photos, a smaller option is Optimize Mac Storage, which keeps the library but not every original.</p></details>
+          <details><summary>How do I move my Photos library to an external drive?</summary><p>Quit Photos, drag the library to a drive formatted as APFS or Mac OS Extended, then hold Option while opening Photos and choose the copy. Delete the original only after checking the copy.</p></details>
+          <details><summary>Do deleted photos still take up space?</summary><p>Yes, for 30 days. They sit in Recently Deleted until then. Delete them from there to get the space back now.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/taking-up-space/icloud-drive"><b>iCloud Drive</b><span>Optimize Mac Storage, Remove Download, and why it uses space.</span></a>
+          <a class="glass" href="/is-256gb-enough-for-mac"><b>Is 256 GB enough?</b><span>What macOS, apps, and caches really take, and who needs more.</span></a>
+          <a class="glass" href="/free-up-space-on-mac"><b>How to free up space on Mac</b><span>The complete checklist, from emptying the Trash to System Data.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="tight">
+      <div class="wrap narrow">
+        <nav class="more-links" aria-label="What&#x27;s taking up space"><a class="label" href="/taking-up-space">What&#x27;s taking up space</a><a href="/taking-up-space/sleepimage">sleepimage</a><a href="/taking-up-space/iphone-backups">iPhone backups</a><a href="/taking-up-space/messages">Messages</a><a href="/taking-up-space/dropbox">Dropbox</a><a href="/taking-up-space/icloud-drive">iCloud Drive</a><a href="/taking-up-space/developer-files">Developer files</a></nav>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/purgeable-space-mac">Purgeable space</a><a href="/time-machine-local-snapshots">Time Machine snapshots</a><a href="/other-users-and-shared-mac">Other Users &amp; Shared</a><a href="/empty-trash-mac">Empty the Trash</a><a href="/is-256gb-enough-for-mac">Is 256 GB enough?</a><a href="/other-storage-mac">Other storage</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a><a href="/taking-up-space">What&#x27;s taking up space</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/alternatives/onyx">OnyX alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Where are photos stored on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "In the Photos library, at ~/Pictures/Photos Library.photoslibrary. It looks like one file in Finder, but it's a package holding every photo, video, and edit. Use File \u203a Export in Photos to get a photo out as a normal file."}}, {"@type": "Question", "name": "Why are photos taking up space on my Mac when I use iCloud?", "acceptedAnswer": {"@type": "Answer", "text": "Probably because Download Originals to this Mac is on, in Photos \u203a Settings \u203a iCloud. That keeps every full-size original on the Mac. Choose Optimize Mac Storage instead, and originals stay in iCloud when the Mac needs space."}}, {"@type": "Question", "name": "Can I delete the Photos library to free up space?", "acceptedAnswer": {"@type": "Answer", "text": "Only if every photo is safely somewhere else, like iCloud Photos or a backup, and you've checked. With iCloud Photos, a smaller option is Optimize Mac Storage, which keeps the library but not every original."}}, {"@type": "Question", "name": "How do I move my Photos library to an external drive?", "acceptedAnswer": {"@type": "Answer", "text": "Quit Photos, drag the library to a drive formatted as APFS or Mac OS Extended, then hold Option while opening Photos and choose the copy. Delete the original only after checking the copy."}}, {"@type": "Question", "name": "Do deleted photos still take up space?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, for 30 days. They sit in Recently Deleted until then. Delete them from there to get the space back now."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Disk Forecast", "item": "https://diskforecast.com/"}, {"@type": "ListItem", "position": 2, "name": "What's taking up space", "item": "https://diskforecast.com/taking-up-space"}, {"@type": "ListItem", "position": 3, "name": "Photos", "item": "https://diskforecast.com/taking-up-space/photos"}]}</script>
+</body>
+</html>

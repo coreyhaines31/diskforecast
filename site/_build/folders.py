@@ -387,7 +387,73 @@ docker system prune</code></pre>
     ],
 }
 
-FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX, ICLOUD_DRIVE, DEVELOPER_FILES]
+# ------------------------------------------------------------------ Photos
+# "where are photos stored on mac" 400/mo US (KD 0), "photos taking up space on mac even with icloud" 30, "photos taking
+# up space on mac" 20. On the measuring Mac (macOS 26.6), Terminal gets "Operation not permitted" on the library, and
+# Disk Forecast treats ~/Pictures/Photos Library.photoslibrary as protected (measured only with Full Disk Access).
+PHOTOS = {
+    "slug": "photos",
+    "title": "Where are photos stored on Mac, and why they take up space",
+    "description": "Where Photos keeps your pictures on a Mac, why the library takes up space even with iCloud Photos, and how to shrink it or move it to an external drive.",
+    "h1": "Where photos are stored on Mac, <em>and how to make them take less space.</em>",
+    "lede": "Every photo in the Photos app lives inside one big file in your Pictures folder. Here's where it is, why it can stay big even with iCloud Photos on, and the safe ways to make it smaller.",
+    "tldr": "Photos keeps everything in <code>~/Pictures/Photos Library.photoslibrary</code>, a package that looks like one file. With iCloud Photos, turn on <strong>Optimize Mac Storage</strong> in <strong>Photos › Settings › iCloud</strong> so originals stay in iCloud when space is tight. Without it, empty <strong>Recently Deleted</strong>, delete videos you don't need, or move the whole library to an external drive. Don't delete files inside the library in Finder.",
+    "card_title": "Photos",
+    "card_blurb": "Where the library lives, Optimize Mac Storage, and moving it.",
+    "finds_title": "Disk Forecast and Photos",
+    "paths": [
+        ("Your Photos library", "~/Pictures/Photos Library.photoslibrary", "Guarded by macOS; measure it in Storage settings"),
+        ("Other libraries you've made", "Wherever you saved them, often ~/Pictures", "One library is the System Photo Library"),
+    ],
+    "html": """
+        <h2>Where are photos stored on a Mac?</h2>
+        <p>Photos keeps your pictures, videos, edits, and its own database in one library, in your Pictures folder. In Finder it looks like a single file, but it's a package: a folder macOS shows as one item.</p>
+        {{PATHS}}
+        <p>To get a photo out as an ordinary file, select it in Photos and choose <strong>File › Export</strong>. You can see inside the library with <strong>Show Package Contents</strong>, but don't move or delete anything there: Photos keeps a database of every file, and changing them by hand can damage the library. On the Mac this page was written on, Terminal got “Operation not permitted” trying to read the library, so check its size in <strong>System Settings › General › Storage</strong>, under <strong>Photos</strong>.</p>
+
+        <h2 style="margin-top:56px">Why Photos takes up space even with iCloud</h2>
+        <p>iCloud Photos has two settings, in <strong>Photos › Settings › iCloud</strong>:</p>
+        <ul>
+          <li><strong>Download Originals to this Mac</strong> keeps every full-size photo and video on the Mac. The library is as big as your whole collection.</li>
+          <li><strong>Optimize Mac Storage</strong> keeps smaller versions on the Mac and the originals in iCloud, and downloads an original when you open it. It only frees space when the Mac needs it, so a library can stay big while there's room.</li>
+        </ul>
+        <p>So if Download Originals is on, iCloud isn't saving you any space on the Mac. Videos, Live Photos, and anything in a Shared Library count too.</p>
+
+        <h2 style="margin-top:56px">How to make the Photos library smaller</h2>
+        <h3>Optimize Mac Storage</h3>
+        <ol class="steps">
+          <li><b>Open Photos settings.</b> In Photos, choose <strong>Photos › Settings</strong>, then click <strong>iCloud</strong>.</li>
+          <li><b>Choose Optimize Mac Storage.</b> You need iCloud Photos on and enough iCloud storage for your whole library.</li>
+        </ol>
+        <h3>Empty Recently Deleted</h3>
+        <p>Deleted photos stay in <strong>Recently Deleted</strong>, in the Photos sidebar, for 30 days. They still take space until then. Open it, select what you're sure about, and delete them for good.</p>
+        <h3>Delete the biggest videos</h3>
+        <p>Videos take far more space than photos. In the Photos sidebar, open <strong>Media Types › Videos</strong> to see only videos, and delete the ones you don't need, then empty Recently Deleted.</p>
+        <h3>Move the library to an external drive</h3>
+        <ol class="steps">
+          <li><b>Quit Photos</b> and connect a drive formatted as APFS or Mac OS Extended.</li>
+          <li><b>Copy the library.</b> Drag <strong>Photos Library</strong> from Pictures to the drive.</li>
+          <li><b>Open the copy.</b> Hold Option while you open Photos, then choose the library on the drive.</li>
+          <li><b>Make it the System Photo Library</b> in <strong>Photos › Settings › General</strong> if you use iCloud Photos.</li>
+          <li><b>Delete the old one</b> only after you've checked the new one opens and looks complete.</li>
+        </ol>
+        <p>The drive has to be connected whenever you use Photos. For other folders that grow on their own, see <a href="/taking-up-space/icloud-drive">iCloud Drive</a>, <a href="/taking-up-space/messages">Messages</a>, and <a href="/taking-up-space">everything else taking up space</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast never touches your Photos library: Photos keeps track of every file in it. Without Full Disk Access, it skips the library entirely, so it never sets off a permission prompt. With Full Disk Access, it measures it, and if Pictures is one of your biggest folders, it shows under <strong>Taking the most space</strong> in the menu. Its <strong>What changed</strong> list then shows how fast it grows. It&#39;s free.</p>
+    """,
+    "mockup": "menu",
+    "related": ["/taking-up-space/icloud-drive", "/is-256gb-enough-for-mac", "/free-up-space-on-mac"],
+    "faqs": [
+        ("Where are photos stored on a Mac?", "In the Photos library, at ~/Pictures/Photos Library.photoslibrary. It looks like one file in Finder, but it's a package holding every photo, video, and edit. Use File › Export in Photos to get a photo out as a normal file."),
+        ("Why are photos taking up space on my Mac when I use iCloud?", "Probably because Download Originals to this Mac is on, in Photos › Settings › iCloud. That keeps every full-size original on the Mac. Choose Optimize Mac Storage instead, and originals stay in iCloud when the Mac needs space."),
+        ("Can I delete the Photos library to free up space?", "Only if every photo is safely somewhere else, like iCloud Photos or a backup, and you've checked. With iCloud Photos, a smaller option is Optimize Mac Storage, which keeps the library but not every original."),
+        ("How do I move my Photos library to an external drive?", "Quit Photos, drag the library to a drive formatted as APFS or Mac OS Extended, then hold Option while opening Photos and choose the copy. Delete the original only after checking the copy."),
+        ("Do deleted photos still take up space?", "Yes, for 30 days. They sit in Recently Deleted until then. Delete them from there to get the space back now."),
+    ],
+}
+
+FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX, ICLOUD_DRIVE, DEVELOPER_FILES, PHOTOS]
 
 TAKING_UP_SPACE_HUB = {
     "path": "/taking-up-space",
