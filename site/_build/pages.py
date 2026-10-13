@@ -1528,7 +1528,7 @@ COMMAND_LINE = {
     "footer": "Command line",
     "related": ["/how-to-check-storage-on-mac", "/free-up-space-on-mac", "/how-to-clear-cache-on-mac"],
     "faqs": [
-        ("How do I install the diskforecast command?", "Install Disk Forecast with Homebrew: brew install --cask coreyhaines31/tap/diskforecast. Homebrew links the command onto your PATH. If you installed from the DMG, link it once with sudo ln -sf \"/Applications/Disk Forecast.app/Contents/MacOS/diskforecast\" /usr/local/bin/diskforecast."),
+        ("How do I install the diskforecast command?", "Install Disk Forecast with Homebrew: brew install --cask coreyhaines31/tap/diskforecast. Homebrew links the command onto your PATH. If you installed from the DMG, open Settings › General in Disk Forecast and click Install, or link it once with sudo ln -sf \"/Applications/Disk Forecast.app/Contents/MacOS/diskforecast\" /usr/local/bin/diskforecast."),
         ("Can Claude Code or Codex use Disk Forecast?", "Yes. Any agent that runs shell commands can. Ask it why your disk is filling up, or add a line to your CLAUDE.md or AGENTS.md telling it to use diskforecast when space is low."),
         ("Can an agent delete my files with it?", "No. diskforecast trash only moves items that are on Disk Forecast's cleanup list, only to the Trash, and only shows what it would move until it's given --yes. Nothing is deleted until you empty the Trash yourself."),
         ("Does the command need the app running?", "It talks to the Disk Forecast app, and opens it in the background if it isn't running. The app keeps the history the forecast is built from."),
@@ -1546,10 +1546,10 @@ Safe to clear: 36 GB. See it with: diskforecast cleanup</code></pre>
         <h2 style="margin-top:56px">Install it</h2>
         <p>Homebrew installs the app and links the command for you:</p>
 <pre><code>brew install --cask coreyhaines31/tap/diskforecast</code></pre>
-        <p>If you installed Disk Forecast from the DMG, link the command once:</p>
+        <p>If you installed Disk Forecast from the DMG, open <strong>Settings… › General</strong> and click <strong>Install…</strong> next to <strong>diskforecast command</strong>. macOS asks for your password. Or link it yourself in Terminal:</p>
 <pre><code>sudo mkdir -p /usr/local/bin
 sudo ln -sf "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast" /usr/local/bin/diskforecast</code></pre>
-        <p>It needs Disk Forecast 1.3 or later, on macOS 14 Sonoma or later.</p>
+        <p>The command needs Disk Forecast 1.3 or later, and the Install button 1.4 or later, on macOS 14 Sonoma or later. Settings also has a <strong>Copy</strong> button for the agent prompt below.</p>
 
         <h2 style="margin-top:56px">Let your agent use it</h2>
         <p>Paste this into Claude Code or Codex, or add it to your <code>CLAUDE.md</code> or <code>AGENTS.md</code> so it applies every time:</p>
