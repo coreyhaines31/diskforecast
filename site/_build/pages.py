@@ -1181,7 +1181,7 @@ GUIDES_HUB = {
 # ---------------------------------------------------------------------- Privacy
 PRIVACY = {
     "path": "/privacy",
-    "title": "Disk Forecast privacy policy",
+    "title": "Disk Forecast privacy policy: nothing leaves your Mac",
     "description": "The Disk Forecast app collects nothing; its only network request is checking GitHub for updates. The website counts visits with cookie-free Fathom Analytics.",
     "h1": "Privacy policy",
     "html": """
