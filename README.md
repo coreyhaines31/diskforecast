@@ -11,6 +11,7 @@
   <a href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a> ·
   <a href="#install">Install</a> ·
   <a href="#first-run">First run</a> ·
+  <a href="#command-line">Command line</a> ·
   <a href="#troubleshooting">Troubleshooting</a>
 </p>
 
@@ -45,6 +46,7 @@ It's a free alternative to DiskBuddy, DaisyDisk, and CleanMyMac for the job they
 - **Explains System Data.** Local Time Machine snapshots, purgeable space, the Spotlight index, simulators, Apple Intelligence and Siri models, and Docker, each with a fix that uses Apple's or the tool's own command.
 - **Reclaims space safely.** Caches, logs, Xcode leftovers, package manager caches, and build folders in old projects are listed as **Safe to clear**. Big downloads, disk images, VMs, and local AI models are **Worth a look** and never selected for you. Files always go to the Trash.
 - **Warns you when space is low**, whatever the trend.
+- **Works from Terminal.** The [`diskforecast` command](#command-line) gives you, or an AI agent, the forecast, what changed, and the cleanup list.
 - **Counts accurately.** APFS clones and hard links are counted once, so totals match what the disk really spends.
 - **Zero telemetry.** Checking for updates is the only time it goes online.
 
@@ -125,6 +127,40 @@ Click the menu bar item:
 - **General:** Launch at login · what the menu bar shows (free space, percent free, or icon only) · automatic update checks.
 - **Scanning:** Full Disk Access status · how long a project must be untouched before its build folders count as Safe to clear (30 days by default) · Rescan Now.
 
+## Command line
+
+The `diskforecast` command reads the forecast, what changed, and the cleanup list from Terminal, so you, a script, or an AI agent like Claude Code or Codex can answer "why is my disk full?" and reclaim space without clicking through the menu.
+
+```sh
+diskforecast status                 # free space, the forecast, and what's safe to clear
+diskforecast changes --days 30      # which folders grew, down to the subfolder that did it
+diskforecast cleanup                # what you can reclaim, with an ID and an explanation for each
+diskforecast trash xcode-derived-data package-caches        # shows what would move
+diskforecast trash xcode-derived-data package-caches --yes  # moves it to the Trash
+```
+
+- **`status`** shows free space, the forecast, a low-space warning, and how much is Safe to clear.
+- **`changes`** compares the folder sizes saved after each scan, over the last 7 days or `--days N`. It also shows how much changed outside your home folder (System Data, other accounts, and apps).
+- **`cleanup`** lists the same items as the Cleanup window, grouped into **Safe to clear** and **Worth a look**, each with an ID, its size, and why it's listed.
+- **`trash`** takes item IDs or paths from the cleanup list. Without `--yes` it only shows what it would move. It refuses anything that isn't on the list, and like the app it only ever moves things to the Trash. Empty the Trash to get the space back.
+- **`scan`** measures again (`--wait` waits until it's done), and **`open forecast`**, **`open cleanup`**, **`open system-data`**, or **`open settings`** shows a window.
+- Add `--json` to any command for output a script or agent can read. If Disk Forecast isn't running, the command opens it in the background.
+
+**Installing the command:** Homebrew links it for you. If you installed from the DMG, link it once:
+
+```sh
+sudo mkdir -p /usr/local/bin
+sudo ln -sf "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast" /usr/local/bin/diskforecast
+```
+
+If you installed with Homebrew before the command existed, run `brew reinstall --cask diskforecast` once to link it.
+
+**For AI agents:** paste this into Claude Code or Codex, or add it to your `CLAUDE.md` or `AGENTS.md`:
+
+```text
+When my Mac is low on disk space, use the `diskforecast` command (run `diskforecast --help`). Start with `diskforecast status` and `diskforecast changes --days 30` to explain what's filling the disk, then `diskforecast cleanup` to see what can be reclaimed. Show me what you'd move and ask before running `diskforecast trash <id> --yes`. Never delete files directly.
+```
+
 ## Privacy and safety
 
 - Disk Forecast reads file sizes and names. It never reads file contents.
@@ -162,7 +198,7 @@ Quit it from the menu, then either:
 brew uninstall --cask --zap diskforecast
 ```
 
-or move **Disk Forecast** from Applications to the Trash, then remove `~/Library/Application Support/Disk Forecast` and `~/Library/Preferences/app.diskforecast.DiskForecast.plist`. Remove it from Full Disk Access in System Settings too, if you added it.
+or move **Disk Forecast** from Applications to the Trash, then remove `~/Library/Application Support/Disk Forecast` and `~/Library/Preferences/app.diskforecast.DiskForecast.plist`. Remove it from Full Disk Access in System Settings too, if you added it. If you linked the command yourself, also run `sudo rm /usr/local/bin/diskforecast`.
 
 Something else? [Open an issue](https://github.com/coreyhaines31/diskforecast/issues/new/choose).
 
