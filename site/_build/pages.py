@@ -1380,7 +1380,75 @@ STORAGE_SIZE = {
     "cta": "Know before it's full.",
 }
 
-GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS, TRASH, STORAGE_SIZE]
+# ------------------------------------------------------------------ Other storage
+# Targets "how to delete other storage on mac" (150/mo US, KD 0), "how to clear other storage on mac" (150), "what is
+# other storage on mac" (90), "how to get rid of other storage on mac" (90), "macbook other storage" (60). Its own
+# parent topic, so it isn't folded into /what-is-system-data-on-mac. Fact: macOS Monterey (12, 2021) renamed Storage's
+# "Other" to "System Data" (Macworld, Apple Community threads), and "System" to "macOS".
+OTHER_STORAGE = {
+    "path": "/other-storage-mac",
+    "title": "Other storage on Mac: what it is and how to delete it",
+    "description": "What happened to Other storage on Mac, what was in it, and how to clear it now that macOS calls it System Data. Safe steps for macOS Monterey and later, and for Big Sur.",
+    "eyebrow": "Guide",
+    "h1": "Other storage on Mac <em>is now called System Data.</em>",
+    "lede": "If you're looking for “Other” in your Mac's storage bar and can't find it, it was renamed. If you can still see it, your Mac runs macOS Big Sur or earlier. Either way, here's what's in it and how to reclaim it safely.",
+    "tldr": "macOS Monterey renamed <strong>Other</strong> to <strong>System Data</strong> in 2021, and renamed <strong>System</strong> to <strong>macOS</strong>. It's the same catch-all: caches, logs, local Time Machine snapshots, app support files, disk images, and anything macOS doesn't file under a named category. To reclaim it, empty the Trash, clear caches, remove old iPhone backups and disk images, and delete local snapshots with Apple's own <code>tmutil</code>. Don't delete folders in <code>/System</code> or <code>/Library</code> by hand.",
+    "card_title": "Other storage",
+    "card_blurb": "The old name for System Data, and how to clear it.",
+    "footer": "Other storage",
+    "related": ["/what-is-system-data-on-mac", "/system-data", "/how-to-check-storage-on-mac"],
+    "faqs": [
+        ("What is Other storage on a Mac?", "Older versions of macOS used Other for files that didn't fit a named category: caches, logs, app support files, disk images, archives, local Time Machine snapshots, and system files outside the macOS volume. Since macOS Monterey, the same category is called System Data."),
+        ("Why can't I find Other storage on my Mac?", "Because macOS Monterey renamed it System Data in 2021. Open System Settings › General › Storage and look for the System Data bar."),
+        ("How do I delete Other storage on a Mac?", "There's no single button. Empty the Trash, clear app caches, remove old iPhone backups and disk images you don't need, and delete local Time Machine snapshots with tmutil. Leave the folders in /System and /Library alone."),
+        ("Is it safe to delete Other storage?", "Parts of it. Caches, old installers, iPhone backups you no longer need, and local snapshots can go. System files, app support folders you don't recognize, and anything in /System can't, or shouldn't."),
+        ("Why is Other storage so big?", "Usually local Time Machine snapshots, caches, simulator runtimes for Xcode, or a Docker disk image. The same things make System Data big today."),
+    ],
+    "html": """
+        <h2>What happened to Other storage on Mac?</h2>
+        <p>Until macOS Big Sur, the storage bar in <strong>About This Mac › Storage</strong> had a gray category called <strong>Other</strong>. With macOS Monterey in 2021, Apple renamed it <strong>System Data</strong>, and renamed the old <strong>System</strong> category to <strong>macOS</strong>. Nothing about how it's counted changed with the name.</p>
+        {{TABLE:names}}
+        <p>So every guide that tells you to clear Other storage is describing System Data. On macOS Ventura and later, the storage bar lives in <strong>System Settings › General › Storage</strong>.</p>
+
+        <h2 style="margin-top:56px">What was in Other storage</h2>
+        <p>Other was everything macOS didn't put in a named category:</p>
+        <ul>
+          <li><strong>Caches</strong> from apps and browsers, in <code>~/Library/Caches</code>.</li>
+          <li><strong>Logs</strong> and crash reports.</li>
+          <li><strong>App support files</strong> in <code>~/Library/Application Support</code>, like chat histories, game saves, and app databases.</li>
+          <li><strong>Disk images and archives</strong>: <code>.dmg</code>, <code>.zip</code>, and installers in Downloads.</li>
+          <li><strong>Local Time Machine snapshots</strong>, if Time Machine was on.</li>
+          <li><strong>Developer files</strong>, like Xcode's DerivedData and simulators.</li>
+        </ul>
+        <p>That's the same list System Data holds today. <a href="/what-is-system-data-on-mac">What is System Data on Mac</a> goes through each part, how big it usually is, and why it keeps growing.</p>
+
+        <h2 style="margin-top:56px">How to delete Other storage, now System Data</h2>
+        <ol class="steps">
+          <li><b>Empty the Trash.</b> Deleted files still count until you do. <a href="/empty-trash-mac">How to empty the Trash</a>.</li>
+          <li><b>Clear caches.</b> Apps rebuild what they need. <a href="/how-to-clear-cache-on-mac">How to clear cache on Mac</a> covers which caches are safe.</li>
+          <li><b>Remove old iPhone backups.</b> In Finder, select your iPhone, click <strong>Manage Backups</strong>, and delete the ones you don't need. <a href="/taking-up-space/iphone-backups">Where iPhone backups are stored</a>.</li>
+          <li><b>Delete installers and disk images.</b> Sort Downloads by size and move old <code>.dmg</code> and <code>.pkg</code> files to the Trash.</li>
+          <li><b>Remove local Time Machine snapshots.</b> Run <code>tmutil listlocalsnapshots /</code> to see them. <a href="/time-machine-local-snapshots">How to delete local snapshots</a> covers the rest.</li>
+        </ol>
+        <p>The step-by-step version, with Apple's own commands for simulators, the Spotlight index, and more, is <a href="/system-data">how to clear System Data on Mac</a>.</p>
+
+        <h2 style="margin-top:56px">What not to delete</h2>
+        <p>Don't remove folders from <code>/System</code>, <code>/Library</code>, or <code>/private</code> by hand, and don't delete folders in <code>~/Library/Application Support</code> you don't recognize. That's where apps keep their data, not their caches. Clearing what rebuilds itself is safe. Clearing what an app needs isn't.</p>
+    """,
+    "tables": {"names": {"head": ["Big Sur and earlier", "Monterey and later"], "rows": [
+        ("Other", "System Data"),
+        ("System", "macOS"),
+        ("About This Mac › Storage", "System Settings › General › Storage (Ventura and later)"),
+    ]}},
+    "shortcut": """
+          <h2>Disk Forecast and System Data</h2>
+          <p>Disk Forecast breaks System Data into the parts it can measure, explains each one, and runs Apple&#39;s own tool for each fix after you confirm. It needs macOS 14 Sonoma or later. It&#39;s free.</p>
+    """,
+    "mockup": "system-data",
+    "cta": "Know before it's full.",
+}
+
+GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS, TRASH, STORAGE_SIZE, OTHER_STORAGE]
 
 GUIDES_HUB = {
     "path": "/guides",
