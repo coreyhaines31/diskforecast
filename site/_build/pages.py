@@ -366,6 +366,7 @@ PAGES = [
     # github.com/tw93/Mole README and API (GPL-3.0, 69,455 stars, V1.58.0 on 2026-10-05), and mole.fit (the $19 app).
     {
         "slug": "mole",
+        "new_rows": {"Command line for scripts and AI agents": "Yes, it's a command-line tool"},
         "competitor": "Mole",
         "title": "Mole Mac cleaner, compared with a free alternative",
         "description": "Mole is a free, open-source Mac cleaner you run in Terminal, plus a $19 app. Disk Forecast is a free menu bar app that warns weeks before your disk fills.",
@@ -796,7 +797,7 @@ FREE_UP = {
     """,
     "shortcut": """
           <h2>Get the warning weeks ahead, not at 2 GB.</h2>
-          <p>Disk Forecast checks your free space every hour and, after 3 days, tells you when you&#39;ll run out. When it&#39;s time, it shows what&#39;s safe to clear and moves it to the Trash. It&#39;s free.</p>
+          <p>Disk Forecast checks your free space every hour and, after 3 days, tells you when you&#39;ll run out. Its <strong>What changed</strong> list shows which folders grew since any day in the chart. When it&#39;s time, it shows what&#39;s safe to clear and moves it to the Trash. It&#39;s free.</p>
     """,
     "mockup": "forecast",
     "cta": "Know before it's full.",
@@ -884,7 +885,7 @@ CHECK = {
     """,
     "shortcut": """
           <h2>Or keep it in your menu bar.</h2>
-          <p>Disk Forecast shows your free space in the menu bar all day. Click it to see when you&#39;ll run out, the five folders taking the most space, and how much is safe to clear. It&#39;s free.</p>
+          <p>Disk Forecast shows your free space in the menu bar all day. Click it to see when you&#39;ll run out, the five folders taking the most space, and how much is safe to clear. The Forecast window shows which folders grew this week or this month. It&#39;s free.</p>
     """,
     "mockup": "menu",
     "cta": "Know before it's full.",
@@ -959,7 +960,7 @@ WHAT_IS = {
     """,
     "shortcut": """
           <h2>See your own System Data, explained.</h2>
-          <p>Disk Forecast breaks System Data on your Mac into its parts, sizes each one, says what it is, and runs Apple&#39;s own fix when you confirm. Then it forecasts when your disk will be full, so the growth never surprises you. It&#39;s free.</p>
+          <p>Disk Forecast breaks System Data on your Mac into its parts, sizes each one, says what it is, and runs Apple&#39;s own fix when you confirm. Then it forecasts when your disk will be full, and its <strong>What changed</strong> list shows how much grew inside your home folder and how much outside it, where System Data lives. It&#39;s free.</p>
     """,
     "mockup": "system-data",
     "cta": "Know before it's full.",
@@ -1242,7 +1243,7 @@ BEST_FREE = {
         {{TABLE:picks}}
 
         <h3 style="margin-top:40px">1. Disk Forecast</h3>
-        <p>Free, source available, for macOS 14 or later. It shows free space in the menu bar and, after 3 days of history, when your disk will be full. Its cleanup list sorts what it finds into “Safe to clear,” like caches, logs, and old build folders, and “Worth a look,” like big downloads, AI models, and virtual machines. Every item has a one-line explanation, and everything goes to the Trash. Its System Data window explains snapshots, simulators, and the rest, and runs Apple's own tool for each fix after showing you the command. It doesn't draw a treemap, uninstall apps, or find duplicates.</p>
+        <p>Free, source available, for macOS 14 or later. It shows free space in the menu bar and, after 3 days of history, when your disk will be full. Its cleanup list sorts what it finds into “Safe to clear,” like caches, logs, and old build folders, and “Worth a look,” like big downloads, AI models, and virtual machines. Every item has a one-line explanation, and everything goes to the Trash. It saves folder sizes after each scan, so it can show which folders grew since any day, and its <code>diskforecast</code> command gives the same answers to scripts and AI agents like Claude Code. Its System Data window explains snapshots, simulators, and the rest, and runs Apple's own tool for each fix after showing you the command. It doesn't draw a treemap, uninstall apps, or find duplicates.</p>
 
         <h3>2. GrandPerspective</h3>
         <p>A free treemap of any folder or drive: every file a rectangle, sized by its space. It's open source under the GPL, updated in September 2026 for macOS 14 and later, and native on Apple silicon. It's free from its website, or $2.99 on the Mac App Store. It shows sizes, not meanings. <a href="/alternatives/grandperspective">GrandPerspective compared</a>.</p>
@@ -1321,7 +1322,7 @@ ANALYZER = {
         <h2 style="margin-top:56px">Analyzer, monitor, or forecast?</h2>
         <p>An analyzer is a snapshot of what's on the disk right now. Most people open one after macOS has already said the disk is almost full.</p>
         <p>A <strong>monitor</strong> watches free space over time, so you see the trend, not just the total. A <strong>forecast</strong> takes that history and projects it forward: “Full in ~41 days.”</p>
-        <p>Disk Forecast is a monitor and forecast first. It checks free space every hour and, after 3 days of history, shows a countdown in the menu bar. When you need room, it lists the folders taking the most space and a cleanup list with each item explained. It doesn't draw a treemap or a sunburst. If you want one, use it alongside GrandPerspective or DaisyDisk.</p>
+        <p>Disk Forecast is a monitor and forecast first. It checks free space every hour and, after 3 days of history, shows a countdown in the menu bar. When you need room, it lists the folders taking the most space, which folders grew since last week or last month, and a cleanup list with each item explained. It doesn't draw a treemap or a sunburst. If you want one, use it alongside GrandPerspective or DaisyDisk.</p>
 
         <h2 style="margin-top:56px">APFS gotchas: why analyzers disagree</h2>
         <p>Run three analyzers on the same Mac and you can get three totals. APFS, the file system on every modern Mac, is why.</p>
@@ -1474,7 +1475,7 @@ COMPARE = {
         <p><strong>Pick DaisyDisk</strong> on a current Mac. If you want OmniDiskSweeper's plain list for free and native, Disk Forecast's top-folders list and Finder's Calculate all sizes are the closest.</p>
 
         <h2 style="margin-top:56px">Where Disk Forecast fits</h2>
-        <p>Every other app in the table answers “what's using my space?” Disk Forecast starts one step earlier. It sits in the menu bar, checks free space every hour, and after 3 days says when your disk will be full. When it's time to reclaim space, it explains every item, sends what you clear to the Trash, and breaks System Data into its parts with Apple's own fixes. It's free, with the source on GitHub. It doesn't draw a map, so it pairs well with DaisyDisk or GrandPerspective.</p>
+        <p>Every other app in the table answers “what's using my space?” Disk Forecast starts one step earlier. It sits in the menu bar, checks free space every hour, and after 3 days says when your disk will be full and which folders grew. When it's time to reclaim space, it explains every item, sends what you clear to the Trash, and breaks System Data into its parts with Apple's own fixes. It's free, with the source on GitHub. It doesn't draw a map, so it pairs well with DaisyDisk or GrandPerspective.</p>
     """,
     "tables": {"all": {"head": ["App", "Price", "How it shows your disk", "Apple silicon", "Latest version", "Source available"], "min_width": 760, "rows": [
         ("Disk Forecast", "Free", "Sorted lists, each item explained, plus a forecast", "Native", "Actively developed", "Yes, on GitHub"),

@@ -169,6 +169,21 @@ def staged(name):
     return mockup(name)
 
 
+# Newer features every comparison table lists. A competitor shows "—" unless its page sets "new_rows".
+NEW_ROWS = [
+    ("Shows which folders grew, and when", "Yes, day by day"),
+    ("Command line for scripts and AI agents", "Yes, <code>diskforecast</code>"),
+]
+
+
+def with_new_rows(rows, them):
+    """Adds NEW_ROWS ahead of the "Source available" row, if there is one. `them` gives the competitor
+    cells for a label, as a list (one per competitor column)."""
+    added = [(label, us, *them(label)) for label, us in NEW_ROWS]
+    at = next((i for i, r in enumerate(rows) if r[0].startswith("Source available")), len(rows))
+    return list(rows[:at]) + added + list(rows[at:])
+
+
 def table(rows, competitor):
     out = ['        <div class="table-card glass"><div class="table-scroll"><table class="compare">',
            f'          <thead><tr><td></td><th scope="col" class="us">Disk Forecast</th><th scope="col">{esc(competitor)}</th></tr></thead><tbody>']
@@ -268,10 +283,14 @@ def render_page(p):
         cls = "tight" + (" lit" if sec.get("lit") else "")
         sid = f' id="{sec["id"]}"' if sec.get("id") else ""
         body = sec["html"]
+        theirs = p.get("new_rows", {})
         if sec.get("table"):
-            body = body.replace("{{TABLE}}", table(sec["table"], p["competitor"]))
+            rows = with_new_rows(sec["table"], lambda label: [theirs.get(label, "—")])
+            body = body.replace("{{TABLE}}", table(rows, p["competitor"]))
         if sec.get("grid"):
-            body = body.replace("{{TABLE}}", grid_table(sec["grid"]))
+            columns = len(sec["grid"]["head"]) - 2
+            rows = with_new_rows(sec["grid"]["rows"], lambda label: theirs.get(label, ["—"] * columns))
+            body = body.replace("{{TABLE}}", grid_table({**sec["grid"], "rows": rows}))
         parts.append(f'    <section class="{cls}"{sid}>\n      <div class="wrap narrow"><div class="prose">\n{body}\n      </div></div>\n    </section>\n')
     parts.append(faq_block(p["faqs"]))
     others = [q for q in PAGES if q["slug"] != p["slug"]]
