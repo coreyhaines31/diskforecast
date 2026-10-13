@@ -36,7 +36,7 @@ enum CommandLineInstaller {
         if manager.isWritableFile(atPath: homebrew) {
             let link = "\(homebrew)/diskforecast"
             if manager.fileExists(atPath: link) || destination(link) != nil {
-                guard destination(link)?.hasSuffix("/Contents/MacOS/diskforecast") == true else {
+                guard isOurs(link) else {
                     return "Something else is already installed at \(link), so Disk Forecast left it alone."
                 }
                 try? manager.removeItem(atPath: link)
@@ -49,7 +49,7 @@ enum CommandLineInstaller {
             }
         }
         let link = "\(system)/diskforecast"
-        if manager.fileExists(atPath: link), destination(link) == nil {
+        if manager.fileExists(atPath: link) || destination(link) != nil, !isOurs(link) {
             return "Something else is already installed at \(link), so Disk Forecast left it alone."
         }
         // /usr/local/bin needs an administrator, so macOS asks for a password.
@@ -65,6 +65,11 @@ enum CommandLineInstaller {
                 : "Couldn't install the diskforecast command: \(message)"
         }
         return "Installed the diskforecast command at \(link). Open a new Terminal window to use it."
+    }
+
+    /// Whether the path is a link to some copy of Disk Forecast's command, like one from an earlier install.
+    private static func isOurs(_ path: String) -> Bool {
+        destination(path)?.hasSuffix(".app/Contents/MacOS/diskforecast") == true
     }
 
     /// Where a symbolic link points, or nil if the path isn't one.
