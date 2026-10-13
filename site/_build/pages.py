@@ -625,7 +625,7 @@ SYSTEM_DATA = {
           <li><strong>Purgeable space.</strong> Files macOS has already marked as reclaimable, like iCloud copies it can download again. It's freed on demand, so it isn't really in your way.</li>
           <li><strong>Simulators and runtimes.</strong> If you've ever installed Xcode, iOS and watchOS simulator runtimes can take tens of gigabytes, including ones for versions you no longer test on.</li>
           <li><strong>Caches and logs.</strong> Apps and package managers keep downloaded and generated files so they don't have to fetch or build them again. They come back on their own.</li>
-          <li><strong>Apple Intelligence models.</strong> On Macs that support it, the on-device models live on your disk.</li>
+          <li><strong>Apple Intelligence models.</strong> On Macs that support it, the on-device models live on your disk. <a href="/ai-models/apple-intelligence">How much space Apple Intelligence takes</a>.</li>
           <li><strong>The Spotlight index.</strong> Your search index, which can grow out of date and larger than it needs to be.</li>
           <li><strong>Docker and virtual machines.</strong> Docker keeps its images and build cache in one large disk image, and VM apps do something similar.</li>
         </ul>
@@ -1347,7 +1347,7 @@ STORAGE_SIZE = {
         <ul>
           <li><strong>Developers.</strong> Xcode's simulator runtimes are about 17 GB each, and on the Mac this guide was written on, package manager caches and old build folders took over 100 GB.</li>
           <li><strong>Video, photo, and music work.</strong> A Final Cut Pro library grows with every project, and Logic Pro's full sound library alone is tens of gigabytes.</li>
-          <li><strong>Local AI.</strong> One Ollama model is 2 to 40 GB, and people rarely keep just one.</li>
+          <li><strong>Local AI.</strong> One Ollama model is 2 to 40 GB, and people rarely keep just one. See <a href="/ai-models/ollama">how to remove Ollama models</a>.</li>
           <li><strong>Games.</strong> Many big games are 50 GB or more each.</li>
           <li><strong>A Photos library kept on the Mac.</strong> Without iCloud's Optimize Mac Storage, every original photo and video is on the disk.</li>
         </ul>
@@ -1491,7 +1491,7 @@ MEMORY_VS_STORAGE = {
 
         <h2 style="margin-top:56px">Which one should you buy more of?</h2>
         <ul>
-          <li><strong>More memory</strong> if you keep many apps and browser tabs open, edit large photos or video, run virtual machines, or use local AI models. Memory pressure that's often yellow or red is the sign.</li>
+          <li><strong>More memory</strong> if you keep many apps and browser tabs open, edit large photos or video, run virtual machines, or use <a href="/ai-models">local AI models</a>. Memory pressure that's often yellow or red is the sign.</li>
           <li><strong>More storage</strong> if you keep a Photos library, video projects, music libraries, games, or developer tools on the Mac. A disk that keeps filling is the sign. <a href="/is-256gb-enough-for-mac">Is 256 GB enough?</a> goes through who needs what.</li>
         </ul>
         <p>On Macs with Apple silicon, memory and storage are both part of the chip or logic board. Neither can be upgraded after you buy the Mac, so choose with a few years in mind.</p>

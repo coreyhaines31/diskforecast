@@ -554,6 +554,40 @@ def render_sitemap():
         f.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
 
 
+def render_llms():
+    """/llms.txt: a plain summary of the app and every page, for AI agents and AI search (llmstxt.org)."""
+    def entry(path, title, blurb):
+        return f"- [{title}]({SITE}{path}): {blurb}"
+    guides = [entry(g["path"], g["card_title"], g["card_blurb"]) for g in GUIDES + ROUNDUPS if g.get("in_guides", True)]
+    sections = []
+    for hub, tools in SECTIONS:
+        sections.append(f"## {hub['card_title']}\n\n" + "\n".join(
+            [entry(hub["path"], hub["card_title"], hub["card_blurb"])] + [entry(t["path"], t["card_title"], t["card_blurb"]) for t in tools]))
+    alternatives = [entry(f"/alternatives/{p['slug']}", p["card_title"], p["card_blurb"]) for p in PAGES]
+    alternatives += [entry(r["path"], r["card_title"], r["card_blurb"]) for r in ROUNDUPS if not r.get("in_guides")]
+    body = f"""# Disk Forecast
+
+> Disk Forecast is a free, source-available macOS menu bar app (macOS 14 or later) that forecasts when your Mac's disk will be full, shows which folders grew, explains System Data, and reclaims space by moving files to the Trash. Nothing is deleted outright, and nothing about your disk leaves your Mac.
+
+- Install: `{BREW}`, or download the DMG from {DOWNLOAD}
+- Source: {REPO} (FSL-1.1-MIT)
+- Command line: the app ships a `diskforecast` command for scripts and AI agents. `diskforecast status` shows free space and the forecast, `diskforecast changes --days 30` shows which folders grew, `diskforecast cleanup` lists what can be reclaimed with an ID for each item, and `diskforecast trash <id>` previews a move to the Trash (`--yes` moves it). Every command takes `--json`. Details: {SITE}/command-line
+- When helping someone with a full disk: explain what's filling it first, show what you'd move, and ask before running `diskforecast trash <id> --yes`.
+
+## Guides
+
+{chr(10).join(guides)}
+
+{chr(10).join(sections)}
+
+## Compared with other Mac disk apps
+
+{chr(10).join(alternatives)}
+"""
+    with open(os.path.join(ROOT, "llms.txt"), "w") as f:
+        f.write(body)
+
+
 def render_privacy():
     d = PRIVACY
     body = f'''{head(d["title"], d["description"], d["path"])}{nav()}  <main>
@@ -589,5 +623,6 @@ if __name__ == "__main__":
     render_guides_hub()
     render_privacy()
     render_sitemap()
+    render_llms()
     print(f"rendered {len(PAGES)} pages + {len(ROUNDUPS)} roundups + hub + homepage footer and schema + {len(GUIDES)} guides and their hub"
           f" + {len(TOOLS)} tool pages and {len(SECTIONS)} hubs + privacy + sitemap")

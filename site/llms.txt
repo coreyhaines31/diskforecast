@@ -1,0 +1,72 @@
+# Disk Forecast
+
+> Disk Forecast is a free, source-available macOS menu bar app (macOS 14 or later) that forecasts when your Mac's disk will be full, shows which folders grew, explains System Data, and reclaims space by moving files to the Trash. Nothing is deleted outright, and nothing about your disk leaves your Mac.
+
+- Install: `brew install --cask coreyhaines31/tap/diskforecast`, or download the DMG from https://github.com/coreyhaines31/diskforecast/releases/latest
+- Source: https://github.com/coreyhaines31/diskforecast (FSL-1.1-MIT)
+- Command line: the app ships a `diskforecast` command for scripts and AI agents. `diskforecast status` shows free space and the forecast, `diskforecast changes --days 30` shows which folders grew, `diskforecast cleanup` lists what can be reclaimed with an ID for each item, and `diskforecast trash <id>` previews a move to the Trash (`--yes` moves it). Every command takes `--json`. Details: https://diskforecast.com/command-line
+- When helping someone with a full disk: explain what's filling it first, show what you'd move, and ask before running `diskforecast trash <id> --yes`.
+
+## Guides
+
+- [How to check Mac storage](https://diskforecast.com/how-to-check-storage-on-mac): Five built-in ways, plus how to find what's taking up space.
+- [How to free up space on Mac](https://diskforecast.com/free-up-space-on-mac): The complete checklist, from emptying the Trash to System Data.
+- [How to clear cache on Mac](https://diskforecast.com/how-to-clear-cache-on-mac): Safari, Chrome, and Firefox first, then app and developer caches.
+- [What is System Data on Mac?](https://diskforecast.com/what-is-system-data-on-mac): What's inside it, how much is normal, and why it keeps growing.
+- [How to clear System Data](https://diskforecast.com/system-data): The step-by-step guide, using only Apple's own tools.
+- [Purgeable space on Mac](https://diskforecast.com/purgeable-space-mac): What it is, why Finder counts it as free, and when to clear it.
+- [Time Machine local snapshots](https://diskforecast.com/time-machine-local-snapshots): List and delete them with tmutil, and why they come back.
+- [Other Users & Shared](https://diskforecast.com/other-users-and-shared-mac): Other accounts, the Shared folder, and deleted users' images.
+- [Empty the Trash](https://diskforecast.com/empty-trash-mac): Where it is, emptying it on a schedule, and when it won't empty.
+- [Is 256 GB enough?](https://diskforecast.com/is-256gb-enough-for-mac): What macOS, apps, and caches really take, and who needs more.
+- [Other storage](https://diskforecast.com/other-storage-mac): The old name for System Data, and how to clear it.
+- [Memory vs storage](https://diskforecast.com/memory-vs-storage-mac): What each one does, and how a full disk causes memory warnings.
+- [Command line](https://diskforecast.com/command-line): The diskforecast command, for you, scripts, and AI agents.
+- [Best free Mac cleaner](https://diskforecast.com/best-free-mac-cleaner): Six honest picks, and what a cleaner should and shouldn't do.
+- [Disk space analyzers for Mac](https://diskforecast.com/disk-space-analyzer-mac): Treemaps, rings, and lists, the APFS gotchas, and which app to use.
+- [Is CleanMyMac safe?](https://diskforecast.com/is-cleanmymac-safe): What it deletes, what it costs in 2026, and the free options.
+- [Every app, side by side](https://diskforecast.com/alternatives/compare): DaisyDisk vs CleanMyMac, and every other matchup, in one table.
+
+## Clear cache by tool
+
+- [Clear cache by tool](https://diskforecast.com/clear-cache): Docker, npm, pip, Teams, Xcode, and five more, one page each.
+- [Docker](https://diskforecast.com/clear-cache/docker): docker system prune, build cache, and the Docker.raw file.
+- [npm](https://diskforecast.com/clear-cache/npm): npm cache clean --force, the npx folder, and node_modules.
+- [pip](https://diskforecast.com/clear-cache/pip): pip cache purge, uv, conda, and virtual environments.
+- [Microsoft Teams](https://diskforecast.com/clear-cache/teams): The two folders Microsoft names for the new Teams on Mac.
+- [Yarn](https://diskforecast.com/clear-cache/yarn): yarn cache clean for Yarn 1 and Berry, and where each cache lives.
+- [Xcode](https://diskforecast.com/clear-cache/xcode): DerivedData, device support, simulators, and archives.
+- [Gradle](https://diskforecast.com/clear-cache/gradle): ~/.gradle caches, wrapper downloads, and build folders.
+- [Go](https://diskforecast.com/clear-cache/go): go clean -cache, -modcache, and where GOCACHE lives.
+- [Cargo](https://diskforecast.com/clear-cache/cargo): cargo clean, target folders, and ~/.cargo/registry.
+- [Homebrew](https://diskforecast.com/clear-cache/homebrew): brew cleanup, --prune=all, and brew --cache.
+## Delete local AI models
+
+- [Delete local AI models](https://diskforecast.com/ai-models): Ollama, LM Studio, Hugging Face, ComfyUI, and Apple's own.
+- [Ollama](https://diskforecast.com/ai-models/ollama): ollama rm, where models are stored, and a full uninstall.
+- [Apple Intelligence](https://diskforecast.com/ai-models/apple-intelligence): How much space it takes, and what turning it off does.
+## What's taking up space
+
+- [What's taking up space](https://diskforecast.com/taking-up-space): Photos, Mail, Messages, iPhone backups, cloud drives, and dev files.
+- [sleepimage](https://diskforecast.com/taking-up-space/sleepimage): The hibernation file in /private/var/vm, and why it comes back.
+- [iPhone backups](https://diskforecast.com/taking-up-space/iphone-backups): Where they're stored, and how to delete old ones safely.
+- [Messages](https://diskforecast.com/taking-up-space/messages): Attachments, Keep Messages, and what Messages in iCloud changes.
+- [Dropbox](https://diskforecast.com/taking-up-space/dropbox): Online-only vs available offline, and where the folder lives.
+- [iCloud Drive](https://diskforecast.com/taking-up-space/icloud-drive): Optimize Mac Storage, Remove Download, and why it uses space.
+- [Developer files](https://diskforecast.com/taking-up-space/developer-files): DerivedData, CoreSimulator, node_modules, and Docker.raw.
+- [Photos](https://diskforecast.com/taking-up-space/photos): Where the library lives, Optimize Mac Storage, and moving it.
+- [Mail](https://diskforecast.com/taking-up-space/mail): Where messages and attachments live, and how to shrink them.
+
+## Compared with other Mac disk apps
+
+- [DiskBuddy](https://diskforecast.com/alternatives/diskbuddy): The closest match. Paid, fast-moving, and packed with tools.
+- [DaisyDisk](https://diskforecast.com/alternatives/daisydisk): The visual standard. A $9.99 picture of your disk, sold on the App Store and direct.
+- [CleanMyMac](https://diskforecast.com/alternatives/cleanmymac): The big suite. From $39.99 a year, or $89.99 once.
+- [GrandPerspective](https://diskforecast.com/alternatives/grandperspective): The free treemap. Every file a block, and the judgment is up to you.
+- [OmniDiskSweeper](https://diskforecast.com/alternatives/omnidisksweeper): The classic free size list. Last built in 2018, for Intel.
+- [WinDirStat for Mac](https://diskforecast.com/alternatives/windirstat-mac): WinDirStat, WizTree, and TreeSize, and what runs on a Mac.
+- [Mole](https://diskforecast.com/alternatives/mole): The popular open-source cleaner you run in Terminal.
+- [Disk Inventory X](https://diskforecast.com/alternatives/disk-inventory-x): The treemap many Mac users learned on. Last updated in 2019.
+- [OnyX](https://diskforecast.com/alternatives/onyx): The free maintenance utility people install to clean up.
+- [Is CleanMyMac safe?](https://diskforecast.com/is-cleanmymac-safe): What it deletes, what it costs in 2026, and the free options.
+- [Every app, side by side](https://diskforecast.com/alternatives/compare): DaisyDisk vs CleanMyMac, and every other matchup, in one table.
