@@ -1448,7 +1448,70 @@ OTHER_STORAGE = {
     "cta": "Know before it's full.",
 }
 
-GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS, TRASH, STORAGE_SIZE, OTHER_STORAGE]
+# ------------------------------------------------------------------ Memory vs storage
+# Targets "memory vs storage on mac" (250/mo US, KD 0). Measured 2026-10-13 on a MacBook Pro with 48 GB of memory and a
+# 1 TB disk, macOS 26.6: vm.swapusage total 22,528 MB, the VM volume 23.6 GB.
+MEMORY_VS_STORAGE = {
+    "path": "/memory-vs-storage-mac",
+    "title": "Memory vs storage on Mac: what's the difference?",
+    "description": "Memory vs storage on a Mac, in plain English: what each one does, how to check both, why a full disk can cause memory warnings, and which one to buy more of.",
+    "eyebrow": "Guide",
+    "h1": "Memory vs storage on Mac, <em>in plain English.</em>",
+    "lede": "Both are measured in gigabytes, and macOS warns you about both, so they're easy to mix up. Memory is the desk you work on. Storage is the filing cabinet. Here's how they differ, and how one can run out because of the other.",
+    "tldr": "<strong>Memory</strong> (RAM, which Apple calls unified memory) holds the apps and files you have open right now, and empties when you restart. <strong>Storage</strong> (the SSD) keeps everything you've saved, even when the Mac is off. Check memory in <strong>Activity Monitor › Memory</strong>, and storage in <strong>System Settings › General › Storage</strong>. When memory runs short, macOS borrows storage as swap, so a nearly full disk can cause memory warnings too.",
+    "card_title": "Memory vs storage",
+    "card_blurb": "What each one does, and how a full disk causes memory warnings.",
+    "footer": "Memory vs storage",
+    "related": ["/is-256gb-enough-for-mac", "/how-to-check-storage-on-mac", "/free-up-space-on-mac"],
+    "faqs": [
+        ("What's the difference between memory and storage on a Mac?", "Memory, or RAM, holds what's open right now and empties when the Mac restarts. Storage, the SSD, keeps your files, apps, and macOS itself, even when the Mac is off. Macs usually have 8 to 64 GB of memory and 256 GB to several terabytes of storage."),
+        ("How do I check memory and storage on my Mac?", "Choose Apple menu › About This Mac to see how much memory the Mac has. Open Activity Monitor and click Memory to see how much is in use. For storage, open System Settings › General › Storage."),
+        ("Why does my Mac say it has run out of application memory?", "Usually because apps need more memory than the Mac has, and macOS can't write enough of it to swap on the disk. A nearly full disk makes that more likely. Quit apps you aren't using, and free up disk space."),
+        ("Does deleting files free up memory?", "Not directly. Deleting files frees storage. But if your disk was nearly full, the extra room lets macOS use swap again, which can stop memory warnings."),
+        ("Should I buy more memory or more storage?", "More memory if you keep many apps, browser tabs, or big projects open at once. More storage if you keep large files, like video, photo libraries, or developer tools, on the Mac. On Apple silicon Macs, you can't add either later."),
+    ],
+    "html": """
+        <h2>Memory vs storage, side by side</h2>
+        {{TABLE:compare}}
+        <p>Memory is fast and temporary: it's where the apps you have open, and the files they're working on, live while you use them. Storage is slower and permanent: it's where everything waits until you open it again. A Mac with 16 GB of memory and 512 GB of storage can have 16 GB of things open at once, and keep 512 GB of things saved.</p>
+
+        <h2 style="margin-top:56px">How to check each one</h2>
+        <h3>Memory</h3>
+        <ol class="steps">
+          <li><b>See how much you have.</b> Choose <strong>Apple menu › About This Mac</strong>. It's listed as <strong>Memory</strong>.</li>
+          <li><b>See how it's being used.</b> Open <strong>Activity Monitor</strong> from Applications › Utilities and click <strong>Memory</strong>. The <strong>Memory Pressure</strong> graph at the bottom matters more than the numbers: green is fine, yellow is busy, red means the Mac needs more than it has.</li>
+        </ol>
+        <h3>Storage</h3>
+        <p>Open <strong>System Settings › General › Storage</strong>. The bar shows how much is used and by what. <a href="/how-to-check-storage-on-mac">How to check Mac storage</a> covers four more ways, including Terminal.</p>
+
+        <h2 style="margin-top:56px">Where they meet: swap</h2>
+        <p>When open apps need more memory than the Mac has, macOS moves some of it out to the disk, into swap files, and brings it back when it's needed. That's normal, and it's why a Mac doesn't crash when memory fills up. But it means memory can take storage.</p>
+        <p>On the MacBook Pro this guide was written on, with 48 GB of memory, macOS had 22.5 GB of swap files on the disk after a long day of work. On a Mac with less memory, or more apps open, it can be more. Swap goes away when you restart.</p>
+        <p>This is why the two warnings are connected. If the disk is nearly full, macOS has nowhere to put swap, and you can see “Your system has run out of application memory” even though the real problem is storage. Free up disk space and the warning usually stops. <a href="/free-up-space-on-mac">How to free up space on Mac</a> is the checklist.</p>
+
+        <h2 style="margin-top:56px">Which one should you buy more of?</h2>
+        <ul>
+          <li><strong>More memory</strong> if you keep many apps and browser tabs open, edit large photos or video, run virtual machines, or use local AI models. Memory pressure that's often yellow or red is the sign.</li>
+          <li><strong>More storage</strong> if you keep a Photos library, video projects, music libraries, games, or developer tools on the Mac. A disk that keeps filling is the sign. <a href="/is-256gb-enough-for-mac">Is 256 GB enough?</a> goes through who needs what.</li>
+        </ul>
+        <p>On Macs with Apple silicon, memory and storage are both part of the chip or logic board. Neither can be upgraded after you buy the Mac, so choose with a few years in mind.</p>
+    """,
+    "tables": {"compare": {"head": ["", "Memory (RAM)", "Storage (SSD)"], "rows": [
+        ("What it holds", "What's open right now", "Everything you've saved, plus apps and macOS"),
+        ("When you restart", "Empties", "Keeps everything"),
+        ("Typical size on a Mac", "8 to 64 GB", "256 GB to 8 TB"),
+        ("Where to check it", "Activity Monitor › Memory", "System Settings › General › Storage"),
+        ("When it runs out", "Apps slow down; macOS uses swap", "“Your disk is almost full”; updates fail"),
+    ]}},
+    "shortcut": """
+          <h2>Keep storage from running out</h2>
+          <p>Disk Forecast shows your free storage in the menu bar and, after 3 days, when the disk will be full, so swap always has room. When it&#39;s time, it shows what&#39;s safe to clear and moves it to the Trash. It&#39;s free.</p>
+    """,
+    "mockup": "menu",
+    "cta": "Know before it's full.",
+}
+
+GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS, TRASH, STORAGE_SIZE, OTHER_STORAGE, MEMORY_VS_STORAGE]
 
 GUIDES_HUB = {
     "path": "/guides",
