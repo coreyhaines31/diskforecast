@@ -113,6 +113,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case "cleanup":
                 cleanupWindow.show()
                 DemoMode.captureAndQuit(windowTitled: "Cleanup")
+            case "settings":
+                settingsWindow.show()
+                DemoMode.captureAndQuit(windowTitled: "General")
             default: break
             }
         }

@@ -2,7 +2,7 @@
 import AppKit
 import DiskForecastCore
 
-/// Runs the app on made-up data for the README images: `--demo --show menu|forecast|cleanup
+/// Runs the app on made-up data for the README images: `--demo --show menu|forecast|cleanup|settings
 /// --capture <file>`, plus `--dark` for dark mode (windows only). Scripts/render-readme-images.sh
 /// drives it. Debug builds only.
 @MainActor
