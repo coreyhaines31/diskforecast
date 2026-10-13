@@ -233,8 +233,11 @@ func report(_ response: CLIResponse, json asJSON: Bool) -> Bool {
 /// Polls until the scan finishes, showing progress on stderr.
 func waitForScan(json asJSON: Bool) -> CLIResponse {
     if !asJSON { note("Measuring your home folder. This usually takes under a minute.") }
+    // A scan skips folders that stall, so one still running after half an hour is stuck.
+    let deadline = Date().addingTimeInterval(30 * 60)
     while true {
         Thread.sleep(forTimeInterval: 1)
+        if Date() > deadline { fail("The scan is still running after 30 minutes. Check Disk Forecast's menu.") }
         guard let response = send(CLIRequest(action: .status)) else {
             fail("Disk Forecast stopped answering during the scan.")
         }
