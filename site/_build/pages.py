@@ -1304,7 +1304,83 @@ TRASH = {
     "cta": "Know before it's full.",
 }
 
-GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS, TRASH]
+# ------------------------------------------------------------------ Is 256 GB enough
+# Targets "is 256gb enough for macbook air" (400/mo US, KD 0), "is 256gb enough for macbook" (100), "macbook storage
+# upgrade" (100), "is 512gb enough for macbook" (20). Measured 2026-10-13 on a MacBook Pro (M4 Pro, 1 TB, macOS 26.6):
+# APFS System 12.6 GB, Preboot 9.0 GB, Recovery 1.3 GB, VM 23.6 GB; /Applications 36 GB for 75 apps; ~/Library/Caches
+# 18 GB; each iOS simulator runtime 17.1 and 17.5 GB; Disk Forecast history 283.5 GB free on Oct 5, 6.3 GB on Oct 8.
+# Apple: the M5 MacBook Air (March 3, 2026) starts at 512 GB; MacBook Airs from the M1 (2020) to the M4 (2025) started at 256 GB.
+STORAGE_SIZE = {
+    "path": "/is-256gb-enough-for-mac",
+    "title": "Is 256GB enough for a MacBook? Real numbers for 2026",
+    "description": "Is 256 GB enough for a MacBook Air or Mac? What macOS, apps, and caches really take, who's fine with 256 GB, who needs 512 GB or more, and how to tell from your own Mac.",
+    "eyebrow": "Guide",
+    "h1": "Is 256 GB enough for a Mac? <em>It depends on how fast you fill it.</em>",
+    "lede": "For email, documents, the web, and photos kept in iCloud, yes. For coding, video, music, local AI, or games, it fills up fast. Here's what really takes the space, measured on a real Mac, and how to tell which group you're in.",
+    "tldr": "256 GB is enough if your files mostly live in iCloud or other cloud services and you don't make video, code, or run local AI models. macOS takes about 23 GB before you add anything, and caches, apps, and swap add tens of gigabytes more. If you're buying now, 512 GB is the safer choice: it's where the MacBook Air starts since the M5 model in March 2026, and a MacBook's storage can't be upgraded later.",
+    "card_title": "Is 256 GB enough?",
+    "card_blurb": "What macOS, apps, and caches really take, and who needs more.",
+    "footer": "Is 256 GB enough?",
+    "related": ["/how-to-check-storage-on-mac", "/free-up-space-on-mac", "/memory-vs-storage-mac"],
+    "faqs": [
+        ("Is 256 GB enough for a MacBook Air?", "For browsing, email, documents, streaming, and photos stored in iCloud, yes. For coding, video editing, music production, local AI models, or games, 512 GB or more is the safer choice."),
+        ("How much space does macOS take?", "On the Mac this guide was written on, macOS 26.6's own volumes took about 23 GB: 12.6 GB for the system, 9 GB for Preboot, and 1.3 GB for Recovery. Swap files and caches come on top of that and change from day to day."),
+        ("Is 512 GB enough for a MacBook?", "For most people, including many developers, yes. Video editors, people with large Photos libraries kept on the Mac, and anyone running several local AI models or iOS simulators should look at 1 TB."),
+        ("Can I upgrade the storage on a MacBook later?", "No. On MacBooks with Apple silicon, the storage is part of the logic board. You can add an external SSD, but you can't make the internal drive bigger."),
+        ("Is it worth paying for more storage on a Mac?", "If your disk would otherwise fill within the Mac's life, yes, because you can't add it later. Check how fast your current Mac fills: Disk Forecast shows it as a daily rate."),
+        ("Does iCloud help with a 256 GB Mac?", "Yes. With Optimize Mac Storage on, iCloud Drive and Photos keep older files in the cloud and download them when you open them. You need enough iCloud storage to hold everything."),
+    ],
+    "html": """
+        <h2>What fills a Mac before your own files</h2>
+        <p>A Mac's disk is never empty, even on day one. These numbers come from the MacBook Pro this guide was written on, running macOS 26.6:</p>
+        {{TABLE:base}}
+        <p>So before you save a single file, a couple of dozen gigabytes are gone, and a busy Mac can have another 50 to 80 GB in apps, caches, and swap. On a 256 GB Mac, that's a third of the disk.</p>
+
+        <h2 style="margin-top:56px">Who 256 GB is enough for</h2>
+        <ul>
+          <li><strong>Web, email, documents, and streaming.</strong> Browsers and Office files are small, and music and video streams instead of downloading.</li>
+          <li><strong>Photos and files in iCloud.</strong> With <strong>Optimize Mac Storage</strong> on in Photos and iCloud Drive, older originals stay in the cloud and download when you open them.</li>
+          <li><strong>A second Mac.</strong> A Mac that's mainly for travel or meetings, with your big files on another one.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Who should get 512 GB or more</h2>
+        <ul>
+          <li><strong>Developers.</strong> Xcode's simulator runtimes are about 17 GB each, and on the Mac this guide was written on, package manager caches and old build folders took over 100 GB.</li>
+          <li><strong>Video, photo, and music work.</strong> A Final Cut Pro library grows with every project, and Logic Pro's full sound library alone is tens of gigabytes.</li>
+          <li><strong>Local AI.</strong> One Ollama model is 2 to 40 GB, and people rarely keep just one.</li>
+          <li><strong>Games.</strong> Many big games are 50 GB or more each.</li>
+          <li><strong>A Photos library kept on the Mac.</strong> Without iCloud's Optimize Mac Storage, every original photo and video is on the disk.</li>
+        </ul>
+        <p>For any of these, 1 TB is a better fit than 512 GB if you can afford it, because a MacBook's storage can't be upgraded after you buy it.</p>
+
+        <h2 style="margin-top:56px">The better question: how fast do you fill it?</h2>
+        <p>A Mac that fills by 100 MB a day will be fine at 256 GB for years. One that fills by 3 GB a day won't last a semester. The Mac this guide was written on went from 283 GB free to 6 GB free in three days, when an AI coding agent made dozens of copies of a large project. That would have filled a 256 GB Mac on the first afternoon.</p>
+        <p>Your current Mac is the best evidence you have. Check how much it uses now with <a href="/how-to-check-storage-on-mac">how to check Mac storage</a>, and watch how that number moves over a week or two. If you're already short on room, <a href="/free-up-space-on-mac">free up space on Mac</a> covers what's safe to clear.</p>
+
+        <h2 style="margin-top:56px">Making 256 GB work</h2>
+        <ul>
+          <li><strong>Turn on Optimize Mac Storage</strong> for iCloud Drive in <strong>System Settings › Apple Account › iCloud</strong>, and in <strong>Photos › Settings › iCloud</strong>.</li>
+          <li><strong>Keep big archives on an external SSD.</strong> Old video projects, finished work, and installers you might need again.</li>
+          <li><strong>Empty the Trash on a schedule.</strong> <a href="/empty-trash-mac">Have macOS empty it after 30 days</a>.</li>
+          <li><strong>Clear caches when they grow.</strong> They rebuild, but they don't need to sit there between uses. See <a href="/how-to-clear-cache-on-mac">how to clear cache on Mac</a>.</li>
+        </ul>
+    """,
+    "tables": {"base": {"head": ["What", "On the Mac we measured"], "rows": [
+        ("macOS itself (System, Preboot, and Recovery volumes)", "22.9 GB"),
+        ("Swap files, while busy, on a Mac with 48 GB of memory", "23.6 GB"),
+        ("75 apps in /Applications", "36 GB"),
+        ("App caches in ~/Library/Caches", "18 GB"),
+        ("One iOS simulator runtime, for Xcode", "17 GB"),
+    ]}},
+    "shortcut": """
+          <h2>See how fast your Mac fills</h2>
+          <p>Disk Forecast checks your free space every hour and, after 3 days, shows how much you use on a typical day and when the disk will be full. Its <strong>What changed</strong> list shows which folders grew. Run it on the Mac you have now, and you&#39;ll know whether 256 GB, 512 GB, or 1 TB fits the way you work. It&#39;s free.</p>
+    """,
+    "mockup": "forecast",
+    "cta": "Know before it's full.",
+}
+
+GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS, TRASH, STORAGE_SIZE]
 
 GUIDES_HUB = {
     "path": "/guides",
