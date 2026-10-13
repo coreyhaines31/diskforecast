@@ -1,4 +1,5 @@
 import Charts
+import DiskForecastCore
 import SwiftUI
 
 /// Free space over time as a filled line, with the forecast as a dashed line to where the disk
