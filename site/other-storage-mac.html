@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Other storage on Mac: what it is and how to delete it</title>
+  <meta name="description" content="What happened to Other storage on Mac, what was in it, and how to clear it now that macOS calls it System Data, with safe steps for Monterey and later.">
+  <link rel="canonical" href="https://diskforecast.com/other-storage-mac">
+  <meta property="og:title" content="Other storage on Mac: what it is and how to delete it">
+  <meta property="og:description" content="What happened to Other storage on Mac, what was in it, and how to clear it now that macOS calls it System Data, with safe steps for Monterey and later.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/other-storage-mac">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Other storage on Mac: what it is and how to delete it">
+  <meta name="twitter:description" content="What happened to Other storage on Mac, what was in it, and how to clear it now that macOS calls it System Data, with safe steps for Monterey and later.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>Other storage on Mac <em>is now called System Data.</em></h1>
+        <p class="lede">If you're looking for “Other” in your Mac's storage bar and can't find it, it was renamed. If you can still see it, your Mac runs macOS Big Sur or earlier. Either way, here's what's in it and how to reclaim it safely.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>macOS Monterey renamed <strong>Other</strong> to <strong>System Data</strong> in 2021, and renamed <strong>System</strong> to <strong>macOS</strong>. It's the same catch-all: caches, logs, local Time Machine snapshots, app support files, disk images, and anything macOS doesn't file under a named category. To reclaim it, empty the Trash, clear caches, remove old iPhone backups and disk images, and delete local snapshots with Apple's own <code>tmutil</code>. Don't delete folders in <code>/System</code> or <code>/Library</code> by hand.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>What happened to Other storage on Mac?</h2>
+        <p>Until macOS Big Sur, the storage bar in <strong>About This Mac › Storage</strong> had a gray category called <strong>Other</strong>. With macOS Monterey in 2021, Apple renamed it <strong>System Data</strong>, and renamed the old <strong>System</strong> category to <strong>macOS</strong>. Nothing about how it's counted changed with the name.</p>
+                <div class="table-card glass"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">Big Sur and earlier</th><th scope="col">Monterey and later</th></tr></thead><tbody>
+            <tr><th scope="row">Other</th><td>System Data</td></tr>
+            <tr><th scope="row">System</th><td>macOS</td></tr>
+            <tr><th scope="row">About This Mac › Storage</th><td>System Settings › General › Storage (Ventura and later)</td></tr>
+          </tbody></table></div></div>
+        <p>So every guide that tells you to clear Other storage is describing System Data. On macOS Ventura and later, the storage bar lives in <strong>System Settings › General › Storage</strong>.</p>
+
+        <h2 style="margin-top:56px">What was in Other storage</h2>
+        <p>Other was everything macOS didn't put in a named category:</p>
+        <ul>
+          <li><strong>Caches</strong> from apps and browsers, in <code>~/Library/Caches</code>.</li>
+          <li><strong>Logs</strong> and crash reports.</li>
+          <li><strong>App support files</strong> in <code>~/Library/Application Support</code>, like chat histories, game saves, and app databases.</li>
+          <li><strong>Disk images and archives</strong>: <code>.dmg</code>, <code>.zip</code>, and installers in Downloads.</li>
+          <li><strong>Local Time Machine snapshots</strong>, if Time Machine was on.</li>
+          <li><strong>Developer files</strong>, like Xcode's DerivedData and simulators.</li>
+        </ul>
+        <p>That's the same list System Data holds today. <a href="/what-is-system-data-on-mac">What is System Data on Mac</a> goes through each part, how big it usually is, and why it keeps growing.</p>
+
+        <h2 style="margin-top:56px">How to delete Other storage, now System Data</h2>
+        <ol class="steps">
+          <li><b>Empty the Trash.</b> Deleted files still count until you do. <a href="/empty-trash-mac">How to empty the Trash</a>.</li>
+          <li><b>Clear caches.</b> Apps rebuild what they need. <a href="/how-to-clear-cache-on-mac">How to clear cache on Mac</a> covers which caches are safe.</li>
+          <li><b>Remove old iPhone backups.</b> In Finder, select your iPhone, click <strong>Manage Backups</strong>, and delete the ones you don't need. <a href="/taking-up-space/iphone-backups">Where iPhone backups are stored</a>.</li>
+          <li><b>Delete installers and disk images.</b> Sort Downloads by size and move old <code>.dmg</code> and <code>.pkg</code> files to the Trash.</li>
+          <li><b>Remove local Time Machine snapshots.</b> Run <code>tmutil listlocalsnapshots /</code> to see them. <a href="/time-machine-local-snapshots">How to delete local snapshots</a> covers the rest.</li>
+        </ol>
+        <p>The step-by-step version, with Apple's own commands for simulators, the Spotlight index, and more, is <a href="/system-data">how to clear System Data on Mac</a>.</p>
+
+        <h2 style="margin-top:56px">What not to delete</h2>
+        <p>Don't remove folders from <code>/System</code>, <code>/Library</code>, or <code>/private</code> by hand, and don't delete folders in <code>~/Library/Application Support</code> you don't recognize. That's where apps keep their data, not their caches. Clearing what rebuilds itself is safe. Clearing what an app needs isn't.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+
+          <h2>Disk Forecast and System Data</h2>
+          <p>Disk Forecast breaks System Data into the parts it can measure, explains each one, and runs Apple&#39;s own tool for each fix after you confirm. It needs macOS 14 Sonoma or later. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="stage glass">
+          <div class="mk mk-win" role="img" aria-label="The Disk Forecast System Data window, titled System Data, explained. It lists purgeable space, three local Time Machine snapshots, the Spotlight index, simulators with two iOS runtimes, Apple Intelligence and Siri models, and Docker, each with a plain explanation and, except purgeable space, a button that runs the owning tool's own fix.">
+            <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">System Data</div></div>
+            <div class="mk-hdr"><div><b>System Data, explained</b><span>What macOS files under System Data in Storage settings, and how to reclaim it with Apple's and each tool's own commands. Nothing runs until you confirm.</span></div><div class="mk-pill">Refresh</div></div>
+            <div class="mk-list">
+                <div class="mk-srow"><div class="top"><b>Purgeable space</b><span class="sz">24 GB</span></div><div class="txt"><span>Space macOS is holding for caches, iCloud copies, and snapshots. It's already counted as free, and macOS gives it back on its own when an app needs room.</span></div></div>
+                <div class="mk-srow"><div class="top"><b>Local Time Machine snapshots</b><span class="sz note">3 snapshots</span></div><div class="txt"><span>Hourly copies Time Machine keeps on this Mac between backups. macOS counts them as purgeable and removes them after 24 hours or when space runs low.</span><div class="mk-det">com.apple.TimeMachine.2026-10-05-073012.local<br>com.apple.TimeMachine.2026-10-05-083008.local<br>com.apple.TimeMachine.2026-10-05-093011.local</div><div class="mk-fix"><div class="mk-pill">Remove local snapshots…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Spotlight index</b><span class="sz">1.2 GB</span></div><div class="txt"><span>The search index behind Spotlight. It's usually small; when it grows huge, rebuilding it often shrinks it. Search results are incomplete while it rebuilds.</span><div class="mk-fix"><div class="mk-pill">Rebuild the Spotlight index…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Simulators</b><span class="sz">27 GB</span></div><div class="txt"><span>iOS and other simulator runtimes, plus each simulator's apps and data. Xcode downloads a runtime again from Settings › Components when you need it.</span><div class="mk-det">iOS 26.4 runtime: 8.5 GB<br>iOS 26.2 runtime: 8.4 GB<br>14 simulators: 10 GB</div><div class="mk-fix"><div class="mk-pill">Delete iOS 26.4 (8.5 GB)…</div><div class="mk-pill">Delete iOS 26.2 (8.4 GB)…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Apple Intelligence and Siri models</b><span class="sz">3.3 GB</span></div><div class="txt"><span>On-device models macOS downloads for Apple Intelligence, Siri, dictation, and translation. Turning Apple Intelligence off in System Settings removes its models.</span><div class="mk-det">Siri Understanding: 2.0 GB<br>Siri TextToSpeech: 583 MB<br>Speech AutomaticSpeechRecognition: 428 MB<br>Photos MagicCleanup: 260 MB</div><div class="mk-fix"><div class="mk-pill">Open Apple Intelligence &amp; Siri settings…</div></div></div></div>
+                <div class="mk-srow"><div class="top"><b>Docker</b><span class="sz">6.1 GB</span></div><div class="txt"><span>Images, containers, volumes, and build cache, stored in one disk image. Docker's own prune command removes what nothing is using.</span><div class="mk-det">Images: 4.2 GB, 2.9 GB unused<br>Build Cache: 1.6 GB, 1.6 GB unused<br>Containers: 318 MB, 12 MB unused</div><div class="mk-fix"><div class="mk-pill">Prune unused Docker data…</div></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>What is Other storage on a Mac?</summary><p>Older versions of macOS used Other for files that didn&#x27;t fit a named category: caches, logs, app support files, disk images, archives, local Time Machine snapshots, and system files outside the macOS volume. Since macOS Monterey, the same category is called System Data.</p></details>
+          <details><summary>Why can&#x27;t I find Other storage on my Mac?</summary><p>Because macOS Monterey renamed it System Data in 2021. Open System Settings › General › Storage and look for the System Data bar.</p></details>
+          <details><summary>How do I delete Other storage on a Mac?</summary><p>There&#x27;s no single button. Empty the Trash, clear app caches, remove old iPhone backups and disk images you don&#x27;t need, and delete local Time Machine snapshots with tmutil. Leave the folders in /System and /Library alone.</p></details>
+          <details><summary>Is it safe to delete Other storage?</summary><p>Parts of it. Caches, old installers, iPhone backups you no longer need, and local snapshots can go. System files, app support folders you don&#x27;t recognize, and anything in /System can&#x27;t, or shouldn&#x27;t.</p></details>
+          <details><summary>Why is Other storage so big?</summary><p>Usually local Time Machine snapshots, caches, simulator runtimes for Xcode, or a Docker disk image. The same things make System Data big today.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/what-is-system-data-on-mac"><b>What is System Data on Mac?</b><span>What&#x27;s inside it, how much is normal, and why it keeps growing.</span></a>
+          <a class="glass" href="/system-data"><b>How to clear System Data</b><span>The step-by-step guide, using only Apple&#x27;s own tools.</span></a>
+          <a class="glass" href="/how-to-check-storage-on-mac"><b>How to check Mac storage</b><span>Five built-in ways, plus how to find what&#x27;s taking up space.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/purgeable-space-mac">Purgeable space</a><a href="/time-machine-local-snapshots">Time Machine snapshots</a><a href="/other-users-and-shared-mac">Other Users &amp; Shared</a><a href="/empty-trash-mac">Empty the Trash</a><a href="/is-256gb-enough-for-mac">Is 256 GB enough?</a><a href="/other-storage-mac">Other storage</a><a href="/memory-vs-storage-mac">Memory vs storage</a><a href="/command-line">Command line</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a><a href="/taking-up-space">What&#x27;s taking up space</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/alternatives/onyx">OnyX alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is Other storage on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Older versions of macOS used Other for files that didn't fit a named category: caches, logs, app support files, disk images, archives, local Time Machine snapshots, and system files outside the macOS volume. Since macOS Monterey, the same category is called System Data."}}, {"@type": "Question", "name": "Why can't I find Other storage on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Because macOS Monterey renamed it System Data in 2021. Open System Settings \u203a General \u203a Storage and look for the System Data bar."}}, {"@type": "Question", "name": "How do I delete Other storage on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "There's no single button. Empty the Trash, clear app caches, remove old iPhone backups and disk images you don't need, and delete local Time Machine snapshots with tmutil. Leave the folders in /System and /Library alone."}}, {"@type": "Question", "name": "Is it safe to delete Other storage?", "acceptedAnswer": {"@type": "Answer", "text": "Parts of it. Caches, old installers, iPhone backups you no longer need, and local snapshots can go. System files, app support folders you don't recognize, and anything in /System can't, or shouldn't."}}, {"@type": "Question", "name": "Why is Other storage so big?", "acceptedAnswer": {"@type": "Answer", "text": "Usually local Time Machine snapshots, caches, simulator runtimes for Xcode, or a Docker disk image. The same things make System Data big today."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Disk Forecast", "item": "https://diskforecast.com/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://diskforecast.com/guides"}, {"@type": "ListItem", "position": 3, "name": "Other storage", "item": "https://diskforecast.com/other-storage-mac"}]}</script>
+</body>
+</html>

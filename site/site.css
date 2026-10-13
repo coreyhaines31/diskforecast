@@ -438,3 +438,13 @@ section.tight { padding: clamp(56px, 8vw, 96px) 0 0; }
   .cli-split { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .cli-term { font-size: 12px; }
 }
+
+/* Sibling pages at the foot of a tool or folder page */
+.more-links { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; font-size: 15px; }
+.more-links .label { font-weight: 600; color: var(--ink); margin-right: 6px; }
+.more-links a:not(.label) { color: var(--ink-2); background: var(--glass); box-shadow: var(--glass-shadow); border-radius: 999px; padding: 5px 12px; text-decoration: none; }
+.more-links a:not(.label):hover { color: var(--accent); }
+.cli-stage { max-width: 720px; margin: 0 auto; }
+.compare th code { white-space: nowrap; }
+.prose pre.wrap { white-space: pre-wrap; }
+.prose .table-card { margin: 16px 0 24px; }
