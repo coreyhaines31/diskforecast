@@ -366,6 +366,7 @@ PAGES = [
     # github.com/tw93/Mole README and API (GPL-3.0, 69,455 stars, V1.58.0 on 2026-10-05), and mole.fit (the $19 app).
     {
         "slug": "mole",
+        "new_rows": {"Command line for scripts and AI agents": "Yes, it's a command-line tool"},
         "competitor": "Mole",
         "title": "Mole Mac cleaner, compared with a free alternative",
         "description": "Mole is a free, open-source Mac cleaner you run in Terminal, plus a $19 app. Disk Forecast is a free menu bar app that warns weeks before your disk fills.",
@@ -493,6 +494,72 @@ PAGES = [
             """},
         ],
     },
+    # ------------------------------------------------------------------ OnyX
+    # Targets "onyx mac" (1,000/mo US, KD 24) and "onyx mac cleaner" (600, KD 11), checked 2026-10-13.
+    # Facts, checked 2026-10-13 on titanium-software.fr/en/onyx.html: free with donations; one build per macOS version
+    # (5.0.6 for Tahoe 26, 4.8.5 for Sequoia 15, 4.6.2 for Sonoma 14, 5.1.1 for macOS 27, Apple silicon only, Oct 11, 2026);
+    # "using a version intended for an earlier OS is not recommended"; the feature list quoted below.
+    {
+        "slug": "onyx",
+        "competitor": "OnyX",
+        "title": "OnyX for Mac, compared with a free disk space app",
+        "description": "OnyX is the free Mac maintenance utility from Titanium Software. What it cleans, and how Disk Forecast differs: a free app that warns before disks fill.",
+        "eyebrow": "OnyX alternative",
+        "h1": "OnyX maintains your Mac. Disk Forecast <em>watches its disk.</em>",
+        "lede": "OnyX, from Titanium Software, has been a free Mac maintenance utility for more than twenty years. People often install it to get disk space back. It can clear caches and logs, but space is one job among many for OnyX, and the only job for Disk Forecast.",
+        "tldr": "Use OnyX if you want a free, deep set of maintenance tasks: verifying system files, rebuilding databases and indexes, hidden settings, and cache cleaning, all in one app. Use Disk Forecast if what you want is disk space: a countdown in the menu bar, which folders grew, a cleanup list that explains every item, and everything sent to the Trash. Both are free, and they don't conflict.",
+        "card_title": "OnyX",
+        "card_blurb": "The free maintenance utility people install to clean up.",
+        "footer": "OnyX alternative",
+        "cta": "Know before it's full.",
+        "faqs": [
+            ("What is OnyX for Mac?", "A free maintenance utility from Titanium Software. Its site describes it as a tool to verify the structure of the system files, perform cleaning and maintenance tasks, uninstall applications, configure hidden settings in the Finder, Dock, Safari, and other Apple apps, delete caches, and rebuild databases and indexes."),
+            ("Is OnyX free?", "Yes. OnyX is free, and Titanium Software accepts donations."),
+            ("Which version of OnyX do I need?", "The one built for your macOS version. As of October 2026, that's OnyX 5.0.6 for macOS Tahoe 26, 4.8.5 for Sequoia 15, 4.6.2 for Sonoma 14, and 5.1.1 for macOS 27. Titanium Software says using a version meant for an earlier macOS is not recommended."),
+            ("Does OnyX free up disk space?", "Some. Clearing caches and logs reclaims space for a while, until apps rebuild their caches. It doesn't show which folders are taking the most space, or which ones grew, so for space it works best alongside an app that does."),
+            ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+        ],
+        "sections": [
+            {"id": "why", "html": """
+        <h2>What OnyX does well</h2>
+        <p>OnyX has been around since the early days of Mac OS X, and Titanium Software still builds a separate version for each macOS release, back to 10.2. Its own description lists what it does: “verify the structure of the system files; perform cleaning and computer maintenance tasks; uninstall applications; configure parameters in the Finder, Dock, Safari, and some Apple applications; delete caches; remove certain problematic folders and files; rebuild various databases and indexes.”</p>
+        <p>That's a lot of capability for free, and it's useful when something on a Mac is misbehaving: a Spotlight index that won't finish, a Launch Services database that shows duplicate “Open With” entries, a cache that's gone bad. Most of those tasks need your administrator password, which is normal for tools that touch system files.</p>
+        <h3>Where it stops</h3>
+        <p><strong>Space is a side effect.</strong> Clearing caches and logs reclaims some space, and apps rebuild their caches as you use them. We couldn't find a view in OnyX's own materials that shows which folders take the most space or which ones grew.</p>
+        <p><strong>It runs when you run it.</strong> OnyX is a tool you open when you think of it. Nothing tells you ahead of time that the disk is filling, so the first warning is still macOS saying your disk is almost full.</p>
+        <p><strong>One version per macOS.</strong> Titanium Software builds OnyX for each release and says not to use one meant for an earlier macOS. After a macOS upgrade, get the matching OnyX before you run it.</p>
+            """},
+            {"id": "compare", "lit": True, "html": """
+        <h2>Disk Forecast vs OnyX</h2>
+        <p>OnyX facts come from Titanium Software's site as of October 13, 2026.</p>
+        {{TABLE}}
+        <h3>What OnyX does better</h3>
+        <p>Maintenance. Verifying system files, rebuilding databases and indexes, running macOS's maintenance tasks, and changing hidden settings are OnyX's job, and Disk Forecast does none of it.</p>
+        <h3>What Disk Forecast does better</h3>
+        <p>Disk space. It warns you weeks before the disk fills, shows which folders grew and when, explains every item it lists in plain English, and sends what you clear to the Trash, so you can change your mind until you empty it.</p>
+            """, "table": [
+                ("Price", "Free", "Free, with donations"),
+                ("Where it runs", "Menu bar app", "Window app, opened when needed"),
+                ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
+                ("Shows the folders taking the most space", "Yes", "—"),
+                ("Clears caches and logs", "Yes, each one explained", "Yes"),
+                ("Deletes go to the Trash", "Yes, always", "—"),
+                ("Rebuilds databases and indexes", "No", "Yes"),
+                ("Hidden settings for Finder, Dock, and Safari", "No", "Yes"),
+                ("Versions", "One app for macOS 14 and later", "A separate build for each macOS"),
+                ("Source available", "Yes, on GitHub", "—"),
+            ]},
+            {"id": "switch", "html": """
+        <h2>Using them together</h2>
+        <ol class="steps">
+          <li><b>Install Disk Forecast.</b> <code>brew install --cask coreyhaines31/tap/diskforecast</code>, or download the app from GitHub.</li>
+          <li><b>Let it watch.</b> Free space shows in the menu bar right away, and the forecast appears after 3 days of history.</li>
+          <li><b>Reclaim space with it when it's time.</b> “Safe to clear” is everything that rebuilds on its own: caches, logs, Xcode DerivedData, and build folders in projects you haven't touched in 30 days. It all goes to the Trash.</li>
+          <li><b>Keep OnyX for maintenance.</b> When something misbehaves, like Spotlight or the “Open With” menu, OnyX's rebuild tasks are the right tool. Use the version built for your macOS.</li>
+        </ol>
+            """},
+        ],
+    },
 ]
 
 HUB = {
@@ -507,6 +574,7 @@ HUB = {
         ("Windows' WizTree, on a Mac", "WizTreeMac"),
         ("A cleaner and system stats in Terminal", "Mole"),
         ("Just to remove an app and its leftovers", "AppCleaner"),
+        ("Free maintenance: rebuild indexes, hidden settings", "OnyX"),
         ("Duplicates, compression, and a Windows license too", "DiskBuddy"),
         ("A broad suite of Mac tools, by the year or once", "CleanMyMac"),
         ("To know when you'll run out, before you do", "Disk Forecast"),
@@ -516,7 +584,7 @@ HUB = {
     "html": """
         <h2>How we compare</h2>
         <p>Every page here draws on the competitor's own site, store listing, and release posts as of October 2026, and says plainly what the other app does better. Where we couldn't confirm a feature either way, the table shows “—” instead of guessing. If something is out of date, <a href="https://github.com/coreyhaines31/diskforecast/issues">open an issue</a> and we'll fix it.</p>
-        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, from $39.99 a year or $89.99 once. <strong>Mole</strong> is the open-source cleaner for Terminal. <strong>OmniDiskSweeper</strong> and <strong>Disk Inventory X</strong> are the free classics, both Intel only and unchanged for years. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
+        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, from $39.99 a year or $89.99 once. <strong>Mole</strong> is the open-source cleaner for Terminal. <strong>OnyX</strong> is the free maintenance utility. <strong>OmniDiskSweeper</strong> and <strong>Disk Inventory X</strong> are the free classics, both Intel only and unchanged for years. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
         <p>To see them all at once, start with <a href="/alternatives/compare">every app side by side</a>. Coming from Windows? <a href="/alternatives/windirstat-mac">WinDirStat for Mac</a> covers what runs here.</p>
     """,
 }
@@ -746,7 +814,7 @@ FREE_UP = {
 
         <h2 style="margin-top:56px">Quick wins: how to free up space on Mac in 5 minutes</h2>
         <ol class="steps">
-          <li><b>Empty the Trash.</b> Files you've deleted still take space until you do. Choose <strong>Finder › Empty Trash</strong>, or press Command-Shift-Delete in Finder. Photos and Mail have their own: <strong>Recently Deleted</strong> in Photos keeps items for up to 30 days unless you delete them there too.</li>
+          <li><b>Empty the Trash.</b> Files you've deleted still take space until you do (<a href="/empty-trash-mac">how to empty the Trash, and what to do when it won't</a>). Choose <strong>Finder › Empty Trash</strong>, or press Command-Shift-Delete in Finder. Photos and Mail have their own: <strong>Recently Deleted</strong> in Photos keeps items for up to 30 days unless you delete them there too.</li>
           <li><b>Clear out Downloads.</b> Open <code>Downloads</code> in Finder, choose <strong>View › as List</strong>, and click the Size column. Old installers (<code>.dmg</code> and <code>.pkg</code> files) and zip files you've already opened are safe to move to the Trash.</li>
           <li><b>Delete apps you don't use.</b> In Storage settings, click the info button next to <strong>Applications</strong> to see them sorted by size. Drag the ones you don't need from the Applications folder to the Trash. Big creative apps and games often take 10 GB or more each.</li>
           <li><b>Turn on Apple's recommendations.</b> At the top of Storage settings: <strong>Store in iCloud</strong> keeps your files, photos, and messages in iCloud and only recent ones on your Mac. <strong>Optimize Storage</strong> removes Apple TV movies and shows you've already watched, and keeps only recent Mail attachments. <strong>Empty Trash Automatically</strong> erases items that have been in the Trash for more than 30 days.</li>
@@ -767,7 +835,7 @@ FREE_UP = {
         <h2 style="margin-top:56px">If you write code</h2>
         <p>Developer Macs fill up differently. Build folders like <code>node_modules</code>, Xcode's DerivedData, simulator runtimes, package manager caches, Docker images, and local AI models add up fast. To list the <code>node_modules</code> folders in your home folder by size:</p>
 <pre><code>find ~ -name node_modules -type d -prune -exec du -sh {} + 2>/dev/null | sort -h | tail -20</code></pre>
-        <p>Delete the ones in projects you haven't touched in a while; <code>npm install</code> brings them back. For Ollama models, <code>ollama list</code> shows what you have and <code>ollama rm &lt;model&gt;</code> removes one; <a href="/ai-models">delete local AI models</a> covers Ollama, LM Studio, and Hugging Face.</p>
+        <p>Delete the ones in projects you haven't touched in a while; <code>npm install</code> brings them back. For <a href="/ai-models/ollama">Ollama models</a>, <code>ollama list</code> shows what you have and <code>ollama rm &lt;model&gt;</code> removes one; <a href="/ai-models">delete local AI models</a> covers Ollama, LM Studio, and Hugging Face.</p>
         <p>Package managers and build tools keep caches of their own, and each has a command to clear it. <a href="/clear-cache">Clear cache by tool</a> has a page for npm, Docker, Xcode, pip, and six more, and <a href="/taking-up-space/developer-files">developer files taking up space</a> covers DerivedData, simulators, node_modules, and Docker.raw on one page.</p>
         <p>Not sure which folder is the big one? <a href="/taking-up-space">What's taking up space</a> goes folder by folder, including the <a href="/taking-up-space/sleepimage">sleepimage</a> file people often find first.</p>
 
@@ -796,7 +864,7 @@ FREE_UP = {
     """,
     "shortcut": """
           <h2>Get the warning weeks ahead, not at 2 GB.</h2>
-          <p>Disk Forecast checks your free space every hour and, after 3 days, tells you when you&#39;ll run out. When it&#39;s time, it shows what&#39;s safe to clear and moves it to the Trash. It&#39;s free.</p>
+          <p>Disk Forecast checks your free space every hour and, after 3 days, tells you when you&#39;ll run out. Its <strong>What changed</strong> list shows which folders grew since any day in the chart. When it&#39;s time, it shows what&#39;s safe to clear and moves it to the Trash. It&#39;s free.</p>
     """,
     "mockup": "forecast",
     "cta": "Know before it's full.",
@@ -861,7 +929,7 @@ CHECK = {
         </ul>
 
         <h2 style="margin-top:56px">How to see what's taking up space on Mac</h2>
-        <p>Start with the biggest category in Storage settings. If it's Applications, Documents, or Photos, its info button lists the files. If it's System Data, the space is in places Storage settings doesn't name, and <a href="/system-data">the System Data guide</a> shows how to reclaim it. If nothing stands out, sort your home folder by size in Finder, and look inside <code>~/Library</code>, <code>~/Downloads</code>, and any code or video folders.</p>
+        <p>Start with the biggest category in Storage settings. If it's Applications, Documents, or Photos, its info button lists the files (and <a href="/taking-up-space/photos">where photos are stored</a> covers shrinking the Photos library). If it's System Data, the space is in places Storage settings doesn't name, and <a href="/system-data">the System Data guide</a> shows how to reclaim it. If nothing stands out, sort your home folder by size in Finder, and look inside <code>~/Library</code>, <code>~/Downloads</code>, and any code or video folders.</p>
 
         <h2 style="margin-top:56px">How to find large files on Mac</h2>
         <ol class="steps">
@@ -884,7 +952,7 @@ CHECK = {
     """,
     "shortcut": """
           <h2>Or keep it in your menu bar.</h2>
-          <p>Disk Forecast shows your free space in the menu bar all day. Click it to see when you&#39;ll run out, the five folders taking the most space, and how much is safe to clear. It&#39;s free.</p>
+          <p>Disk Forecast shows your free space in the menu bar all day. Click it to see when you&#39;ll run out, the five folders taking the most space, and how much is safe to clear. The Forecast window shows which folders grew this week or this month. It&#39;s free.</p>
     """,
     "mockup": "menu",
     "cta": "Know before it's full.",
@@ -959,7 +1027,7 @@ WHAT_IS = {
     """,
     "shortcut": """
           <h2>See your own System Data, explained.</h2>
-          <p>Disk Forecast breaks System Data on your Mac into its parts, sizes each one, says what it is, and runs Apple&#39;s own fix when you confirm. Then it forecasts when your disk will be full, so the growth never surprises you. It&#39;s free.</p>
+          <p>Disk Forecast breaks System Data on your Mac into its parts, sizes each one, says what it is, and runs Apple&#39;s own fix when you confirm. Then it forecasts when your disk will be full, and its <strong>What changed</strong> list shows how much grew inside your home folder and how much outside it, where System Data lives. It&#39;s free.</p>
     """,
     "mockup": "system-data",
     "cta": "Know before it's full.",
@@ -1166,7 +1234,360 @@ sudo du -sh /Users/*</code></pre>
 }
 
 # In reading order: the hub and every footer list them this way.
-GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS]
+# ------------------------------------------------------------------ Empty the Trash
+# Targets "how to empty trash on mac" (1,200/mo US, KD 0), "empty trash mac" (450, KD 1), "where is trash on mac" (400,
+# KD 0), and "trash not emptying mac". Checked on macOS 26.6 on 2026-10-13: Terminal gets "Operation not permitted" on
+# ~/.Trash without Full Disk Access; Finder's "Remove items from the Trash after 30 days" was on (FXRemoveOldTrashItems).
+TRASH = {
+    "path": "/empty-trash-mac",
+    "title": "How to empty the Trash on Mac, and when it won't empty",
+    "description": "How to empty the Trash on a Mac, where the Trash is, how to empty it automatically after 30 days, and what to do when it won't empty or space doesn't come back.",
+    "eyebrow": "Guide",
+    "h1": "How to empty the Trash on Mac, <em>and get the space back.</em>",
+    "lede": "Deleting a file on a Mac only moves it to the Trash. The space comes back when you empty it. Here's how, where the Trash is, how to make it empty itself, and what to do when it won't.",
+    "tldr": "Click the Trash at the right end of the Dock, then click <strong>Empty</strong> in the top-right corner of the window. Or press <strong>Shift-Command-Delete</strong> in Finder. To have macOS do it for you, turn on <strong>Finder › Settings › Advanced › Remove items from the Trash after 30 days</strong>. If free space doesn't go up afterward, local Time Machine snapshots may still be holding the files.",
+    "card_title": "Empty the Trash",
+    "card_blurb": "Where it is, emptying it on a schedule, and when it won't empty.",
+    "footer": "Empty the Trash",
+    "related": ["/free-up-space-on-mac", "/time-machine-local-snapshots", "/purgeable-space-mac"],
+    "faqs": [
+        ("How do I empty the Trash on my Mac?", "Click the Trash icon in the Dock, then click Empty in the top-right corner of the window. You can also choose Finder › Empty Trash, or press Shift-Command-Delete. macOS asks you to confirm first."),
+        ("Where is the Trash on a Mac?", "At the right end of the Dock, or the bottom if your Dock is on the side. The files themselves are in a hidden folder in your home folder, ~/.Trash, and each external drive keeps its own."),
+        ("Can I make the Trash empty automatically?", "Yes. In Finder, choose Finder › Settings, click Advanced, and turn on Remove items from the Trash after 30 days. Anything that's been in the Trash for 30 days is deleted for good."),
+        ("Why won't my Trash empty?", "Usually an app still has one of the files open. Quit that app, or restart, and try again. A locked file won't delete either: select it, choose File › Get Info, and turn off Locked."),
+        ("I emptied the Trash but didn't get any space back. Why?", "Local Time Machine snapshots can keep deleted files on the disk until macOS removes the snapshot. Purgeable space can also make the number in Finder move slowly. Give it a few minutes, then check local snapshots."),
+        ("Can I get files back after emptying the Trash?", "Only from a backup, like Time Machine. Before you empty it, you can put anything back: select it in the Trash and choose File › Put Back."),
+    ],
+    "html": """
+        <h2>How to empty the Trash on Mac</h2>
+        <ol class="steps">
+          <li><b>Open the Trash.</b> Click the Trash icon at the right end of the Dock. It looks full when there's something in it.</li>
+          <li><b>Look before you empty.</b> Everything in this window will be deleted for good. To keep something, select it and choose <strong>File › Put Back</strong>, which returns it to where it was.</li>
+          <li><b>Click Empty.</b> It's in the top-right corner of the window. macOS asks you to confirm.</li>
+        </ol>
+        <p>Two faster ways do the same thing: Control-click the Trash in the Dock and choose <strong>Empty Trash</strong>, or press <strong>Shift-Command-Delete</strong> in Finder. Add Option, <strong>Option-Shift-Command-Delete</strong>, to skip the confirmation.</p>
+        <p>To delete one item without emptying everything, open the Trash, Control-click the item, and choose <strong>Delete Immediately</strong>.</p>
+
+        <h2 style="margin-top:56px">Where is the Trash on a Mac?</h2>
+        <p>In the Dock, at the right end, or at the bottom if your Dock sits on the side of the screen. It can't be removed from the Dock.</p>
+        <p>The files themselves live in a hidden folder in your home folder, <code>~/.Trash</code>. Each external drive keeps its own Trash too, in a hidden folder at the top of the drive, so files you delete from a USB drive still take space on that drive until you empty the Trash. On the Mac this guide was written on, Terminal got “Operation not permitted” trying to read <code>~/.Trash</code>: macOS guards it, so use Finder rather than Terminal.</p>
+
+        <h2 style="margin-top:56px">Empty the Trash automatically</h2>
+        <p>macOS can delete anything that's been in the Trash for 30 days, so it never fills up quietly:</p>
+        <ol class="steps">
+          <li><b>Open Finder settings.</b> In Finder, choose <strong>Finder › Settings</strong>, then click <strong>Advanced</strong>.</li>
+          <li><b>Turn it on.</b> Select <strong>Remove items from the Trash after 30 days</strong>.</li>
+        </ol>
+        <p>Storage settings offers the same thing as <strong>Empty Trash Automatically</strong>, under Recommendations in <strong>System Settings › General › Storage</strong>. Either way, you still have 30 days to change your mind about anything you delete.</p>
+
+        <h2 style="margin-top:56px">When the Trash won't empty</h2>
+        <ul>
+          <li><strong>“The operation can't be completed because the item is in use.”</strong> An app still has the file open. Quit the app it belongs to and try again. If you can't tell which one, restart and empty the Trash first thing.</li>
+          <li><strong>A locked file.</strong> Select it in the Trash, choose <strong>File › Get Info</strong>, and turn off <strong>Locked</strong>.</li>
+          <li><strong>You don't have permission.</strong> The file belongs to another user or to the system. In <strong>File › Get Info</strong>, open <strong>Sharing &amp; Permissions</strong>, click the lock, and give yourself Read &amp; Write.</li>
+          <li><strong>An external drive.</strong> Its Trash only empties while it's connected. Plug it back in, then empty the Trash.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Emptied the Trash, and still no space?</h2>
+        <p>Emptying the Trash deletes the files, but two things can keep the space from showing up right away:</p>
+        <ul>
+          <li><strong>Local Time Machine snapshots.</strong> If Time Machine is on, macOS keeps snapshots of your disk, and a snapshot holds onto files that existed when it was taken. The space comes back when the snapshot is removed. <a href="/time-machine-local-snapshots">How to delete local snapshots</a> shows how to see them and remove them.</li>
+          <li><strong>Purgeable space.</strong> Finder counts space macOS can free on demand as available, so the number can look the same before and after. <a href="/purgeable-space-mac">Purgeable space, explained</a>.</li>
+        </ul>
+        <p>Other apps keep their own trash too. Photos keeps deleted photos in <strong>Recently Deleted</strong> for 30 days, and Mail keeps deleted messages in its Trash mailbox. Emptying the Finder Trash doesn't touch either one.</p>
+    """,
+    "shortcut": """
+          <h2>Disk Forecast and the Trash</h2>
+          <p>Disk Forecast never deletes anything itself. Everything you clear goes to the Trash, so you can put it back until you empty it. After a cleanup, it tells you how much it moved, and its <strong>Open Trash</strong> button takes you straight there to check before you empty it. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "cta": "Know before it's full.",
+}
+
+# ------------------------------------------------------------------ Is 256 GB enough
+# Targets "is 256gb enough for macbook air" (400/mo US, KD 0), "is 256gb enough for macbook" (100), "macbook storage
+# upgrade" (100), "is 512gb enough for macbook" (20). Measured 2026-10-13 on a MacBook Pro (M4 Pro, 1 TB, macOS 26.6):
+# APFS System 12.6 GB, Preboot 9.0 GB, Recovery 1.3 GB, VM 23.6 GB; /Applications 36 GB for 75 apps; ~/Library/Caches
+# 18 GB; each iOS simulator runtime 17.1 and 17.5 GB; Disk Forecast history 283.5 GB free on Oct 5, 6.3 GB on Oct 8.
+# Apple: the M5 MacBook Air (March 3, 2026) starts at 512 GB; MacBook Airs from the M1 (2020) to the M4 (2025) started at 256 GB.
+STORAGE_SIZE = {
+    "path": "/is-256gb-enough-for-mac",
+    "title": "Is 256GB enough for a MacBook? Real numbers for 2026",
+    "description": "Is 256GB enough for a MacBook Air? What macOS, apps, and caches really take, who's fine with 256GB, and who needs 512GB or more, with numbers from a real Mac.",
+    "eyebrow": "Guide",
+    "h1": "Is 256 GB enough for a Mac? <em>It depends on how fast you fill it.</em>",
+    "lede": "For email, documents, the web, and photos kept in iCloud, yes. For coding, video, music, local AI, or games, it fills up fast. Here's what really takes the space, measured on a real Mac, and how to tell which group you're in.",
+    "tldr": "256 GB is enough if your files mostly live in iCloud or other cloud services and you don't make video, code, or run local AI models. macOS takes about 23 GB before you add anything, and caches, apps, and swap add tens of gigabytes more. If you're buying now, 512 GB is the safer choice: it's where the MacBook Air starts since the M5 model in March 2026, and a MacBook's storage can't be upgraded later.",
+    "card_title": "Is 256 GB enough?",
+    "card_blurb": "What macOS, apps, and caches really take, and who needs more.",
+    "footer": "Is 256 GB enough?",
+    "related": ["/how-to-check-storage-on-mac", "/free-up-space-on-mac", "/memory-vs-storage-mac"],
+    "faqs": [
+        ("Is 256 GB enough for a MacBook Air?", "For browsing, email, documents, streaming, and photos stored in iCloud, yes. For coding, video editing, music production, local AI models, or games, 512 GB or more is the safer choice."),
+        ("How much space does macOS take?", "On the Mac this guide was written on, macOS 26.6's own volumes took about 23 GB: 12.6 GB for the system, 9 GB for Preboot, and 1.3 GB for Recovery. Swap files and caches come on top of that and change from day to day."),
+        ("Is 512 GB enough for a MacBook?", "For most people, including many developers, yes. Video editors, people with large Photos libraries kept on the Mac, and anyone running several local AI models or iOS simulators should look at 1 TB."),
+        ("Can I upgrade the storage on a MacBook later?", "No. On MacBooks with Apple silicon, the storage is part of the logic board. You can add an external SSD, but you can't make the internal drive bigger."),
+        ("Is it worth paying for more storage on a Mac?", "If your disk would otherwise fill within the Mac's life, yes, because you can't add it later. Check how fast your current Mac fills: Disk Forecast shows it as a daily rate."),
+        ("Does iCloud help with a 256 GB Mac?", "Yes. With Optimize Mac Storage on, iCloud Drive and Photos keep older files in the cloud and download them when you open them. You need enough iCloud storage to hold everything."),
+    ],
+    "html": """
+        <h2>What fills a Mac before your own files</h2>
+        <p>A Mac's disk is never empty, even on day one. These numbers come from the MacBook Pro this guide was written on, running macOS 26.6:</p>
+        {{TABLE:base}}
+        <p>So before you save a single file, a couple of dozen gigabytes are gone, and a busy Mac can have another 50 to 80 GB in apps, caches, and swap. On a 256 GB Mac, that's a third of the disk.</p>
+
+        <h2 style="margin-top:56px">Who 256 GB is enough for</h2>
+        <ul>
+          <li><strong>Web, email, documents, and streaming.</strong> Browsers and Office files are small, and music and video streams instead of downloading.</li>
+          <li><strong>Photos and files in iCloud.</strong> With <strong>Optimize Mac Storage</strong> on in Photos and iCloud Drive, older originals stay in the cloud and download when you open them.</li>
+          <li><strong>A second Mac.</strong> A Mac that's mainly for travel or meetings, with your big files on another one.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Who should get 512 GB or more</h2>
+        <ul>
+          <li><strong>Developers.</strong> Xcode's simulator runtimes are about 17 GB each, and on the Mac this guide was written on, package manager caches and old build folders took over 100 GB.</li>
+          <li><strong>Video, photo, and music work.</strong> A Final Cut Pro library grows with every project, and Logic Pro's full sound library alone is tens of gigabytes.</li>
+          <li><strong>Local AI.</strong> One Ollama model is 2 to 40 GB, and people rarely keep just one.</li>
+          <li><strong>Games.</strong> Many big games are 50 GB or more each.</li>
+          <li><strong>A Photos library kept on the Mac.</strong> Without iCloud's Optimize Mac Storage, every original photo and video is on the disk.</li>
+        </ul>
+        <p>For any of these, 1 TB is a better fit than 512 GB if you can afford it, because a MacBook's storage can't be upgraded after you buy it.</p>
+
+        <h2 style="margin-top:56px">The better question: how fast do you fill it?</h2>
+        <p>A Mac that fills by 100 MB a day will be fine at 256 GB for years. One that fills by 3 GB a day won't last a semester. The Mac this guide was written on went from 283 GB free to 6 GB free in three days, when an AI coding agent made dozens of copies of a large project. That would have filled a 256 GB Mac on the first afternoon.</p>
+        <p>Your current Mac is the best evidence you have. Check how much it uses now with <a href="/how-to-check-storage-on-mac">how to check Mac storage</a>, and watch how that number moves over a week or two. If you're already short on room, <a href="/free-up-space-on-mac">free up space on Mac</a> covers what's safe to clear.</p>
+
+        <h2 style="margin-top:56px">Making 256 GB work</h2>
+        <ul>
+          <li><strong>Turn on Optimize Mac Storage</strong> for iCloud Drive in <strong>System Settings › Apple Account › iCloud</strong>, and in <strong>Photos › Settings › iCloud</strong>.</li>
+          <li><strong>Keep big archives on an external SSD.</strong> Old video projects, finished work, and installers you might need again.</li>
+          <li><strong>Empty the Trash on a schedule.</strong> <a href="/empty-trash-mac">Have macOS empty it after 30 days</a>.</li>
+          <li><strong>Clear caches when they grow.</strong> They rebuild, but they don't need to sit there between uses. See <a href="/how-to-clear-cache-on-mac">how to clear cache on Mac</a>.</li>
+        </ul>
+    """,
+    "tables": {"base": {"head": ["What", "On the Mac we measured"], "rows": [
+        ("macOS itself (System, Preboot, and Recovery volumes)", "22.9 GB"),
+        ("Swap files, while busy, on a Mac with 48 GB of memory", "23.6 GB"),
+        ("75 apps in /Applications", "36 GB"),
+        ("App caches in ~/Library/Caches", "18 GB"),
+        ("One iOS simulator runtime, for Xcode", "17 GB"),
+    ]}},
+    "shortcut": """
+          <h2>See how fast your Mac fills</h2>
+          <p>Disk Forecast checks your free space every hour and, after 3 days, shows how much you use on a typical day and when the disk will be full. Its <strong>What changed</strong> list shows which folders grew. Run it on the Mac you have now, and you&#39;ll know whether 256 GB, 512 GB, or 1 TB fits the way you work. It&#39;s free.</p>
+    """,
+    "mockup": "forecast",
+    "cta": "Know before it's full.",
+}
+
+# ------------------------------------------------------------------ Other storage
+# Targets "how to delete other storage on mac" (150/mo US, KD 0), "how to clear other storage on mac" (150), "what is
+# other storage on mac" (90), "how to get rid of other storage on mac" (90), "macbook other storage" (60). Its own
+# parent topic, so it isn't folded into /what-is-system-data-on-mac. Fact: macOS Monterey (12, 2021) renamed Storage's
+# "Other" to "System Data" (Macworld, Apple Community threads), and "System" to "macOS".
+OTHER_STORAGE = {
+    "path": "/other-storage-mac",
+    "title": "Other storage on Mac: what it is and how to delete it",
+    "description": "What happened to Other storage on Mac, what was in it, and how to clear it now that macOS calls it System Data, with safe steps for Monterey and later.",
+    "eyebrow": "Guide",
+    "h1": "Other storage on Mac <em>is now called System Data.</em>",
+    "lede": "If you're looking for “Other” in your Mac's storage bar and can't find it, it was renamed. If you can still see it, your Mac runs macOS Big Sur or earlier. Either way, here's what's in it and how to reclaim it safely.",
+    "tldr": "macOS Monterey renamed <strong>Other</strong> to <strong>System Data</strong> in 2021, and renamed <strong>System</strong> to <strong>macOS</strong>. It's the same catch-all: caches, logs, local Time Machine snapshots, app support files, disk images, and anything macOS doesn't file under a named category. To reclaim it, empty the Trash, clear caches, remove old iPhone backups and disk images, and delete local snapshots with Apple's own <code>tmutil</code>. Don't delete folders in <code>/System</code> or <code>/Library</code> by hand.",
+    "card_title": "Other storage",
+    "card_blurb": "The old name for System Data, and how to clear it.",
+    "footer": "Other storage",
+    "related": ["/what-is-system-data-on-mac", "/system-data", "/how-to-check-storage-on-mac"],
+    "faqs": [
+        ("What is Other storage on a Mac?", "Older versions of macOS used Other for files that didn't fit a named category: caches, logs, app support files, disk images, archives, local Time Machine snapshots, and system files outside the macOS volume. Since macOS Monterey, the same category is called System Data."),
+        ("Why can't I find Other storage on my Mac?", "Because macOS Monterey renamed it System Data in 2021. Open System Settings › General › Storage and look for the System Data bar."),
+        ("How do I delete Other storage on a Mac?", "There's no single button. Empty the Trash, clear app caches, remove old iPhone backups and disk images you don't need, and delete local Time Machine snapshots with tmutil. Leave the folders in /System and /Library alone."),
+        ("Is it safe to delete Other storage?", "Parts of it. Caches, old installers, iPhone backups you no longer need, and local snapshots can go. System files, app support folders you don't recognize, and anything in /System can't, or shouldn't."),
+        ("Why is Other storage so big?", "Usually local Time Machine snapshots, caches, simulator runtimes for Xcode, or a Docker disk image. The same things make System Data big today."),
+    ],
+    "html": """
+        <h2>What happened to Other storage on Mac?</h2>
+        <p>Until macOS Big Sur, the storage bar in <strong>About This Mac › Storage</strong> had a gray category called <strong>Other</strong>. With macOS Monterey in 2021, Apple renamed it <strong>System Data</strong>, and renamed the old <strong>System</strong> category to <strong>macOS</strong>. Nothing about how it's counted changed with the name.</p>
+        {{TABLE:names}}
+        <p>So every guide that tells you to clear Other storage is describing System Data. On macOS Ventura and later, the storage bar lives in <strong>System Settings › General › Storage</strong>.</p>
+
+        <h2 style="margin-top:56px">What was in Other storage</h2>
+        <p>Other was everything macOS didn't put in a named category:</p>
+        <ul>
+          <li><strong>Caches</strong> from apps and browsers, in <code>~/Library/Caches</code>.</li>
+          <li><strong>Logs</strong> and crash reports.</li>
+          <li><strong>App support files</strong> in <code>~/Library/Application Support</code>, like chat histories, game saves, and app databases.</li>
+          <li><strong>Disk images and archives</strong>: <code>.dmg</code>, <code>.zip</code>, and installers in Downloads.</li>
+          <li><strong>Local Time Machine snapshots</strong>, if Time Machine was on.</li>
+          <li><strong>Developer files</strong>, like Xcode's DerivedData and simulators.</li>
+        </ul>
+        <p>That's the same list System Data holds today. <a href="/what-is-system-data-on-mac">What is System Data on Mac</a> goes through each part, how big it usually is, and why it keeps growing.</p>
+
+        <h2 style="margin-top:56px">How to delete Other storage, now System Data</h2>
+        <ol class="steps">
+          <li><b>Empty the Trash.</b> Deleted files still count until you do. <a href="/empty-trash-mac">How to empty the Trash</a>.</li>
+          <li><b>Clear caches.</b> Apps rebuild what they need. <a href="/how-to-clear-cache-on-mac">How to clear cache on Mac</a> covers which caches are safe.</li>
+          <li><b>Remove old iPhone backups.</b> In Finder, select your iPhone, click <strong>Manage Backups</strong>, and delete the ones you don't need. <a href="/taking-up-space/iphone-backups">Where iPhone backups are stored</a>.</li>
+          <li><b>Delete installers and disk images.</b> Sort Downloads by size and move old <code>.dmg</code> and <code>.pkg</code> files to the Trash.</li>
+          <li><b>Remove local Time Machine snapshots.</b> Run <code>tmutil listlocalsnapshots /</code> to see them. <a href="/time-machine-local-snapshots">How to delete local snapshots</a> covers the rest.</li>
+        </ol>
+        <p>The step-by-step version, with Apple's own commands for simulators, the Spotlight index, and more, is <a href="/system-data">how to clear System Data on Mac</a>.</p>
+
+        <h2 style="margin-top:56px">What not to delete</h2>
+        <p>Don't remove folders from <code>/System</code>, <code>/Library</code>, or <code>/private</code> by hand, and don't delete folders in <code>~/Library/Application Support</code> you don't recognize. That's where apps keep their data, not their caches. Clearing what rebuilds itself is safe. Clearing what an app needs isn't.</p>
+    """,
+    "tables": {"names": {"head": ["Big Sur and earlier", "Monterey and later"], "rows": [
+        ("Other", "System Data"),
+        ("System", "macOS"),
+        ("About This Mac › Storage", "System Settings › General › Storage (Ventura and later)"),
+    ]}},
+    "shortcut": """
+          <h2>Disk Forecast and System Data</h2>
+          <p>Disk Forecast breaks System Data into the parts it can measure, explains each one, and runs Apple&#39;s own tool for each fix after you confirm. It needs macOS 14 Sonoma or later. It&#39;s free.</p>
+    """,
+    "mockup": "system-data",
+    "cta": "Know before it's full.",
+}
+
+# ------------------------------------------------------------------ Memory vs storage
+# Targets "memory vs storage on mac" (250/mo US, KD 0). Measured 2026-10-13 on a MacBook Pro with 48 GB of memory and a
+# 1 TB disk, macOS 26.6: vm.swapusage total 22,528 MB, the VM volume 23.6 GB.
+MEMORY_VS_STORAGE = {
+    "path": "/memory-vs-storage-mac",
+    "title": "Memory vs storage on Mac: what's the difference?",
+    "description": "Memory vs storage on a Mac, in plain English: what each one does, how to check both, why a full disk can cause memory warnings, and which one to buy more of.",
+    "eyebrow": "Guide",
+    "h1": "Memory vs storage on Mac, <em>in plain English.</em>",
+    "lede": "Both are measured in gigabytes, and macOS warns you about both, so they're easy to mix up. Memory is the desk you work on. Storage is the filing cabinet. Here's how they differ, and how one can run out because of the other.",
+    "tldr": "<strong>Memory</strong> (RAM, which Apple calls unified memory) holds the apps and files you have open right now, and empties when you restart. <strong>Storage</strong> (the SSD) keeps everything you've saved, even when the Mac is off. Check memory in <strong>Activity Monitor › Memory</strong>, and storage in <strong>System Settings › General › Storage</strong>. When memory runs short, macOS borrows storage as swap, so a nearly full disk can cause memory warnings too.",
+    "card_title": "Memory vs storage",
+    "card_blurb": "What each one does, and how a full disk causes memory warnings.",
+    "footer": "Memory vs storage",
+    "related": ["/is-256gb-enough-for-mac", "/how-to-check-storage-on-mac", "/free-up-space-on-mac"],
+    "faqs": [
+        ("What's the difference between memory and storage on a Mac?", "Memory, or RAM, holds what's open right now and empties when the Mac restarts. Storage, the SSD, keeps your files, apps, and macOS itself, even when the Mac is off. Memory is usually 8 GB or more, and storage 256 GB or more, so storage is the much bigger number."),
+        ("How do I check memory and storage on my Mac?", "Choose Apple menu › About This Mac to see how much memory the Mac has. Open Activity Monitor and click Memory to see how much is in use. For storage, open System Settings › General › Storage."),
+        ("Why does my Mac say it has run out of application memory?", "Usually because apps need more memory than the Mac has, and macOS can't write enough of it to swap on the disk. A nearly full disk makes that more likely. Quit apps you aren't using, and free up disk space."),
+        ("Does deleting files free up memory?", "Not directly. Deleting files frees storage. But if your disk was nearly full, the extra room lets macOS use swap again, which can stop memory warnings."),
+        ("Should I buy more memory or more storage?", "More memory if you keep many apps, browser tabs, or big projects open at once. More storage if you keep large files, like video, photo libraries, or developer tools, on the Mac. On Apple silicon Macs, you can't add either later."),
+    ],
+    "html": """
+        <h2>Memory vs storage, side by side</h2>
+        {{TABLE:compare}}
+        <p>Memory is fast and temporary: it's where the apps you have open, and the files they're working on, live while you use them. Storage is slower and permanent: it's where everything waits until you open it again. A Mac with 16 GB of memory and 512 GB of storage can have 16 GB of things open at once, and keep 512 GB of things saved.</p>
+
+        <h2 style="margin-top:56px">How to check each one</h2>
+        <h3>Memory</h3>
+        <ol class="steps">
+          <li><b>See how much you have.</b> Choose <strong>Apple menu › About This Mac</strong>. It's listed as <strong>Memory</strong>.</li>
+          <li><b>See how it's being used.</b> Open <strong>Activity Monitor</strong> from Applications › Utilities and click <strong>Memory</strong>. The <strong>Memory Pressure</strong> graph at the bottom matters more than the numbers: green is fine, yellow is busy, red means the Mac needs more than it has.</li>
+        </ol>
+        <h3>Storage</h3>
+        <p>Open <strong>System Settings › General › Storage</strong>. The bar shows how much is used and by what. <a href="/how-to-check-storage-on-mac">How to check Mac storage</a> covers four more ways, including Terminal.</p>
+
+        <h2 style="margin-top:56px">Where they meet: swap</h2>
+        <p>When open apps need more memory than the Mac has, macOS moves some of it out to the disk, into swap files, and brings it back when it's needed. That's normal, and it's why a Mac doesn't crash when memory fills up. But it means memory can take storage.</p>
+        <p>On the MacBook Pro this guide was written on, with 48 GB of memory, macOS had 22.5 GB of swap files on the disk after a long day of work. On a Mac with less memory, or more apps open, it can be more. Swap goes away when you restart.</p>
+        <p>This is why the two warnings are connected. If the disk is nearly full, macOS has nowhere to put swap, and you can see “Your system has run out of application memory” even though the real problem is storage. Free up disk space and the warning usually stops. <a href="/free-up-space-on-mac">How to free up space on Mac</a> is the checklist.</p>
+
+        <h2 style="margin-top:56px">Which one should you buy more of?</h2>
+        <ul>
+          <li><strong>More memory</strong> if you keep many apps and browser tabs open, edit large photos or video, run virtual machines, or use local AI models. Memory pressure that's often yellow or red is the sign.</li>
+          <li><strong>More storage</strong> if you keep a Photos library, video projects, music libraries, games, or developer tools on the Mac. A disk that keeps filling is the sign. <a href="/is-256gb-enough-for-mac">Is 256 GB enough?</a> goes through who needs what.</li>
+        </ul>
+        <p>On Macs with Apple silicon, memory and storage are both part of the chip or logic board. Neither can be upgraded after you buy the Mac, so choose with a few years in mind.</p>
+    """,
+    "tables": {"compare": {"head": ["", "Memory (RAM)", "Storage (SSD)"], "rows": [
+        ("What it holds", "What's open right now", "Everything you've saved, plus apps and macOS"),
+        ("When you restart", "Empties", "Keeps everything"),
+        ("Typical size on a Mac", "8 GB and up; 16 GB on new Macs since 2024", "256 GB and up"),
+        ("Where to check it", "Activity Monitor › Memory", "System Settings › General › Storage"),
+        ("When it runs out", "Apps slow down; macOS uses swap", "“Your disk is almost full”; updates fail"),
+    ]}},
+    "shortcut": """
+          <h2>Keep storage from running out</h2>
+          <p>Disk Forecast shows your free storage in the menu bar and, after 3 days, when the disk will be full, so swap always has room. When it&#39;s time, it shows what&#39;s safe to clear and moves it to the Trash. It&#39;s free.</p>
+    """,
+    "mockup": "menu",
+    "cta": "Know before it's full.",
+}
+
+# ------------------------------------------------------------------ Command line
+# No measurable search volume ("check disk space mac terminal", "du command mac", "claude code disk space" are all 0 in
+# Ahrefs US, 2026-10-13). It's the page AI answers, agents, the homepage, and the README point to for the diskforecast
+# command (shipped in 1.3.0). Commands and output match DiskForecastCLI/main.swift.
+COMMAND_LINE = {
+    "path": "/command-line",
+    "title": "Disk Forecast command line: disk space for AI agents",
+    "description": "The diskforecast command: see when your Mac's disk will be full, which folders grew, and what to reclaim, from Terminal or through Claude Code or Codex.",
+    "eyebrow": "For AI agents",
+    "h1": "Check and reclaim disk space <em>from Terminal, or from your agent.</em>",
+    "lede": "Disk Forecast comes with a <code>diskforecast</code> command. You, a script, or an AI agent like Claude Code or Codex can get the forecast, see what grew, and move what's safe to clear to the Trash, using the same data as the menu bar.",
+    "tldr": "Install Disk Forecast with Homebrew and the <code>diskforecast</code> command is on your PATH. <code>diskforecast status</code> shows free space and the forecast, <code>diskforecast changes --days 30</code> shows which folders grew, and <code>diskforecast cleanup</code> lists what can be reclaimed. <code>diskforecast trash &lt;id&gt;</code> shows what it would move, and <code>--yes</code> moves it to the Trash. Add <code>--json</code> to any command.",
+    "card_title": "Command line",
+    "card_blurb": "The diskforecast command, for you, scripts, and AI agents.",
+    "footer": "Command line",
+    "related": ["/how-to-check-storage-on-mac", "/free-up-space-on-mac", "/how-to-clear-cache-on-mac"],
+    "faqs": [
+        ("How do I install the diskforecast command?", "Install Disk Forecast with Homebrew: brew install --cask coreyhaines31/tap/diskforecast. Homebrew links the command onto your PATH. If you installed from the DMG, link it once with sudo ln -sf \"/Applications/Disk Forecast.app/Contents/MacOS/diskforecast\" /usr/local/bin/diskforecast."),
+        ("Can Claude Code or Codex use Disk Forecast?", "Yes. Any agent that runs shell commands can. Ask it why your disk is filling up, or add a line to your CLAUDE.md or AGENTS.md telling it to use diskforecast when space is low."),
+        ("Can an agent delete my files with it?", "No. diskforecast trash only moves items that are on Disk Forecast's cleanup list, only to the Trash, and only shows what it would move until it's given --yes. Nothing is deleted until you empty the Trash yourself."),
+        ("Does the command need the app running?", "It talks to the Disk Forecast app, and opens it in the background if it isn't running. The app keeps the history the forecast is built from."),
+        ("How do I check disk space on a Mac from Terminal without an app?", "df -h / shows free space on the startup disk, and du -sh ~/* | sort -h lists the folders in your home folder by size. They show the current state, not how fast it's changing."),
+    ],
+    "html": """
+        <h2>The commands</h2>
+        {{TABLE:commands}}
+        <p>Add <code>--json</code> to any command for output a script or agent can parse. If Disk Forecast isn't running, the command opens it in the background first.</p>
+<pre><code>$ diskforecast status
+142 GB free of 494 GB (29% free)
+Full in ~30 days · using 4.7 GB a day
+Safe to clear: 36 GB. See it with: diskforecast cleanup</code></pre>
+
+        <h2 style="margin-top:56px">Install it</h2>
+        <p>Homebrew installs the app and links the command for you:</p>
+<pre><code>brew install --cask coreyhaines31/tap/diskforecast</code></pre>
+        <p>If you installed Disk Forecast from the DMG, link the command once:</p>
+<pre><code>sudo mkdir -p /usr/local/bin
+sudo ln -sf "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast" /usr/local/bin/diskforecast</code></pre>
+        <p>It needs Disk Forecast 1.3 or later, on macOS 14 Sonoma or later.</p>
+
+        <h2 style="margin-top:56px">Let your agent use it</h2>
+        <p>Paste this into Claude Code or Codex, or add it to your <code>CLAUDE.md</code> or <code>AGENTS.md</code> so it applies every time:</p>
+<pre class="wrap"><code>When my Mac is low on disk space, use the `diskforecast` command (run `diskforecast --help`). Start with `diskforecast status` and `diskforecast changes --days 30` to explain what's filling the disk, then `diskforecast cleanup` to see what can be reclaimed. Show me what you'd move and ask before running `diskforecast trash &lt;id&gt; --yes`. Never delete files directly.</code></pre>
+        <p>Then ask in plain words: “why is my disk almost full?”, “what grew this month?”, or “clear what's safe, but show me first.”</p>
+
+        <h2 style="margin-top:56px">Why it's safe to hand to an agent</h2>
+        <ul>
+          <li><strong>Only what's on the list.</strong> <code>trash</code> takes item IDs and paths from the cleanup list, and refuses everything else, including your Documents, Desktop, and anything outside your home folder.</li>
+          <li><strong>Preview first.</strong> Without <code>--yes</code>, it only shows what it would move and how much space that is.</li>
+          <li><strong>Trash, never gone.</strong> Everything goes to the Trash. You decide when to empty it.</li>
+          <li><strong>Private.</strong> The command talks to the app over a socket only your user account can open, and nothing leaves your Mac.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Without the app: built-in Terminal commands</h2>
+        <p>macOS has its own tools for a quick look. They show the disk right now, not where it's heading:</p>
+<pre><code>df -h /                          # free space on the startup disk
+du -sh ~/* 2&gt;/dev/null | sort -h   # folders in your home folder, biggest last
+tmutil listlocalsnapshots /       # local Time Machine snapshots</code></pre>
+        <p><a href="/how-to-check-storage-on-mac">How to check Mac storage</a> explains each one, and why <code>df</code> and Finder can disagree.</p>
+    """,
+    "tables": {"commands": {"head": ["Command", "What it does"], "min_width": 640, "rows": [
+        ("<code>diskforecast status</code>", "Free space, the forecast, a low-space warning, and how much is safe to clear"),
+        ("<code>diskforecast changes --days 30</code>", "Which folders grew or shrank, down to the subfolder, and how much changed outside your home folder"),
+        ("<code>diskforecast cleanup</code>", "What you can reclaim, grouped into Safe to clear and Worth a look, with an ID and explanation for each"),
+        ("<code>diskforecast trash &lt;id or path&gt;</code>", "Shows what would move to the Trash; add <code>--yes</code> to move it"),
+        ("<code>diskforecast scan --wait</code>", "Measures your home folder again and waits until it's done"),
+        ("<code>diskforecast open forecast</code>", "Opens a window: forecast, cleanup, system-data, or settings"),
+    ]}},
+    "shortcut": """
+          <h2>What it looks like with an agent</h2>
+          <p>Ask Claude Code why your disk is full. It reads the forecast and what changed, and tells you what&#39;s safe to clear before it moves anything.</p>
+    """,
+    "mockup": "cli",
+    "cta": "Know before it's full.",
+}
+
+GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS, TRASH, STORAGE_SIZE, OTHER_STORAGE, MEMORY_VS_STORAGE, COMMAND_LINE]
 
 GUIDES_HUB = {
     "path": "/guides",
@@ -1180,7 +1601,7 @@ GUIDES_HUB = {
 # ---------------------------------------------------------------------- Privacy
 PRIVACY = {
     "path": "/privacy",
-    "title": "Disk Forecast privacy policy",
+    "title": "Disk Forecast privacy policy: nothing leaves your Mac",
     "description": "The Disk Forecast app collects nothing; its only network request is checking GitHub for updates. The website counts visits with cookie-free Fathom Analytics.",
     "h1": "Privacy policy",
     "html": """
@@ -1242,7 +1663,7 @@ BEST_FREE = {
         {{TABLE:picks}}
 
         <h3 style="margin-top:40px">1. Disk Forecast</h3>
-        <p>Free, source available, for macOS 14 or later. It shows free space in the menu bar and, after 3 days of history, when your disk will be full. Its cleanup list sorts what it finds into “Safe to clear,” like caches, logs, and old build folders, and “Worth a look,” like big downloads, AI models, and virtual machines. Every item has a one-line explanation, and everything goes to the Trash. Its System Data window explains snapshots, simulators, and the rest, and runs Apple's own tool for each fix after showing you the command. It doesn't draw a treemap, uninstall apps, or find duplicates.</p>
+        <p>Free, source available, for macOS 14 or later. It shows free space in the menu bar and, after 3 days of history, when your disk will be full. Its cleanup list sorts what it finds into “Safe to clear,” like caches, logs, and old build folders, and “Worth a look,” like big downloads, AI models, and virtual machines. Every item has a one-line explanation, and everything goes to the Trash. It saves folder sizes after each scan, so it can show which folders grew since any day, and its <code>diskforecast</code> command gives the same answers to scripts and AI agents like Claude Code. Its System Data window explains snapshots, simulators, and the rest, and runs Apple's own tool for each fix after showing you the command. It doesn't draw a treemap, uninstall apps, or find duplicates.</p>
 
         <h3>2. GrandPerspective</h3>
         <p>A free treemap of any folder or drive: every file a rectangle, sized by its space. It's open source under the GPL, updated in September 2026 for macOS 14 and later, and native on Apple silicon. It's free from its website, or $2.99 on the Mac App Store. It shows sizes, not meanings. <a href="/alternatives/grandperspective">GrandPerspective compared</a>.</p>
@@ -1321,7 +1742,7 @@ ANALYZER = {
         <h2 style="margin-top:56px">Analyzer, monitor, or forecast?</h2>
         <p>An analyzer is a snapshot of what's on the disk right now. Most people open one after macOS has already said the disk is almost full.</p>
         <p>A <strong>monitor</strong> watches free space over time, so you see the trend, not just the total. A <strong>forecast</strong> takes that history and projects it forward: “Full in ~41 days.”</p>
-        <p>Disk Forecast is a monitor and forecast first. It checks free space every hour and, after 3 days of history, shows a countdown in the menu bar. When you need room, it lists the folders taking the most space and a cleanup list with each item explained. It doesn't draw a treemap or a sunburst. If you want one, use it alongside GrandPerspective or DaisyDisk.</p>
+        <p>Disk Forecast is a monitor and forecast first. It checks free space every hour and, after 3 days of history, shows a countdown in the menu bar. When you need room, it lists the folders taking the most space, which folders grew since last week or last month, and a cleanup list with each item explained. It doesn't draw a treemap or a sunburst. If you want one, use it alongside GrandPerspective or DaisyDisk.</p>
 
         <h2 style="margin-top:56px">APFS gotchas: why analyzers disagree</h2>
         <p>Run three analyzers on the same Mac and you can get three totals. APFS, the file system on every modern Mac, is why.</p>
@@ -1474,7 +1895,7 @@ COMPARE = {
         <p><strong>Pick DaisyDisk</strong> on a current Mac. If you want OmniDiskSweeper's plain list for free and native, Disk Forecast's top-folders list and Finder's Calculate all sizes are the closest.</p>
 
         <h2 style="margin-top:56px">Where Disk Forecast fits</h2>
-        <p>Every other app in the table answers “what's using my space?” Disk Forecast starts one step earlier. It sits in the menu bar, checks free space every hour, and after 3 days says when your disk will be full. When it's time to reclaim space, it explains every item, sends what you clear to the Trash, and breaks System Data into its parts with Apple's own fixes. It's free, with the source on GitHub. It doesn't draw a map, so it pairs well with DaisyDisk or GrandPerspective.</p>
+        <p>Every other app in the table answers “what's using my space?” Disk Forecast starts one step earlier. It sits in the menu bar, checks free space every hour, and after 3 days says when your disk will be full and which folders grew. When it's time to reclaim space, it explains every item, sends what you clear to the Trash, and breaks System Data into its parts with Apple's own fixes. It's free, with the source on GitHub. It doesn't draw a map, so it pairs well with DaisyDisk or GrandPerspective.</p>
     """,
     "tables": {"all": {"head": ["App", "Price", "How it shows your disk", "Apple silicon", "Latest version", "Source available"], "min_width": 760, "rows": [
         ("Disk Forecast", "Free", "Sorted lists, each item explained, plus a forecast", "Native", "Actively developed", "Yes, on GitHub"),

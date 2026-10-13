@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>What&#x27;s taking up space on Mac: folder by folder</title>
-  <meta name="description" content="The folders that quietly fill a Mac: the sleep image, iPhone backups, Messages, Dropbox, iCloud Drive, and developer files, with what&#x27;s safe to remove.">
+  <meta name="description" content="The folders that quietly fill a Mac: Photos, Mail, Messages, iPhone backups, cloud drives, the sleep image, and developer files, with what&#x27;s safe to remove.">
   <link rel="canonical" href="https://diskforecast.com/taking-up-space">
   <meta property="og:title" content="What&#x27;s taking up space on Mac: folder by folder">
-  <meta property="og:description" content="The folders that quietly fill a Mac: the sleep image, iPhone backups, Messages, Dropbox, iCloud Drive, and developer files, with what&#x27;s safe to remove.">
+  <meta property="og:description" content="The folders that quietly fill a Mac: Photos, Mail, Messages, iPhone backups, cloud drives, the sleep image, and developer files, with what&#x27;s safe to remove.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Disk Forecast">
   <meta property="og:image" content="https://diskforecast.com/images/og.png">
@@ -16,7 +16,7 @@
   <meta property="og:url" content="https://diskforecast.com/taking-up-space">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="What&#x27;s taking up space on Mac: folder by folder">
-  <meta name="twitter:description" content="The folders that quietly fill a Mac: the sleep image, iPhone backups, Messages, Dropbox, iCloud Drive, and developer files, with what&#x27;s safe to remove.">
+  <meta name="twitter:description" content="The folders that quietly fill a Mac: Photos, Mail, Messages, iPhone backups, cloud drives, the sleep image, and developer files, with what&#x27;s safe to remove.">
   <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
@@ -59,6 +59,8 @@
           <a class="glass" href="/taking-up-space/dropbox"><b>Dropbox</b><span>Online-only vs available offline, and where the folder lives.</span></a>
           <a class="glass" href="/taking-up-space/icloud-drive"><b>iCloud Drive</b><span>Optimize Mac Storage, Remove Download, and why it uses space.</span></a>
           <a class="glass" href="/taking-up-space/developer-files"><b>Developer files</b><span>DerivedData, CoreSimulator, node_modules, and Docker.raw.</span></a>
+          <a class="glass" href="/taking-up-space/photos"><b>Photos</b><span>Where the library lives, Optimize Mac Storage, and moving it.</span></a>
+          <a class="glass" href="/taking-up-space/mail"><b>Mail</b><span>Where messages and attachments live, and how to shrink them.</span></a>
         </div>
       </div>
     </section>
@@ -67,7 +69,7 @@
 
         <h2>Where to look first</h2>
         <p>Open <strong>System Settings › General › Storage</strong> and find the biggest category. Messages, iOS Files, and iCloud Drive each have their own row there, with an info button that lists what's inside. Other folders on these pages, like the sleep image and developer files, don't get a row. They're counted in System Data or Documents, or not named at all.</p>
-        <p>A rule that holds for every folder here: remove things with the app that made them. Finder deletes iPhone backups, Messages deletes old attachments, Dropbox and iCloud Drive turn files online-only, and Xcode and Docker have their own commands. Deleting the raw files by hand works for some of them and breaks others, and each page says which. For the categories themselves, see <a href="/how-to-check-storage-on-mac">how to check Mac storage</a> and <a href="/what-is-system-data-on-mac">what System Data is</a>.</p>
+        <p>A rule that holds for every folder here: remove things with the app that made them. Finder deletes iPhone backups, Messages deletes old attachments, Photos and Mail have their own storage settings, Dropbox and iCloud Drive turn files online-only, and Xcode and Docker have their own commands. Deleting the raw files by hand works for some of them and breaks others, and each page says which. For the categories themselves, see <a href="/how-to-check-storage-on-mac">how to check Mac storage</a> and <a href="/what-is-system-data-on-mac">what System Data is</a>.</p>
     
       </div></div>
     </section>
@@ -98,12 +100,15 @@
   </main>
   <footer>
     <div class="wrap">
-      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/purgeable-space-mac">Purgeable space</a><a href="/time-machine-local-snapshots">Time Machine snapshots</a><a href="/other-users-and-shared-mac">Other Users &amp; Shared</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a><a href="/taking-up-space">What&#x27;s taking up space</a></nav>
-      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/purgeable-space-mac">Purgeable space</a><a href="/time-machine-local-snapshots">Time Machine snapshots</a><a href="/other-users-and-shared-mac">Other Users &amp; Shared</a><a href="/empty-trash-mac">Empty the Trash</a><a href="/is-256gb-enough-for-mac">Is 256 GB enough?</a><a href="/other-storage-mac">Other storage</a><a href="/memory-vs-storage-mac">Memory vs storage</a><a href="/command-line">Command line</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a><a href="/taking-up-space">What&#x27;s taking up space</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/alternatives/onyx">OnyX alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
       <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
       <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I see what's taking up space on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Open System Settings \u203a General \u203a Storage and wait for the bar to finish. Click the info button next to a category to see its files. For folders Storage settings doesn't name, sort your home folder by size in Finder with Calculate all sizes turned on."}}, {"@type": "Question", "name": "Which folders take the most space on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Often iPhone backups, Messages attachments, downloaded iCloud Drive or Dropbox files, and, on developer Macs, Xcode simulators, node_modules folders, and Docker's disk image."}}, {"@type": "Question", "name": "Is it safe to delete folders in ~/Library?", "acceptedAnswer": {"@type": "Answer", "text": "Only the ones you know. Caches rebuild themselves, but Application Support and Messages hold real data. Delete backups, attachments, and cloud files with the app that owns them."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "name": "What's taking up space on Mac: folder by folder", "url": "https://diskforecast.com/taking-up-space", "mainEntity": {"@type": "ItemList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "sleepimage", "url": "https://diskforecast.com/taking-up-space/sleepimage"}, {"@type": "ListItem", "position": 2, "name": "iPhone backups", "url": "https://diskforecast.com/taking-up-space/iphone-backups"}, {"@type": "ListItem", "position": 3, "name": "Messages", "url": "https://diskforecast.com/taking-up-space/messages"}, {"@type": "ListItem", "position": 4, "name": "Dropbox", "url": "https://diskforecast.com/taking-up-space/dropbox"}, {"@type": "ListItem", "position": 5, "name": "iCloud Drive", "url": "https://diskforecast.com/taking-up-space/icloud-drive"}, {"@type": "ListItem", "position": 6, "name": "Developer files", "url": "https://diskforecast.com/taking-up-space/developer-files"}, {"@type": "ListItem", "position": 7, "name": "Photos", "url": "https://diskforecast.com/taking-up-space/photos"}, {"@type": "ListItem", "position": 8, "name": "Mail", "url": "https://diskforecast.com/taking-up-space/mail"}]}}</script>
+
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Disk Forecast", "item": "https://diskforecast.com/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://diskforecast.com/guides"}, {"@type": "ListItem", "position": 3, "name": "What's taking up space", "item": "https://diskforecast.com/taking-up-space"}]}</script>
 </body>
 </html>

@@ -6,10 +6,12 @@ and writes sitemap.xml.
 
     python3 site/_build/render.py
 """
+import datetime
 import html
 import json
 import os
 import re
+import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -164,9 +166,26 @@ def mockup(name):
 
 def staged(name):
     """App windows sit on a glass stage, like on the homepage; the menu bar and chart bring their own frame."""
+    if name == "cli":
+        return f'<div class="cli-stage">\n          {mockup(name)}\n        </div>'
     if name in ("system-data", "cleanup"):
         return f'<div class="stage glass">\n          {mockup(name)}\n        </div>'
     return mockup(name)
+
+
+# Newer features every comparison table lists. A competitor shows "—" unless its page sets "new_rows".
+NEW_ROWS = [
+    ("Shows which folders grew, and when", "Yes, day by day"),
+    ("Command line for scripts and AI agents", "Yes, <code>diskforecast</code>"),
+]
+
+
+def with_new_rows(rows, them):
+    """Adds NEW_ROWS ahead of the "Source available" row, if there is one. `them` gives the competitor
+    cells for a label, as a list (one per competitor column)."""
+    added = [(label, us, *them(label)) for label, us in NEW_ROWS]
+    at = next((i for i, r in enumerate(rows) if r[0].startswith("Source available")), len(rows))
+    return list(rows[:at]) + added + list(rows[at:])
 
 
 def table(rows, competitor):
@@ -242,7 +261,47 @@ def cta(text):
 '''
 
 
+def page_names():
+    """Short names for breadcrumbs, by path."""
+    names = {"/guides": "Guides", "/alternatives": "Alternatives", PRIVACY["path"]: "Privacy"}
+    for g in GUIDES + GUIDE_HUBS + TOOLS + ROUNDUPS:
+        names[g["path"]] = g["card_title"]
+    for p in PAGES:
+        names[f"/alternatives/{p['slug']}"] = p["card_title"]
+    return names
+
+
+def breadcrumb_schema(path):
+    """Home, then the section a page sits in, then the page itself."""
+    names = page_names()
+    if path.startswith("/alternatives/") or (path in [r["path"] for r in ROUNDUPS if not r.get("in_guides")]):
+        trail = ["/alternatives", path]
+    elif path.count("/") == 2:
+        trail = ["/" + path.split("/")[1], path]
+    elif path in ("/guides", "/alternatives", PRIVACY["path"]):
+        trail = [path]
+    else:
+        trail = ["/guides", path]
+    items = [{"@type": "ListItem", "position": 1, "name": "Disk Forecast", "item": f"{SITE}/"}]
+    items += [{"@type": "ListItem", "position": i + 2, "name": names.get(p, p), "item": f"{SITE}{p}"}
+              for i, p in enumerate(trail)]
+    data = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": items}
+    return f'<script type="application/ld+json">{json.dumps(data)}</script>'
+
+
+def collection_schema(path, title, cards):
+    """A hub page and the pages it lists."""
+    data = {"@context": "https://schema.org", "@type": "CollectionPage", "name": title, "url": f"{SITE}{path}",
+            "mainEntity": {"@type": "ItemList", "itemListElement": [
+                {"@type": "ListItem", "position": i + 1, "name": name, "url": f"{SITE}{href}"}
+                for i, (name, href) in enumerate(cards)]}}
+    return f'<script type="application/ld+json">{json.dumps(data)}</script>\n'
+
+
 def write(path, body):
+    """Writes the page and adds its breadcrumb trail. "/x/index" is the page at "/x"."""
+    url = path[:-len("/index")] if path.endswith("/index") else path
+    body = body.replace("</body>", breadcrumb_schema(url) + "\n</body>", 1)
     out = os.path.join(ROOT, path.strip("/") + ".html")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w") as f:
@@ -268,10 +327,14 @@ def render_page(p):
         cls = "tight" + (" lit" if sec.get("lit") else "")
         sid = f' id="{sec["id"]}"' if sec.get("id") else ""
         body = sec["html"]
+        theirs = p.get("new_rows", {})
         if sec.get("table"):
-            body = body.replace("{{TABLE}}", table(sec["table"], p["competitor"]))
+            rows = with_new_rows(sec["table"], lambda label: [theirs.get(label, "—")])
+            body = body.replace("{{TABLE}}", table(rows, p["competitor"]))
         if sec.get("grid"):
-            body = body.replace("{{TABLE}}", grid_table(sec["grid"]))
+            columns = len(sec["grid"]["head"]) - 2
+            rows = with_new_rows(sec["grid"]["rows"], lambda label: theirs.get(label, ["—"] * columns))
+            body = body.replace("{{TABLE}}", grid_table({**sec["grid"], "rows": rows}))
         parts.append(f'    <section class="{cls}"{sid}>\n      <div class="wrap narrow"><div class="prose">\n{body}\n      </div></div>\n    </section>\n')
     parts.append(faq_block(p["faqs"]))
     others = [q for q in PAGES if q["slug"] != p["slug"]]
@@ -321,11 +384,10 @@ def render_hub():
       </div></div>
     </section>
 {cta(HUB["cta"])}  </main>
-{footer()}</body>
+{footer()}{collection_schema(path, HUB["title"], [(q["card_title"], f"/alternatives/{q['slug']}") for q in PAGES] + [(r["card_title"], r["path"]) for r in ROUNDUPS])}</body>
 </html>
 '''
-    with open(os.path.join(ROOT, "alternatives", "index.html"), "w") as f:
-        f.write(body)
+    write("/alternatives/index", body)
 
 
 def related_guides(g):
@@ -373,7 +435,7 @@ def render_guide(g):
         {staged(g["mockup"])}
       </div>
     </section>
-{faq_block(g["faqs"])}{related_guides(g)}{cta(g["cta"])}  </main>
+{faq_block(g["faqs"])}{related_guides(g)}{g.get("more", "")}{cta(g["cta"])}  </main>
 {footer()}{faq_schema(g["faqs"])}
 </body>
 </html>
@@ -400,7 +462,7 @@ def render_guides_hub():
       </div>
     </section>
 {cta(d["cta"])}  </main>
-{footer()}</body>
+{footer()}{collection_schema(d["path"], d["title"], [(g["card_title"], g["path"]) for g in listed])}</body>
 </html>
 '''
     write(d["path"], body)
@@ -417,13 +479,26 @@ def paths_table(rows):
     return "\n".join(out)
 
 
-def render_tool(t):
+def more_in(hub, tools, current):
+    """Every other page in the same section, as a compact list, so each one is linked from all its siblings."""
+    links = "".join(f'<a href="{t["path"]}">{esc(t["card_title"])}</a>' for t in tools if t["path"] != current["path"])
+    if not links:
+        return ""
+    return f'''    <section class="tight">
+      <div class="wrap narrow">
+        <nav class="more-links" aria-label="{esc(hub["card_title"])}"><a class="label" href="{hub["path"]}">{esc(hub["card_title"])}</a>{links}</nav>
+      </div>
+    </section>
+'''
+
+
+def render_tool(t, more=""):
     """A per-tool page is a guide: the TL;DR answers it, the shortcut names the Disk Forecast row.
     Pages where the app does less can title that section themselves with "finds_title"."""
     finds_title = t.get("finds_title", "Disk Forecast finds this for you")
     render_guide({**t, "eyebrow": t.get("eyebrow", "Guide"), "cta": t.get("cta", "Know before it's full."),
                   "html": t["html"].replace("{{PATHS}}", paths_table(t["paths"])),
-                  "shortcut": f"          <h2>{finds_title}</h2>\n{t['finds']}"})
+                  "shortcut": f"          <h2>{finds_title}</h2>\n{t['finds']}", "more": more})
 
 
 def render_tool_hub(d, tools):
@@ -450,10 +525,23 @@ def render_tool_hub(d, tools):
     </section>
 {faq_block(d["faqs"])}{cta(d["cta"])}  </main>
 {footer()}{faq_schema(d["faqs"])}
+{collection_schema(d["path"], d["title"], [(t["card_title"], t["path"]) for t in tools])}
 </body>
 </html>
 '''
     write(d["path"] + "/index", body)
+
+
+def last_modified(path):
+    """The day a page's file last changed: today if it has changes not yet committed, else its last commit."""
+    name = "index.html" if path == "/" else path.strip("/") + ".html"
+    if not os.path.exists(os.path.join(ROOT, name)):
+        name = path.strip("/") + "/index.html"
+    git = ["git", "-C", ROOT]
+    if subprocess.run(git + ["diff", "--quiet", "HEAD", "--", name]).returncode != 0:
+        return datetime.date.today().isoformat()
+    day = subprocess.run(git + ["log", "-1", "--format=%cs", "--", name], capture_output=True, text=True).stdout.strip()
+    return day or datetime.date.today().isoformat()
 
 
 def render_sitemap():
@@ -461,7 +549,7 @@ def render_sitemap():
     for hub, tools in SECTIONS:
         paths += [hub["path"]] + [t["path"] for t in tools]
     paths += ["/alternatives"] + [f"/alternatives/{p['slug']}" for p in PAGES] + [r["path"] for r in ROUNDUPS] + [PRIVACY["path"]]
-    urls = "".join(f"  <url><loc>{SITE}{p}</loc></url>\n" for p in paths)
+    urls = "".join(f"  <url><loc>{SITE}{p}</loc><lastmod>{last_modified(p)}</lastmod></url>\n" for p in paths)
     with open(os.path.join(ROOT, "sitemap.xml"), "w") as f:
         f.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
 
@@ -496,7 +584,7 @@ if __name__ == "__main__":
         render_guide(g)
     for hub, tools in SECTIONS:
         for t in tools:
-            render_tool(t)
+            render_tool(t, more_in(hub, tools, t))
         render_tool_hub(hub, tools)
     render_guides_hub()
     render_privacy()
