@@ -1,3 +1,4 @@
+import AppKit
 import os
 import ServiceManagement
 import SwiftUI
@@ -9,6 +10,9 @@ struct GeneralSettingsView: View {
     @State private var checksForUpdates: Bool
     @State private var launchesAtLogin = SMAppService.mainApp.status == .enabled
     @AppStorage(Preferences.menuBarDisplayKey) private var menuBarDisplay = MenuBarDisplay.freeSpace
+    @State private var commandPath = CommandLineInstaller.installedPath
+    @State private var commandNote: String?
+    @State private var copiedPrompt = false
 
     init(updater: Updater) {
         self.updater = updater
@@ -24,6 +28,7 @@ struct GeneralSettingsView: View {
                     ForEach(MenuBarDisplay.allCases) { Text($0.title).tag($0) }
                 }
             }
+            commandLineSection
             Section {
                 Toggle("Check for updates automatically", isOn: $checksForUpdates)
                     .onChange(of: checksForUpdates) { _, enabled in updater.checksAutomatically = enabled }
@@ -36,6 +41,35 @@ struct GeneralSettingsView: View {
             }
         }
         .formStyle(.grouped)
+    }
+
+    /// The `diskforecast` command: where it's installed, a way to install it, and the prompt for AI agents.
+    private var commandLineSection: some View {
+        Section {
+            LabeledContent("diskforecast command") {
+                if let commandPath {
+                    Text("Installed at \(commandPath)").foregroundStyle(.secondary)
+                } else {
+                    Button("Install…") {
+                        commandNote = CommandLineInstaller.install()
+                        commandPath = CommandLineInstaller.installedPath
+                    }
+                }
+            }
+            LabeledContent("Prompt for AI agents") {
+                Button(copiedPrompt ? "Copied" : "Copy") {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(CommandLineInstaller.agentPrompt, forType: .string)
+                    copiedPrompt = true
+                }
+            }
+        } header: {
+            Text("Command line")
+        } footer: {
+            Text(commandNote ?? "Lets you, a script, or an AI agent like Claude Code check the forecast and reclaim "
+                + "space from Terminal. Paste the prompt into your agent, or into CLAUDE.md or AGENTS.md.")
+                .font(.caption).foregroundStyle(.secondary)
+        }
     }
 
     private static var version: String {

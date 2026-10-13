@@ -146,7 +146,7 @@ diskforecast trash xcode-derived-data package-caches --yes  # moves it to the Tr
 - **`scan`** measures again (`--wait` waits until it's done), and **`open forecast`**, **`open cleanup`**, **`open system-data`**, or **`open settings`** shows a window.
 - Add `--json` to any command for output a script or agent can read. If Disk Forecast isn't running, the command opens it in the background.
 
-**Installing the command:** Homebrew links it for you. If you installed from the DMG, link it once:
+**Installing the command:** Homebrew links it for you. If you installed from the DMG, open **Settings… › General** and click **Install…** next to **diskforecast command** (macOS asks for your password), or link it yourself:
 
 ```sh
 sudo mkdir -p /usr/local/bin
