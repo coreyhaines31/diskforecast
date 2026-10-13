@@ -1464,7 +1464,7 @@ MEMORY_VS_STORAGE = {
     "footer": "Memory vs storage",
     "related": ["/is-256gb-enough-for-mac", "/how-to-check-storage-on-mac", "/free-up-space-on-mac"],
     "faqs": [
-        ("What's the difference between memory and storage on a Mac?", "Memory, or RAM, holds what's open right now and empties when the Mac restarts. Storage, the SSD, keeps your files, apps, and macOS itself, even when the Mac is off. Macs usually have 8 to 64 GB of memory and 256 GB to several terabytes of storage."),
+        ("What's the difference between memory and storage on a Mac?", "Memory, or RAM, holds what's open right now and empties when the Mac restarts. Storage, the SSD, keeps your files, apps, and macOS itself, even when the Mac is off. Memory is usually 8 GB or more, and storage 256 GB or more, so storage is the much bigger number."),
         ("How do I check memory and storage on my Mac?", "Choose Apple menu › About This Mac to see how much memory the Mac has. Open Activity Monitor and click Memory to see how much is in use. For storage, open System Settings › General › Storage."),
         ("Why does my Mac say it has run out of application memory?", "Usually because apps need more memory than the Mac has, and macOS can't write enough of it to swap on the disk. A nearly full disk makes that more likely. Quit apps you aren't using, and free up disk space."),
         ("Does deleting files free up memory?", "Not directly. Deleting files frees storage. But if your disk was nearly full, the extra room lets macOS use swap again, which can stop memory warnings."),
@@ -1499,7 +1499,7 @@ MEMORY_VS_STORAGE = {
     "tables": {"compare": {"head": ["", "Memory (RAM)", "Storage (SSD)"], "rows": [
         ("What it holds", "What's open right now", "Everything you've saved, plus apps and macOS"),
         ("When you restart", "Empties", "Keeps everything"),
-        ("Typical size on a Mac", "8 to 64 GB", "256 GB to 8 TB"),
+        ("Typical size on a Mac", "8 GB and up; 16 GB on new Macs since 2024", "256 GB and up"),
         ("Where to check it", "Activity Monitor › Memory", "System Settings › General › Storage"),
         ("When it runs out", "Apps slow down; macOS uses swap", "“Your disk is almost full”; updates fail"),
     ]}},
