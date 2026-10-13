@@ -814,7 +814,7 @@ FREE_UP = {
 
         <h2 style="margin-top:56px">Quick wins: how to free up space on Mac in 5 minutes</h2>
         <ol class="steps">
-          <li><b>Empty the Trash.</b> Files you've deleted still take space until you do. Choose <strong>Finder › Empty Trash</strong>, or press Command-Shift-Delete in Finder. Photos and Mail have their own: <strong>Recently Deleted</strong> in Photos keeps items for up to 30 days unless you delete them there too.</li>
+          <li><b>Empty the Trash.</b> Files you've deleted still take space until you do (<a href="/empty-trash-mac">how to empty the Trash, and what to do when it won't</a>). Choose <strong>Finder › Empty Trash</strong>, or press Command-Shift-Delete in Finder. Photos and Mail have their own: <strong>Recently Deleted</strong> in Photos keeps items for up to 30 days unless you delete them there too.</li>
           <li><b>Clear out Downloads.</b> Open <code>Downloads</code> in Finder, choose <strong>View › as List</strong>, and click the Size column. Old installers (<code>.dmg</code> and <code>.pkg</code> files) and zip files you've already opened are safe to move to the Trash.</li>
           <li><b>Delete apps you don't use.</b> In Storage settings, click the info button next to <strong>Applications</strong> to see them sorted by size. Drag the ones you don't need from the Applications folder to the Trash. Big creative apps and games often take 10 GB or more each.</li>
           <li><b>Turn on Apple's recommendations.</b> At the top of Storage settings: <strong>Store in iCloud</strong> keeps your files, photos, and messages in iCloud and only recent ones on your Mac. <strong>Optimize Storage</strong> removes Apple TV movies and shows you've already watched, and keeps only recent Mail attachments. <strong>Empty Trash Automatically</strong> erases items that have been in the Trash for more than 30 days.</li>
@@ -1234,7 +1234,77 @@ sudo du -sh /Users/*</code></pre>
 }
 
 # In reading order: the hub and every footer list them this way.
-GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS]
+# ------------------------------------------------------------------ Empty the Trash
+# Targets "how to empty trash on mac" (1,200/mo US, KD 0), "empty trash mac" (450, KD 1), "where is trash on mac" (400,
+# KD 0), and "trash not emptying mac". Checked on macOS 26.6 on 2026-10-13: Terminal gets "Operation not permitted" on
+# ~/.Trash without Full Disk Access; Finder's "Remove items from the Trash after 30 days" was on (FXRemoveOldTrashItems).
+TRASH = {
+    "path": "/empty-trash-mac",
+    "title": "How to empty the Trash on Mac, and when it won't empty",
+    "description": "How to empty the Trash on a Mac, where the Trash is, how to empty it automatically after 30 days, and what to do when it won't empty or space doesn't come back.",
+    "eyebrow": "Guide",
+    "h1": "How to empty the Trash on Mac, <em>and get the space back.</em>",
+    "lede": "Deleting a file on a Mac only moves it to the Trash. The space comes back when you empty it. Here's how, where the Trash is, how to make it empty itself, and what to do when it won't.",
+    "tldr": "Click the Trash at the right end of the Dock, then click <strong>Empty</strong> in the top-right corner of the window. Or press <strong>Shift-Command-Delete</strong> in Finder. To have macOS do it for you, turn on <strong>Finder › Settings › Advanced › Remove items from the Trash after 30 days</strong>. If free space doesn't go up afterward, local Time Machine snapshots may still be holding the files.",
+    "card_title": "Empty the Trash",
+    "card_blurb": "Where it is, emptying it on a schedule, and when it won't empty.",
+    "footer": "Empty the Trash",
+    "related": ["/free-up-space-on-mac", "/time-machine-local-snapshots", "/purgeable-space-mac"],
+    "faqs": [
+        ("How do I empty the Trash on my Mac?", "Click the Trash icon in the Dock, then click Empty in the top-right corner of the window. You can also choose Finder › Empty Trash, or press Shift-Command-Delete. macOS asks you to confirm first."),
+        ("Where is the Trash on a Mac?", "At the right end of the Dock, or the bottom if your Dock is on the side. The files themselves are in a hidden folder in your home folder, ~/.Trash, and each external drive keeps its own."),
+        ("Can I make the Trash empty automatically?", "Yes. In Finder, choose Finder › Settings, click Advanced, and turn on Remove items from the Trash after 30 days. Anything that's been in the Trash for 30 days is deleted for good."),
+        ("Why won't my Trash empty?", "Usually an app still has one of the files open. Quit that app, or restart, and try again. A locked file won't delete either: select it, choose File › Get Info, and turn off Locked."),
+        ("I emptied the Trash but didn't get any space back. Why?", "Local Time Machine snapshots can keep deleted files on the disk until macOS removes the snapshot. Purgeable space can also make the number in Finder move slowly. Give it a few minutes, then check local snapshots."),
+        ("Can I get files back after emptying the Trash?", "Only from a backup, like Time Machine. Before you empty it, you can put anything back: select it in the Trash and choose File › Put Back."),
+    ],
+    "html": """
+        <h2>How to empty the Trash on Mac</h2>
+        <ol class="steps">
+          <li><b>Open the Trash.</b> Click the Trash icon at the right end of the Dock. It looks full when there's something in it.</li>
+          <li><b>Look before you empty.</b> Everything in this window will be deleted for good. To keep something, select it and choose <strong>File › Put Back</strong>, which returns it to where it was.</li>
+          <li><b>Click Empty.</b> It's in the top-right corner of the window. macOS asks you to confirm.</li>
+        </ol>
+        <p>Two faster ways do the same thing: Control-click the Trash in the Dock and choose <strong>Empty Trash</strong>, or press <strong>Shift-Command-Delete</strong> in Finder. Add Option, <strong>Option-Shift-Command-Delete</strong>, to skip the confirmation.</p>
+        <p>To delete one item without emptying everything, open the Trash, Control-click the item, and choose <strong>Delete Immediately</strong>.</p>
+
+        <h2 style="margin-top:56px">Where is the Trash on a Mac?</h2>
+        <p>In the Dock, at the right end, or at the bottom if your Dock sits on the side of the screen. It can't be removed from the Dock.</p>
+        <p>The files themselves live in a hidden folder in your home folder, <code>~/.Trash</code>. Each external drive keeps its own Trash too, in a hidden folder at the top of the drive, so files you delete from a USB drive still take space on that drive until you empty the Trash. On the Mac this guide was written on, Terminal got “Operation not permitted” trying to read <code>~/.Trash</code>: macOS guards it, so use Finder rather than Terminal.</p>
+
+        <h2 style="margin-top:56px">Empty the Trash automatically</h2>
+        <p>macOS can delete anything that's been in the Trash for 30 days, so it never fills up quietly:</p>
+        <ol class="steps">
+          <li><b>Open Finder settings.</b> In Finder, choose <strong>Finder › Settings</strong>, then click <strong>Advanced</strong>.</li>
+          <li><b>Turn it on.</b> Select <strong>Remove items from the Trash after 30 days</strong>.</li>
+        </ol>
+        <p>Storage settings offers the same thing as <strong>Empty Trash Automatically</strong>, under Recommendations in <strong>System Settings › General › Storage</strong>. Either way, you still have 30 days to change your mind about anything you delete.</p>
+
+        <h2 style="margin-top:56px">When the Trash won't empty</h2>
+        <ul>
+          <li><strong>“The operation can't be completed because the item is in use.”</strong> An app still has the file open. Quit the app it belongs to and try again. If you can't tell which one, restart and empty the Trash first thing.</li>
+          <li><strong>A locked file.</strong> Select it in the Trash, choose <strong>File › Get Info</strong>, and turn off <strong>Locked</strong>.</li>
+          <li><strong>You don't have permission.</strong> The file belongs to another user or to the system. In <strong>File › Get Info</strong>, open <strong>Sharing &amp; Permissions</strong>, click the lock, and give yourself Read &amp; Write.</li>
+          <li><strong>An external drive.</strong> Its Trash only empties while it's connected. Plug it back in, then empty the Trash.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Emptied the Trash, and still no space?</h2>
+        <p>Emptying the Trash deletes the files, but two things can keep the space from showing up right away:</p>
+        <ul>
+          <li><strong>Local Time Machine snapshots.</strong> If Time Machine is on, macOS keeps snapshots of your disk, and a snapshot holds onto files that existed when it was taken. The space comes back when the snapshot is removed. <a href="/time-machine-local-snapshots">How to delete local snapshots</a> shows how to see them and remove them.</li>
+          <li><strong>Purgeable space.</strong> Finder counts space macOS can free on demand as available, so the number can look the same before and after. <a href="/purgeable-space-mac">Purgeable space, explained</a>.</li>
+        </ul>
+        <p>Other apps keep their own trash too. Photos keeps deleted photos in <strong>Recently Deleted</strong> for 30 days, and Mail keeps deleted messages in its Trash mailbox. Emptying the Finder Trash doesn't touch either one.</p>
+    """,
+    "shortcut": """
+          <h2>Disk Forecast and the Trash</h2>
+          <p>Disk Forecast never deletes anything itself. Everything you clear goes to the Trash, so you can put it back until you empty it. After a cleanup, it tells you how much it moved, and its <strong>Open Trash</strong> button takes you straight there to check before you empty it. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "cta": "Know before it's full.",
+}
+
+GUIDES = [CHECK, FREE_UP, CACHE, WHAT_IS, SYSTEM_DATA, PURGEABLE, SNAPSHOTS, OTHER_USERS, TRASH]
 
 GUIDES_HUB = {
     "path": "/guides",

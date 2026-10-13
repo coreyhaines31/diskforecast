@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to empty the Trash on Mac, and when it won&#x27;t empty</title>
+  <meta name="description" content="How to empty the Trash on a Mac, where the Trash is, how to empty it automatically after 30 days, and what to do when it won&#x27;t empty or space doesn&#x27;t come back.">
+  <link rel="canonical" href="https://diskforecast.com/empty-trash-mac">
+  <meta property="og:title" content="How to empty the Trash on Mac, and when it won&#x27;t empty">
+  <meta property="og:description" content="How to empty the Trash on a Mac, where the Trash is, how to empty it automatically after 30 days, and what to do when it won&#x27;t empty or space doesn&#x27;t come back.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/empty-trash-mac">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How to empty the Trash on Mac, and when it won&#x27;t empty">
+  <meta name="twitter:description" content="How to empty the Trash on a Mac, where the Trash is, how to empty it automatically after 30 days, and what to do when it won&#x27;t empty or space doesn&#x27;t come back.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>How to empty the Trash on Mac, <em>and get the space back.</em></h1>
+        <p class="lede">Deleting a file on a Mac only moves it to the Trash. The space comes back when you empty it. Here's how, where the Trash is, how to make it empty itself, and what to do when it won't.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Click the Trash at the right end of the Dock, then click <strong>Empty</strong> in the top-right corner of the window. Or press <strong>Shift-Command-Delete</strong> in Finder. To have macOS do it for you, turn on <strong>Finder › Settings › Advanced › Remove items from the Trash after 30 days</strong>. If free space doesn't go up afterward, local Time Machine snapshots may still be holding the files.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>How to empty the Trash on Mac</h2>
+        <ol class="steps">
+          <li><b>Open the Trash.</b> Click the Trash icon at the right end of the Dock. It looks full when there's something in it.</li>
+          <li><b>Look before you empty.</b> Everything in this window will be deleted for good. To keep something, select it and choose <strong>File › Put Back</strong>, which returns it to where it was.</li>
+          <li><b>Click Empty.</b> It's in the top-right corner of the window. macOS asks you to confirm.</li>
+        </ol>
+        <p>Two faster ways do the same thing: Control-click the Trash in the Dock and choose <strong>Empty Trash</strong>, or press <strong>Shift-Command-Delete</strong> in Finder. Add Option, <strong>Option-Shift-Command-Delete</strong>, to skip the confirmation.</p>
+        <p>To delete one item without emptying everything, open the Trash, Control-click the item, and choose <strong>Delete Immediately</strong>.</p>
+
+        <h2 style="margin-top:56px">Where is the Trash on a Mac?</h2>
+        <p>In the Dock, at the right end, or at the bottom if your Dock sits on the side of the screen. It can't be removed from the Dock.</p>
+        <p>The files themselves live in a hidden folder in your home folder, <code>~/.Trash</code>. Each external drive keeps its own Trash too, in a hidden folder at the top of the drive, so files you delete from a USB drive still take space on that drive until you empty the Trash. On the Mac this guide was written on, Terminal got “Operation not permitted” trying to read <code>~/.Trash</code>: macOS guards it, so use Finder rather than Terminal.</p>
+
+        <h2 style="margin-top:56px">Empty the Trash automatically</h2>
+        <p>macOS can delete anything that's been in the Trash for 30 days, so it never fills up quietly:</p>
+        <ol class="steps">
+          <li><b>Open Finder settings.</b> In Finder, choose <strong>Finder › Settings</strong>, then click <strong>Advanced</strong>.</li>
+          <li><b>Turn it on.</b> Select <strong>Remove items from the Trash after 30 days</strong>.</li>
+        </ol>
+        <p>Storage settings offers the same thing as <strong>Empty Trash Automatically</strong>, under Recommendations in <strong>System Settings › General › Storage</strong>. Either way, you still have 30 days to change your mind about anything you delete.</p>
+
+        <h2 style="margin-top:56px">When the Trash won't empty</h2>
+        <ul>
+          <li><strong>“The operation can't be completed because the item is in use.”</strong> An app still has the file open. Quit the app it belongs to and try again. If you can't tell which one, restart and empty the Trash first thing.</li>
+          <li><strong>A locked file.</strong> Select it in the Trash, choose <strong>File › Get Info</strong>, and turn off <strong>Locked</strong>.</li>
+          <li><strong>You don't have permission.</strong> The file belongs to another user or to the system. In <strong>File › Get Info</strong>, open <strong>Sharing &amp; Permissions</strong>, click the lock, and give yourself Read &amp; Write.</li>
+          <li><strong>An external drive.</strong> Its Trash only empties while it's connected. Plug it back in, then empty the Trash.</li>
+        </ul>
+
+        <h2 style="margin-top:56px">Emptied the Trash, and still no space?</h2>
+        <p>Emptying the Trash deletes the files, but two things can keep the space from showing up right away:</p>
+        <ul>
+          <li><strong>Local Time Machine snapshots.</strong> If Time Machine is on, macOS keeps snapshots of your disk, and a snapshot holds onto files that existed when it was taken. The space comes back when the snapshot is removed. <a href="/time-machine-local-snapshots">How to delete local snapshots</a> shows how to see them and remove them.</li>
+          <li><strong>Purgeable space.</strong> Finder counts space macOS can free on demand as available, so the number can look the same before and after. <a href="/purgeable-space-mac">Purgeable space, explained</a>.</li>
+        </ul>
+        <p>Other apps keep their own trash too. Photos keeps deleted photos in <strong>Recently Deleted</strong> for 30 days, and Mail keeps deleted messages in its Trash mailbox. Emptying the Finder Trash doesn't touch either one.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+
+          <h2>Disk Forecast and the Trash</h2>
+          <p>Disk Forecast never deletes anything itself. Everything you clear goes to the Trash, so you can put it back until you empty it. After a cleanup, it tells you how much it moved, and its <strong>Open Trash</strong> button takes you straight there to check before you empty it. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="stage glass">
+          <div class="mk mk-win" role="img" aria-label="The Disk Forecast Cleanup window, headed Reclaim space. Safe to clear, 12.4 GB, all checked: build folders in old projects, package manager caches, app caches, Xcode device support, Xcode DerivedData, and logs. Worth a look, 47 GB, unchecked: Ollama models, build folders in active projects, the Docker disk image, big downloads, and disk images and installers. The footer reads 12.4 GB selected, with Open Trash and Move to Trash buttons.">
+              <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">Cleanup</div></div>
+              <div class="mk-hdr"><div><b>Reclaim space</b><span>1,284,906 files measured in 9 s. Everything goes to the Trash first.</span></div><div class="mk-pill">Rescan</div></div>
+              <div class="mk-list">
+                <div class="mk-sec"><span>Safe to clear</span><span>12.4 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Build folders in old projects</b><span>node_modules, build, and package folders in projects you haven't changed in 30+ days. Reinstalling or rebuilding brings them back.</span></div><span class="sz">4.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Package manager caches</b><span>Downloads kept by npm, pnpm, Bun, Cargo, Gradle, pip, and friends so installs are faster. They fill back up as you install packages.</span></div><span class="sz">3.1 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>App caches</b><span>Files apps keep to load things faster. Apps recreate what they need. macOS's own caches are left alone.</span></div><span class="sz">2.2 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode device support</b><span>Debug symbols copied from devices you've plugged in. Xcode copies them again when you connect that device.</span></div><span class="sz">1.3 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode DerivedData</b><span>Xcode's build products and indexes. Xcode rebuilds them the next time you build.</span></div><span class="sz">812 MB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Logs</b><span>Records apps write about what they did. Useful for troubleshooting, then rarely read again.</span></div><span class="sz">402 MB</span></div>
+                <div class="mk-sec"><span>Worth a look</span><span>47 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Ollama models</b><span>Local AI models downloaded by Ollama. Running ollama pull downloads one again, and ollama rm removes a single model.</span></div><span class="sz">18 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Build folders in active projects</b><span>Build and package folders in projects you've changed recently. Safe to remove, but you'll wait for a reinstall or rebuild next time.</span></div><span class="sz">9.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><svg class="mk-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-2.5z"/></svg><div class="txt"><b>Docker disk image</b><span>Everything Docker stores: images, containers, and volumes, in one file. Reclaim space with Docker's own cleanup in System Data, not by deleting the file.</span><div class="mk-pill">Reclaim in System Data…</div></div><span class="sz">8.4 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Big downloads</b><span>Large files and folders in Downloads. Most were needed once.</span></div><span class="sz">5.9 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Disk images and installers</b><span>DMG, ISO, and PKG files. Once an app is installed, its installer is usually not needed.</span></div><span class="sz">4.7 GB</span></div>
+              </div>
+              <div class="mk-foot"><span>12.4 GB selected</span><div class="mk-pill">Open Trash</div><div class="mk-pill blue">Move to Trash…</div></div>
+            </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>How do I empty the Trash on my Mac?</summary><p>Click the Trash icon in the Dock, then click Empty in the top-right corner of the window. You can also choose Finder › Empty Trash, or press Shift-Command-Delete. macOS asks you to confirm first.</p></details>
+          <details><summary>Where is the Trash on a Mac?</summary><p>At the right end of the Dock, or the bottom if your Dock is on the side. The files themselves are in a hidden folder in your home folder, ~/.Trash, and each external drive keeps its own.</p></details>
+          <details><summary>Can I make the Trash empty automatically?</summary><p>Yes. In Finder, choose Finder › Settings, click Advanced, and turn on Remove items from the Trash after 30 days. Anything that&#x27;s been in the Trash for 30 days is deleted for good.</p></details>
+          <details><summary>Why won&#x27;t my Trash empty?</summary><p>Usually an app still has one of the files open. Quit that app, or restart, and try again. A locked file won&#x27;t delete either: select it, choose File › Get Info, and turn off Locked.</p></details>
+          <details><summary>I emptied the Trash but didn&#x27;t get any space back. Why?</summary><p>Local Time Machine snapshots can keep deleted files on the disk until macOS removes the snapshot. Purgeable space can also make the number in Finder move slowly. Give it a few minutes, then check local snapshots.</p></details>
+          <details><summary>Can I get files back after emptying the Trash?</summary><p>Only from a backup, like Time Machine. Before you empty it, you can put anything back: select it in the Trash and choose File › Put Back.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/free-up-space-on-mac"><b>How to free up space on Mac</b><span>The complete checklist, from emptying the Trash to System Data.</span></a>
+          <a class="glass" href="/time-machine-local-snapshots"><b>Time Machine local snapshots</b><span>List and delete them with tmutil, and why they come back.</span></a>
+          <a class="glass" href="/purgeable-space-mac"><b>Purgeable space on Mac</b><span>What it is, why Finder counts it as free, and when to clear it.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/purgeable-space-mac">Purgeable space</a><a href="/time-machine-local-snapshots">Time Machine snapshots</a><a href="/other-users-and-shared-mac">Other Users &amp; Shared</a><a href="/empty-trash-mac">Empty the Trash</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a><a href="/taking-up-space">What&#x27;s taking up space</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/alternatives/onyx">OnyX alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I empty the Trash on my Mac?", "acceptedAnswer": {"@type": "Answer", "text": "Click the Trash icon in the Dock, then click Empty in the top-right corner of the window. You can also choose Finder \u203a Empty Trash, or press Shift-Command-Delete. macOS asks you to confirm first."}}, {"@type": "Question", "name": "Where is the Trash on a Mac?", "acceptedAnswer": {"@type": "Answer", "text": "At the right end of the Dock, or the bottom if your Dock is on the side. The files themselves are in a hidden folder in your home folder, ~/.Trash, and each external drive keeps its own."}}, {"@type": "Question", "name": "Can I make the Trash empty automatically?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. In Finder, choose Finder \u203a Settings, click Advanced, and turn on Remove items from the Trash after 30 days. Anything that's been in the Trash for 30 days is deleted for good."}}, {"@type": "Question", "name": "Why won't my Trash empty?", "acceptedAnswer": {"@type": "Answer", "text": "Usually an app still has one of the files open. Quit that app, or restart, and try again. A locked file won't delete either: select it, choose File \u203a Get Info, and turn off Locked."}}, {"@type": "Question", "name": "I emptied the Trash but didn't get any space back. Why?", "acceptedAnswer": {"@type": "Answer", "text": "Local Time Machine snapshots can keep deleted files on the disk until macOS removes the snapshot. Purgeable space can also make the number in Finder move slowly. Give it a few minutes, then check local snapshots."}}, {"@type": "Question", "name": "Can I get files back after emptying the Trash?", "acceptedAnswer": {"@type": "Answer", "text": "Only from a backup, like Time Machine. Before you empty it, you can put anything back: select it in the Trash and choose File \u203a Put Back."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Disk Forecast", "item": "https://diskforecast.com/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://diskforecast.com/guides"}, {"@type": "ListItem", "position": 3, "name": "Empty the Trash", "item": "https://diskforecast.com/empty-trash-mac"}]}</script>
+</body>
+</html>
