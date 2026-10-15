@@ -109,10 +109,25 @@ def footer_guides():
     return f'      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a>{links}</nav>\n'
 
 
+FAMILY = [
+    ("Green Room", "https://greenroomformac.com", "Check your camera, mic, and speakers"),
+    ("WiFi or ISP", "https://wifiorisp.com", "Is slow internet your Wi-Fi or your ISP?"),
+    ("Midnight Oil", "https://midnightoil.app", "Keep your Mac awake"),
+    ("Spare", "https://spareformac.com", "See what's using your Mac"),
+    ("On Hand", "https://onhandformac.com", "A clipboard manager for your Mac"),
+]
+
+
+def footer_family():
+    """Corey's other free Mac apps, cross-linked from every footer."""
+    links = "".join(f'<a href="{url}" title="{esc(desc)}">{esc(name)}</a>' for name, url, desc in FAMILY)
+    return f'      <nav class="footer-alts" aria-label="More free Mac apps"><a class="label" href="https://github.com/coreyhaines31">More free Mac apps</a>{links}</nav>\n'
+
+
 def footer():
     return f'''  <footer>
     <div class="wrap">
-{footer_guides()}{footer_alternatives()}      <div class="footer-links"><span>© 2026 Corey Haines. <a href="{REPO}/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+{footer_guides()}{footer_alternatives()}{footer_family()}      <div class="footer-links"><span>© 2026 Corey Haines. <a href="{REPO}/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
       <div class="footer-links"><a href="{REPO}">GitHub</a><a href="{REPO}/releases">Releases</a><a href="{REPO}/issues">Issues</a><a href="/privacy">Privacy</a></div>
     </div>
   </footer>
@@ -131,7 +146,7 @@ def render_homepage_footer():
     start, end = "<!-- alternatives -->\n", "<!-- /alternatives -->"
     i, j = page.index(start) + len(start), page.index(end)
     with open(path, "w") as f:
-        f.write(page[:i] + footer_guides() + footer_alternatives() + "      " + page[j:])
+        f.write(page[:i] + footer_guides() + footer_alternatives() + footer_family() + "      " + page[j:])
 
 
 def homepage_schema():
