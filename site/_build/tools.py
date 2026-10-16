@@ -274,6 +274,67 @@ TEAMS = {
     ],
 }
 
+# ------------------------------------------------------------------ VS Code
+# "clear vscode cache" 70 (KD 1), "clear cursor cache" 20.
+VSCODE = {
+    "slug": "vscode",
+    "title": "Clear VS Code cache on Mac: VS Code, Cursor, and Windsurf",
+    "description": "Where VS Code, Cursor, and Windsurf keep their caches on a Mac, which folders are safe to move to the Trash, and the one that holds your Cursor chats.",
+    "h1": "How to clear VS Code cache on Mac, <em>and Cursor's too.</em>",
+    "lede": "VS Code and the editors built from it keep their caches next to your settings in Application Support, not in the Caches folder. Here's which folders to clear and which to leave.",
+    "tldr": "Quit the editor with Command-Q. In <code>~/Library/Application Support/Code</code> (or <code>Cursor</code>, or <code>Windsurf</code>), move <code>Cache</code>, <code>CachedData</code>, <code>Code Cache</code>, <code>GPUCache</code>, and <code>CachedExtensionVSIXs</code> to the Trash. Open the editor again and it rebuilds what it needs. Leave the <code>User</code> folder alone: it holds your settings, and in Cursor, your chats.",
+    "card_title": "VS Code and Cursor",
+    "card_blurb": "The cache folders VS Code, Cursor, and Windsurf keep in Application Support.",
+    "paths": [
+        ("VS Code", "~/Library/Application Support/Code", "Cache 105 MB, CachedData 145 MB on the Mac we measured"),
+        ("Cursor", "~/Library/Application Support/Cursor", "Cache 313 MB, extension downloads 486 MB on the Mac we measured"),
+        ("Windsurf", "~/Library/Application Support/Windsurf", "Not installed on the Mac we measured"),
+    ],
+    "html": """
+        <h2>Where the VS Code cache lives on a Mac</h2>
+        <p>VS Code is built on Electron, the same web tech as Slack and Discord, so it keeps its caches the way a browser does: inside its own folder in Application Support, beside your settings. Cursor and Windsurf started as copies of VS Code and use the same layout under their own names:</p>
+        {{PATHS}}
+        <p>Inside each one, these folders are caches. The editor rebuilds them on its own:</p>
+        <ul>
+          <li><code>Cache</code>: web content the editor downloaded, like extension pages and images.</li>
+          <li><code>CachedData</code>: compiled code that makes the editor start faster. It keeps a folder per version, so old ones pile up after updates.</li>
+          <li><code>Code Cache</code> and <code>GPUCache</code>: more compiled code and graphics data.</li>
+          <li><code>CachedExtensionVSIXs</code>: copies of extensions as they were downloaded. Your installed extensions live in <code>~/.vscode/extensions</code> (or <code>~/.cursor/extensions</code>) and aren't touched.</li>
+        </ul>
+        <p>To see how much space yours use:</p>
+<pre><code>cd ~/Library/Application\\ Support/Code &amp;&amp; du -sh Cache CachedData "Code Cache" GPUCache CachedExtensionVSIXs</code></pre>
+
+        <h2 style="margin-top:56px">How to clear VS Code cache on Mac, step by step</h2>
+        <ol class="steps">
+          <li><b>Quit the editor.</b> Press Command-Q. Closing the window isn't enough, and an editor that's still running writes the cache right back.</li>
+          <li><b>Open its folder.</b> In Finder, choose <strong>Go › Go to Folder</strong> and type <code>~/Library/Application Support/Code</code>. For Cursor, type <code>Cursor</code> at the end instead.</li>
+          <li><b>Move the cache folders to the Trash.</b> Select <code>Cache</code>, <code>CachedData</code>, <code>Code Cache</code>, <code>GPUCache</code>, and <code>CachedExtensionVSIXs</code>, and press Command-Delete.</li>
+          <li><b>Open the editor.</b> It makes new, empty caches. The first launch is a little slower.</li>
+          <li><b>Empty the Trash later.</b> Once everything works, empty the Trash to reclaim the space.</li>
+        </ol>
+        <p>Most guides say to use <code>rm -rf</code> in Terminal. That deletes the folders for good. The Trash does the same job and leaves you a way back.</p>
+
+        <h2 style="margin-top:56px">What not to delete: the User folder</h2>
+        <p><code>User</code> holds your settings, keybindings, and snippets. Inside it, <code>workspaceStorage</code> keeps one folder for every project you've opened: open tabs, layout, and in Cursor, your chat history for that project. <code>globalStorage</code> holds extension data and sign-ins. Deleting these resets things you'd notice.</p>
+        <p>The exception is <code>workspaceStorage</code> folders for projects you've deleted. The editor never cleans those up, so they stay forever. Each has a <code>workspace.json</code> that names its project, so you can check whether the project still exists before moving one to the Trash.</p>
+
+        <h2 style="margin-top:56px">How big the VS Code cache gets</h2>
+        <p>On the Mac this page was written on, VS Code's caches came to about 260 MB and Cursor's to about 900 MB, most of it extension downloads. An editor you use every day with many extensions holds more. If yours is only a couple hundred megabytes, clearing it won't change much on your disk, but it's a common fix when an extension or the editor itself acts up after an update.</p>
+        <p>More caches, one tool at a time: <a href="/clear-cache/npm">npm</a>, <a href="/clear-cache/xcode">Xcode</a>, or <a href="/clear-cache">the full list</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast lists these for you. Under <strong>Cleanup › Safe to clear</strong>, <strong>Editor and chat app caches</strong> shows each cache folder from VS Code, Cursor, Windsurf, and other apps built the same way, like Slack, Discord, and Figma, named by app. Under <strong>Worth a look</strong>, <strong>Editor data for deleted projects</strong> lists the <code>workspaceStorage</code> folders whose project is gone, unchecked. Everything goes to the Trash, and you can undo it. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/how-to-clear-cache-on-mac", "/clear-cache/npm", "/clear-cache/xcode"],
+    "faqs": [
+        ("How do I clear VS Code cache on a Mac?", "Quit VS Code with Command-Q, then in ~/Library/Application Support/Code move Cache, CachedData, Code Cache, GPUCache, and CachedExtensionVSIXs to the Trash. Open VS Code again and it rebuilds them."),
+        ("Where is the Cursor cache on a Mac?", "In ~/Library/Application Support/Cursor, in the same folders as VS Code: Cache, CachedData, Code Cache, GPUCache, and CachedExtensionVSIXs. Windsurf uses ~/Library/Application Support/Windsurf."),
+        ("Will clearing the VS Code cache delete my settings or extensions?", "No. Settings live in the User folder and extensions in ~/.vscode/extensions. Neither is a cache. Leave both alone."),
+        ("Does clearing the Cursor cache delete my chats?", "Not if you only clear the cache folders. Cursor keeps chat history in User/workspaceStorage, one folder per project. Delete those only for projects that no longer exist."),
+    ],
+}
+
 # ------------------------------------------------------------------ Yarn
 # "yarn cache clean" 100, "clear yarn cache" 70, "yarn cache location".
 YARN = {
@@ -630,7 +691,7 @@ du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
     ],
 }
 
-CACHE_TOOLS = [DOCKER, NPM, PIP, TEAMS, YARN, XCODE, GRADLE, GO, CARGO, HOMEBREW]
+CACHE_TOOLS = [DOCKER, NPM, PIP, TEAMS, VSCODE, YARN, XCODE, GRADLE, GO, CARGO, HOMEBREW]
 
 CLEAR_CACHE_HUB = {
     "path": "/clear-cache",
