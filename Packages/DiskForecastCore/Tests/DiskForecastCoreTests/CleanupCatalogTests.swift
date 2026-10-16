@@ -87,6 +87,27 @@ struct CleanupCatalogTests {
         #expect(items["app-support-caches"]?.group == .safeToClear)
     }
 
+    @Test func findsEditorDataForDeletedProjects() async throws {
+        let storage = "Library/Application Support/Code/User/workspaceStorage/"
+        let existing = home.appending(path: "code/kept").path
+        try FileManager.default.createDirectory(atPath: existing, withIntermediateDirectories: true)
+        let projects = [
+            ("gone", "{\"folder\": \"file://\(home.path)/code/gone\"}"),
+            ("kept", "{\"folder\": \"file://\(existing)\"}"),
+            ("drive", "{\"folder\": \"file:///Volumes/External/project\"}"),
+            ("remote", "{\"folder\": \"vscode-remote://ssh-remote+box/home/project\"}")
+        ]
+        for (hash, json) in projects {
+            try write(storage + hash + "/state.vscdb", bytes: 1_500_000)
+            try Data(json.utf8).write(to: home.appending(path: storage + hash + "/workspace.json"))
+        }
+
+        let items = await items()
+        #expect(items["orphaned-workspaces"]?.entries.map(\.name) == ["gone"])
+        #expect(items["orphaned-workspaces"]?.entries.first?.detail == "Code · gone")
+        #expect(items["orphaned-workspaces"]?.group == .worthALook)
+    }
+
     @Test func subtractsWhatAMoreSpecificRuleClaimed() async throws {
         try write("Downloads/project/package.json", bytes: 10)
         try write("Downloads/project/node_modules/pkg/index.js", bytes: 15_000_000)

@@ -107,6 +107,12 @@ extension CleanupCatalog {
                 group: .worthALook
             ) { catalog, scan in catalog.artifacts(scan, stale: false) },
             CleanupRule(
+                id: "orphaned-workspaces", title: "Editor data for deleted projects",
+                explanation: "What VS Code, Cursor, and similar editors saved about projects that are no longer on "
+                    + "your Mac, like open tabs and, in Cursor, chat history.",
+                group: .worthALook
+            ) { catalog, scan in catalog.orphanedWorkspaces(scan) },
+            CleanupRule(
                 id: "app-support-caches", title: "Editor and chat app caches",
                 explanation: "Caches that VS Code, Cursor, Slack, Discord, Figma, and other apps built on web tech "
                     + "keep with their data. Settings, sign-ins, and history aren't touched. Quit the app first.",

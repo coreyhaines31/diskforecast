@@ -168,6 +168,28 @@ public struct CleanupCatalog: Sendable {
         return found
     }
 
+    /// What VS Code and editors built from it saved about each project, for projects that are no
+    /// longer on this Mac. Projects on a drive that isn't connected are left out.
+    func orphanedWorkspaces(_ scan: ScanResult) -> [Candidate] {
+        let tree = scan.tree
+        guard let support = tree.node(at: path("Library/Application Support")) else { return [] }
+        return tree.children[support].map(Int.init).flatMap { app -> [Candidate] in
+            let appName = tree.names[app]
+            return children(of: "Library/Application Support/\(appName)/User/workspaceStorage", in: scan)
+                .compactMap { candidate in
+                    let file = URL(filePath: candidate.path).appending(path: "workspace.json")
+                    guard let data = try? Data(contentsOf: file),
+                          let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                          let link = (json["folder"] ?? json["workspace"]) as? String,
+                          let url = URL(string: link), url.isFileURL,
+                          !url.path.hasPrefix("/Volumes/"),
+                          !FileManager.default.fileExists(atPath: url.path)
+                    else { return nil }
+                    return Candidate(path: candidate.path, detail: "\(appName) · \(url.lastPathComponent)")
+                }
+        }
+    }
+
     func diskImages(_ scan: ScanResult) -> [Candidate] {
         scan.diskImages.map { Candidate(path: $0.path, detail: "Modified \(Age.phrase(from: $0.modified, to: now))") }
     }
