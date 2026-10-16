@@ -83,7 +83,7 @@ struct CleanupCatalogTests {
         let items = await items()
         let entries = try #require(items["app-support-caches"]?.entries)
         #expect(Set(entries.map { "\($0.name)/\($0.detail ?? "")" })
-            == ["Cursor/Cache", "Cursor/CachedExtensionVSIXs", "Figma/Code Cache"])
+            == ["Cursor/Cache", "Cursor/CachedExtensionVSIXs", "Figma/DesktopProfile/v39/Code Cache"])
         #expect(items["app-support-caches"]?.group == .safeToClear)
     }
 

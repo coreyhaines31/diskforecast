@@ -155,19 +155,22 @@ public struct CleanupCatalog: Sendable {
         let tree = scan.tree
         guard let support = tree.node(at: path("Library/Application Support")) else { return [] }
         var found: [Candidate] = []
-        func visit(_ node: Int, app: String, depth: Int) {
+        func visit(_ node: Int, app: String, within: [String]) {
             let children = tree.children[node].map(Int.init)
             let isProfile = children.contains { ["Local Storage", "Session Storage"].contains(tree.names[$0]) }
             for child in children {
+                let inside = within + [tree.names[child]]
                 if isProfile && names.contains(tree.names[child]) {
-                    found.append(Candidate(path: tree.path(of: child), detail: tree.names[child], name: app))
-                } else if depth < 3 {
-                    visit(child, app: app, depth: depth + 1)
+                    // The path inside the app's folder tells two Cache folders of one app apart.
+                    let detail = inside.joined(separator: "/")
+                    found.append(Candidate(path: tree.path(of: child), detail: detail, name: app))
+                } else if inside.count < 4 {
+                    visit(child, app: app, within: inside)
                 }
             }
         }
         for app in tree.children[support].map(Int.init) where !tree.names[app].hasPrefix("com.apple.") {
-            visit(app, app: tree.names[app], depth: 0)
+            visit(app, app: tree.names[app], within: [])
         }
         return found
     }
@@ -186,14 +189,19 @@ public struct CleanupCatalog: Sendable {
                           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                           let link = (json["folder"] ?? json["workspace"]) as? String,
                           let url = URL(string: link), url.isFileURL,
-                          !url.path.hasPrefix("/Volumes/"),
-                          !FileManager.default.fileExists(atPath: url.path)
+                          !url.path.hasPrefix("/Volumes/"), Self.isMissing(url.path)
                     else { return nil }
                     return Candidate(
                         path: candidate.path, detail: "\(appName) · project deleted", name: url.lastPathComponent
                     )
                 }
         }
+    }
+
+    /// True only when nothing is there. A folder macOS won't let the app look into isn't missing.
+    static func isMissing(_ path: String) -> Bool {
+        var info = stat()
+        return lstat(path, &info) != 0 && errno == ENOENT
     }
 
     func diskImages(_ scan: ScanResult) -> [Candidate] {
