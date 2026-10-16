@@ -13,6 +13,7 @@ struct CLIArgumentsTests {
         #expect(try parse("changes") == .send(CLIRequest(action: .changes, days: 7), json: false))
         #expect(try parse("changes --days 30") == .send(CLIRequest(action: .changes, days: 30), json: false))
         #expect(try parse("scan --wait") == .send(CLIRequest(action: .scan), json: false, wait: true))
+        #expect(try parse("undo --json") == .send(CLIRequest(action: .undo), json: true))
         #expect(try parse("open system-data") == .send(CLIRequest(action: .open, window: .systemData), json: false))
         #expect(try CLIArguments.parse([]) == .help)
         #expect(try parse("--version") == .version)
