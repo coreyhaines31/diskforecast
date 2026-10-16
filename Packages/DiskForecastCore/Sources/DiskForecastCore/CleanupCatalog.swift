@@ -26,14 +26,15 @@ public struct CleanupEntry: Sendable, Hashable, Identifiable {
     public let path: String
     public let bytes: Int64
     public let detail: String?
+    /// What the list calls it. Usually the file or folder name.
+    public let name: String
 
-    public init(path: String, bytes: Int64, detail: String? = nil) {
+    public init(path: String, bytes: Int64, detail: String? = nil, name: String? = nil) {
         self.path = path
         self.bytes = bytes
         self.detail = detail
+        self.name = name ?? (path as NSString).lastPathComponent
     }
-
-    public var name: String { (path as NSString).lastPathComponent }
 }
 
 public struct CleanupItem: Sendable, Identifiable {
@@ -90,7 +91,9 @@ public struct CleanupCatalog: Sendable {
                 for inner in claimed where inner.hasPrefix(candidate.path + "/") {
                     bytes -= scan.allocatedSize(of: inner) ?? 0
                 }
-                return CleanupEntry(path: candidate.path, bytes: max(0, bytes), detail: candidate.detail)
+                return CleanupEntry(
+                    path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name
+                )
             }
             .filter { $0.bytes >= rule.minimumBytes }
             .sorted { $0.bytes > $1.bytes }
@@ -109,6 +112,7 @@ public struct CleanupCatalog: Sendable {
     struct Candidate {
         let path: String
         var detail: String?
+        var name: String?
     }
 
     func path(_ relative: String) -> String {
@@ -138,6 +142,66 @@ public struct CleanupCatalog: Sendable {
                 let age = Age.phrase(from: artifact.projectModified, to: now)
                 return Candidate(path: artifact.path, detail: "\(project) · last changed \(age)")
             }
+    }
+
+    /// Cache folders that apps built on web tech (VS Code, Cursor, Slack, Figma) keep next to their
+    /// data in Application Support. Only folders beside Local Storage or Session Storage count, so a
+    /// folder that merely happens to be named Cache isn't listed.
+    func appSupportCaches(_ scan: ScanResult) -> [Candidate] {
+        let names: Set<String> = [
+            "Cache", "Code Cache", "GPUCache", "DawnCache", "DawnGraphiteCache", "DawnWebGPUCache",
+            "GrShaderCache", "ShaderCache", "CachedData", "CachedExtensionVSIXs"
+        ]
+        let tree = scan.tree
+        guard let support = tree.node(at: path("Library/Application Support")) else { return [] }
+        var found: [Candidate] = []
+        func visit(_ node: Int, app: String, within: [String]) {
+            let children = tree.children[node].map(Int.init)
+            let isProfile = children.contains { ["Local Storage", "Session Storage"].contains(tree.names[$0]) }
+            for child in children {
+                let inside = within + [tree.names[child]]
+                if isProfile && names.contains(tree.names[child]) {
+                    // The path inside the app's folder tells two Cache folders of one app apart.
+                    let detail = inside.joined(separator: "/")
+                    found.append(Candidate(path: tree.path(of: child), detail: detail, name: app))
+                } else if inside.count < 4 {
+                    visit(child, app: app, within: inside)
+                }
+            }
+        }
+        for app in tree.children[support].map(Int.init) where !tree.names[app].hasPrefix("com.apple.") {
+            visit(app, app: tree.names[app], within: [])
+        }
+        return found
+    }
+
+    /// What VS Code and editors built from it saved about each project, for projects that are no
+    /// longer on this Mac. Projects on a drive that isn't connected are left out.
+    func orphanedWorkspaces(_ scan: ScanResult) -> [Candidate] {
+        let tree = scan.tree
+        guard let support = tree.node(at: path("Library/Application Support")) else { return [] }
+        return tree.children[support].map(Int.init).flatMap { app -> [Candidate] in
+            let appName = tree.names[app]
+            return children(of: "Library/Application Support/\(appName)/User/workspaceStorage", in: scan)
+                .compactMap { candidate in
+                    let file = URL(filePath: candidate.path).appending(path: "workspace.json")
+                    guard let data = try? Data(contentsOf: file),
+                          let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                          let link = (json["folder"] ?? json["workspace"]) as? String,
+                          let url = URL(string: link), url.isFileURL,
+                          !url.path.hasPrefix("/Volumes/"), Self.isMissing(url.path)
+                    else { return nil }
+                    return Candidate(
+                        path: candidate.path, detail: "\(appName) · project deleted", name: url.lastPathComponent
+                    )
+                }
+        }
+    }
+
+    /// True only when nothing is there. A folder macOS won't let the app look into isn't missing.
+    static func isMissing(_ path: String) -> Bool {
+        var info = stat()
+        return lstat(path, &info) != 0 && errno == ENOENT
     }
 
     func diskImages(_ scan: ScanResult) -> [Candidate] {

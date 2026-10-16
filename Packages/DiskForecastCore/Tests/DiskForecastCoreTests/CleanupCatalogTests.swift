@@ -69,6 +69,45 @@ struct CleanupCatalogTests {
         #expect(items["downloads"]?.entries.map(\.name) == ["movie.mov"])
     }
 
+    @Test func findsCachesBesideWebAppData() async throws {
+        let support = "Library/Application Support/"
+        try write(support + "Cursor/Local Storage/leveldb/000001.log", bytes: 10)
+        try write(support + "Cursor/Cache/Cache_Data/data_0", bytes: 2_000_000)
+        try write(support + "Cursor/CachedExtensionVSIXs/ext.vsix", bytes: 1_500_000)
+        try write(support + "Cursor/User/settings.json", bytes: 1_200_000)
+        try write(support + "Figma/DesktopProfile/v39/Session Storage/000001.log", bytes: 10)
+        try write(support + "Figma/DesktopProfile/v39/Code Cache/js/index", bytes: 1_800_000)
+        // Not beside Local Storage or Session Storage, so it isn't treated as a web cache.
+        try write(support + "Notes Pro/Cache/notes.db", bytes: 3_000_000)
+
+        let items = await items()
+        let entries = try #require(items["app-support-caches"]?.entries)
+        #expect(Set(entries.map { "\($0.name)/\($0.detail ?? "")" })
+            == ["Cursor/Cache", "Cursor/CachedExtensionVSIXs", "Figma/DesktopProfile/v39/Code Cache"])
+        #expect(items["app-support-caches"]?.group == .safeToClear)
+    }
+
+    @Test func findsEditorDataForDeletedProjects() async throws {
+        let storage = "Library/Application Support/Code/User/workspaceStorage/"
+        let existing = home.appending(path: "code/kept").path
+        try FileManager.default.createDirectory(atPath: existing, withIntermediateDirectories: true)
+        let projects = [
+            ("gone", "{\"folder\": \"file://\(home.path)/code/gone\"}"),
+            ("kept", "{\"folder\": \"file://\(existing)\"}"),
+            ("drive", "{\"folder\": \"file:///Volumes/External/project\"}"),
+            ("remote", "{\"folder\": \"vscode-remote://ssh-remote+box/home/project\"}")
+        ]
+        for (hash, json) in projects {
+            try write(storage + hash + "/state.vscdb", bytes: 1_500_000)
+            try Data(json.utf8).write(to: home.appending(path: storage + hash + "/workspace.json"))
+        }
+
+        let items = await items()
+        #expect(items["orphaned-workspaces"]?.entries.map(\.name) == ["gone"])
+        #expect(items["orphaned-workspaces"]?.entries.first?.detail == "Code · project deleted")
+        #expect(items["orphaned-workspaces"]?.group == .worthALook)
+    }
+
     @Test func subtractsWhatAMoreSpecificRuleClaimed() async throws {
         try write("Downloads/project/package.json", bytes: 10)
         try write("Downloads/project/node_modules/pkg/index.js", bytes: 15_000_000)

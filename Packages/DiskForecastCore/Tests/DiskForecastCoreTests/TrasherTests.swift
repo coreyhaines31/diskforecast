@@ -26,6 +26,22 @@ struct TrasherTests {
         #expect(!FileManager.default.fileExists(atPath: path))
     }
 
+    @Test func putsBackWhatItMoved() throws {
+        try write("Library/Caches/com.example.app/blob", bytes: 10)
+        try write("Library/Caches/com.example.other/blob", bytes: 10)
+        let first = home.path + "/Library/Caches/com.example.app"
+        let second = home.path + "/Library/Caches/com.example.other"
+        let trasher = Trasher(home: home.path)
+        let report = trasher.trash([first, second])
+        // The app made a new cache in the meantime, so that one stays in the Trash.
+        try write("Library/Caches/com.example.other/new", bytes: 10)
+
+        let failed = trasher.putBack(report)
+        #expect(FileManager.default.fileExists(atPath: first + "/blob"))
+        #expect(failed.map(\.path) == [second])
+        if let trashed = report.inTrash[second] { try? FileManager.default.removeItem(atPath: trashed) }
+    }
+
     @Test func refusesAnythingRisky() throws {
         let caches = home.appending(path: "Library/Caches")
         try FileManager.default.createDirectory(at: caches, withIntermediateDirectories: true)

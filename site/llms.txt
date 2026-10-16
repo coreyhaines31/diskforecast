@@ -34,6 +34,7 @@
 - [npm](https://diskforecast.com/clear-cache/npm): npm cache clean --force, the npx folder, and node_modules.
 - [pip](https://diskforecast.com/clear-cache/pip): pip cache purge, uv, conda, and virtual environments.
 - [Microsoft Teams](https://diskforecast.com/clear-cache/teams): The two folders Microsoft names for the new Teams on Mac.
+- [VS Code and Cursor](https://diskforecast.com/clear-cache/vscode): The cache folders VS Code, Cursor, and Windsurf keep in Application Support.
 - [Yarn](https://diskforecast.com/clear-cache/yarn): yarn cache clean for Yarn 1 and Berry, and where each cache lives.
 - [Xcode](https://diskforecast.com/clear-cache/xcode): DerivedData, device support, simulators, and archives.
 - [Gradle](https://diskforecast.com/clear-cache/gradle): ~/.gradle caches, wrapper downloads, and build folders.
