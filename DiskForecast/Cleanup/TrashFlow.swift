@@ -17,7 +17,8 @@ enum TrashFlow {
         guard confirm.runModal() == .alertFirstButtonReturn else { return }
 
         let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
-        let report = Trasher(home: scan.home).trash(entries.map(\.path), sizes: sizes)
+        let trasher = Trasher(home: scan.home)
+        let report = trasher.trash(entries.map(\.path), sizes: sizes)
         scan.remove(Set(report.moved))
         disk.refresh()
 
@@ -34,11 +35,27 @@ enum TrashFlow {
             details.append("Couldn't move \(report.failed.count):\n" + failures.joined(separator: "\n"))
         }
         done.informativeText = details.joined(separator: "\n\n")
-        done.addButton(withTitle: "Open Trash")
         done.addButton(withTitle: "Done")
-        if done.runModal() == .alertFirstButtonReturn {
-            openTrash()
+        done.addButton(withTitle: "Open Trash")
+        if !report.moved.isEmpty { done.addButton(withTitle: "Undo") }
+        switch done.runModal() {
+        case .alertSecondButtonReturn: openTrash()
+        case .alertThirdButtonReturn: undo(report, trasher: trasher, scan: scan, disk: disk)
+        default: break
         }
+    }
+
+    private static func undo(_ report: Trasher.Report, trasher: Trasher, scan: ScanModel, disk: DiskStatus) {
+        let failed = trasher.putBack(report)
+        disk.refresh()
+        scan.scan()
+        guard !failed.isEmpty else { return }
+        let alert = NSAlert()
+        alert.messageText = "Couldn't put back \(failed.count) of \(report.moved.count)"
+        alert.informativeText = failed.prefix(5)
+            .map { "• \(($0.path as NSString).lastPathComponent): \($0.reason)" }
+            .joined(separator: "\n")
+        alert.runModal()
     }
 
     static func openTrash() {
