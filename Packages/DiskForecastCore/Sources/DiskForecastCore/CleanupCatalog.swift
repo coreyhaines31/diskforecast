@@ -26,14 +26,15 @@ public struct CleanupEntry: Sendable, Hashable, Identifiable {
     public let path: String
     public let bytes: Int64
     public let detail: String?
+    /// What the list calls it. Usually the file or folder name.
+    public let name: String
 
-    public init(path: String, bytes: Int64, detail: String? = nil) {
+    public init(path: String, bytes: Int64, detail: String? = nil, name: String? = nil) {
         self.path = path
         self.bytes = bytes
         self.detail = detail
+        self.name = name ?? (path as NSString).lastPathComponent
     }
-
-    public var name: String { (path as NSString).lastPathComponent }
 }
 
 public struct CleanupItem: Sendable, Identifiable {
@@ -90,7 +91,9 @@ public struct CleanupCatalog: Sendable {
                 for inner in claimed where inner.hasPrefix(candidate.path + "/") {
                     bytes -= scan.allocatedSize(of: inner) ?? 0
                 }
-                return CleanupEntry(path: candidate.path, bytes: max(0, bytes), detail: candidate.detail)
+                return CleanupEntry(
+                    path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name
+                )
             }
             .filter { $0.bytes >= rule.minimumBytes }
             .sorted { $0.bytes > $1.bytes }
@@ -109,6 +112,7 @@ public struct CleanupCatalog: Sendable {
     struct Candidate {
         let path: String
         var detail: String?
+        var name: String?
     }
 
     func path(_ relative: String) -> String {
@@ -156,7 +160,7 @@ public struct CleanupCatalog: Sendable {
             let isProfile = children.contains { ["Local Storage", "Session Storage"].contains(tree.names[$0]) }
             for child in children {
                 if isProfile && names.contains(tree.names[child]) {
-                    found.append(Candidate(path: tree.path(of: child), detail: app))
+                    found.append(Candidate(path: tree.path(of: child), detail: tree.names[child], name: app))
                 } else if depth < 3 {
                     visit(child, app: app, depth: depth + 1)
                 }
@@ -185,7 +189,9 @@ public struct CleanupCatalog: Sendable {
                           !url.path.hasPrefix("/Volumes/"),
                           !FileManager.default.fileExists(atPath: url.path)
                     else { return nil }
-                    return Candidate(path: candidate.path, detail: "\(appName) · \(url.lastPathComponent)")
+                    return Candidate(
+                        path: candidate.path, detail: "\(appName) · project deleted", name: url.lastPathComponent
+                    )
                 }
         }
     }

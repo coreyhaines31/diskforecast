@@ -82,7 +82,7 @@ struct CleanupCatalogTests {
 
         let items = await items()
         let entries = try #require(items["app-support-caches"]?.entries)
-        #expect(Set(entries.map { "\($0.detail ?? "")/\($0.name)" })
+        #expect(Set(entries.map { "\($0.name)/\($0.detail ?? "")" })
             == ["Cursor/Cache", "Cursor/CachedExtensionVSIXs", "Figma/Code Cache"])
         #expect(items["app-support-caches"]?.group == .safeToClear)
     }
@@ -104,7 +104,7 @@ struct CleanupCatalogTests {
 
         let items = await items()
         #expect(items["orphaned-workspaces"]?.entries.map(\.name) == ["gone"])
-        #expect(items["orphaned-workspaces"]?.entries.first?.detail == "Code · gone")
+        #expect(items["orphaned-workspaces"]?.entries.first?.detail == "Code · project deleted")
         #expect(items["orphaned-workspaces"]?.group == .worthALook)
     }
 
