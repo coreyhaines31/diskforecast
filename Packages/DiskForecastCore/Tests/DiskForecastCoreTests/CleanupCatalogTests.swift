@@ -69,6 +69,24 @@ struct CleanupCatalogTests {
         #expect(items["downloads"]?.entries.map(\.name) == ["movie.mov"])
     }
 
+    @Test func findsCachesBesideWebAppData() async throws {
+        let support = "Library/Application Support/"
+        try write(support + "Cursor/Local Storage/leveldb/000001.log", bytes: 10)
+        try write(support + "Cursor/Cache/Cache_Data/data_0", bytes: 2_000_000)
+        try write(support + "Cursor/CachedExtensionVSIXs/ext.vsix", bytes: 1_500_000)
+        try write(support + "Cursor/User/settings.json", bytes: 1_200_000)
+        try write(support + "Figma/DesktopProfile/v39/Session Storage/000001.log", bytes: 10)
+        try write(support + "Figma/DesktopProfile/v39/Code Cache/js/index", bytes: 1_800_000)
+        // Not beside Local Storage or Session Storage, so it isn't treated as a web cache.
+        try write(support + "Notes Pro/Cache/notes.db", bytes: 3_000_000)
+
+        let items = await items()
+        let entries = try #require(items["app-support-caches"]?.entries)
+        #expect(Set(entries.map { "\($0.detail ?? "")/\($0.name)" })
+            == ["Cursor/Cache", "Cursor/CachedExtensionVSIXs", "Figma/Code Cache"])
+        #expect(items["app-support-caches"]?.group == .safeToClear)
+    }
+
     @Test func subtractsWhatAMoreSpecificRuleClaimed() async throws {
         try write("Downloads/project/package.json", bytes: 10)
         try write("Downloads/project/node_modules/pkg/index.js", bytes: 15_000_000)

@@ -140,6 +140,34 @@ public struct CleanupCatalog: Sendable {
             }
     }
 
+    /// Cache folders that apps built on web tech (VS Code, Cursor, Slack, Figma) keep next to their
+    /// data in Application Support. Only folders beside Local Storage or Session Storage count, so a
+    /// folder that merely happens to be named Cache isn't listed.
+    func appSupportCaches(_ scan: ScanResult) -> [Candidate] {
+        let names: Set<String> = [
+            "Cache", "Code Cache", "GPUCache", "DawnCache", "DawnGraphiteCache", "DawnWebGPUCache",
+            "GrShaderCache", "ShaderCache", "CachedData", "CachedExtensionVSIXs"
+        ]
+        let tree = scan.tree
+        guard let support = tree.node(at: path("Library/Application Support")) else { return [] }
+        var found: [Candidate] = []
+        func visit(_ node: Int, app: String, depth: Int) {
+            let children = tree.children[node].map(Int.init)
+            let isProfile = children.contains { ["Local Storage", "Session Storage"].contains(tree.names[$0]) }
+            for child in children {
+                if isProfile && names.contains(tree.names[child]) {
+                    found.append(Candidate(path: tree.path(of: child), detail: app))
+                } else if depth < 3 {
+                    visit(child, app: app, depth: depth + 1)
+                }
+            }
+        }
+        for app in tree.children[support].map(Int.init) where !tree.names[app].hasPrefix("com.apple.") {
+            visit(app, app: tree.names[app], depth: 0)
+        }
+        return found
+    }
+
     func diskImages(_ scan: ScanResult) -> [Candidate] {
         scan.diskImages.map { Candidate(path: $0.path, detail: "Modified \(Age.phrase(from: $0.modified, to: now))") }
     }
