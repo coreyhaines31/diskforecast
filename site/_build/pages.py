@@ -1530,7 +1530,7 @@ COMMAND_LINE = {
     "faqs": [
         ("How do I install the diskforecast command?", "Install Disk Forecast with Homebrew: brew install --cask coreyhaines31/tap/diskforecast. Homebrew links the command onto your PATH. If you installed from the DMG, open Settings › General in Disk Forecast and click Install, or link it once with sudo ln -sf \"/Applications/Disk Forecast.app/Contents/MacOS/diskforecast\" /usr/local/bin/diskforecast."),
         ("Can Claude Code or Codex use Disk Forecast?", "Yes. Any agent that runs shell commands can. Ask it why your disk is filling up, or add a line to your CLAUDE.md or AGENTS.md telling it to use diskforecast when space is low."),
-        ("Can an agent delete my files with it?", "No. diskforecast trash only moves items that are on Disk Forecast's cleanup list, only to the Trash, and only shows what it would move until it's given --yes. Nothing is deleted until you empty the Trash yourself."),
+        ("Can an agent delete my files with it?", "No. diskforecast trash only moves items that are on Disk Forecast's cleanup list, only to the Trash, and only shows what it would move until it's given --yes. Nothing is deleted until you empty the Trash yourself, and diskforecast undo puts back the last run."),
         ("Does the command need the app running?", "It talks to the Disk Forecast app, and opens it in the background if it isn't running. The app keeps the history the forecast is built from."),
         ("How do I check disk space on a Mac from Terminal without an app?", "df -h / shows free space on the startup disk, and du -sh ~/* | sort -h lists the folders in your home folder by size. They show the current state, not how fast it's changing."),
     ],
@@ -1576,6 +1576,7 @@ tmutil listlocalsnapshots /       # local Time Machine snapshots</code></pre>
         ("<code>diskforecast changes --days 30</code>", "Which folders grew or shrank, down to the subfolder, and how much changed outside your home folder"),
         ("<code>diskforecast cleanup</code>", "What you can reclaim, grouped into Safe to clear and Worth a look, with an ID and explanation for each"),
         ("<code>diskforecast trash &lt;id or path&gt;</code>", "Shows what would move to the Trash; add <code>--yes</code> to move it"),
+        ("<code>diskforecast undo</code>", "Puts back everything the last trash run moved, from Terminal or the app"),
         ("<code>diskforecast scan --wait</code>", "Measures your home folder again and waits until it's done"),
         ("<code>diskforecast open forecast</code>", "Opens a window: forecast, cleanup, system-data, or settings"),
     ]}},
