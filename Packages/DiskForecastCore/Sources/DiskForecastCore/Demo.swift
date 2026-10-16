@@ -16,7 +16,9 @@ public enum Demo {
         ("Library/Caches/com.spotify.client", 3.1),
         ("Library/Caches/Google", 2.4),
         ("Library/Logs", 1.2),
-        ("Library/Application Support/Slack", 2.9),
+        ("Library/Application Support/Slack", 1.6),
+        ("Library/Application Support/Slack/Cache", 1.3),
+        ("Library/Application Support/Cursor/CachedExtensionVSIXs", 1.1),
         ("Movies/Final Cut Projects", 38),
         ("Pictures/Photos Library.photoslibrary", 64),
         ("code/storefront/node_modules", 1.4),
@@ -74,7 +76,13 @@ public enum Demo {
             "code/api/target": "api · last changed 3 months ago",
             "code/website/.next": "website · last changed 6 weeks ago",
             "Downloads/macOS Installer.dmg": "Modified 5 weeks ago",
-            "code/storefront/node_modules": "storefront · last changed today"
+            "code/storefront/node_modules": "storefront · last changed today",
+            "Library/Application Support/Slack/Cache": "Cache",
+            "Library/Application Support/Cursor/CachedExtensionVSIXs": "CachedExtensionVSIXs"
+        ]
+        let names = [
+            "Library/Application Support/Slack/Cache": "Slack",
+            "Library/Application Support/Cursor/CachedExtensionVSIXs": "Cursor"
         ]
         func item(_ id: String, _ entries: [(path: String, gigabytes: Double)]) -> CleanupItem? {
             guard let rule = rules.first(where: { $0.id == id }) else { return nil }
@@ -83,7 +91,7 @@ public enum Demo {
                 entries: entries.map { entry in
                     CleanupEntry(
                         path: home + "/" + entry.path, bytes: Int64(entry.gigabytes * Double(gigabyte)),
-                        detail: details[entry.path]
+                        detail: details[entry.path], name: names[entry.path]
                     )
                 }
             )
@@ -94,6 +102,10 @@ public enum Demo {
             item("device-support", [("Library/Developer/Xcode/iOS DeviceSupport", 7.8)]),
             item("package-caches", [(".npm/_cacache", 4.6)]),
             item("app-caches", [("Library/Caches/com.spotify.client", 3.1), ("Library/Caches/Google", 2.4)]),
+            item("app-support-caches", [
+                ("Library/Application Support/Slack/Cache", 1.3),
+                ("Library/Application Support/Cursor/CachedExtensionVSIXs", 1.1)
+            ]),
             item("logs", [("Library/Logs", 1.2)]),
             item("ollama", [(".ollama/models", 18)]),
             item("disk-images", [("Downloads/macOS Installer.dmg", 14)]),
