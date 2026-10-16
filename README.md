@@ -44,7 +44,7 @@ It's a free alternative to DiskBuddy, DaisyDisk, and CleanMyMac for the job they
 - **Shows the trend.** A small chart at the top of the menu, and a Forecast window with 2-week, 30-day, and 4-month views, the projected full date, and the lowest point.
 - **Says what changed.** After each scan it saves folder sizes, so it can show which folders grew since any day in the chart, down to the subfolder that did it.
 - **Explains System Data.** Local Time Machine snapshots, purgeable space, the Spotlight index, simulators, Apple Intelligence and Siri models, and Docker, each with a fix that uses Apple's or the tool's own command.
-- **Reclaims space safely.** Caches, logs, Xcode leftovers, package manager caches, and build folders in old projects are listed as **Safe to clear**. Big downloads, disk images, VMs, and local AI models are **Worth a look** and never selected for you. Files always go to the Trash.
+- **Reclaims space safely.** Caches (including the ones VS Code, Cursor, Slack, and Figma keep with their data), logs, Xcode leftovers, package manager caches, and build folders in old projects are listed as **Safe to clear**. Big downloads, disk images, VMs, local AI models, and editor data for deleted projects are **Worth a look** and never selected for you. Files always go to the Trash, and a cleanup can be undone.
 - **Warns you when space is low**, whatever the trend.
 - **Works from Terminal.** The [`diskforecast` command](#command-line) gives you, or an AI agent, the forecast, what changed, and the cleanup list.
 - **Counts accurately.** APFS clones and hard links are counted once, so totals match what the disk really spends.
