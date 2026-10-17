@@ -32,7 +32,7 @@ It's a free alternative to DiskBuddy, DaisyDisk, and CleanMyMac for the job they
   </picture>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset=".github/images/cleanup-dark.png">
-    <img src=".github/images/cleanup-light.png" width="49%" align="top" alt="The Cleanup window: Safe to clear lists Xcode DerivedData, Xcode device support, build folders in old projects, app caches, package manager caches, and logs, each with a plain explanation; Worth a look lists Ollama models and disk images, unchecked">
+    <img src=".github/images/cleanup-light.png" width="49%" align="top" alt="The Cleanup window: Safe to clear lists Xcode DerivedData, Xcode device support, build folders in old projects, app caches, package manager caches, editor and chat app caches, and logs, each with a plain explanation; Worth a look lists Ollama models and disk images, unchecked">
   </picture>
 </p>
 
