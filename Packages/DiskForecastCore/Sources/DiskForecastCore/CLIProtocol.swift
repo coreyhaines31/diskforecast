@@ -4,7 +4,7 @@ import Foundation
 /// only the signed-in user can open, one request per connection.
 public struct CLIRequest: Codable, Equatable, Sendable {
     public enum Action: String, Codable, Sendable {
-        case status, changes, cleanup, scan, trash, open
+        case status, changes, cleanup, scan, trash, undo, open
     }
 
     public enum Window: String, Codable, Sendable, CaseIterable {
@@ -41,10 +41,11 @@ public struct CLIResponse: Codable, Equatable, Sendable {
     public var changes: CLIChanges?
     public var cleanup: [CLICleanupItem]?
     public var trash: CLITrashReport?
+    public var undo: CLIUndoReport?
 
     public init(
         error: String? = nil, notes: [String] = [], status: CLIStatus? = nil, changes: CLIChanges? = nil,
-        cleanup: [CLICleanupItem]? = nil, trash: CLITrashReport? = nil
+        cleanup: [CLICleanupItem]? = nil, trash: CLITrashReport? = nil, undo: CLIUndoReport? = nil
     ) {
         self.error = error
         self.notes = notes
@@ -52,6 +53,7 @@ public struct CLIResponse: Codable, Equatable, Sendable {
         self.changes = changes
         self.cleanup = cleanup
         self.trash = trash
+        self.undo = undo
     }
 }
 
@@ -181,6 +183,19 @@ public struct CLITrashReport: Codable, Equatable, Sendable {
 
     public init(confirmed: Bool, paths: [String], bytes: Int64, failed: [CLITrashFailure] = []) {
         self.confirmed = confirmed
+        self.paths = paths
+        self.bytes = bytes
+        self.failed = failed
+    }
+}
+
+/// What the last trash run put back where it was.
+public struct CLIUndoReport: Codable, Equatable, Sendable {
+    public var paths: [String]
+    public var bytes: Int64
+    public var failed: [CLITrashFailure]
+
+    public init(paths: [String], bytes: Int64, failed: [CLITrashFailure] = []) {
         self.paths = paths
         self.bytes = bytes
         self.failed = failed
