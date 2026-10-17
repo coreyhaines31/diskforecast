@@ -137,12 +137,14 @@ diskforecast changes --days 30      # which folders grew, down to the subfolder 
 diskforecast cleanup                # what you can reclaim, with an ID and an explanation for each
 diskforecast trash xcode-derived-data package-caches        # shows what would move
 diskforecast trash xcode-derived-data package-caches --yes  # moves it to the Trash
+diskforecast undo                   # puts back everything the last trash run moved
 ```
 
 - **`status`** shows free space, the forecast, a low-space warning, and how much is Safe to clear.
 - **`changes`** compares the folder sizes saved after each scan, over the last 7 days or `--days N`. It also shows how much changed outside your home folder (System Data, other accounts, and apps).
 - **`cleanup`** lists the same items as the Cleanup window, grouped into **Safe to clear** and **Worth a look**, each with an ID, its size, and why it's listed.
 - **`trash`** takes item IDs or paths from the cleanup list. Without `--yes` it only shows what it would move. It refuses anything that isn't on the list, and like the app it only ever moves things to the Trash. Empty the Trash to get the space back.
+- **`undo`** puts back everything the last trash run moved, whether it ran from Terminal or the Cleanup window. If an app has already made a new folder in the same place, that item stays in the Trash.
 - **`scan`** measures again (`--wait` waits until it's done), and **`open forecast`**, **`open cleanup`**, **`open system-data`**, or **`open settings`** shows a window.
 - Add `--json` to any command for output a script or agent can read. If Disk Forecast isn't running, the command opens it in the background.
 

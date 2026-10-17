@@ -24,6 +24,8 @@ public struct Trasher: Sendable {
         public var failed: [(path: String, reason: String)] = []
         /// Where each moved path ended up in the Trash, for putting it back.
         public var inTrash: [String: String] = [:]
+        /// What each moved path held.
+        public var movedSizes: [String: Int64] = [:]
     }
 
     static let protectedNames: Set<String> = [
@@ -65,6 +67,7 @@ public struct Trasher: Sendable {
                 report.moved.append(path)
                 report.inTrash[path] = trashed?.path
                 report.movedBytes += sizes[path] ?? 0
+                report.movedSizes[path] = sizes[path]
             } catch {
                 report.failed.append((path, error.localizedDescription))
             }

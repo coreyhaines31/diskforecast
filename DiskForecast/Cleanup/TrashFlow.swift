@@ -19,6 +19,7 @@ enum TrashFlow {
         let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
         let trasher = Trasher(home: scan.home)
         let report = trasher.trash(entries.map(\.path), sizes: sizes)
+        TrashHistory.record(report, trasher: trasher)
         scan.remove(Set(report.moved))
         disk.refresh()
 
@@ -40,13 +41,13 @@ enum TrashFlow {
         if !report.moved.isEmpty { done.addButton(withTitle: "Undo") }
         switch done.runModal() {
         case .alertSecondButtonReturn: openTrash()
-        case .alertThirdButtonReturn: undo(report, trasher: trasher, scan: scan, disk: disk)
+        case .alertThirdButtonReturn: undo(scan: scan, disk: disk)
         default: break
         }
     }
 
-    private static func undo(_ report: Trasher.Report, trasher: Trasher, scan: ScanModel, disk: DiskStatus) {
-        let failed = trasher.putBack(report)
+    private static func undo(scan: ScanModel, disk: DiskStatus) {
+        guard let (report, failed) = TrashHistory.undo() else { return }
         disk.refresh()
         scan.scan()
         guard !failed.isEmpty else { return }

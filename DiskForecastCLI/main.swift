@@ -11,6 +11,7 @@ Usage:
   diskforecast cleanup [--json]
   diskforecast scan [--wait] [--json]
   diskforecast trash <id or path>... [--yes] [--json]
+  diskforecast undo [--json]
   diskforecast open forecast|cleanup|system-data|settings
 
 Commands:
@@ -21,6 +22,7 @@ Commands:
   trash     Move cleanup items (by ID) or entries (by path) to the Trash. Without --yes it
             only shows what it would move. Only what's on the cleanup list can be moved,
             and nothing is deleted: you can put it all back until you empty the Trash.
+  undo      Put back everything the last trash run moved, from here or the app.
   open      Show one of Disk Forecast's windows.
 
 Examples:
@@ -190,7 +192,8 @@ func describe(_ report: CLITrashReport) -> String {
     if report.confirmed {
         lines.append(report.paths.isEmpty
             ? "Nothing was moved to the Trash."
-            : "Moved \(Bytes.format(report.bytes)) to the Trash. Empty the Trash to reclaim the space.")
+            : "Moved \(Bytes.format(report.bytes)) to the Trash. Empty the Trash to reclaim the space, "
+                + "or put it all back with: diskforecast undo")
     } else {
         lines.append("Would move \(Bytes.format(report.bytes)) to the Trash:")
     }
@@ -200,6 +203,18 @@ func describe(_ report: CLITrashReport) -> String {
         lines += report.failed.map { "  \(shortened($0.path)): \($0.reason)" }
     }
     if !report.confirmed { lines.append("Run it again with --yes to move them.") }
+    return lines.joined(separator: "\n")
+}
+
+func describe(_ undo: CLIUndoReport) -> String {
+    var lines = [undo.paths.isEmpty
+        ? "Nothing was put back."
+        : "Put back \(Bytes.format(undo.bytes)) where it was:"]
+    lines += undo.paths.map { "  " + shortened($0) }
+    if !undo.failed.isEmpty {
+        lines.append("Left in the Trash (\(undo.failed.count)):")
+        lines += undo.failed.map { "  \(shortened($0.path)): \($0.reason)" }
+    }
     return lines.joined(separator: "\n")
 }
 
@@ -217,9 +232,11 @@ func report(_ response: CLIResponse, json asJSON: Bool) -> Bool {
         FileHandle.standardError.write(Data("diskforecast: \(error)\n".utf8))
         return false
     }
+    // Anything that couldn't be moved or put back counts as a failure, so scripts notice.
+    let succeeded = (response.trash?.failed.isEmpty ?? true) && (response.undo?.failed.isEmpty ?? true)
     if asJSON {
         printJSON(response)
-        return response.trash?.failed.isEmpty ?? true
+        return succeeded
     }
     response.notes.forEach(note)
     var sections: [String] = []
@@ -227,9 +244,9 @@ func report(_ response: CLIResponse, json asJSON: Bool) -> Bool {
     if let changes = response.changes { sections.append(describe(changes)) }
     if let cleanup = response.cleanup { sections.append(describe(cleanup)) }
     if let trash = response.trash { sections.append(describe(trash)) }
+    if let undo = response.undo { sections.append(describe(undo)) }
     if !sections.isEmpty { print(sections.joined(separator: "\n\n")) }
-    // Anything that couldn't be moved counts as a failure, so scripts notice.
-    return response.trash?.failed.isEmpty ?? true
+    return succeeded
 }
 
 /// Polls until the scan finishes, showing progress on stderr.

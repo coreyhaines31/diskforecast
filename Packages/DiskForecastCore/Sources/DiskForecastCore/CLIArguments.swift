@@ -23,10 +23,10 @@ public enum CLIArguments {
         switch name {
         case "help", "-h", "--help": return .help
         case "version", "-v", "--version": return .version
-        case "status", "cleanup":
+        case "status", "cleanup", "undo":
             try options.parse()
             try options.noPositionals()
-            return .send(CLIRequest(action: name == "status" ? .status : .cleanup), json: options.json)
+            return .send(CLIRequest(action: CLIRequest.Action(rawValue: name) ?? .status), json: options.json)
         case "changes":
             try options.parse(allowing: ["--days"])
             try options.noPositionals()

@@ -22,13 +22,7 @@ final class CLICommands {
     func handle(_ request: CLIRequest) -> CLIResponse {
         switch request.action {
         case .status:
-            disk.refresh()
-            var notes: [String] = []
-            if !FullDiskAccess.isGranted {
-                notes.append("Full Disk Access is off, so some folders aren't measured. "
-                    + "Turn it on in System Settings › Privacy & Security › Full Disk Access.")
-            }
-            return CLIResponse(notes: notes, status: status())
+            return statusResponse()
         case .changes:
             return changes(days: request.days ?? 7)
         case .cleanup:
@@ -41,10 +35,22 @@ final class CLICommands {
             return CLIResponse(status: status())
         case .trash:
             return trash(request.targets ?? [], confirmed: request.confirmed ?? false)
+        case .undo:
+            return undo()
         case .open:
             if let window = request.window { open(window) }
             return CLIResponse()
         }
+    }
+
+    private func statusResponse() -> CLIResponse {
+        disk.refresh()
+        var notes: [String] = []
+        if !FullDiskAccess.isGranted {
+            notes.append("Full Disk Access is off, so some folders aren't measured. "
+                + "Turn it on in System Settings › Privacy & Security › Full Disk Access.")
+        }
+        return CLIResponse(notes: notes, status: status())
     }
 
     private func status() -> CLIStatus {
@@ -94,12 +100,29 @@ final class CLICommands {
             return CLIResponse(trash: CLITrashReport(confirmed: false, paths: entries.map(\.path), bytes: total))
         }
         let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
-        let report = Trasher(home: scan.home).trash(entries.map(\.path), sizes: sizes)
+        let trasher = Trasher(home: scan.home)
+        let report = trasher.trash(entries.map(\.path), sizes: sizes)
+        TrashHistory.record(report, trasher: trasher)
         scan.remove(Set(report.moved))
         disk.refresh()
         return CLIResponse(trash: CLITrashReport(
             confirmed: true, paths: report.moved, bytes: report.movedBytes,
             failed: report.failed.map { CLITrashFailure(path: $0.path, reason: $0.reason) }
+        ))
+    }
+
+    private func undo() -> CLIResponse {
+        guard let (report, failed) = TrashHistory.undo() else {
+            return CLIResponse(error: "Nothing to undo. Only the last trash run since \(Brand.name) opened "
+                + "can be undone.")
+        }
+        let failedPaths = Set(failed.map(\.path))
+        let putBack = report.moved.filter { !failedPaths.contains($0) }
+        disk.refresh()
+        scan.scan()
+        return CLIResponse(undo: CLIUndoReport(
+            paths: putBack, bytes: putBack.reduce(0) { $0 + (report.movedSizes[$1] ?? 0) },
+            failed: failed.map { CLITrashFailure(path: $0.path, reason: $0.reason) }
         ))
     }
 
