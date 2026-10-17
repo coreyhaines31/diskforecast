@@ -126,12 +126,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
     #endif
 
-    /// Turns on launch at login once, so the daily readings survive a restart.
+    /// Turns on launch at login once, so the daily readings survive a restart. Tries again next launch if it fails.
     /// Debug builds skip it so a DerivedData copy never becomes the login item.
     private func applyLaunchAtLoginDefault() {
         guard !Preferences.appliedLaunchAtLoginDefault else { return }
+        guard (try? SMAppService.mainApp.register()) != nil else { return }
         Preferences.appliedLaunchAtLoginDefault = true
-        try? SMAppService.mainApp.register()
     }
 
     /// Saves today's folder sizes, so later scans can say what grew.
