@@ -1,5 +1,6 @@
 import AppKit
 import DiskForecastCore
+import ServiceManagement
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -38,6 +39,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.registerDefaults()
+        #if !DEBUG
+        applyLaunchAtLoginDefault()
+        #endif
         #if DEBUG
         if DemoMode.isOn { DemoMode.prepare(home: scan.home) }
         #endif
@@ -121,6 +125,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     #endif
+
+    /// Turns on launch at login once, so the daily readings survive a restart. Tries again next launch if it fails.
+    /// Debug builds skip it so a DerivedData copy never becomes the login item.
+    private func applyLaunchAtLoginDefault() {
+        guard !Preferences.appliedLaunchAtLoginDefault else { return }
+        guard (try? SMAppService.mainApp.register()) != nil else { return }
+        Preferences.appliedLaunchAtLoginDefault = true
+    }
 
     /// Saves today's folder sizes, so later scans can say what grew.
     private func recordSnapshot(of result: ScanResult) {

@@ -20,6 +20,7 @@ enum Preferences {
     static let menuBarDisplayKey = "menuBarDisplay"
     static let staleAfterDaysKey = "staleAfterDays"
     static let onboardingDoneKey = "onboardingDone"
+    static let appliedLaunchAtLoginDefaultKey = "appliedLaunchAtLoginDefault"
 
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
@@ -40,5 +41,10 @@ enum Preferences {
     static var onboardingDone: Bool {
         get { UserDefaults.standard.bool(forKey: onboardingDoneKey) }
         set { UserDefaults.standard.set(newValue, forKey: onboardingDoneKey) }
+    }
+
+    static var appliedLaunchAtLoginDefault: Bool {
+        get { UserDefaults.standard.bool(forKey: appliedLaunchAtLoginDefaultKey) }
+        set { UserDefaults.standard.set(newValue, forKey: appliedLaunchAtLoginDefaultKey) }
     }
 }
