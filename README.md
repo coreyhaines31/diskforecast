@@ -95,7 +95,7 @@ The app is signed with a Developer ID and notarized by Apple, so it opens withou
    - **Continue with home folder only** to measure just your home folder. Folders macOS guards, like Mail, Messages, and other apps' containers, are skipped and show up as unexplained space.
 3. **Allow Desktop, Documents, and Downloads if macOS asks.** Without Full Disk Access, macOS asks once for each of these folders. Click **Allow** so they're included.
 4. **Wait for the first scan.** The menu shows **Measuring… N files** while it works. A home folder with a few million files takes one to two minutes. After that it scans twice a day on its own.
-5. **Turn on Launch at login** in **Settings… › General**, so the daily readings keep coming.
+5. **Leave Launch at login on.** It's on from the first launch, so the daily readings keep coming after a restart. You can turn it off in **Settings… › General**.
 
 What to expect over the first days:
 
@@ -188,7 +188,7 @@ macOS may be waiting on a permission prompt (Desktop, Documents, or Downloads). 
 Empty the Trash. If it still doesn't go up, local Time Machine snapshots may be holding the deleted files. You can see and remove them in **System Data…**.
 
 **It says "Forecast ready in 2 days".**
-It needs three daily readings. Keep it running (turn on Launch at login) and the forecast appears.
+It needs three daily readings. Keep it running (leave Launch at login on) and the forecast appears.
 
 **How do I update?**
 It checks for updates on its own. You can also choose **Check for Updates…** from the menu, or run `brew upgrade --cask diskforecast`.
