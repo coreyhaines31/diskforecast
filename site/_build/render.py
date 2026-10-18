@@ -115,6 +115,7 @@ FAMILY = [
     ("Midnight Oil", "https://midnightoil.app", "Keep your Mac awake"),
     ("Spare", "https://spareformac.com", "See what's using your Mac"),
     ("On Hand", "https://onhandformac.com", "A clipboard manager for your Mac"),
+    ("Coat Check", "https://coatcheckformac.com", "Reach the menu bar icons the notch hides"),
 ]
 
 
