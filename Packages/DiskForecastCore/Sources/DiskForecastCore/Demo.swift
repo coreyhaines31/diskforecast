@@ -36,7 +36,8 @@ public enum Demo {
     public static func scan(home: String) -> ScanResult {
         ScanResult(
             tree: tree(home: home, folders: folders), fileCount: 2_480_000, largestFiles: [], diskImages: [],
-            artifacts: [], deniedCount: 0, deniedSamples: [], skippedPaths: [], stalledPaths: [], duration: 31
+            artifacts: [], worktrees: [], deniedCount: 0, deniedSamples: [], skippedPaths: [], stalledPaths: [],
+            duration: 31
         )
     }
 

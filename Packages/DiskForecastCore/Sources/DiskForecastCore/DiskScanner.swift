@@ -65,6 +65,7 @@ public final class DiskScanner: @unchecked Sendable {
     private var largeFiles: [FileFinding] = []
     private var diskImages: [FileFinding] = []
     private var artifacts: [ArtifactFinding] = []
+    private var worktrees: [WorktreeFinding] = []
     private var deniedCount = 0
     private var deniedSamples: [String] = []
     private var skippedPaths: [String] = []
@@ -140,6 +141,7 @@ public final class DiskScanner: @unchecked Sendable {
             largestFiles: Array(largeFiles.sorted { $0.bytes > $1.bytes }.prefix(options.largestFileLimit)),
             diskImages: diskImages.sorted { $0.bytes > $1.bytes },
             artifacts: artifacts.sorted { $0.path < $1.path },
+            worktrees: worktrees.sorted { $0.path < $1.path },
             deniedCount: deniedCount,
             deniedSamples: deniedSamples,
             skippedPaths: skippedPaths.sorted(),
@@ -212,6 +214,7 @@ public final class DiskScanner: @unchecked Sendable {
         byteCount += listing.bytes
         largeFiles.append(contentsOf: listing.large)
         diskImages.append(contentsOf: listing.images)
+        if let worktree = listing.worktree { worktrees.append(worktree) }
         skippedPaths.append(contentsOf: listing.skipped)
         if cancelled { return }
         var artifactNodes: [String: Int32] = [:]
@@ -252,6 +255,7 @@ extension DiskScanner {
         var large: [FileFinding] = []
         var images: [FileFinding] = []
         var artifacts: [(kind: ArtifactKind, projectModified: Date)] = []
+        var worktree: WorktreeFinding?
     }
 
     fileprivate func list(_ job: Job, reader: BulkReader) -> Listing {
@@ -292,14 +296,9 @@ extension DiskScanner {
             }
         }
 
-        let found = job.insideArtifact ? [] : ArtifactKind.detect(directories: directoryNames, files: fileNames)
-        let artifactNames = Set(found.map(\.folderName))
-        if !found.isEmpty {
-            // Everything directly in the project counts, the build folder and .git included: a
-            // recent install or commit means the project is in use.
-            let newest = modified.values.max() ?? .distantPast
-            listing.artifacts = found.map { ($0, newest) }
-        }
+        let artifactNames = findProject(
+            job, directories: directoryNames, files: fileNames, newest: modified.values.max(), into: &listing
+        )
         let skipped = Set(listing.skipped)
         for name in directoryNames where !skipped.contains(job.path + "/" + name) {
             let inside = job.insideArtifact || artifactNames.contains(name) || name == "node_modules"
@@ -310,6 +309,23 @@ extension DiskScanner {
             listing.images = []
         }
         return listing
+    }
+
+    /// Notes the build folders and worktree checkout a folder holds. Returns the build folders' names.
+    fileprivate func findProject(
+        _ job: Job, directories: Set<String>, files: Set<String>, newest: Date?, into listing: inout Listing
+    ) -> Set<String> {
+        // Everything directly in the project counts, the build folder and .git included: a
+        // recent install or commit means the project is in use.
+        let newest = newest ?? .distantPast
+        if files.contains(".git"),
+           let contents = try? String(contentsOfFile: job.path + "/.git", encoding: .utf8),
+           let gitDirectory = WorktreeFinding.gitDirectory(fromGitFile: contents, checkout: job.path) {
+            listing.worktree = WorktreeFinding(path: job.path, gitDirectory: gitDirectory, modified: newest)
+        }
+        let found = job.insideArtifact ? [] : ArtifactKind.detect(directories: directories, files: files)
+        listing.artifacts = found.map { ($0, newest) }
+        return Set(found.map(\.folderName))
     }
 
     /// The bytes a file adds that haven't been counted already.

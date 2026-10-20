@@ -111,12 +111,45 @@ public struct ArtifactFinding: Sendable, Hashable {
     public var projectPath: String { (path as NSString).deletingLastPathComponent }
 }
 
+/// A git worktree: a checkout whose `.git` is a file pointing into another repository's
+/// `.git/worktrees` folder, as `git worktree add` and coding agents make them.
+public struct WorktreeFinding: Sendable, Hashable {
+    public let path: String
+    /// The repository's records for this worktree, `<repository>/.git/worktrees/<name>`.
+    public let gitDirectory: String
+    /// The newest modification date among the entries directly in the checkout.
+    public let modified: Date
+
+    /// The folder name of the repository it belongs to.
+    public var repository: String {
+        let records = ((gitDirectory as NSString).deletingLastPathComponent as NSString).deletingLastPathComponent
+        let name = (records as NSString).lastPathComponent
+        if name == ".git" { return ((records as NSString).deletingLastPathComponent as NSString).lastPathComponent }
+        return name.hasSuffix(".git") ? String(name.dropLast(4)) : name
+    }
+
+    /// The worktree records a checkout's `.git` file points to, or nil when it points anywhere
+    /// else, like a submodule's does.
+    static func gitDirectory(fromGitFile contents: String, checkout: String) -> String? {
+        guard let line = contents.split(whereSeparator: \.isNewline).first, line.hasPrefix("gitdir: ") else {
+            return nil
+        }
+        let target = String(line.dropFirst("gitdir: ".count)).trimmingCharacters(in: .whitespaces)
+        let absolute = target.hasPrefix("/") ? target : checkout + "/" + target
+        let standardized = (absolute as NSString).standardizingPath
+        let parent = (standardized as NSString).deletingLastPathComponent
+        guard (parent as NSString).lastPathComponent == "worktrees" else { return nil }
+        return standardized
+    }
+}
+
 public struct ScanResult: Sendable {
     public let tree: ScanTree
     public let fileCount: Int
     public let largestFiles: [FileFinding]
     public let diskImages: [FileFinding]
     public let artifacts: [ArtifactFinding]
+    public let worktrees: [WorktreeFinding]
     /// Folders macOS wouldn't let us read, usually because Full Disk Access is off.
     public let deniedCount: Int
     public let deniedSamples: [String]

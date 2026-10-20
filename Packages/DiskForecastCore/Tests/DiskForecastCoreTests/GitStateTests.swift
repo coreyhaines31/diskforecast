@@ -71,3 +71,33 @@ struct GitStateTests {
         #expect(GitState.read(at: fixture.base.path) == nil)
     }
 }
+
+struct WorktreeFindingTests {
+    @Test func scanFindsWorktreesButNotTheMainCheckout() async throws {
+        let fixture = try GitFixture()
+        let scan = await DiskScanner(options: .init(root: fixture.base)).scan()
+        #expect(scan.worktrees.map(\.path) == [fixture.worktree])
+        #expect(scan.worktrees.first?.gitDirectory == fixture.main + "/.git/worktrees/repo-agent")
+        #expect(scan.worktrees.first?.repository == "repo")
+    }
+
+    @Test func readsOnlyWorktreeGitFiles() {
+        let checkout = "/Users/me/code/app/.claude/worktrees/fix"
+        #expect(WorktreeFinding.gitDirectory(
+            fromGitFile: "gitdir: /Users/me/code/app/.git/worktrees/fix\n", checkout: checkout
+        ) == "/Users/me/code/app/.git/worktrees/fix")
+        #expect(WorktreeFinding.gitDirectory(
+            fromGitFile: "gitdir: ../../../.git/worktrees/fix", checkout: checkout
+        ) == "/Users/me/code/app/.git/worktrees/fix")
+        // A submodule's .git file points into .git/modules.
+        #expect(WorktreeFinding.gitDirectory(fromGitFile: "gitdir: ../.git/modules/lib", checkout: checkout) == nil)
+        #expect(WorktreeFinding.gitDirectory(fromGitFile: "not git", checkout: checkout) == nil)
+    }
+
+    @Test func namesBareRepositoriesWithoutTheSuffix() {
+        let finding = WorktreeFinding(
+            path: "/Users/me/w/fix", gitDirectory: "/Users/me/repos/app.git/worktrees/fix", modified: Date()
+        )
+        #expect(finding.repository == "app")
+    }
+}
