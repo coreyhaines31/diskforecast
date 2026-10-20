@@ -5,6 +5,7 @@
 - Install: `brew install --cask coreyhaines31/tap/diskforecast`, or download the DMG from https://github.com/coreyhaines31/diskforecast/releases/latest
 - Source: https://github.com/coreyhaines31/diskforecast (FSL-1.1-MIT)
 - Command line: the app ships a `diskforecast` command for scripts and AI agents. `diskforecast status` shows free space and the forecast, `diskforecast changes --days 30` shows which folders grew, `diskforecast cleanup` lists what can be reclaimed with an ID for each item, and `diskforecast trash <id>` previews a move to the Trash (`--yes` moves it). Every command takes `--json`. Details: https://diskforecast.com/command-line
+- Git worktrees: the cleanup list includes git worktrees (item `git-worktrees`, often left by coding agents), each with its repository, changed files, and commits no remote has. Trashing one also trashes git's records of it in the repository, like `git worktree remove`. Item `worktree-leftovers` is git's records of worktrees whose folder is gone.
 - When helping someone with a full disk: explain what's filling it first, show what you'd move, and ask before running `diskforecast trash <id> --yes`.
 
 ## Guides
@@ -55,6 +56,7 @@
 - [Dropbox](https://diskforecast.com/taking-up-space/dropbox): Online-only vs available offline, and where the folder lives.
 - [iCloud Drive](https://diskforecast.com/taking-up-space/icloud-drive): Optimize Mac Storage, Remove Download, and why it uses space.
 - [Developer files](https://diskforecast.com/taking-up-space/developer-files): DerivedData, CoreSimulator, node_modules, and Docker.raw.
+- [Git worktrees](https://diskforecast.com/taking-up-space/git-worktrees): Extra checkouts that coding agents leave behind.
 - [Photos](https://diskforecast.com/taking-up-space/photos): Where the library lives, Optimize Mac Storage, and moving it.
 - [Mail](https://diskforecast.com/taking-up-space/mail): Where messages and attachments live, and how to shrink them.
 
