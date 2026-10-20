@@ -8,6 +8,7 @@ struct CleanupView: View {
     let openSystemData: () -> Void
     @State private var selection: Set<String> = []
     @State private var seenItems: Set<String> = []
+    @State private var copiedPrompt = false
 
     private var selectedEntries: [CleanupEntry] {
         scan.items.flatMap(\.entries).filter { selection.contains($0.path) }
@@ -93,6 +94,9 @@ struct CleanupView: View {
             Text(selectionSummary).foregroundStyle(.secondary)
             Spacer()
             Button("Open Trash") { TrashFlow.openTrash() }
+            Button(copiedPrompt ? "Copied" : "Copy Agent Prompt", action: copyAgentPrompt)
+                .disabled(selection.isEmpty)
+                .help("Copies what's selected as instructions for a coding agent like Claude Code or Codex.")
             Button("Move to Trash…") {
                 let entries = selectedEntries
                 let titles = scan.items.filter { item in item.entries.contains { selection.contains($0.path) } }
@@ -106,6 +110,20 @@ struct CleanupView: View {
             .disabled(selection.isEmpty)
         }
         .padding()
+    }
+
+    private func copyAgentPrompt() {
+        let selected = scan.items.flatMap { item in
+            item.entries.filter { selection.contains($0.path) }.map { (entry: $0, title: item.title) }
+        }
+        let prompt = AgentPrompt.make(selected, freeBytes: disk.freeBytes, capacityBytes: disk.capacityBytes)
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(prompt, forType: .string)
+        copiedPrompt = true
+        Task {
+            try? await Task.sleep(for: .seconds(2))
+            copiedPrompt = false
+        }
     }
 
     /// Safe items start checked the first time they show up; Worth a look items never do.

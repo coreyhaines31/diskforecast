@@ -114,7 +114,7 @@ Click the menu bar item:
 - **The chart.** Click it, or choose **Forecast…**, to open the Forecast window.
 - **Taking the most space:** the five biggest folders. Click one to show it in Finder.
 - **Safe to clear: 12 GB…** moves everything in the Safe to clear group to the Trash, after a confirmation that lists what's included.
-- **Open Cleanup…** to review both groups and pick exactly what to move.
+- **Open Cleanup…** to review both groups and pick exactly what to move. **Copy Agent Prompt** copies what you picked as instructions for a coding agent like Claude Code or Codex instead: only those paths, each checked first, with git checks before a checkout goes.
 - **System Data…** to see what macOS counts as System Data and fix the parts you can.
 - **Rescan** to measure again now.
 
