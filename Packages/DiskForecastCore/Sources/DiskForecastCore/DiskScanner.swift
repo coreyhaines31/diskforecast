@@ -318,7 +318,7 @@ extension DiskScanner {
         // Everything directly in the project counts, the build folder and .git included: a
         // recent install or commit means the project is in use.
         let newest = newest ?? .distantPast
-        if files.contains(".git"),
+        if files.contains(".git"), Self.isRegularFile(job.path + "/.git"),
            let contents = try? String(contentsOfFile: job.path + "/.git", encoding: .utf8),
            let gitDirectory = WorktreeFinding.gitDirectory(fromGitFile: contents, checkout: job.path) {
             listing.worktree = WorktreeFinding(path: job.path, gitDirectory: gitDirectory, modified: newest)
@@ -326,6 +326,12 @@ extension DiskScanner {
         let found = job.insideArtifact ? [] : ArtifactKind.detect(directories: directories, files: files)
         listing.artifacts = found.map { ($0, newest) }
         return Set(found.map(\.folderName))
+    }
+
+    /// Only a plain file is read: a `.git` that's a link or a pipe could lead anywhere, or never end.
+    fileprivate static func isRegularFile(_ path: String) -> Bool {
+        var info = stat()
+        return lstat(path, &info) == 0 && info.st_mode & S_IFMT == S_IFREG
     }
 
     /// The bytes a file adds that haven't been counted already.
