@@ -46,7 +46,7 @@ public struct GitState: Sendable, Equatable {
         var changed: Int?
         if !namesItsOwnFilters(path) {
             // Submodules are other checkouts with configs of their own.
-            changed = run(["status", "--porcelain=v1", "-z", "--ignore-submodules=all"], in: path)
+            changed = run(["status", "--porcelain=v1", "-z", "--no-renames", "--ignore-submodules=all"], in: path)
                 .map { $0.split(separator: "\0").count }
         }
         var unpushed: Int?
