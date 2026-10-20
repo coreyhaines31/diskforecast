@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Git worktrees taking up space on Mac: find and remove them</title>
+  <meta name="description" content="Coding agents leave git worktrees behind, and with submodules each can hold gigabytes. How to find every worktree on a Mac, check what it holds, and remove it.">
+  <link rel="canonical" href="https://diskforecast.com/taking-up-space/git-worktrees">
+  <meta property="og:title" content="Git worktrees taking up space on Mac: find and remove them">
+  <meta property="og:description" content="Coding agents leave git worktrees behind, and with submodules each can hold gigabytes. How to find every worktree on a Mac, check what it holds, and remove it.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Disk Forecast">
+  <meta property="og:image" content="https://diskforecast.com/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://diskforecast.com/taking-up-space/git-worktrees">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Git worktrees taking up space on Mac: find and remove them">
+  <meta name="twitter:description" content="Coding agents leave git worktrees behind, and with submodules each can hold gigabytes. How to find every worktree on a Mac, check what it holds, and remove it.">
+  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/site.css">
+  <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+      <nav>
+        <a href="/#forecast">Features</a>
+        <a href="/guides">Guides</a>
+        <a href="/system-data">System Data</a>
+        <a href="/alternatives">Compare</a>
+        <a href="/#faq">FAQ</a>
+        <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest">Download</a>
+      </nav>
+    </div>
+  </div>
+  <main>
+    <div class="sub-hero">
+      <div class="wrap narrow">
+        <div class="eyebrow">Guide</div>
+        <h1>Git worktrees taking up space, <em>and how to clear them.</em></h1>
+        <p class="lede">Claude Code, Codex, Conductor, and other coding agents give each task its own git worktree. They're quick to make and easy to forget, and every one is a full checkout. Here's how to find them, check what each would lose, and remove them the way git expects.</p>
+        <div class="tldr glass"><h2>The short version</h2><p>Run <code>git worktree list</code> in each repository to see its worktrees, then <code>git worktree remove <path></code> for the ones you're done with. It refuses a worktree with uncommitted changes. <code>git worktree prune</code> clears git's records of worktree folders that are already gone, which can hold whole copies of every submodule. On the Mac measured here, 36 worktrees in one code folder came to 39 GB.</p></div>
+      </div>
+    </div>
+    <section class="tight">
+      <div class="wrap narrow"><div class="prose">
+
+        <h2>Why worktrees add up</h2>
+        <p>A worktree is a second checkout of the same repository, on its own branch, sharing the repository's history. The history isn't copied, but everything else is: every tracked file, plus whatever the project installs or builds, like <code>node_modules</code>. Agents make one per task so parallel tasks don't collide, and they rarely clean up after themselves.</p>
+        <p>Here's one developer Mac in October 2026:</p>
+                <div class="table-card glass" style="margin:16px 0 24px"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">What</th><th scope="col">Default location</th><th scope="col">On one Mac</th></tr></thead><tbody>
+            <tr><th scope="row">Worktrees in a code folder</th><td><code>~/code</code>, made by <code>git worktree add</code> and by agents</td><td>39 GB, 36 worktrees</td></tr>
+            <tr><th scope="row">Claude Code&#x27;s worktrees</th><td><code>&lt;repository&gt;/.claude/worktrees</code></td><td>Inside each repository</td></tr>
+            <tr><th scope="row">Git&#x27;s records of each worktree</th><td><code>&lt;repository&gt;/.git/worktrees/&lt;name&gt;</code></td><td>8.2 GB for one repository</td></tr>
+            <tr><th scope="row">Submodule copies per worktree</th><td><code>&lt;repository&gt;/.git/worktrees/&lt;name&gt;/modules</code></td><td>4.1 GB each</td></tr>
+          </tbody></table></div></div>
+        <p>The last two rows are easy to miss. Each worktree gets its own folder inside the main repository's <code>.git/worktrees</code>, and if the repository has submodules, every worktree keeps its own copy of each one there. Deleting the worktree's folder in Finder leaves that copy behind.</p>
+
+        <h2 style="margin-top:56px">How to find every worktree</h2>
+        <p>In a repository, git lists its own:</p>
+<pre><code>git worktree list</code></pre>
+        <p>To find worktrees from every repository in a folder, look for the <code>.git</code> file each one has. A normal checkout has a <code>.git</code> folder; a worktree has a one-line file that points back to its repository:</p>
+<pre><code>find ~/code -name .git -type f -exec grep -l "gitdir: .*/worktrees/" {} + \
+  | sed 's#/.git$##' | tr '\n' '\0' | xargs -0 du -sh | sort -h</code></pre>
+        <p>Change <code>~/code</code> to wherever your projects and your agents' worktrees live.</p>
+
+        <h2 style="margin-top:56px">Check what a worktree would lose</h2>
+        <p>The branch and its commits live in the main repository, so removing a worktree doesn't remove them. Two things can still be lost: changes that aren't committed, and commits that were never pushed anywhere else. In the worktree:</p>
+<pre><code>git status
+git log HEAD --not --remotes --oneline</code></pre>
+        <p>The first shows changed and untracked files. The second lists commits no remote has. If both are empty, nothing is lost except files git ignores, like <code>.env</code> or a local database, so check for those too.</p>
+
+        <h2 style="margin-top:56px">Remove it the way git expects</h2>
+<pre><code>git worktree remove ../my-repo-feature
+git worktree prune</code></pre>
+        <p><code>git worktree remove</code> deletes the folder and git's records of it, including any submodule copies, and refuses if the worktree has uncommitted changes. <code>git worktree prune</code> clears records for worktree folders that were already deleted some other way. Neither touches the branch. Delete that separately with <code>git branch -d</code> once it's merged.</p>
+        <p>More developer folders that grow on their own: <a href="/taking-up-space/developer-files">Xcode, node_modules, and Docker</a>, and <a href="/clear-cache">every tool's cache</a>.</p>
+    
+      </div></div>
+    </section>
+    <section class="tight lit" id="shortcut">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Disk Forecast and git worktrees</h2>
+
+          <p>Disk Forecast finds worktrees anywhere in your home folder by their <code>.git</code> file and lists them in <strong>Cleanup › Worth a look</strong>, unchecked, each with its repository, how many files are changed, and how many commits no remote has. Moving one to the Trash also moves git&#39;s records of it, like <code>git worktree remove</code>; the branch and its commits stay. Records of worktrees that are already gone are under <strong>Safe to clear</strong>, except locked ones. It reads git with every program a repository can configure turned off, so looking never runs code from your projects. Its <strong>Copy Agent Prompt</strong> button hands your picks to Claude Code or Codex with these same checks. It&#39;s free.</p>
+    
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+        </div>
+        <div class="stage glass">
+          <div class="mk mk-win" role="img" aria-label="The Disk Forecast Cleanup window, headed Reclaim space. Safe to clear, 14.3 GB, all checked: build folders in old projects, package manager caches, app caches, editor and chat app caches, Xcode device support, Xcode DerivedData, and logs. Worth a look, 59 GB, unchecked: Ollama models, git worktrees, build folders in active projects, the Docker disk image, big downloads, and disk images and installers. The footer reads 14.3 GB selected, with Open Trash, Copy Agent Prompt, and Move to Trash buttons.">
+              <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">Cleanup</div></div>
+              <div class="mk-hdr"><div><b>Reclaim space</b><span>1,284,906 files measured in 9 s. Everything goes to the Trash first.</span></div><div class="mk-pill">Rescan</div></div>
+              <div class="mk-list">
+                <div class="mk-sec"><span>Safe to clear</span><span>14.3 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Build folders in old projects</b><span>node_modules, build, and package folders in projects you haven't changed in 30+ days. Reinstalling or rebuilding brings them back.</span></div><span class="sz">4.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Package manager caches</b><span>Downloads kept by npm, pnpm, Bun, Cargo, Gradle, pip, and friends so installs are faster. They fill back up as you install packages.</span></div><span class="sz">3.1 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>App caches</b><span>Files apps keep to load things faster. Apps recreate what they need. macOS's own caches are left alone.</span></div><span class="sz">2.2 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Editor and chat app caches</b><span>Caches that VS Code, Cursor, Slack, Discord, Figma, and other apps built on web tech keep with their data. Settings, sign-ins, and history aren't touched. Quit the app first.</span></div><span class="sz">1.9 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode device support</b><span>Debug symbols copied from devices you've plugged in. Xcode copies them again when you connect that device.</span></div><span class="sz">1.3 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode DerivedData</b><span>Xcode's build products and indexes. Xcode rebuilds them the next time you build.</span></div><span class="sz">812 MB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Logs</b><span>Records apps write about what they did. Useful for troubleshooting, then rarely read again.</span></div><span class="sz">402 MB</span></div>
+                <div class="mk-sec"><span>Worth a look</span><span>59 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Ollama models</b><span>Local AI models downloaded by Ollama. Running ollama pull downloads one again, and ollama rm removes a single model.</span></div><span class="sz">18 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Git worktrees</b><span>Extra checkouts of a repository, often left behind by coding agents like Claude Code, Codex, and Conductor. Each shows changes and commits that exist only there; files git ignores, like .env, aren't counted. Its records in the repository go with it, as with git worktree remove; the branch and its commits stay.</span></div><span class="sz">12 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Build folders in active projects</b><span>Build and package folders in projects you've changed recently. Safe to remove, but you'll wait for a reinstall or rebuild next time.</span></div><span class="sz">9.6 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><svg class="mk-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-2.5z"/></svg><div class="txt"><b>Docker disk image</b><span>Everything Docker stores: images, containers, and volumes, in one file. Reclaim space with Docker's own cleanup in System Data, not by deleting the file.</span><div class="mk-pill">Reclaim in System Data…</div></div><span class="sz">8.4 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Big downloads</b><span>Large files and folders in Downloads. Most were needed once.</span></div><span class="sz">5.9 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Disk images and installers</b><span>DMG, ISO, and PKG files. Once an app is installed, its installer is usually not needed.</span></div><span class="sz">4.7 GB</span></div>
+              </div>
+              <div class="mk-foot"><span>14.3 GB selected</span><div class="mk-pill">Open Trash</div><div class="mk-pill">Copy Agent Prompt</div><div class="mk-pill blue">Move to Trash…</div></div>
+            </div>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Questions</h2></div>
+        <div class="faq glass">
+          <details><summary>Does deleting a git worktree delete the branch?</summary><p>No. The branch and its commits are in the main repository. Delete the branch separately with git branch -d once it&#x27;s merged.</p></details>
+          <details><summary>Can I just delete a worktree folder in Finder?</summary><p>It works, but it leaves git&#x27;s records of the worktree in the repository&#x27;s .git/worktrees folder, including any submodule copies. Run git worktree prune afterward to clear them.</p></details>
+          <details><summary>Where does Claude Code put worktrees?</summary><p>On the Mac measured here, in each repository&#x27;s .claude/worktrees folder. Other tools pick their own place, so find worktrees by their .git file rather than by folder name.</p></details>
+          <details><summary>Why does git worktree remove refuse?</summary><p>The worktree has uncommitted changes or untracked files. Commit or stash what you want to keep, or add --force if you&#x27;re sure nothing in it matters.</p></details>
+        </div>
+      </div>
+    </section>
+    <section class="tight lit">
+      <div class="wrap">
+        <div class="head center head-sm"><h2>Related guides</h2></div>
+        <div class="related">
+          <a class="glass" href="/taking-up-space/developer-files"><b>Developer files</b><span>DerivedData, CoreSimulator, node_modules, and Docker.raw.</span></a>
+          <a class="glass" href="/command-line"><b>Command line</b><span>The diskforecast command, for you, scripts, and AI agents.</span></a>
+          <a class="glass" href="/clear-cache/npm"><b>npm</b><span>npm cache clean --force, the npx folder, and node_modules.</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="tight">
+      <div class="wrap narrow">
+        <nav class="more-links" aria-label="What&#x27;s taking up space"><a class="label" href="/taking-up-space">What&#x27;s taking up space</a><a href="/taking-up-space/sleepimage">sleepimage</a><a href="/taking-up-space/iphone-backups">iPhone backups</a><a href="/taking-up-space/messages">Messages</a><a href="/taking-up-space/dropbox">Dropbox</a><a href="/taking-up-space/icloud-drive">iCloud Drive</a><a href="/taking-up-space/developer-files">Developer files</a><a href="/taking-up-space/photos">Photos</a><a href="/taking-up-space/mail">Mail</a></nav>
+      </div>
+    </section>
+    <section class="cta lit">
+      <div class="wrap">
+        <div class="cta-card glass">
+          <img src="/images/icon.svg" alt="" width="96" height="96" loading="lazy">
+          <h2>Know before it's full.</h2>
+          <p>Free. No account, no subscription.</p>
+          <div class="actions">
+            <a class="btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
+        <a class="btn-quiet" href="https://github.com/coreyhaines31/diskforecast"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View source code</a>
+          </div>
+          <p class="fineprint">macOS 14 or later · Apple Silicon and Intel · <code>brew install --cask coreyhaines31/tap/diskforecast</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/purgeable-space-mac">Purgeable space</a><a href="/time-machine-local-snapshots">Time Machine snapshots</a><a href="/other-users-and-shared-mac">Other Users &amp; Shared</a><a href="/empty-trash-mac">Empty the Trash</a><a href="/is-256gb-enough-for-mac">Is 256 GB enough?</a><a href="/other-storage-mac">Other storage</a><a href="/memory-vs-storage-mac">Memory vs storage</a><a href="/command-line">Command line</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a><a href="/taking-up-space">What&#x27;s taking up space</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/alternatives/onyx">OnyX alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
+      <nav class="footer-alts" aria-label="More free Mac apps"><a class="label" href="https://github.com/coreyhaines31">More free Mac apps</a><a href="https://greenroomformac.com" title="Check your camera, mic, and speakers">Green Room</a><a href="https://wifiorisp.com" title="Is slow internet your Wi-Fi or your ISP?">WiFi or ISP</a><a href="https://midnightoil.app" title="Keep your Mac awake">Midnight Oil</a><a href="https://spareformac.com" title="See what&#x27;s using your Mac">Spare</a><a href="https://onhandformac.com" title="A clipboard manager for your Mac">On Hand</a><a href="https://coatcheckformac.com" title="Reach the menu bar icons the notch hides">Coat Check</a></nav>
+      <div class="footer-links"><span>© 2026 Corey Haines. <a href="https://github.com/coreyhaines31/diskforecast/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+      <div class="footer-links"><a href="https://github.com/coreyhaines31/diskforecast">GitHub</a><a href="https://github.com/coreyhaines31/diskforecast/releases">Releases</a><a href="https://github.com/coreyhaines31/diskforecast/issues">Issues</a><a href="/privacy">Privacy</a></div>
+    </div>
+  </footer>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does deleting a git worktree delete the branch?", "acceptedAnswer": {"@type": "Answer", "text": "No. The branch and its commits are in the main repository. Delete the branch separately with git branch -d once it's merged."}}, {"@type": "Question", "name": "Can I just delete a worktree folder in Finder?", "acceptedAnswer": {"@type": "Answer", "text": "It works, but it leaves git's records of the worktree in the repository's .git/worktrees folder, including any submodule copies. Run git worktree prune afterward to clear them."}}, {"@type": "Question", "name": "Where does Claude Code put worktrees?", "acceptedAnswer": {"@type": "Answer", "text": "On the Mac measured here, in each repository's .claude/worktrees folder. Other tools pick their own place, so find worktrees by their .git file rather than by folder name."}}, {"@type": "Question", "name": "Why does git worktree remove refuse?", "acceptedAnswer": {"@type": "Answer", "text": "The worktree has uncommitted changes or untracked files. Commit or stash what you want to keep, or add --force if you're sure nothing in it matters."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Disk Forecast", "item": "https://diskforecast.com/"}, {"@type": "ListItem", "position": 2, "name": "What's taking up space", "item": "https://diskforecast.com/taking-up-space"}, {"@type": "ListItem", "position": 3, "name": "Git worktrees", "item": "https://diskforecast.com/taking-up-space/git-worktrees"}]}</script>
+</body>
+</html>

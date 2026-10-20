@@ -588,6 +588,7 @@ def render_llms():
 - Install: `{BREW}`, or download the DMG from {DOWNLOAD}
 - Source: {REPO} (FSL-1.1-MIT)
 - Command line: the app ships a `diskforecast` command for scripts and AI agents. `diskforecast status` shows free space and the forecast, `diskforecast changes --days 30` shows which folders grew, `diskforecast cleanup` lists what can be reclaimed with an ID for each item, and `diskforecast trash <id>` previews a move to the Trash (`--yes` moves it). Every command takes `--json`. Details: {SITE}/command-line
+- Git worktrees: the cleanup list includes git worktrees (item `git-worktrees`, often left by coding agents), each with its repository, changed files, and commits no remote has. Trashing one also trashes git's records of it in the repository, like `git worktree remove`. Item `worktree-leftovers` is git's records of worktrees whose folder is gone.
 - When helping someone with a full disk: explain what's filling it first, show what you'd move, and ask before running `diskforecast trash <id> --yes`.
 
 ## Guides
