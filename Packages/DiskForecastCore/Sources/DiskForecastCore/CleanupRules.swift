@@ -22,6 +22,12 @@ extension CleanupCatalog {
                 group: .safeToClear
             ) { catalog, scan in catalog.artifacts(scan, stale: true) },
             CleanupRule(
+                id: "worktree-leftovers", title: "Leftover worktree data",
+                explanation: "Git's records for worktrees whose folder is gone, including any submodule copies. "
+                    + "git worktree prune removes the same thing.",
+                group: .safeToClear
+            ) { catalog, scan in catalog.leftoverWorktreeData(scan) },
+            CleanupRule(
                 id: "ollama", title: "Ollama models",
                 explanation: "Local AI models downloaded by Ollama. Running ollama pull downloads one again, "
                     + "and ollama rm removes a single model.",
@@ -106,6 +112,14 @@ extension CleanupCatalog {
                     + "you'll wait for a reinstall or rebuild next time.",
                 group: .worthALook
             ) { catalog, scan in catalog.artifacts(scan, stale: false) },
+            CleanupRule(
+                id: "git-worktrees", title: "Git worktrees",
+                explanation: "Extra checkouts of a repository, often left behind by coding agents like Claude Code, "
+                    + "Codex, and Conductor. Each shows changes and commits that exist only there; files git "
+                    + "ignores, like .env, aren't counted. Its records in the repository go with it, as with git "
+                    + "worktree remove; the branch and its commits stay.",
+                group: .worthALook
+            ) { catalog, scan in catalog.worktrees(scan) },
             CleanupRule(
                 id: "orphaned-workspaces", title: "Editor data for deleted projects",
                 explanation: "What VS Code, Cursor, and similar editors saved about projects that are no longer on "

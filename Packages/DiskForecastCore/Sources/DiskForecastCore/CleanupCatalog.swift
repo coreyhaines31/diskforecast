@@ -28,12 +28,16 @@ public struct CleanupEntry: Sendable, Hashable, Identifiable {
     public let detail: String?
     /// What the list calls it. Usually the file or folder name.
     public let name: String
+    /// Paths that go to the Trash with it, like a worktree's records in its repository. Counted
+    /// in `bytes`.
+    public let companions: [String]
 
-    public init(path: String, bytes: Int64, detail: String? = nil, name: String? = nil) {
+    public init(path: String, bytes: Int64, detail: String? = nil, name: String? = nil, companions: [String] = []) {
         self.path = path
         self.bytes = bytes
         self.detail = detail
         self.name = name ?? (path as NSString).lastPathComponent
+        self.companions = companions
     }
 }
 
@@ -67,15 +71,21 @@ public struct CleanupCatalog: Sendable {
     public let home: String
     public let staleAfterDays: Int
     public let now: Date
+    /// What removing a checkout would lose. Swappable for tests.
+    let gitState: @Sendable (String) -> GitState?
 
     /// Entries smaller than this aren't worth listing.
     static let minimumEntryBytes: Int64 = 1_000_000
     static let minimumDownloadBytes: Int64 = 10_000_000
 
-    public init(home: String, staleAfterDays: Int = 30, now: Date = Date()) {
+    public init(
+        home: String, staleAfterDays: Int = 30, now: Date = Date(),
+        gitState: @escaping @Sendable (String) -> GitState? = GitState.read(at:)
+    ) {
         self.home = home.hasSuffix("/") ? String(home.dropLast()) : home
         self.staleAfterDays = staleAfterDays
         self.now = now
+        self.gitState = gitState
     }
 
     private var staleCutoff: Date { now.addingTimeInterval(-Double(staleAfterDays) * 86_400) }
@@ -91,8 +101,11 @@ public struct CleanupCatalog: Sendable {
                 for inner in claimed where inner.hasPrefix(candidate.path + "/") {
                     bytes -= scan.allocatedSize(of: inner) ?? 0
                 }
+                let companions = candidate.companions.filter { scan.allocatedSize(of: $0) != nil }
+                bytes += companions.reduce(0) { $0 + (scan.allocatedSize(of: $1) ?? 0) }
                 return CleanupEntry(
-                    path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name
+                    path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name,
+                    companions: companions
                 )
             }
             .filter { $0.bytes >= rule.minimumBytes }
@@ -113,6 +126,7 @@ public struct CleanupCatalog: Sendable {
         let path: String
         var detail: String?
         var name: String?
+        var companions: [String] = []
     }
 
     func path(_ relative: String) -> String {
@@ -196,6 +210,59 @@ public struct CleanupCatalog: Sendable {
                     )
                 }
         }
+    }
+
+    /// Git worktree checkouts, each with what removing it would lose.
+    func worktrees(_ scan: ScanResult) -> [Candidate] {
+        scan.worktrees.map { worktree in
+            var parts = [worktree.repository]
+            if let state = gitState(worktree.path) { parts.append(state.summary) }
+            parts.append("last changed \(Age.phrase(from: worktree.modified, to: now))")
+            // Its records go too, as with git worktree remove; they can hold whole submodule copies.
+            // Only when they point back at this checkout, as git's own do, so a stray .git file
+            // can't send something else to the Trash.
+            let pointsBack = Self.checkoutGitFile(recordedIn: worktree.gitDirectory) == worktree.path + "/.git"
+            return Candidate(
+                path: worktree.path, detail: parts.joined(separator: " · "),
+                companions: pointsBack ? [worktree.gitDirectory] : []
+            )
+        }
+    }
+
+    /// Git's records for worktrees whose folder is gone, which is what `git worktree prune`
+    /// removes. Locked worktrees and ones on a drive that isn't connected are left out.
+    func leftoverWorktreeData(_ scan: ScanResult) -> [Candidate] {
+        let tree = scan.tree
+        let recordFolders = tree.names.indices.filter { node in
+            guard node > 0, tree.names[node] == "worktrees" else { return false }
+            let parent = tree.names[Int(tree.parents[node])]
+            return parent == ".git" || parent.hasSuffix(".git")
+        }
+        // A checkout moved by hand still points at its records; they aren't left over.
+        let inUse = Set(scan.worktrees.map(\.gitDirectory))
+        return recordFolders.flatMap { records in
+            tree.children[records].map(Int.init).compactMap { node -> Candidate? in
+                let folder = tree.path(of: node)
+                guard !inUse.contains(folder), !FileManager.default.fileExists(atPath: folder + "/locked"),
+                      let checkoutGit = Self.checkoutGitFile(recordedIn: folder),
+                      !checkoutGit.hasPrefix("/Volumes/"), Self.isMissing(checkoutGit)
+                else { return nil }
+                let checkout = (checkoutGit as NSString).deletingLastPathComponent
+                return Candidate(
+                    path: folder,
+                    detail: "\(WorktreeFinding.repository(of: folder)) · worktree folder deleted",
+                    name: (checkout as NSString).lastPathComponent
+                )
+            }
+        }
+    }
+
+    /// The checkout's `.git` file that a worktree's records say they belong to.
+    static func checkoutGitFile(recordedIn records: String) -> String? {
+        guard let pointer = try? String(contentsOfFile: records + "/gitdir", encoding: .utf8) else { return nil }
+        let target = pointer.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !target.isEmpty else { return nil }
+        return ((target.hasPrefix("/") ? target : records + "/" + target) as NSString).standardizingPath
     }
 
     /// True only when nothing is there. A folder macOS won't let the app look into isn't missing.
