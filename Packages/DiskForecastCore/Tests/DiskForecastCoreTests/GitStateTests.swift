@@ -140,8 +140,38 @@ struct WorktreeCleanupTests {
         let items = CleanupCatalog(home: fixture.base.path) { _ in nil }.items(from: scan)
         let leftovers = try #require(items.first { $0.id == "worktree-leftovers" })
         #expect(leftovers.group == .safeToClear)
+        // The fixture's live worktree keeps its records off the list.
         #expect(leftovers.entries.map(\.path) == [records + "gone"])
         #expect(leftovers.entries.first?.name == "gone")
         #expect(leftovers.entries.first?.detail == "repo · worktree folder deleted")
+    }
+
+    @Test func keepsRecordsOfACheckoutMovedByHand() async throws {
+        let fixture = try GitFixture()
+        let moved = fixture.base.path + "/moved"
+        try FileManager.default.moveItem(atPath: fixture.worktree, toPath: moved)
+        try Data(count: 2_000_000).write(to: URL(filePath: moved + "/big.bin"))
+        try Data(count: 2_000_000).write(to: URL(filePath: fixture.main + "/.git/worktrees/repo-agent/modules.bin"))
+        let scan = await DiskScanner(options: .init(root: fixture.base)).scan()
+        let items = CleanupCatalog(home: fixture.base.path) { _ in nil }.items(from: scan)
+        #expect(!items.contains { $0.id == "worktree-leftovers" })
+        // Its records point at where it used to be, so they don't go with it either.
+        let worktree = try #require(items.first { $0.id == "git-worktrees" }?.entries.first)
+        #expect(worktree.path == moved)
+        #expect(worktree.companions.isEmpty)
+    }
+
+    @Test func ignoresGitFilesThatArentPlainFiles() async throws {
+        let fixture = try GitFixture()
+        let decoy = fixture.base.path + "/decoy"
+        try FileManager.default.createDirectory(atPath: decoy, withIntermediateDirectories: true)
+        try FileManager.default.createSymbolicLink(
+            atPath: decoy + "/.git", withDestinationPath: fixture.worktree + "/.git"
+        )
+        let pipeHolder = fixture.base.path + "/pipe-holder"
+        try FileManager.default.createDirectory(atPath: pipeHolder, withIntermediateDirectories: true)
+        #expect(mkfifo(pipeHolder + "/.git", 0o600) == 0)
+        let scan = await DiskScanner(options: .init(root: fixture.base)).scan()
+        #expect(scan.worktrees.map(\.path) == [fixture.worktree])
     }
 }

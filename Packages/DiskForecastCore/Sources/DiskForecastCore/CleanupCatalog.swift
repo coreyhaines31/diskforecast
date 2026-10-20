@@ -219,8 +219,12 @@ public struct CleanupCatalog: Sendable {
             if let state = gitState(worktree.path) { parts.append(state.summary) }
             parts.append("last changed \(Age.phrase(from: worktree.modified, to: now))")
             // Its records go too, as with git worktree remove; they can hold whole submodule copies.
+            // Only when they point back at this checkout, as git's own do, so a stray .git file
+            // can't send something else to the Trash.
+            let pointsBack = Self.checkoutGitFile(recordedIn: worktree.gitDirectory) == worktree.path + "/.git"
             return Candidate(
-                path: worktree.path, detail: parts.joined(separator: " · "), companions: [worktree.gitDirectory]
+                path: worktree.path, detail: parts.joined(separator: " · "),
+                companions: pointsBack ? [worktree.gitDirectory] : []
             )
         }
     }
@@ -234,18 +238,15 @@ public struct CleanupCatalog: Sendable {
             let parent = tree.names[Int(tree.parents[node])]
             return parent == ".git" || parent.hasSuffix(".git")
         }
+        // A checkout moved by hand still points at its records; they aren't left over.
+        let inUse = Set(scan.worktrees.map(\.gitDirectory))
         return recordFolders.flatMap { records in
             tree.children[records].map(Int.init).compactMap { node -> Candidate? in
                 let folder = tree.path(of: node)
-                guard !FileManager.default.fileExists(atPath: folder + "/locked"),
-                      let pointer = try? String(contentsOfFile: folder + "/gitdir", encoding: .utf8)
+                guard !inUse.contains(folder), !FileManager.default.fileExists(atPath: folder + "/locked"),
+                      let checkoutGit = Self.checkoutGitFile(recordedIn: folder),
+                      !checkoutGit.hasPrefix("/Volumes/"), Self.isMissing(checkoutGit)
                 else { return nil }
-                let target = pointer.trimmingCharacters(in: .whitespacesAndNewlines)
-                let checkoutGit = ((target.hasPrefix("/") ? target : folder + "/" + target) as NSString)
-                    .standardizingPath
-                guard !target.isEmpty, !checkoutGit.hasPrefix("/Volumes/"), Self.isMissing(checkoutGit) else {
-                    return nil
-                }
                 let checkout = (checkoutGit as NSString).deletingLastPathComponent
                 return Candidate(
                     path: folder,
@@ -254,6 +255,14 @@ public struct CleanupCatalog: Sendable {
                 )
             }
         }
+    }
+
+    /// The checkout's `.git` file that a worktree's records say they belong to.
+    static func checkoutGitFile(recordedIn records: String) -> String? {
+        guard let pointer = try? String(contentsOfFile: records + "/gitdir", encoding: .utf8) else { return nil }
+        let target = pointer.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !target.isEmpty else { return nil }
+        return ((target.hasPrefix("/") ? target : records + "/" + target) as NSString).standardizingPath
     }
 
     /// True only when nothing is there. A folder macOS won't let the app look into isn't missing.
