@@ -105,7 +105,7 @@
           </div>
         </div>
         <div class="stage glass">
-          <div class="mk mk-win" role="img" aria-label="The Disk Forecast Cleanup window, headed Reclaim space. Safe to clear, 14.3 GB, all checked: build folders in old projects, package manager caches, app caches, editor and chat app caches, Xcode device support, Xcode DerivedData, and logs. Worth a look, 47 GB, unchecked: Ollama models, build folders in active projects, the Docker disk image, big downloads, and disk images and installers. The footer reads 14.3 GB selected, with Open Trash and Move to Trash buttons.">
+          <div class="mk mk-win" role="img" aria-label="The Disk Forecast Cleanup window, headed Reclaim space. Safe to clear, 14.3 GB, all checked: build folders in old projects, package manager caches, app caches, editor and chat app caches, Xcode device support, Xcode DerivedData, and logs. Worth a look, 59 GB, unchecked: Ollama models, git worktrees, build folders in active projects, the Docker disk image, big downloads, and disk images and installers. The footer reads 14.3 GB selected, with Open Trash, Copy Agent Prompt, and Move to Trash buttons.">
               <div class="mk-titlebar"><div class="mk-lights"><i></i><i></i><i></i></div><div class="title">Cleanup</div></div>
               <div class="mk-hdr"><div><b>Reclaim space</b><span>1,284,906 files measured in 9 s. Everything goes to the Trash first.</span></div><div class="mk-pill">Rescan</div></div>
               <div class="mk-list">
@@ -117,14 +117,15 @@
                 <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode device support</b><span>Debug symbols copied from devices you've plugged in. Xcode copies them again when you connect that device.</span></div><span class="sz">1.3 GB</span></div>
                 <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Xcode DerivedData</b><span>Xcode's build products and indexes. Xcode rebuilds them the next time you build.</span></div><span class="sz">812 MB</span></div>
                 <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box on"></span><div class="txt"><b>Logs</b><span>Records apps write about what they did. Useful for troubleshooting, then rarely read again.</span></div><span class="sz">402 MB</span></div>
-                <div class="mk-sec"><span>Worth a look</span><span>47 GB</span></div>
+                <div class="mk-sec"><span>Worth a look</span><span>59 GB</span></div>
                 <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Ollama models</b><span>Local AI models downloaded by Ollama. Running ollama pull downloads one again, and ollama rm removes a single model.</span></div><span class="sz">18 GB</span></div>
+                <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Git worktrees</b><span>Extra checkouts of a repository, often left behind by coding agents like Claude Code, Codex, and Conductor. Each shows changes and commits that exist only there; files git ignores, like .env, aren't counted. Its records in the repository go with it, as with git worktree remove; the branch and its commits stay.</span></div><span class="sz">12 GB</span></div>
                 <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Build folders in active projects</b><span>Build and package folders in projects you've changed recently. Safe to remove, but you'll wait for a reinstall or rebuild next time.</span></div><span class="sz">9.6 GB</span></div>
                 <div class="mk-crow"><i class="mk-chev"></i><svg class="mk-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-2.5z"/></svg><div class="txt"><b>Docker disk image</b><span>Everything Docker stores: images, containers, and volumes, in one file. Reclaim space with Docker's own cleanup in System Data, not by deleting the file.</span><div class="mk-pill">Reclaim in System Data…</div></div><span class="sz">8.4 GB</span></div>
                 <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Big downloads</b><span>Large files and folders in Downloads. Most were needed once.</span></div><span class="sz">5.9 GB</span></div>
                 <div class="mk-crow"><i class="mk-chev"></i><span class="mk-box"></span><div class="txt"><b>Disk images and installers</b><span>DMG, ISO, and PKG files. Once an app is installed, its installer is usually not needed.</span></div><span class="sz">4.7 GB</span></div>
               </div>
-              <div class="mk-foot"><span>14.3 GB selected</span><div class="mk-pill">Open Trash</div><div class="mk-pill blue">Move to Trash…</div></div>
+              <div class="mk-foot"><span>14.3 GB selected</span><div class="mk-pill">Open Trash</div><div class="mk-pill">Copy Agent Prompt</div><div class="mk-pill blue">Move to Trash…</div></div>
             </div>
         </div>
       </div>

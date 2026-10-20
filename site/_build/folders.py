@@ -508,7 +508,69 @@ MAIL = {
     ],
 }
 
-FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX, ICLOUD_DRIVE, DEVELOPER_FILES, PHOTOS, MAIL]
+# ------------------------------------------------------------------ git worktrees
+# "git worktree" queries are developer-docs searches with little volume; this page is for people whose agents (Claude
+# Code, Codex, Conductor, Clinch) make worktrees. Facts measured on the same Mac on 2026-10-20: 36 worktree checkouts in
+# ~/code (find for .git files pointing into .git/worktrees, maxdepth 4), 39 GB with their node_modules; one repo's
+# .git/worktrees at 8.2 GB, two worktrees with 4.1 GB of submodule copies each. Claude Code's are in <repo>/.claude/worktrees
+# on this Mac. Disk Forecast claims trace to CleanupRules.swift (git-worktrees, worktree-leftovers) and GitState.swift.
+GIT_WORKTREES = {
+    "slug": "git-worktrees",
+    "title": "Git worktrees taking up space on Mac: find and remove them",
+    "description": "Coding agents leave git worktrees behind, and with submodules each can hold gigabytes. How to find every worktree on a Mac, check what it holds, and remove it.",
+    "h1": "Git worktrees taking up space, <em>and how to clear them.</em>",
+    "lede": "Claude Code, Codex, Conductor, and other coding agents give each task its own git worktree. They're quick to make and easy to forget, and every one is a full checkout. Here's how to find them, check what each would lose, and remove them the way git expects.",
+    "tldr": "Run <code>git worktree list</code> in each repository to see its worktrees, then <code>git worktree remove <path></code> for the ones you're done with. It refuses a worktree with uncommitted changes. <code>git worktree prune</code> clears git's records of worktree folders that are already gone, which can hold whole copies of every submodule. On the Mac measured here, 36 worktrees in one code folder came to 39 GB.",
+    "card_title": "Git worktrees",
+    "card_blurb": "Extra checkouts that coding agents leave behind.",
+    "finds_title": "Disk Forecast and git worktrees",
+    "paths": [
+        ("Worktrees in a code folder", "<code>~/code</code>, made by <code>git worktree add</code> and by agents", "39 GB, 36 worktrees"),
+        ("Claude Code's worktrees", "<code>&lt;repository&gt;/.claude/worktrees</code>", "Inside each repository"),
+        ("Git's records of each worktree", "<code>&lt;repository&gt;/.git/worktrees/&lt;name&gt;</code>", "8.2 GB for one repository"),
+        ("Submodule copies per worktree", "<code>&lt;repository&gt;/.git/worktrees/&lt;name&gt;/modules</code>", "4.1 GB each"),
+    ],
+    "html": """
+        <h2>Why worktrees add up</h2>
+        <p>A worktree is a second checkout of the same repository, on its own branch, sharing the repository's history. The history isn't copied, but everything else is: every tracked file, plus whatever the project installs or builds, like <code>node_modules</code>. Agents make one per task so parallel tasks don't collide, and they rarely clean up after themselves.</p>
+        <p>Here's one developer Mac in October 2026:</p>
+        {{PATHS}}
+        <p>The last two rows are easy to miss. Each worktree gets its own folder inside the main repository's <code>.git/worktrees</code>, and if the repository has submodules, every worktree keeps its own copy of each one there. Deleting the worktree's folder in Finder leaves that copy behind.</p>
+
+        <h2 style="margin-top:56px">How to find every worktree</h2>
+        <p>In a repository, git lists its own:</p>
+<pre><code>git worktree list</code></pre>
+        <p>To find worktrees from every repository in a folder, look for the <code>.git</code> file each one has. A normal checkout has a <code>.git</code> folder; a worktree has a one-line file that points back to its repository:</p>
+<pre><code>find ~/code -name .git -type f -exec grep -l "gitdir: .*/worktrees/" {} + \\
+  | sed 's#/.git$##' | tr '\\n' '\\0' | xargs -0 du -sh | sort -h</code></pre>
+        <p>Change <code>~/code</code> to wherever your projects and your agents' worktrees live.</p>
+
+        <h2 style="margin-top:56px">Check what a worktree would lose</h2>
+        <p>The branch and its commits live in the main repository, so removing a worktree doesn't remove them. Two things can still be lost: changes that aren't committed, and commits that were never pushed anywhere else. In the worktree:</p>
+<pre><code>git status
+git log HEAD --not --remotes --oneline</code></pre>
+        <p>The first shows changed and untracked files. The second lists commits no remote has. If both are empty, nothing is lost except files git ignores, like <code>.env</code> or a local database, so check for those too.</p>
+
+        <h2 style="margin-top:56px">Remove it the way git expects</h2>
+<pre><code>git worktree remove ../my-repo-feature
+git worktree prune</code></pre>
+        <p><code>git worktree remove</code> deletes the folder and git's records of it, including any submodule copies, and refuses if the worktree has uncommitted changes. <code>git worktree prune</code> clears records for worktree folders that were already deleted some other way. Neither touches the branch. Delete that separately with <code>git branch -d</code> once it's merged.</p>
+        <p>More developer folders that grow on their own: <a href="/taking-up-space/developer-files">Xcode, node_modules, and Docker</a>, and <a href="/clear-cache">every tool's cache</a>.</p>
+    """,
+    "finds": """
+          <p>Disk Forecast finds worktrees anywhere in your home folder by their <code>.git</code> file and lists them in <strong>Cleanup › Worth a look</strong>, unchecked, each with its repository, how many files are changed, and how many commits no remote has. Moving one to the Trash also moves git&#39;s records of it, like <code>git worktree remove</code>; the branch and its commits stay. Records of worktrees that are already gone are under <strong>Safe to clear</strong>, except locked ones. It reads git with every program a repository can configure turned off, so looking never runs code from your projects. Its <strong>Copy Agent Prompt</strong> button hands your picks to Claude Code or Codex with these same checks. It&#39;s free.</p>
+    """,
+    "mockup": "cleanup",
+    "related": ["/taking-up-space/developer-files", "/command-line", "/clear-cache/npm"],
+    "faqs": [
+        ("Does deleting a git worktree delete the branch?", "No. The branch and its commits are in the main repository. Delete the branch separately with git branch -d once it's merged."),
+        ("Can I just delete a worktree folder in Finder?", "It works, but it leaves git's records of the worktree in the repository's .git/worktrees folder, including any submodule copies. Run git worktree prune afterward to clear them."),
+        ("Where does Claude Code put worktrees?", "On the Mac measured here, in each repository's .claude/worktrees folder. Other tools pick their own place, so find worktrees by their .git file rather than by folder name."),
+        ("Why does git worktree remove refuse?", "The worktree has uncommitted changes or untracked files. Commit or stash what you want to keep, or add --force if you're sure nothing in it matters."),
+    ],
+}
+
+FOLDER_PAGES = [SLEEPIMAGE, IPHONE_BACKUPS, MESSAGES, DROPBOX, ICLOUD_DRIVE, DEVELOPER_FILES, GIT_WORKTREES, PHOTOS, MAIL]
 
 TAKING_UP_SPACE_HUB = {
     "path": "/taking-up-space",
