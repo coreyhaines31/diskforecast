@@ -88,6 +88,20 @@ struct DiskScannerTests {
         #expect(result.size(of: nodeModules) >= 10_000)
     }
 
+    @Test func findsToolCachesBesideTheirProjectFiles() async throws {
+        try write("web/package.json", bytes: 10)
+        try write("web/.turbo/cache/blob", bytes: 5_000)
+        try write("web/.parcel-cache/data.mdb", bytes: 5_000)
+        try write("py/pyproject.toml", bytes: 10)
+        try write("py/.pytest_cache/v/cache/nodeids", bytes: 5_000)
+        try write("py/.mypy_cache/3.12/app.data.json", bytes: 5_000)
+        try write("py/.ruff_cache/0.6.0/123", bytes: 5_000)
+        try write("loose/.ruff_cache/0.6.0/123", bytes: 5_000)
+        let kinds = await scan().artifacts.map(\.kind)
+        #expect(Set(kinds) == [.turborepo, .parcel, .pytest, .mypy, .ruff])
+        #expect(kinds.count == 5)
+    }
+
     @Test func findsDiskImages() async throws {
         try write("Downloads/Installer.dmg", bytes: 200_000)
         try write("Downloads/small.dmg", bytes: 1_000)
