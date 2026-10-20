@@ -113,6 +113,17 @@ struct WorktreeCleanupTests {
         #expect(worktrees.entries.map(\.path) == [fixture.worktree])
         #expect(worktrees.entries.first?.detail == "repo · 1 changed file · last changed today")
         #expect(!items.contains { $0.id == "worktree-leftovers" })
+
+        // Trashing it takes its records in the repository too, as git worktree remove would.
+        let records = fixture.main + "/.git/worktrees/repo-agent"
+        let entry = try #require(worktrees.entries.first)
+        #expect(entry.companions == [records])
+        let trasher = Trasher(home: fixture.base.path)
+        let report = trasher.trash([entry])
+        #expect(Set(report.moved) == [fixture.worktree, records])
+        #expect(!FileManager.default.fileExists(atPath: records))
+        #expect(trasher.putBack(report).isEmpty)
+        #expect(GitState.read(at: fixture.worktree) != nil)
     }
 
     @Test func listsRecordsOfDeletedWorktreesButNotLockedOnes() async throws {

@@ -80,6 +80,19 @@ public struct Trasher: Sendable {
         return report
     }
 
+    /// Moves cleanup entries to the Trash, each with its companions. Companions go only when their
+    /// entry did.
+    public func trash(_ entries: [CleanupEntry]) -> Report {
+        let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
+        var report = trash(entries.map(\.path), sizes: sizes)
+        let moved = Set(report.moved)
+        let companions = trash(entries.filter { moved.contains($0.path) }.flatMap(\.companions))
+        report.moved += companions.moved
+        report.inTrash.merge(companions.inTrash) { first, _ in first }
+        report.failed += companions.failed
+        return report
+    }
+
     /// Moves what a trash run moved back where it was, outer folders first. Returns what couldn't
     /// go back, and why.
     public func putBack(_ report: Report) -> [(path: String, reason: String)] {

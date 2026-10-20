@@ -28,12 +28,16 @@ public struct CleanupEntry: Sendable, Hashable, Identifiable {
     public let detail: String?
     /// What the list calls it. Usually the file or folder name.
     public let name: String
+    /// Paths that go to the Trash with it, like a worktree's records in its repository. Counted
+    /// in `bytes`.
+    public let companions: [String]
 
-    public init(path: String, bytes: Int64, detail: String? = nil, name: String? = nil) {
+    public init(path: String, bytes: Int64, detail: String? = nil, name: String? = nil, companions: [String] = []) {
         self.path = path
         self.bytes = bytes
         self.detail = detail
         self.name = name ?? (path as NSString).lastPathComponent
+        self.companions = companions
     }
 }
 
@@ -97,8 +101,11 @@ public struct CleanupCatalog: Sendable {
                 for inner in claimed where inner.hasPrefix(candidate.path + "/") {
                     bytes -= scan.allocatedSize(of: inner) ?? 0
                 }
+                let companions = candidate.companions.filter { scan.allocatedSize(of: $0) != nil }
+                bytes += companions.reduce(0) { $0 + (scan.allocatedSize(of: $1) ?? 0) }
                 return CleanupEntry(
-                    path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name
+                    path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name,
+                    companions: companions
                 )
             }
             .filter { $0.bytes >= rule.minimumBytes }
@@ -119,6 +126,7 @@ public struct CleanupCatalog: Sendable {
         let path: String
         var detail: String?
         var name: String?
+        var companions: [String] = []
     }
 
     func path(_ relative: String) -> String {
@@ -210,7 +218,10 @@ public struct CleanupCatalog: Sendable {
             var parts = [worktree.repository]
             if let state = gitState(worktree.path) { parts.append(state.summary) }
             parts.append("last changed \(Age.phrase(from: worktree.modified, to: now))")
-            return Candidate(path: worktree.path, detail: parts.joined(separator: " · "))
+            // Its records go too, as with git worktree remove; they can hold whole submodule copies.
+            return Candidate(
+                path: worktree.path, detail: parts.joined(separator: " · "), companions: [worktree.gitDirectory]
+            )
         }
     }
 
