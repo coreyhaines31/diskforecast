@@ -101,3 +101,36 @@ struct WorktreeFindingTests {
         #expect(finding.repository == "app")
     }
 }
+
+struct WorktreeCleanupTests {
+    @Test func listsWorktreesWithWhatTheyWouldLose() async throws {
+        let fixture = try GitFixture()
+        try Data(count: 2_000_000).write(to: URL(filePath: fixture.worktree + "/big.bin"))
+        let scan = await DiskScanner(options: .init(root: fixture.base)).scan()
+        let items = CleanupCatalog(home: fixture.base.path).items(from: scan)
+        let worktrees = try #require(items.first { $0.id == "git-worktrees" })
+        #expect(worktrees.group == .worthALook)
+        #expect(worktrees.entries.map(\.path) == [fixture.worktree])
+        #expect(worktrees.entries.first?.detail == "repo · 1 changed file · last changed today")
+        #expect(!items.contains { $0.id == "worktree-leftovers" })
+    }
+
+    @Test func listsRecordsOfDeletedWorktreesButNotLockedOnes() async throws {
+        let fixture = try GitFixture()
+        let records = fixture.main + "/.git/worktrees/"
+        for name in ["gone", "away"] {
+            try fixture.git(["worktree", "add", "-q", "-b", name, fixture.base.path + "/" + name], in: fixture.main)
+            // Stands in for the submodule copies that make these records big.
+            try Data(count: 2_000_000).write(to: URL(filePath: records + name + "/modules.bin"))
+            try FileManager.default.removeItem(atPath: fixture.base.path + "/" + name)
+        }
+        try fixture.git(["worktree", "lock", fixture.base.path + "/away"], in: fixture.main)
+        let scan = await DiskScanner(options: .init(root: fixture.base)).scan()
+        let items = CleanupCatalog(home: fixture.base.path) { _ in nil }.items(from: scan)
+        let leftovers = try #require(items.first { $0.id == "worktree-leftovers" })
+        #expect(leftovers.group == .safeToClear)
+        #expect(leftovers.entries.map(\.path) == [records + "gone"])
+        #expect(leftovers.entries.first?.name == "gone")
+        #expect(leftovers.entries.first?.detail == "repo · worktree folder deleted")
+    }
+}

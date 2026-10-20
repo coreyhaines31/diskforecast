@@ -121,7 +121,10 @@ public struct WorktreeFinding: Sendable, Hashable {
     public let modified: Date
 
     /// The folder name of the repository it belongs to.
-    public var repository: String {
+    public var repository: String { Self.repository(of: gitDirectory) }
+
+    /// The folder name of the repository that keeps the worktree records at `gitDirectory`.
+    static func repository(of gitDirectory: String) -> String {
         let records = ((gitDirectory as NSString).deletingLastPathComponent as NSString).deletingLastPathComponent
         let name = (records as NSString).lastPathComponent
         if name == ".git" { return ((records as NSString).deletingLastPathComponent as NSString).lastPathComponent }

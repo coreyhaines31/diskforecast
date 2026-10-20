@@ -67,15 +67,21 @@ public struct CleanupCatalog: Sendable {
     public let home: String
     public let staleAfterDays: Int
     public let now: Date
+    /// What removing a checkout would lose. Swappable for tests.
+    let gitState: @Sendable (String) -> GitState?
 
     /// Entries smaller than this aren't worth listing.
     static let minimumEntryBytes: Int64 = 1_000_000
     static let minimumDownloadBytes: Int64 = 10_000_000
 
-    public init(home: String, staleAfterDays: Int = 30, now: Date = Date()) {
+    public init(
+        home: String, staleAfterDays: Int = 30, now: Date = Date(),
+        gitState: @escaping @Sendable (String) -> GitState? = GitState.read(at:)
+    ) {
         self.home = home.hasSuffix("/") ? String(home.dropLast()) : home
         self.staleAfterDays = staleAfterDays
         self.now = now
+        self.gitState = gitState
     }
 
     private var staleCutoff: Date { now.addingTimeInterval(-Double(staleAfterDays) * 86_400) }
@@ -195,6 +201,47 @@ public struct CleanupCatalog: Sendable {
                         path: candidate.path, detail: "\(appName) · project deleted", name: url.lastPathComponent
                     )
                 }
+        }
+    }
+
+    /// Git worktree checkouts, each with what removing it would lose.
+    func worktrees(_ scan: ScanResult) -> [Candidate] {
+        scan.worktrees.map { worktree in
+            var parts = [worktree.repository]
+            if let state = gitState(worktree.path) { parts.append(state.summary) }
+            parts.append("last changed \(Age.phrase(from: worktree.modified, to: now))")
+            return Candidate(path: worktree.path, detail: parts.joined(separator: " · "))
+        }
+    }
+
+    /// Git's records for worktrees whose folder is gone, which is what `git worktree prune`
+    /// removes. Locked worktrees and ones on a drive that isn't connected are left out.
+    func leftoverWorktreeData(_ scan: ScanResult) -> [Candidate] {
+        let tree = scan.tree
+        let recordFolders = tree.names.indices.filter { node in
+            guard node > 0, tree.names[node] == "worktrees" else { return false }
+            let parent = tree.names[Int(tree.parents[node])]
+            return parent == ".git" || parent.hasSuffix(".git")
+        }
+        return recordFolders.flatMap { records in
+            tree.children[records].map(Int.init).compactMap { node -> Candidate? in
+                let folder = tree.path(of: node)
+                guard !FileManager.default.fileExists(atPath: folder + "/locked"),
+                      let pointer = try? String(contentsOfFile: folder + "/gitdir", encoding: .utf8)
+                else { return nil }
+                let target = pointer.trimmingCharacters(in: .whitespacesAndNewlines)
+                let checkoutGit = ((target.hasPrefix("/") ? target : folder + "/" + target) as NSString)
+                    .standardizingPath
+                guard !target.isEmpty, !checkoutGit.hasPrefix("/Volumes/"), Self.isMissing(checkoutGit) else {
+                    return nil
+                }
+                let checkout = (checkoutGit as NSString).deletingLastPathComponent
+                return Candidate(
+                    path: folder,
+                    detail: "\(WorktreeFinding.repository(of: folder)) · worktree folder deleted",
+                    name: (checkout as NSString).lastPathComponent
+                )
+            }
         }
     }
 
