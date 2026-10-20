@@ -36,7 +36,8 @@ public enum Demo {
     public static func scan(home: String) -> ScanResult {
         ScanResult(
             tree: tree(home: home, folders: folders), fileCount: 2_480_000, largestFiles: [], diskImages: [],
-            artifacts: [], deniedCount: 0, deniedSamples: [], skippedPaths: [], stalledPaths: [], duration: 31
+            artifacts: [], worktrees: [], deniedCount: 0, deniedSamples: [], skippedPaths: [], stalledPaths: [],
+            duration: 31
         )
     }
 
@@ -77,6 +78,7 @@ public enum Demo {
             "code/website/.next": "website · last changed 6 weeks ago",
             "Downloads/macOS Installer.dmg": "Modified 5 weeks ago",
             "code/storefront/node_modules": "storefront · last changed today",
+            "code/storefront-checkout-flow": "storefront · 2 commits not pushed · last changed 3 days ago",
             "Library/Application Support/Slack/Cache": "Cache",
             "Library/Application Support/Cursor/CachedExtensionVSIXs": "CachedExtensionVSIXs"
         ]
@@ -109,7 +111,8 @@ public enum Demo {
             item("logs", [("Library/Logs", 1.2)]),
             item("ollama", [(".ollama/models", 18)]),
             item("disk-images", [("Downloads/macOS Installer.dmg", 14)]),
-            item("active-builds", [("code/storefront/node_modules", 1.4)])
+            item("active-builds", [("code/storefront/node_modules", 1.4)]),
+            item("git-worktrees", [("code/storefront-checkout-flow", 3.4)])
         ]
         .compactMap { $0 }
         .sorted { $0.bytes > $1.bytes }

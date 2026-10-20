@@ -16,9 +16,8 @@ enum TrashFlow {
         NSApp.activate()
         guard confirm.runModal() == .alertFirstButtonReturn else { return }
 
-        let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
         let trasher = Trasher(home: scan.home)
-        let report = trasher.trash(entries.map(\.path), sizes: sizes)
+        let report = trasher.trash(entries)
         TrashHistory.record(report, trasher: trasher)
         scan.remove(Set(report.moved))
         disk.refresh()

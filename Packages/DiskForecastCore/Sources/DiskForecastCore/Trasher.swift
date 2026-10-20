@@ -53,10 +53,15 @@ public struct Trasher: Sendable {
         return nil
     }
 
-    /// Moves each path to the Trash. `sizes` reports what each one held, for the total.
+    /// Moves each path to the Trash. `sizes` reports what each one held, for the total. Deeper
+    /// paths go first, so a folder and something inside it can be trashed in one run.
     public func trash(_ paths: [String], sizes: [String: Int64] = [:]) -> Report {
         var report = Report()
-        for path in paths {
+        let deepestFirst = paths.enumerated().sorted { first, second in
+            let depths = (first.element.split(separator: "/").count, second.element.split(separator: "/").count)
+            return depths.0 == depths.1 ? first.offset < second.offset : depths.0 > depths.1
+        }
+        for path in deepestFirst.map(\.element) {
             if let refusal = refusal(for: path) {
                 report.failed.append((path, refusal.description))
                 continue
@@ -75,10 +80,24 @@ public struct Trasher: Sendable {
         return report
     }
 
-    /// Moves what a trash run moved back where it was. Returns what couldn't go back, and why.
+    /// Moves cleanup entries to the Trash, each with its companions. Companions go only when their
+    /// entry did.
+    public func trash(_ entries: [CleanupEntry]) -> Report {
+        let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
+        var report = trash(entries.map(\.path), sizes: sizes)
+        let moved = Set(report.moved)
+        let companions = trash(entries.filter { moved.contains($0.path) }.flatMap(\.companions))
+        report.moved += companions.moved
+        report.inTrash.merge(companions.inTrash) { first, _ in first }
+        report.failed += companions.failed
+        return report
+    }
+
+    /// Moves what a trash run moved back where it was, outer folders first. Returns what couldn't
+    /// go back, and why.
     public func putBack(_ report: Report) -> [(path: String, reason: String)] {
         var failed: [(path: String, reason: String)] = []
-        for path in report.moved {
+        for path in report.moved.reversed() {
             guard let trashed = report.inTrash[path] else {
                 failed.append((path, "It isn't in the Trash anymore."))
                 continue

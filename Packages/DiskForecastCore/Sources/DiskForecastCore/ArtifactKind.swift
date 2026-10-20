@@ -9,6 +9,11 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
     case pythonVenv
     case gradleBuild
     case cocoaPods
+    case turborepo
+    case parcel
+    case pytest
+    case mypy
+    case ruff
 
     /// The folder's name.
     public var folderName: String {
@@ -20,6 +25,11 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
         case .pythonVenv: ".venv"
         case .gradleBuild: "build"
         case .cocoaPods: "Pods"
+        case .turborepo: ".turbo"
+        case .parcel: ".parcel-cache"
+        case .pytest: ".pytest_cache"
+        case .mypy: ".mypy_cache"
+        case .ruff: ".ruff_cache"
         }
     }
 
@@ -27,10 +37,10 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
     /// folder is never mistaken for one.
     public var markers: [String] {
         switch self {
-        case .nodeModules, .nextBuild: ["package.json"]
+        case .nodeModules, .nextBuild, .turborepo, .parcel: ["package.json"]
         case .rustTarget: ["Cargo.toml"]
         case .swiftBuild: ["Package.swift"]
-        case .pythonVenv: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"]
+        case .pythonVenv, .pytest, .mypy, .ruff: ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"]
         case .gradleBuild: ["build.gradle", "build.gradle.kts"]
         case .cocoaPods: ["Podfile"]
         }
@@ -45,6 +55,11 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
         case .pythonVenv: "Python virtual environments"
         case .gradleBuild: "Gradle builds"
         case .cocoaPods: "CocoaPods"
+        case .turborepo: "Turborepo caches"
+        case .parcel: "Parcel caches"
+        case .pytest: "pytest caches"
+        case .mypy: "mypy caches"
+        case .ruff: "Ruff caches"
         }
     }
 
@@ -57,6 +72,11 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
         case .pythonVenv: "pip install"
         case .gradleBuild: "gradle build"
         case .cocoaPods: "pod install"
+        case .turborepo: "turbo run build"
+        case .parcel: "parcel build"
+        case .pytest: "pytest"
+        case .mypy: "mypy"
+        case .ruff: "ruff check"
         }
     }
 
