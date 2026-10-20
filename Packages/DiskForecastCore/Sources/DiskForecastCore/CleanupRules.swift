@@ -115,8 +115,9 @@ extension CleanupCatalog {
             CleanupRule(
                 id: "git-worktrees", title: "Git worktrees",
                 explanation: "Extra checkouts of a repository, often left behind by coding agents like Claude Code, "
-                    + "Codex, and Conductor. Each says what removing it would lose. Its records in the repository "
-                    + "go with it, as with git worktree remove; the branch and its commits stay.",
+                    + "Codex, and Conductor. Each shows changes and commits that exist only there; files git "
+                    + "ignores, like .env, aren't counted. Its records in the repository go with it, as with git "
+                    + "worktree remove; the branch and its commits stay.",
                 group: .worthALook
             ) { catalog, scan in catalog.worktrees(scan) },
             CleanupRule(
