@@ -22,8 +22,8 @@ public enum AgentPrompt {
             1. Work only on the paths listed. Don't delete anything else, and don't widen a path to its parent.
             2. Check each path first: that it still exists, what it is, and roughly how big it is now. Skip one \
             that has changed a lot, and tell me.
-            3. For a git checkout or worktree, run `git status` and look for commits no remote has \
-            (`git log --branches --not --remotes`). If there's work that exists nowhere else, stop and ask me \
+            3. For a git checkout or worktree, run `git status` in it and look for commits no remote has \
+            (`git log HEAD --not --remotes`). If there's work that exists nowhere else, stop and ask me \
             before removing it. Remove a worktree with `git worktree remove`, so git's records of it go too.
             4. Where a tool owns the data (a package manager's cache, Docker, Xcode, Ollama), prefer that tool's \
             own clean command over deleting its files.
@@ -43,8 +43,9 @@ public enum AgentPrompt {
             let path = escaped(entry.path)
             prompt += "- \(path.wasEscaped ? "escaped, find by hand: " : "")\(path.text)  "
                 + "(\(Bytes.format(entry.bytes)) · \(description.joined(separator: " · ")))\n"
-            for companion in entry.companions {
-                prompt += "  with git's records of it: \(escaped(companion).text)\n"
+            for companion in entry.companions.map(escaped) {
+                prompt += "  with git's records of it: \(companion.wasEscaped ? "escaped, find by hand: " : "")"
+                    + "\(companion.text)\n"
             }
         }
         return prompt
