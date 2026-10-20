@@ -42,6 +42,21 @@ struct TrasherTests {
         if let trashed = report.inTrash[second] { try? FileManager.default.removeItem(atPath: trashed) }
     }
 
+    @Test func trashesAFolderAndSomethingInsideItTogether() throws {
+        try write("code/app-worktree/node_modules/pkg/index.js", bytes: 10)
+        try write("code/app-worktree/README.md", bytes: 10)
+        let outer = home.path + "/code/app-worktree"
+        let inner = outer + "/node_modules"
+        let trasher = Trasher(home: home.path)
+        let report = trasher.trash([outer, inner])
+        #expect(report.failed.isEmpty)
+        #expect(Set(report.moved) == [outer, inner])
+
+        #expect(trasher.putBack(report).isEmpty)
+        #expect(FileManager.default.fileExists(atPath: inner + "/pkg/index.js"))
+        #expect(FileManager.default.fileExists(atPath: outer + "/README.md"))
+    }
+
     @Test func refusesAnythingRisky() throws {
         let caches = home.appending(path: "Library/Caches")
         try FileManager.default.createDirectory(at: caches, withIntermediateDirectories: true)
