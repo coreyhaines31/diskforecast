@@ -76,3 +76,26 @@ struct TrasherTests {
         #expect(FileManager.default.fileExists(atPath: home.path + "/Library"))
     }
 }
+
+struct TrasherReportTests {
+    @Test func groupsFailuresByReasonAndNamesTheProject() {
+        var report = Trasher.Report()
+        let full = "There isn't enough space."
+        for project in ["shop", "blog", "site", "api"] {
+            report.failed.append(("/Users/me/code/\(project)/node_modules", full))
+        }
+        report.failed.append(("/Users/me/Library/Caches/x", "It's no longer there."))
+        #expect(report.failureLines() == [
+            "• shop/node_modules, blog/node_modules, site/node_modules and 1 more: There isn't enough space.",
+            "• Caches/x: It's no longer there."
+        ])
+    }
+
+    @Test func recognizesAFullDisk() {
+        let posix = NSError(domain: NSPOSIXErrorDomain, code: Int(ENOSPC))
+        #expect(Trasher.isOutOfSpace(NSError(domain: NSCocoaErrorDomain, code: NSFileWriteOutOfSpaceError)))
+        let wrapped = NSError(domain: NSCocoaErrorDomain, code: 513, userInfo: [NSUnderlyingErrorKey: posix])
+        #expect(Trasher.isOutOfSpace(wrapped))
+        #expect(!Trasher.isOutOfSpace(NSError(domain: NSCocoaErrorDomain, code: 513)))
+    }
+}
