@@ -4,13 +4,15 @@ import DiskForecastCore
 /// Confirms, moves entries to the Trash, and says how to finish reclaiming the space.
 @MainActor
 enum TrashFlow {
-    static func confirmAndTrash(_ entries: [CleanupEntry], summary: [String], scan: ScanModel, disk: DiskStatus) {
+    static func confirmAndTrash(
+        _ entries: [CleanupEntry], summary: [(title: String, bytes: Int64)], scan: ScanModel, disk: DiskStatus
+    ) {
         guard !entries.isEmpty else { return }
         let total = entries.reduce(0) { $0 + $1.bytes }
         let confirm = NSAlert()
         confirm.messageText = "Move \(Bytes.format(total)) to the Trash?"
-        confirm.informativeText = summary.joined(separator: "\n")
-            + "\n\nNothing is deleted. You can put anything back from the Trash until you empty it."
+        confirm.informativeText = "Nothing is deleted. You can put anything back from the Trash until you empty it."
+        confirm.accessoryView = summaryGrid(summary)
         confirm.addButton(withTitle: "Move to Trash")
         confirm.addButton(withTitle: "Cancel")
         NSApp.activate()
@@ -23,26 +25,61 @@ enum TrashFlow {
         disk.refresh()
 
         let done = NSAlert()
-        done.messageText = report.moved.isEmpty
-            ? "Nothing was moved to the Trash"
-            : "Moved \(Bytes.format(report.movedBytes)) to the Trash"
         var details: [String] = []
-        if !report.moved.isEmpty {
-            details.append("Empty the Trash to reclaim the space.")
+        if report.diskFull {
+            done.messageText = report.moved.isEmpty
+                ? "Your disk is too full to use the Trash"
+                : "Moved \(Bytes.format(report.movedBytes)), then the disk filled up"
+            details.append(
+                "Moving to the Trash needs a little free space. Empty the Trash, then try again. If it's "
+                    + "already empty, select a large folder you can rebuild in Finder and press "
+                    + "Option\u{2011}Command\u{2011}Delete to delete it right away."
+            )
+        } else {
+            done.messageText = report.moved.isEmpty
+                ? "Nothing was moved to the Trash"
+                : "Moved \(Bytes.format(report.movedBytes)) to the Trash"
+            if !report.moved.isEmpty {
+                details.append("The space comes back when you empty the Trash.")
+            }
         }
-        if !report.failed.isEmpty {
-            let failures = report.failed.prefix(5).map { "• \(($0.path as NSString).lastPathComponent): \($0.reason)" }
-            details.append("Couldn't move \(report.failed.count):\n" + failures.joined(separator: "\n"))
+        if !report.failed.isEmpty && !(report.diskFull && report.moved.isEmpty) {
+            details.append("Couldn't move \(report.failed.count):\n" + report.failureLines().joined(separator: "\n"))
         }
         done.informativeText = details.joined(separator: "\n\n")
-        done.addButton(withTitle: "Done")
-        done.addButton(withTitle: "Open Trash")
-        if !report.moved.isEmpty { done.addButton(withTitle: "Undo") }
-        switch done.runModal() {
-        case .alertSecondButtonReturn: openTrash()
-        case .alertThirdButtonReturn: undo(scan: scan, disk: disk)
+        // With a full disk, emptying the Trash is the way forward, so it leads.
+        var buttons = report.diskFull ? ["Open Trash", "Done"] : ["Done", "Open Trash"]
+        if !report.moved.isEmpty { buttons.append("Undo") }
+        buttons.forEach { done.addButton(withTitle: $0) }
+        let index = done.runModal().rawValue - NSApplication.ModalResponse.alertFirstButtonReturn.rawValue
+        switch buttons.indices.contains(index) ? buttons[index] : "" {
+        case "Open Trash": openTrash()
+        case "Undo": undo(scan: scan, disk: disk)
         default: break
         }
+    }
+
+    /// Titles on the left, sizes right-aligned, largest first, so no size wraps onto a line of its own.
+    private static func summaryGrid(_ summary: [(title: String, bytes: Int64)]) -> NSView {
+        let font = NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
+        let rows = summary.sorted { $0.bytes > $1.bytes }.map { row -> [NSView] in
+            let title = NSTextField(labelWithString: row.title)
+            title.font = font
+            title.lineBreakMode = .byTruncatingTail
+            title.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+            let size = NSTextField(labelWithString: Bytes.format(row.bytes))
+            size.font = .monospacedDigitSystemFont(ofSize: font.pointSize, weight: .medium)
+            return [title, size]
+        }
+        let grid = NSGridView(views: rows)
+        grid.rowSpacing = 4
+        grid.columnSpacing = 16
+        grid.column(at: 1).xPlacement = .trailing
+        grid.translatesAutoresizingMaskIntoConstraints = false
+        grid.widthAnchor.constraint(equalToConstant: 260).isActive = true
+        grid.layoutSubtreeIfNeeded()
+        grid.frame.size = grid.fittingSize
+        return grid
     }
 
     private static func undo(scan: ScanModel, disk: DiskStatus) {
