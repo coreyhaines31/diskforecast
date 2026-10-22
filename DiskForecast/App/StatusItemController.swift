@@ -143,7 +143,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
             menu.addItem(ClosureMenuItem("Safe to clear: \(Bytes.format(scan.safeToClearBytes))…") { [self] in
                 TrashFlow.confirmAndTrash(
                     safe.flatMap(\.entries),
-                    summary: safe.map { (title: $0.title, bytes: $0.bytes) },
+                    summary: safe,
                     scan: scan, disk: disk
                 )
             })

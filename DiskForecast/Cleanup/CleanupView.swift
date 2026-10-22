@@ -99,12 +99,15 @@ struct CleanupView: View {
                 .help("Copies what's selected as instructions for a coding agent like Claude Code or Codex.")
             Button("Move to Trash…") {
                 let entries = selectedEntries
-                let titles = scan.items.filter { item in item.entries.contains { selection.contains($0.path) } }
-                    .map { item in
-                        let bytes = item.entries.filter { selection.contains($0.path) }.reduce(0) { $0 + $1.bytes }
-                        return (title: item.title, bytes: bytes)
-                    }
-                TrashFlow.confirmAndTrash(entries, summary: titles, scan: scan, disk: disk)
+                let chosen = scan.items.compactMap { item -> CleanupItem? in
+                    let picked = item.entries.filter { selection.contains($0.path) }
+                    guard !picked.isEmpty else { return nil }
+                    return CleanupItem(
+                        id: item.id, title: item.title, explanation: item.explanation,
+                        group: item.group, action: item.action, entries: picked
+                    )
+                }
+                TrashFlow.confirmAndTrash(entries, summary: chosen, scan: scan, disk: disk)
             }
             .buttonStyle(.borderedProminent)
             .disabled(selection.isEmpty)
