@@ -5,7 +5,7 @@ import DiskForecastCore
 @MainActor
 enum TrashFlow {
     static func confirmAndTrash(
-        _ entries: [CleanupEntry], summary: [(title: String, bytes: Int64)], scan: ScanModel, disk: DiskStatus
+        _ entries: [CleanupEntry], summary: [CleanupItem], scan: ScanModel, disk: DiskStatus
     ) {
         guard !entries.isEmpty else { return }
         let total = entries.reduce(0) { $0 + $1.bytes }
@@ -59,27 +59,54 @@ enum TrashFlow {
         }
     }
 
-    /// Titles on the left, sizes right-aligned, largest first, so no size wraps onto a line of its own.
-    private static func summaryGrid(_ summary: [(title: String, bytes: Int64)]) -> NSView {
+    /// Each category's title and size on one row, sizes right-aligned and largest first, with what's
+    /// in it underneath across the full width. Hovering a category explains it.
+    private static func summaryGrid(_ summary: [CleanupItem]) -> NSView {
+        let width: CGFloat = 300
         let font = NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)
-        let rows = summary.sorted { $0.bytes > $1.bytes }.map { row -> [NSView] in
-            let title = NSTextField(labelWithString: row.title)
+        let grid = NSGridView()
+        grid.columnSpacing = 16
+        grid.rowSpacing = 1
+        for item in summary.sorted(by: { $0.bytes > $1.bytes }) {
+            let title = NSTextField(labelWithString: item.title)
             title.font = font
             title.lineBreakMode = .byTruncatingTail
             title.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-            let size = NSTextField(labelWithString: Bytes.format(row.bytes))
+            title.toolTip = item.explanation
+            let size = NSTextField(labelWithString: Bytes.format(item.bytes))
             size.font = .monospacedDigitSystemFont(ofSize: font.pointSize, weight: .medium)
-            return [title, size]
+            let contents = NSTextField(wrappingLabelWithString: item.preview())
+            contents.font = .systemFont(ofSize: NSFont.smallSystemFontSize - 1)
+            contents.textColor = .secondaryLabelColor
+            contents.preferredMaxLayoutWidth = width
+            contents.maximumNumberOfLines = 2
+            contents.toolTip = item.explanation
+            if grid.numberOfRows > 0 { grid.row(at: grid.numberOfRows - 1).bottomPadding = 8 }
+            grid.addRow(with: [title, size])
+            grid.addRow(with: [contents, NSGridCell.emptyContentView])
+            grid.mergeCells(inHorizontalRange: NSRange(location: 0, length: 2), verticalRange: NSRange(
+                location: grid.numberOfRows - 1, length: 1
+            ))
         }
-        let grid = NSGridView(views: rows)
-        grid.rowSpacing = 4
-        grid.columnSpacing = 16
         grid.column(at: 1).xPlacement = .trailing
         grid.translatesAutoresizingMaskIntoConstraints = false
-        grid.widthAnchor.constraint(equalToConstant: 260).isActive = true
+        grid.widthAnchor.constraint(equalToConstant: width).isActive = true
         grid.layoutSubtreeIfNeeded()
         grid.frame.size = grid.fittingSize
-        return grid
+        return scrolling(grid, maxHeight: 260)
+    }
+
+    /// Keeps a long list from pushing the alert's buttons off a small screen.
+    private static func scrolling(_ view: NSView, maxHeight: CGFloat) -> NSView {
+        guard view.frame.height > maxHeight else { return view }
+        view.translatesAutoresizingMaskIntoConstraints = true
+        let scroll = NSScrollView(frame: NSRect(x: 0, y: 0, width: view.frame.width, height: maxHeight))
+        scroll.hasVerticalScroller = true
+        scroll.scrollerStyle = .overlay
+        scroll.drawsBackground = false
+        scroll.documentView = view
+        view.scroll(NSPoint(x: 0, y: view.isFlipped ? 0 : view.frame.height))
+        return scroll
     }
 
     private static func undo(scan: ScanModel, disk: DiskStatus) {

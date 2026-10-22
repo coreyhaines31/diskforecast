@@ -125,3 +125,24 @@ struct CleanupCatalogTests {
         #expect(Age.phrase(from: now.addingTimeInterval(-120 * 86_400), to: now) == "4 months ago")
     }
 }
+
+struct CleanupItemPreviewTests {
+    private func item(_ entries: [CleanupEntry]) -> CleanupItem {
+        CleanupItem(id: "x", title: "X", explanation: "", group: .safeToClear, action: .trash, entries: entries)
+    }
+
+    @Test func namesTheLargestAndCountsTheRest() {
+        let preview = item([
+            CleanupEntry(path: "/u/code/blog/node_modules", bytes: 2),
+            CleanupEntry(path: "/u/code/shop/node_modules", bytes: 9),
+            CleanupEntry(path: "/u/code/api/.next", bytes: 5),
+            CleanupEntry(path: "/u/code/site/node_modules", bytes: 1)
+        ]).preview()
+        #expect(preview == "shop/node_modules, .next, blog/node_modules and 1 more")
+    }
+
+    @Test func aShortListHasNoRemainder() {
+        let preview = item([CleanupEntry(path: "/u/Library/Caches/com.example", bytes: 3, name: "Example")]).preview()
+        #expect(preview == "Example")
+    }
+}
