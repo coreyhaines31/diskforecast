@@ -102,7 +102,7 @@ struct CleanupView: View {
                 let titles = scan.items.filter { item in item.entries.contains { selection.contains($0.path) } }
                     .map { item in
                         let bytes = item.entries.filter { selection.contains($0.path) }.reduce(0) { $0 + $1.bytes }
-                        return "• \(item.title): \(Bytes.format(bytes))"
+                        return (title: item.title, bytes: bytes)
                     }
                 TrashFlow.confirmAndTrash(entries, summary: titles, scan: scan, disk: disk)
             }

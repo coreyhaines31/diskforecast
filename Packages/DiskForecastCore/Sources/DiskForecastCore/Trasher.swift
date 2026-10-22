@@ -26,6 +26,31 @@ public struct Trasher: Sendable {
         public var inTrash: [String: String] = [:]
         /// What each moved path held.
         public var movedSizes: [String: Int64] = [:]
+        /// A move failed because the disk had no room left, which even the Trash needs.
+        public var diskFull = false
+
+        /// One line per reason, naming up to three folders by their parent and name, since many
+        /// failures share a reason and a folder name like node_modules.
+        public func failureLines(limit: Int = 5) -> [String] {
+            var order: [String] = []
+            var paths: [String: [String]] = [:]
+            for failure in failed {
+                if paths[failure.reason] == nil { order.append(failure.reason) }
+                paths[failure.reason, default: []].append(failure.path)
+            }
+            return order.prefix(limit).map { reason in
+                let all = paths[reason] ?? []
+                let names = all.prefix(3).map(Self.label).joined(separator: ", ")
+                let more = all.count > 3 ? " and \(all.count - 3) more" : ""
+                return "• \(names)\(more): \(reason)"
+            }
+        }
+
+        static func label(_ path: String) -> String {
+            let url = URL(filePath: path)
+            let parent = url.deletingLastPathComponent().lastPathComponent
+            return parent.isEmpty || parent == "/" ? url.lastPathComponent : parent + "/" + url.lastPathComponent
+        }
     }
 
     static let protectedNames: Set<String> = [
@@ -75,6 +100,7 @@ public struct Trasher: Sendable {
                 report.movedSizes[path] = sizes[path]
             } catch {
                 report.failed.append((path, error.localizedDescription))
+                if Self.isOutOfSpace(error) { report.diskFull = true }
             }
         }
         return report
@@ -90,7 +116,15 @@ public struct Trasher: Sendable {
         report.moved += companions.moved
         report.inTrash.merge(companions.inTrash) { first, _ in first }
         report.failed += companions.failed
+        report.diskFull = report.diskFull || companions.diskFull
         return report
+    }
+
+    static func isOutOfSpace(_ error: Error) -> Bool {
+        let error = error as NSError
+        if error.domain == NSCocoaErrorDomain && error.code == NSFileWriteOutOfSpaceError { return true }
+        if error.domain == NSPOSIXErrorDomain && error.code == Int(ENOSPC) { return true }
+        return (error.userInfo[NSUnderlyingErrorKey] as? Error).map(isOutOfSpace) ?? false
     }
 
     /// Moves what a trash run moved back where it was, outer folders first. Returns what couldn't
