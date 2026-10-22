@@ -93,7 +93,20 @@ enum TrashFlow {
         grid.widthAnchor.constraint(equalToConstant: width).isActive = true
         grid.layoutSubtreeIfNeeded()
         grid.frame.size = grid.fittingSize
-        return grid
+        return scrolling(grid, maxHeight: 260)
+    }
+
+    /// Keeps a long list from pushing the alert's buttons off a small screen.
+    private static func scrolling(_ view: NSView, maxHeight: CGFloat) -> NSView {
+        guard view.frame.height > maxHeight else { return view }
+        view.translatesAutoresizingMaskIntoConstraints = true
+        let scroll = NSScrollView(frame: NSRect(x: 0, y: 0, width: view.frame.width, height: maxHeight))
+        scroll.hasVerticalScroller = true
+        scroll.scrollerStyle = .overlay
+        scroll.drawsBackground = false
+        scroll.documentView = view
+        view.scroll(NSPoint(x: 0, y: view.isFlipped ? 0 : view.frame.height))
+        return scroll
     }
 
     private static func undo(scan: ScanModel, disk: DiskStatus) {
