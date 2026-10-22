@@ -62,6 +62,17 @@ public struct CleanupItem: Sendable, Identifiable {
     }
 
     public var bytes: Int64 { entries.reduce(0) { $0 + $1.bytes } }
+
+    /// What's in it, largest first: "shop/node_modules, blog/node_modules and 309 more". A name
+    /// several entries share gets its parent folder.
+    public func preview(naming limit: Int = 3) -> String {
+        let counts = Dictionary(entries.map { ($0.name, 1) }, uniquingKeysWith: +)
+        let labels = entries.sorted { $0.bytes > $1.bytes }.prefix(limit).map { entry in
+            counts[entry.name, default: 0] > 1 ? Trasher.Report.label(entry.path) : entry.name
+        }
+        let named = labels.joined(separator: ", ")
+        return entries.count > limit ? "\(named) and \(entries.count - limit) more" : named
+    }
 }
 
 /// Turns a scan of the home folder into the cleanup list: known caches, logs, build folders, AI
