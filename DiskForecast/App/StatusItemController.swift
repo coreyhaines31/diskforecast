@@ -129,6 +129,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         }
         if known.isEmpty {
             submenu.addItem(label("Cleanup doesn't know what's in here"))
+            submenu.addItem(ClosureMenuItem("Suggest a Rule…") { [weak self] in self?.suggestRule(for: path) })
         } else {
             submenu.addItem(NSMenuItem.sectionHeader(title: "In Cleanup"))
             for (item, bytes) in known.sorted(by: { $0.bytes > $1.bytes }) {
@@ -147,6 +148,28 @@ final class StatusItemController: NSObject, NSMenuDelegate {
             NSWorkspace.shared.activateFileViewerSelecting([URL(filePath: path)])
         })
         return submenu
+    }
+
+    /// Opens a GitHub issue asking for Cleanup to explain a folder, filled in with its location and
+    /// size. Nothing is sent until the person submits it, and they can edit it first.
+    private func suggestRule(for path: String) {
+        let home = scan.home
+        let shown = path.hasPrefix(home + "/") ? "~/" + path.dropFirst(home.count + 1) : path
+        let size = scan.result.flatMap { $0.tree.size(of: path) }.map(Bytes.format) ?? "?"
+        let body = """
+            Cleanup doesn't know what's in `\(shown)` (\(size)).
+
+            What app or tool makes it, if you know:
+
+            Is it safe to remove, and does it come back?
+            """
+        var components = URLComponents(string: "https://github.com/coreyhaines31/diskforecast/issues/new")
+        components?.queryItems = [
+            URLQueryItem(name: "title", value: "Explain \(shown) in Cleanup"),
+            URLQueryItem(name: "body", value: body),
+            URLQueryItem(name: "labels", value: "cleanup-rule")
+        ]
+        if let url = components?.url { NSWorkspace.shared.open(url) }
     }
 
     private func addReclaim(to menu: NSMenu) {
