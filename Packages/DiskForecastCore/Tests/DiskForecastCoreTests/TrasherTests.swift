@@ -26,6 +26,31 @@ struct TrasherTests {
         #expect(!FileManager.default.fileExists(atPath: path))
     }
 
+    @Test func leavesWhatARunningProgramUses() throws {
+        try write("Library/Caches/com.example.app/blob", bytes: 10)
+        try write("Library/Caches/com.example.other/blob", bytes: 10)
+        let open = home.path + "/Library/Caches/com.example.app"
+        let closed = home.path + "/Library/Caches/com.example.other"
+        let openFiles = OpenFiles(processes: [(name: "Example", paths: [open + "/blob"])])
+        let report = Trasher(home: home.path).trash([open, closed], openFiles: openFiles)
+        #expect(report.moved == [closed])
+        #expect(report.failed.map(\.reason) == ["Example is using it. Quit Example, then try again."])
+        #expect(FileManager.default.fileExists(atPath: open))
+    }
+
+    @Test func findsFilesAnotherProcessHasOpen() throws {
+        try write("Library/Caches/com.example.app/blob", bytes: 10)
+        let tail = Process()
+        tail.executableURL = URL(filePath: "/usr/bin/tail")
+        tail.arguments = ["-f", home.path + "/Library/Caches/com.example.app/blob"]
+        try tail.run()
+        defer { tail.terminate() }
+        Thread.sleep(forTimeInterval: 0.3)
+        let openFiles = OpenFiles.current()
+        #expect(openFiles.user(of: home.path + "/Library/Caches/com.example.app") == "tail")
+        #expect(openFiles.user(of: home.path + "/Library/Caches/com.example") == nil)
+    }
+
     @Test func putsBackWhatItMoved() throws {
         try write("Library/Caches/com.example.app/blob", bytes: 10)
         try write("Library/Caches/com.example.other/blob", bytes: 10)

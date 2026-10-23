@@ -79,8 +79,11 @@ public struct Trasher: Sendable {
     }
 
     /// Moves each path to the Trash. `sizes` reports what each one held, for the total. Deeper
-    /// paths go first, so a folder and something inside it can be trashed in one run.
-    public func trash(_ paths: [String], sizes: [String: Int64] = [:]) -> Report {
+    /// paths go first, so a folder and something inside it can be trashed in one run. Anything a
+    /// running program has open stays, since the program would keep using the trashed copy.
+    public func trash(
+        _ paths: [String], sizes: [String: Int64] = [:], openFiles: OpenFiles = .current()
+    ) -> Report {
         var report = Report()
         let deepestFirst = paths.enumerated().sorted { first, second in
             let depths = (first.element.split(separator: "/").count, second.element.split(separator: "/").count)
@@ -89,6 +92,10 @@ public struct Trasher: Sendable {
         for path in deepestFirst.map(\.element) {
             if let refusal = refusal(for: path) {
                 report.failed.append((path, refusal.description))
+                continue
+            }
+            if let user = openFiles.user(of: Self.resolved(path)) {
+                report.failed.append((path, "\(user) is using it. Quit \(user), then try again."))
                 continue
             }
             do {
@@ -110,9 +117,12 @@ public struct Trasher: Sendable {
     /// entry did.
     public func trash(_ entries: [CleanupEntry]) -> Report {
         let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
-        var report = trash(entries.map(\.path), sizes: sizes)
+        let openFiles = OpenFiles.current()
+        var report = trash(entries.map(\.path), sizes: sizes, openFiles: openFiles)
         let moved = Set(report.moved)
-        let companions = trash(entries.filter { moved.contains($0.path) }.flatMap(\.companions))
+        let companions = trash(
+            entries.filter { moved.contains($0.path) }.flatMap(\.companions), openFiles: openFiles
+        )
         report.moved += companions.moved
         report.inTrash.merge(companions.inTrash) { first, _ in first }
         report.failed += companions.failed
