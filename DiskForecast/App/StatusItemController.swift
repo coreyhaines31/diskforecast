@@ -120,14 +120,42 @@ final class StatusItemController: NSObject, NSMenuDelegate {
             let path = result.tree.path(of: node)
             let shown = path.hasPrefix(home + "/") ? "~/" + path.dropFirst(home.count + 1) : path
             let size = Bytes.format(result.tree.size(ofNode: node))
-            let item = ClosureMenuItem("\(shown)\t\(size)") {
-                NSWorkspace.shared.activateFileViewerSelecting([URL(filePath: path)])
-            }
+            let item = NSMenuItem(title: "\(shown)\t\(size)", action: nil, keyEquivalent: "")
             item.attributedTitle = Self.columns(String(shown), size)
-            item.toolTip = "Show in Finder"
+            item.submenu = consumerMenu(for: path)
             menu.addItem(item)
         }
         menu.addItem(.separator())
+    }
+
+    /// What Cleanup knows inside a big folder, each opening Cleanup at that item, then Finder.
+    private func consumerMenu(for path: String) -> NSMenu {
+        let submenu = NSMenu()
+        let known = scan.items.compactMap { item -> (item: CleanupItem, bytes: Int64)? in
+            let inside = item.entries.filter { $0.path == path || $0.path.hasPrefix(path + "/") }
+            let bytes = inside.reduce(0) { $0 + $1.bytes }
+            return bytes > 0 ? (item, bytes) : nil
+        }
+        if known.isEmpty {
+            submenu.addItem(label("Cleanup doesn't know what's in here"))
+        } else {
+            submenu.addItem(NSMenuItem.sectionHeader(title: "In Cleanup"))
+            for (item, bytes) in known.sorted(by: { $0.bytes > $1.bytes }) {
+                let size = Bytes.format(bytes)
+                let row = ClosureMenuItem("\(item.title)…\t\(size)") { [weak self] in
+                    self?.scan.focusedItem = item.id
+                    self?.openCleanup()
+                }
+                row.attributedTitle = Self.columns(item.title + "…", size)
+                row.toolTip = item.explanation
+                submenu.addItem(row)
+            }
+        }
+        submenu.addItem(.separator())
+        submenu.addItem(ClosureMenuItem("Show in Finder") {
+            NSWorkspace.shared.activateFileViewerSelecting([URL(filePath: path)])
+        })
+        return submenu
     }
 
     private func addReclaim(to menu: NSMenu) {
