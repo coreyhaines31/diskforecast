@@ -9,20 +9,32 @@ enum TrashFlow {
     ) {
         guard !entries.isEmpty else { return }
         let total = entries.reduce(0) { $0 + $1.bytes }
+        let openFiles = OpenFiles.current()
         let confirm = NSAlert()
         confirm.messageText = "Move \(Bytes.format(total)) to the Trash?"
         confirm.informativeText = "You can put anything back from the Trash until you empty it. Delete "
             + "Immediately frees the space now, but can't be undone."
+            + busyNote(Trasher.busy(entries, openFiles: openFiles))
         confirm.accessoryView = summaryGrid(summary)
         confirm.addButton(withTitle: "Move to Trash")
         confirm.addButton(withTitle: "Cancel")
         confirm.addButton(withTitle: "Delete Immediately").hasDestructiveAction = true
         NSApp.activate()
         switch confirm.runModal() {
+        // Checked again when moving, in case an app was quit while this was open.
         case .alertFirstButtonReturn: dispose(entries, permanently: false, scan: scan, disk: disk)
         case .alertThirdButtonReturn: dispose(entries, permanently: true, scan: scan, disk: disk)
         default: break
         }
+    }
+
+    /// "\n\nCursor is open, so 1.2 GB of this stays. Quit it first to include everything."
+    private static func busyNote(_ busy: [String: [CleanupEntry]]) -> String {
+        guard !busy.isEmpty else { return "" }
+        let bytes = busy.values.joined().reduce(0) { $0 + $1.bytes }
+        let apps = busy.keys.sorted()
+        return "\n\n\(appsPhrase(apps)) open, so \(Bytes.format(bytes)) of this stays. Quit "
+            + (apps.count == 1 ? "it" : "them") + " first to include everything."
     }
 
     /// Deleting can take a while, so it runs off the main thread while the menu says so.
