@@ -39,6 +39,14 @@ struct CleanupCatalogTests {
         #expect(items["active-builds"]?.entries.count == 1)
     }
 
+    @Test func namesScreenRecordingsByTheirApp() async throws {
+        try write(".screenpipe/data/2026-10-22/monitor_1.mp4", bytes: 2_000_000)
+        try write(".screenpipe/pipes/obsidian/pipe.json", bytes: 2_000_000)
+        let items = await items()
+        #expect(items["screen-recordings"]?.entries.map(\.name) == ["Screenpipe"])
+        #expect(items["screen-recordings"]?.group == .worthALook)
+    }
+
     @Test func groupsKnownLocations() async throws {
         let old = now.addingTimeInterval(-90 * 86_400)
         try write("Library/Caches/com.example.app/blob", bytes: 2_000_000)
