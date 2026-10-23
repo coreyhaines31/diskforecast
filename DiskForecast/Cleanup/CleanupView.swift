@@ -18,38 +18,55 @@ struct CleanupView: View {
         VStack(spacing: 0) {
             header
             Divider()
-            List {
-                ForEach(CleanupGroup.allCases, id: \.self) { group in
-                    let items = scan.items.filter { $0.group == group }
-                    if !items.isEmpty {
-                        Section {
-                            ForEach(items) { item in
-                                CleanupItemRow(item: item, selection: $selection, openSystemData: openSystemData)
+            ScrollViewReader { proxy in
+                List {
+                    ForEach(CleanupGroup.allCases, id: \.self) { group in
+                        let items = scan.items.filter { $0.group == group }
+                        if !items.isEmpty {
+                            Section {
+                                ForEach(items) { item in
+                                    CleanupItemRow(
+                                        item: item, selection: $selection, focused: scan.focusedItem == item.id,
+                                        openSystemData: openSystemData
+                                    )
+                                    .id(item.id)
+                                }
+                            } header: {
+                                HStack {
+                                    Text(group.title)
+                                    Spacer()
+                                    Text(Bytes.format(items.reduce(0) { $0 + $1.bytes }))
+                                }
+                                .font(.headline)
                             }
-                        } header: {
-                            HStack {
-                                Text(group.title)
-                                Spacer()
-                                Text(Bytes.format(items.reduce(0) { $0 + $1.bytes }))
-                            }
-                            .font(.headline)
                         }
                     }
                 }
-            }
-            .overlay {
-                if scan.items.isEmpty && !scan.isScanning {
-                    ContentUnavailableView(
-                        "Nothing to reclaim", systemImage: "checkmark.circle",
-                        description: Text("No caches, build folders, or large downloads worth clearing right now.")
-                    )
+                .overlay {
+                    if scan.items.isEmpty && !scan.isScanning {
+                        ContentUnavailableView(
+                            "Nothing to reclaim", systemImage: "checkmark.circle",
+                            description: Text("No caches, build folders, or large downloads worth clearing right now.")
+                        )
+                    }
                 }
+                .onChange(of: scan.focusedItem, initial: true) { reveal(scan.focusedItem, with: proxy) }
             }
             Divider()
             footer
         }
         .onAppear(perform: selectNewSafeItems)
         .onChange(of: scan.items.map(\.id)) { selectNewSafeItems() }
+    }
+
+    /// Scrolls to the item the menu sent someone to, then lets the same item be sent to again.
+    private func reveal(_ id: String?, with proxy: ScrollViewProxy) {
+        guard let id else { return }
+        // A window opening for the first time hasn't laid out its list yet.
+        DispatchQueue.main.async {
+            withAnimation { proxy.scrollTo(id, anchor: .top) }
+            scan.focusedItem = nil
+        }
     }
 
     private var header: some View {
@@ -145,6 +162,7 @@ struct CleanupView: View {
 private struct CleanupItemRow: View {
     let item: CleanupItem
     @Binding var selection: Set<String>
+    let focused: Bool
     let openSystemData: () -> Void
     @State private var expanded = false
 
@@ -199,6 +217,7 @@ private struct CleanupItemRow: View {
             }
         }
         .padding(.vertical, 2)
+        .onChange(of: focused, initial: true) { if focused { expanded = true } }
     }
 
     private var checkboxSymbol: String {

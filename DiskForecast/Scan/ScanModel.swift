@@ -19,6 +19,8 @@ final class ScanModel {
     private(set) var finishedAt: Date?
     /// Folders still being measured on their own, usually because macOS is asking permission.
     private(set) var pendingFolders: [String] = []
+    /// The Cleanup item to scroll to and open, set when the menu sends someone to it.
+    var focusedItem: String?
     private var generation = 0
     var onChange: (() -> Void)?
     /// Called with each complete result, including after a separately measured folder is added.
