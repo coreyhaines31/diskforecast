@@ -89,15 +89,25 @@ extension CleanupCatalog {
                 group: .worthALook
             ) { catalog, scan in catalog.children(of: "Library/Developer/Xcode/Archives", in: scan) },
             CleanupRule(
+                id: "agent-leftovers", title: "Left behind by coding agents",
+                explanation: "Tools coding agents download to do their work: packages npx runs, like MCP servers, "
+                    + "browsers for Playwright, Puppeteer, and agent-browser, and older Claude Code versions. The "
+                    + "newest browser and Claude Code stay, and anything still running is left alone. The rest "
+                    + "downloads again when an agent needs it.",
+                group: .safeToClear
+            ) { catalog, scan in catalog.agentLeftovers(scan) },
+            CleanupRule(
                 id: "package-caches", title: "Package manager caches",
                 explanation: "Downloads kept by npm, pnpm, Bun, Cargo, Gradle, pip, and friends so installs are "
                     + "faster. They fill back up as you install packages.",
                 group: .safeToClear
             ) { catalog, scan in
                 catalog.fixed([
-                    ".npm/_cacache", ".npm/_npx", "Library/pnpm/store", ".bun/install/cache",
+                    ".npm/_cacache", "Library/pnpm/store", ".bun/install/cache",
                     ".cargo/registry", ".gradle/caches", ".gradle/wrapper/dists"
-                ]) + catalog.children(of: ".cache", in: scan) { ["huggingface", "lm-studio"].contains($0) }
+                ]) + catalog.children(of: ".cache", in: scan) {
+                    ["huggingface", "lm-studio", "puppeteer"].contains($0)
+                }
             },
             CleanupRule(
                 id: "disk-images", title: "Disk images and installers",
@@ -151,7 +161,9 @@ extension CleanupCatalog {
                     + "are left alone.",
                 group: .safeToClear
             ) { catalog, scan in
-                catalog.children(of: "Library/Caches", in: scan) { $0.hasPrefix("com.apple.") || $0 == "CloudKit" }
+                catalog.children(of: "Library/Caches", in: scan) {
+                    $0.hasPrefix("com.apple.") || $0 == "CloudKit" || $0 == "ms-playwright"
+                }
             },
             CleanupRule(
                 id: "logs", title: "Logs",

@@ -47,6 +47,25 @@ struct CleanupCatalogTests {
         #expect(items["screen-recordings"]?.group == .worthALook)
     }
 
+    @Test func findsWhatCodingAgentsLeaveBehind() async throws {
+        let older = now.addingTimeInterval(-7 * 86_400)
+        try write(".local/share/claude/versions/2.1.304", bytes: 2_000_000, modified: older)
+        try write(".local/share/claude/versions/2.1.309", bytes: 2_000_000)
+        try write(".npm/_npx/4f2a/node_modules/slack-mcp-server/index.js", bytes: 2_000_000)
+        for (browser, modified) in [("chromium-1140", older), ("chromium-1148", now), ("webkit-2083", older)] {
+            try write("Library/Caches/ms-playwright/\(browser)/chrome", bytes: 2_000_000)
+            try FileManager.default.setAttributes(
+                [.modificationDate: modified], ofItemAtPath: home.path + "/Library/Caches/ms-playwright/" + browser
+            )
+        }
+
+        let items = await items()
+        let names = Set(items["agent-leftovers"]?.entries.map(\.name) ?? [])
+        #expect(names == ["npx packages", "Claude Code 2.1.304", "Playwright chromium-1140"])
+        #expect(items["app-caches"] == nil)
+        #expect(items["package-caches"] == nil)
+    }
+
     @Test func groupsKnownLocations() async throws {
         let old = now.addingTimeInterval(-90 * 86_400)
         try write("Library/Caches/com.example.app/blob", bytes: 2_000_000)
