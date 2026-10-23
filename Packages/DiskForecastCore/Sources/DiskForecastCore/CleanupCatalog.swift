@@ -282,6 +282,40 @@ public struct CleanupCatalog: Sendable {
         return lstat(path, &info) != 0 && errno == ENOENT
     }
 
+    func agentLeftovers(_ scan: ScanResult) -> [Candidate] {
+        var found = [Candidate(path: path(".npm/_npx"), name: "npx packages")]
+        found += olderVersions(in: ".local/share/claude/versions", scan: scan) { "Claude Code \($0)" }
+        found += olderVersions(in: ".agent-browser/browsers", scan: scan) { "agent-browser \($0)" }
+        // Playwright keeps one folder per browser build, like chromium-1140 and webkit-2083.
+        found += olderVersions(
+            in: "Library/Caches/ms-playwright", scan: scan,
+            kind: { String($0.prefix { !$0.isNumber }) }, name: { "Playwright \($0)" }
+        )
+        for browser in children(of: ".cache/puppeteer", in: scan) {
+            let kind = (browser.path as NSString).lastPathComponent
+            found += olderVersions(in: ".cache/puppeteer/" + kind, scan: scan) { "Puppeteer \(kind) \($0)" }
+        }
+        return found
+    }
+
+    /// Everything in a folder of downloaded versions except the newest of each kind, which is
+    /// probably the one in use.
+    func olderVersions(
+        in relative: String, scan: ScanResult, kind: (String) -> String = { _ in "" }, name: (String) -> String
+    ) -> [Candidate] {
+        let versions = children(of: relative, in: scan) { $0.hasPrefix(".") }.map { candidate in
+            let version = (candidate.path as NSString).lastPathComponent
+            var info = stat()
+            let modified = lstat(candidate.path, &info) == 0 ? info.st_mtimespec.tv_sec : 0
+            return (candidate: candidate, version: version, modified: modified)
+        }
+        return Dictionary(grouping: versions) { kind($0.version) }.values.flatMap { group in
+            group.sorted { $0.modified > $1.modified }.dropFirst().map {
+                Candidate(path: $0.candidate.path, name: name($0.version))
+            }
+        }
+    }
+
     func diskImages(_ scan: ScanResult) -> [Candidate] {
         scan.diskImages.map { Candidate(path: $0.path, detail: "Modified \(Age.phrase(from: $0.modified, to: now))") }
     }

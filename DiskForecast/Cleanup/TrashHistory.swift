@@ -12,6 +12,11 @@ enum TrashHistory {
         last = report.moved.isEmpty ? nil : (report, trasher)
     }
 
+    /// Forgets the last run once the Trash is emptied, since nothing can go back.
+    static func clear() {
+        last = nil
+    }
+
     /// Puts back what the last run moved. Nil when there's nothing to undo.
     static func undo() -> (report: Trasher.Report, failed: [(path: String, reason: String)])? {
         guard let last else { return nil }

@@ -95,21 +95,12 @@ final class StatusItemController: NSObject, NSMenuDelegate {
             menu?.cancelTracking()
             self?.openForecast()
         }
-        let view = NSHostingView(rootView: MenuForecastView(disk: disk, grewMost: grewMostThisWeek(), open: open))
+        let grewMost = SnapshotComparison.grewMostThisWeek(in: snapshots)
+        let view = NSHostingView(rootView: MenuForecastView(disk: disk, grewMost: grewMost, open: open))
         view.frame.size = view.fittingSize
         let item = NSMenuItem()
         item.view = view
         menu.addItem(item)
-    }
-
-    /// What used the most space over the last week, when it's at least 1 GB: a folder in the home
-    /// folder, or everything outside it.
-    private func grewMostThisWeek() -> (name: String, bytes: Int64)? {
-        guard let comparison = SnapshotComparison(store: snapshots, since: Date().addingTimeInterval(-7 * 86_400))
-        else { return nil }
-        var candidates: [(name: String, bytes: Int64)] = comparison.changes().map { ("~/" + $0.path, $0.delta) }
-        candidates.append(("Outside your home folder", comparison.outsideHome))
-        return candidates.filter { $0.bytes >= 1_000_000_000 }.max { $0.bytes < $1.bytes }
     }
 
     private func addConsumers(to menu: NSMenu) {
@@ -138,6 +129,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         }
         if known.isEmpty {
             submenu.addItem(label("Cleanup doesn't know what's in here"))
+            submenu.addItem(ClosureMenuItem("Suggest a Rule…") { [weak self] in self?.suggestRule(for: path) })
         } else {
             submenu.addItem(NSMenuItem.sectionHeader(title: "In Cleanup"))
             for (item, bytes) in known.sorted(by: { $0.bytes > $1.bytes }) {
@@ -158,6 +150,28 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         return submenu
     }
 
+    /// Opens a GitHub issue asking for Cleanup to explain a folder, filled in with its location and
+    /// size. Nothing is sent until the person submits it, and they can edit it first.
+    private func suggestRule(for path: String) {
+        let home = scan.home
+        let shown = path.hasPrefix(home + "/") ? "~/" + path.dropFirst(home.count + 1) : path
+        let size = scan.result.flatMap { $0.tree.size(of: path) }.map(Bytes.format) ?? "?"
+        let body = """
+            Cleanup doesn't know what's in `\(shown)` (\(size)).
+
+            What app or tool makes it, if you know:
+
+            Is it safe to remove, and does it come back?
+            """
+        var components = URLComponents(string: "https://github.com/coreyhaines31/diskforecast/issues/new")
+        components?.queryItems = [
+            URLQueryItem(name: "title", value: "Explain \(shown) in Cleanup"),
+            URLQueryItem(name: "body", value: body),
+            URLQueryItem(name: "labels", value: "cleanup-rule")
+        ]
+        if let url = components?.url { NSWorkspace.shared.open(url) }
+    }
+
     private func addReclaim(to menu: NSMenu) {
         if case .scanning(let files) = scan.state {
             let counted = files.formatted(.number.notation(.compactName))
@@ -174,6 +188,13 @@ final class StatusItemController: NSObject, NSMenuDelegate {
                     summary: safe,
                     scan: scan, disk: disk
                 )
+            })
+        }
+        if let activity = scan.activity {
+            menu.addItem(label(activity))
+        } else if let trash = scan.trashBytes, trash >= 1_000_000 {
+            menu.addItem(ClosureMenuItem("Empty Trash: \(Bytes.format(trash))…") { [self] in
+                TrashFlow.confirmAndEmptyTrash(scan: scan, disk: disk)
             })
         }
         menu.addItem(ClosureMenuItem("Open Cleanup…") { [weak self] in self?.openCleanup() })
