@@ -21,12 +21,15 @@ enum Preferences {
     static let staleAfterDaysKey = "staleAfterDays"
     static let onboardingDoneKey = "onboardingDone"
     static let appliedLaunchAtLoginDefaultKey = "appliedLaunchAtLoginDefault"
+    static let notifiesBeforeFullKey = "notifiesBeforeFull"
+    static let lastDiskAlertKey = "lastDiskAlert"
 
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
             menuBarDisplayKey: MenuBarDisplay.freeSpace.rawValue,
             staleAfterDaysKey: 30,
-            onboardingDoneKey: false
+            onboardingDoneKey: false,
+            notifiesBeforeFullKey: true
         ])
     }
 
@@ -46,5 +49,14 @@ enum Preferences {
     static var appliedLaunchAtLoginDefault: Bool {
         get { UserDefaults.standard.bool(forKey: appliedLaunchAtLoginDefaultKey) }
         set { UserDefaults.standard.set(newValue, forKey: appliedLaunchAtLoginDefaultKey) }
+    }
+
+    static var notifiesBeforeFull: Bool {
+        UserDefaults.standard.bool(forKey: notifiesBeforeFullKey)
+    }
+
+    static var lastDiskAlert: Date? {
+        get { UserDefaults.standard.object(forKey: lastDiskAlertKey) as? Date }
+        set { UserDefaults.standard.set(newValue, forKey: lastDiskAlertKey) }
     }
 }

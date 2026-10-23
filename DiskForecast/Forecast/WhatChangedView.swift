@@ -18,6 +18,16 @@ struct SnapshotComparison {
     func changes(under parent: String = "") -> [FolderChange] {
         FolderChanges.changes(from: old, to: new, under: parent)
     }
+
+    /// What used the most space over the last week, when it's at least 1 GB: a folder in the home
+    /// folder, or everything outside it.
+    static func grewMostThisWeek(in store: FolderSnapshotStore) -> (name: String, bytes: Int64)? {
+        guard let comparison = SnapshotComparison(store: store, since: Date().addingTimeInterval(-7 * 86_400))
+        else { return nil }
+        var candidates: [(name: String, bytes: Int64)] = comparison.changes().map { ("~/" + $0.path, $0.delta) }
+        candidates.append(("Outside your home folder", comparison.outsideHome))
+        return candidates.filter { $0.bytes >= 1_000_000_000 }.max { $0.bytes < $1.bytes }
+    }
 }
 
 /// Which folders grew or shrank between two scans, biggest change first. Each folder opens to

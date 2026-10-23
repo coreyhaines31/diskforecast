@@ -29,6 +29,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private var cliServer: CLIServer?
+    private lazy var notifier = Notifier(disk: disk, scan: scan, snapshots: snapshots)
 
     static var supportFolder: URL {
         #if DEBUG
@@ -49,7 +50,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItemController?.openCleanup = { [weak self] in self?.cleanupWindow.show() }
         statusItemController?.openSystemData = { [weak self] in self?.systemDataWindow.show() }
         statusItemController?.openForecast = { [weak self] in self?.forecastWindow.show() }
-        disk.onChange = { [weak self] in self?.statusItemController?.update() }
+        notifier.openCleanup = { [weak self] in self?.cleanupWindow.show() }
+        disk.onChange = { [weak self] in
+            self?.statusItemController?.update()
+            self?.notifier.check()
+        }
         scan.onChange = { [weak self] in self?.statusItemController?.update() }
         scan.onFinished = { [weak self] result in self?.recordSnapshot(of: result) }
         statusItemController?.grantAccess = { [weak self] in self?.onboardingWindow.show() }
