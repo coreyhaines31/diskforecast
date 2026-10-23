@@ -90,7 +90,8 @@ struct CleanupView: View {
     private var summary: String {
         guard let result = scan.result else { return "Measuring your home folder…" }
         let seconds = Int(result.duration.rounded())
-        var text = "\(result.fileCount.formatted()) files measured in \(seconds) s. Everything goes to the Trash first."
+        var text = "\(result.fileCount.formatted()) files measured in \(seconds) s. Everything goes to the Trash "
+            + "unless you choose to delete it."
         if !scan.pendingFolders.isEmpty {
             let names = scan.pendingFolders.map { ($0 as NSString).lastPathComponent }
             text += " Waiting to measure \(names.formatted()): allow access when macOS asks."
@@ -110,7 +111,10 @@ struct CleanupView: View {
         HStack {
             Text(selectionSummary).foregroundStyle(.secondary)
             Spacer()
-            Button("Open Trash") { TrashFlow.openTrash() }
+            Button(scan.trashBytes.map { "Empty Trash (\(Bytes.format($0)))…" } ?? "Empty Trash…") {
+                TrashFlow.confirmAndEmptyTrash(scan: scan, disk: disk)
+            }
+            .disabled(scan.activity != nil || scan.trashBytes == 0)
             Button(copiedPrompt ? "Copied" : "Copy Agent Prompt", action: copyAgentPrompt)
                 .disabled(selection.isEmpty)
                 .help("Copies what's selected as instructions for a coding agent like Claude Code or Codex.")

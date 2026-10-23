@@ -17,7 +17,7 @@
 
 ---
 
-Disk Forecast sits in your menu bar and shows how much space is free. After a few days it knows your pace and tells you when the disk will be full ("Full in ~41 days · using 3.5 GB a day"), shows which folders are growing, and moves what's safe to clear to the Trash. It's free, the source is on GitHub, and nothing about your disk ever leaves your Mac.
+Disk Forecast sits in your menu bar and shows how much space is free. After a few days it knows your pace and tells you when the disk will be full ("Full in ~41 days · using 3.5 GB a day"), shows which folders are growing, and clears what's safe to clear. It's free, the source is on GitHub, and nothing about your disk ever leaves your Mac.
 
 It's a free alternative to DiskBuddy, DaisyDisk, and CleanMyMac for the job they're most often bought for: getting disk space back.
 
@@ -44,7 +44,7 @@ It's a free alternative to DiskBuddy, DaisyDisk, and CleanMyMac for the job they
 - **Shows the trend.** A small chart at the top of the menu, and a Forecast window with 2-week, 30-day, and 4-month views, the projected full date, and the lowest point.
 - **Says what changed.** After each scan it saves folder sizes, so it can show which folders grew since any day in the chart, down to the subfolder that did it.
 - **Explains System Data.** Local Time Machine snapshots, purgeable space, the Spotlight index, simulators, Apple Intelligence and Siri models, and Docker, each with a fix that uses Apple's or the tool's own command.
-- **Reclaims space safely.** Caches (including the ones VS Code, Cursor, Slack, and Figma keep with their data), logs, Xcode leftovers, package manager caches, build folders in old projects, and git's records of deleted worktrees are listed as **Safe to clear**. Big downloads, disk images, VMs, local AI models, editor data for deleted projects, and git worktrees left by coding agents (each with what removing it would lose: changed files, commits no remote has) are **Worth a look** and never selected for you. Files always go to the Trash, and a cleanup can be undone.
+- **Reclaims space safely.** Caches (including the ones VS Code, Cursor, Slack, and Figma keep with their data), logs, Xcode leftovers, package manager caches, build folders in old projects, and git's records of deleted worktrees are listed as **Safe to clear**. Big downloads, disk images, VMs, local AI models, editor data for deleted projects, and git worktrees left by coding agents (each with what removing it would lose: changed files, commits no remote has) are **Worth a look** and never selected for you. Files go to the Trash, where a cleanup can be undone, or, if you choose **Delete Immediately**, are deleted right away. Anything a running app still has open is left alone, with the app named so you can quit it.
 - **Warns you when space is low**, whatever the trend.
 - **Works from Terminal.** The [`diskforecast` command](#command-line) gives you, or an AI agent, the forecast, what changed, and the cleanup list.
 - **Counts accurately.** APFS clones and hard links are counted once, so totals match what the disk really spends.
@@ -118,7 +118,7 @@ Click the menu bar item:
 - **System Data…** to see what macOS counts as System Data and fix the parts you can.
 - **Rescan** to measure again now.
 
-**Getting the space back.** Moving files to the Trash doesn't free space until the Trash is emptied. After a cleanup, check what's there with **Open Trash**, then empty it in Finder when you're sure.
+**Getting the space back.** Moving files to the Trash doesn't free space until the Trash is emptied. The menu shows what's in the Trash (**Empty Trash: 8.4 GB…**), and emptying it from there works even on items Finder gives up on, like folders whose path is too long. Emptying needs Full Disk Access. If the disk is too full to use the Trash at all, the result offers **Delete Instead**.
 
 **System Data fixes** run real commands, like `tmutil deletelocalsnapshots` or `xcrun simctl runtime delete`. Each one shows the exact command and asks you to confirm. Some ask for your administrator password.
 
@@ -167,7 +167,7 @@ When my Mac is low on disk space, use the `diskforecast` command (run `diskforec
 
 - Disk Forecast reads file sizes and names. It never reads file contents.
 - Nothing about your disk is sent anywhere. The only network request is the update check, which fetches a small feed from this repo's GitHub releases. You can turn automatic checks off in Settings.
-- Files only ever go to the Trash. It refuses anything outside your home folder, your home folder itself, and the standard folders in it (like Documents or Library).
+- Files go to the Trash unless you choose to delete them, and every deletion asks first. It refuses anything outside your home folder, your home folder itself, and the standard folders in it (like Documents or Library).
 - It never scans cloud drives (iCloud Drive, Dropbox, Google Drive), so it never downloads cloud-only files.
 - Its history lives in `~/Library/Application Support/Disk Forecast/`.
 

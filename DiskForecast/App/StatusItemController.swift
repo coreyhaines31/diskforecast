@@ -176,6 +176,13 @@ final class StatusItemController: NSObject, NSMenuDelegate {
                 )
             })
         }
+        if let activity = scan.activity {
+            menu.addItem(label(activity))
+        } else if let trash = scan.trashBytes, trash >= 1_000_000 {
+            menu.addItem(ClosureMenuItem("Empty Trash: \(Bytes.format(trash))…") { [self] in
+                TrashFlow.confirmAndEmptyTrash(scan: scan, disk: disk)
+            })
+        }
         menu.addItem(ClosureMenuItem("Open Cleanup…") { [weak self] in self?.openCleanup() })
         menu.addItem(ClosureMenuItem("System Data…") { [weak self] in self?.openSystemData() })
         menu.addItem(ClosureMenuItem("Forecast…") { [weak self] in self?.openForecast() })

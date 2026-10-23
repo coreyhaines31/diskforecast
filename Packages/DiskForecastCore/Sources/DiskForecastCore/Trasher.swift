@@ -28,6 +28,8 @@ public struct Trasher: Sendable {
         public var movedSizes: [String: Int64] = [:]
         /// A move failed because the disk had no room left, which even the Trash needs.
         public var diskFull = false
+        /// Deleted outright rather than moved to the Trash, so there's nothing to put back.
+        public var deleted = false
 
         /// One line per reason, naming up to three folders by their parent and name, since many
         /// failures share a reason and a folder name like node_modules.
@@ -84,7 +86,22 @@ public struct Trasher: Sendable {
     public func trash(
         _ paths: [String], sizes: [String: Int64] = [:], openFiles: OpenFiles = .current()
     ) -> Report {
+        dispose(paths, sizes: sizes, openFiles: openFiles, permanently: false)
+    }
+
+    /// Deletes each path outright, with the same safety checks as moving it to the Trash. For when
+    /// the space is needed now, or the disk is too full for the Trash.
+    public func delete(
+        _ paths: [String], sizes: [String: Int64] = [:], openFiles: OpenFiles = .current()
+    ) -> Report {
+        dispose(paths, sizes: sizes, openFiles: openFiles, permanently: true)
+    }
+
+    private func dispose(
+        _ paths: [String], sizes: [String: Int64], openFiles: OpenFiles, permanently: Bool
+    ) -> Report {
         var report = Report()
+        report.deleted = permanently
         let deepestFirst = paths.enumerated().sorted { first, second in
             let depths = (first.element.split(separator: "/").count, second.element.split(separator: "/").count)
             return depths.0 == depths.1 ? first.offset < second.offset : depths.0 > depths.1
@@ -99,10 +116,14 @@ public struct Trasher: Sendable {
                 continue
             }
             do {
-                var trashed: NSURL?
-                try FileManager.default.trashItem(at: URL(filePath: path), resultingItemURL: &trashed)
+                if permanently {
+                    try Deleter.remove(path)
+                } else {
+                    var trashed: NSURL?
+                    try FileManager.default.trashItem(at: URL(filePath: path), resultingItemURL: &trashed)
+                    report.inTrash[path] = trashed?.path
+                }
                 report.moved.append(path)
-                report.inTrash[path] = trashed?.path
                 report.movedBytes += sizes[path] ?? 0
                 report.movedSizes[path] = sizes[path]
             } catch {
@@ -113,15 +134,17 @@ public struct Trasher: Sendable {
         return report
     }
 
-    /// Moves cleanup entries to the Trash, each with its companions. Companions go only when their
-    /// entry did.
-    public func trash(_ entries: [CleanupEntry]) -> Report {
+    /// Moves cleanup entries to the Trash, or deletes them, each with its companions. Companions go
+    /// only when their entry did.
+    public func trash(
+        _ entries: [CleanupEntry], permanently: Bool = false, openFiles: OpenFiles = .current()
+    ) -> Report {
         let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
-        let openFiles = OpenFiles.current()
-        var report = trash(entries.map(\.path), sizes: sizes, openFiles: openFiles)
+        var report = dispose(entries.map(\.path), sizes: sizes, openFiles: openFiles, permanently: permanently)
         let moved = Set(report.moved)
-        let companions = trash(
-            entries.filter { moved.contains($0.path) }.flatMap(\.companions), openFiles: openFiles
+        let companions = dispose(
+            entries.filter { moved.contains($0.path) }.flatMap(\.companions), sizes: [:],
+            openFiles: openFiles, permanently: permanently
         )
         report.moved += companions.moved
         report.inTrash.merge(companions.inTrash) { first, _ in first }

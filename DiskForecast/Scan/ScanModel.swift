@@ -19,6 +19,13 @@ final class ScanModel {
     private(set) var finishedAt: Date?
     /// Folders still being measured on their own, usually because macOS is asking permission.
     private(set) var pendingFolders: [String] = []
+    /// What's in the Trash, measured after each scan and each change to it. Nil until measured, or
+    /// without Full Disk Access, which reading the Trash needs.
+    private(set) var trashBytes: Int64?
+    /// Something slow underway that the menu should mention, like emptying the Trash.
+    var activity: String? {
+        didSet { onChange?() }
+    }
     /// The Cleanup item to scroll to and open, set when the menu sends someone to it.
     var focusedItem: String?
     private var generation = 0
@@ -66,6 +73,7 @@ final class ScanModel {
             scannedWithFullDiskAccess = true
             finishedAt = Date()
             state = .done
+            measureTrash()
             onChange?()
             return
         }
@@ -115,6 +123,26 @@ final class ScanModel {
         await rebuildItems()
         state = .done
         onChange?()
+        measureTrash()
+    }
+
+    func measureTrash() {
+        #if DEBUG
+        if DemoMode.isOn {
+            trashBytes = 8_400_000_000
+            return
+        }
+        #endif
+        guard FullDiskAccess.isGranted else {
+            trashBytes = nil
+            return
+        }
+        let folder = URL(filePath: home + "/.Trash")
+        Task {
+            let result = await DiskScanner(options: .init(root: folder)).scan()
+            trashBytes = result.tree.totalSize
+            onChange?()
+        }
     }
 
     /// Adds a separately measured folder once both it and the main scan are done.
