@@ -52,6 +52,19 @@ extension CleanupCatalog {
                 group: .worthALook
             ) { catalog, scan in catalog.children(of: ".cache/huggingface/hub", in: scan) { $0.hasPrefix(".") } },
             CleanupRule(
+                id: "screen-recordings", title: "Screen recordings",
+                explanation: "Screen and audio history that Screenpipe or Rewind records so you can search it. "
+                    + "Moving it to the Trash erases that history, so quit the app first. Lowering the app's "
+                    + "own retention setting keeps recent days instead.",
+                group: .worthALook
+            ) { catalog, _ in
+                let apps = [
+                    (".screenpipe/data", "Screenpipe"),
+                    ("Library/Application Support/com.memoryvault.MemoryVault", "Rewind")
+                ]
+                return apps.map { CleanupCatalog.Candidate(path: catalog.path($0.0), name: $0.1) }
+            },
+            CleanupRule(
                 id: "xcode-derived-data", title: "Xcode DerivedData",
                 explanation: "Xcode's build products and indexes. Xcode rebuilds them the next time you build.",
                 group: .safeToClear
