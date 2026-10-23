@@ -21,7 +21,7 @@ PAGES = [
         "cta": "Get the forecast, free.",
         "faqs": [
             ("How much does DiskBuddy cost?", "DiskBuddy launched at $19 with a limited run of launch copies, and its site has since listed it at $49. Check DiskBuddy's site for the current price."),
-            ("Does DiskBuddy move files to the Trash?", "Yes. DiskBuddy sends deletions to the Trash, and so does Disk Forecast."),
+            ("Does DiskBuddy move files to the Trash?", "Yes. DiskBuddy sends deletions to the Trash, and so does Disk Forecast, unless you choose Delete Immediately."),
             ("Does DiskBuddy tell you when your disk will be full?", "We couldn't find a forecast in DiskBuddy's own materials as of October 2026. In Disk Forecast it's the headline feature: a countdown in the menu bar, built from your own daily history."),
             ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
         ],
@@ -48,7 +48,7 @@ PAGES = [
                 ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
                 ("System Data broken down", "Every part, in plain English, with Apple's fixes", "Snapshots view"),
                 ("Cleanup sorted by risk", "Yes", "Yes"),
-                ("Deletes go to the Trash", "Yes", "Yes"),
+                ("Deletes go to the Trash", "By default", "Yes"),
                 ("Finds local AI models", "Ollama, LM Studio, Hugging Face", "Yes"),
                 ("Duplicate finder", "No", "Yes"),
                 ("Windows version", "No", "Yes, same license"),
@@ -109,7 +109,7 @@ PAGES = [
                 ("How it shows your disk", "Lists sorted by size, each item explained", "An interactive picture you click through"),
                 ("System Data broken down", "Every part, in plain English, with Apple's fixes", "—"),
                 ("Cleanup sorted by risk", "Yes", "—"),
-                ("Deletes go to the Trash", "Yes", "—"),
+                ("Deletes go to the Trash", "By default", "—"),
                 ("Where to get it", "GitHub or Homebrew", "Mac App Store or direct"),
                 ("Sees hidden and system files", "Yes", "Direct build only"),
                 ("Source available", "Yes, on GitHub", "No"),
@@ -142,7 +142,7 @@ PAGES = [
         "faqs": [
             ("How much does CleanMyMac cost?", "On the Mac App Store (October 2026), CleanMyMac costs $9.99 a month or $39.99 a year, Plus costs $65.99 a year, and CleanMyMac X is a one-time $89.99. MacPaw's own store may differ, so check it for current plans."),
             ("Do I need a Mac cleaner app?", "For disk space, a careful tool helps when you're running low. Beyond that, usually not. macOS manages its own caches and memory, and on an SSD, free space doesn't change how a Mac runs until the disk is nearly full."),
-            ("Can I use Disk Forecast and CleanMyMac together?", "Yes. They don't conflict. Disk Forecast only moves files to the Trash when you ask it to."),
+            ("Can I use Disk Forecast and CleanMyMac together?", "Yes. They don't conflict. Disk Forecast only moves or deletes files when you ask it to."),
             ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
         ],
         "sections": [
@@ -166,7 +166,7 @@ PAGES = [
                 ("Price", "Free", "$39.99 a year, or $89.99 once"),
                 ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
                 ("System Data broken down", "Every part, in plain English, with Apple's fixes", "—"),
-                ("Deletes go to the Trash", "Yes", "—"),
+                ("Deletes go to the Trash", "By default", "—"),
                 ("System fixes use Apple's own tools", "Yes: tmutil, mdutil, xcrun simctl", "—"),
                 ("Account needed", "No", "—"),
                 ("Source available", "Yes, on GitHub", "No"),
@@ -285,7 +285,7 @@ PAGES = [
                 ("How it shows your disk", "Lists sorted by size, each item explained", "Columns sorted by size"),
                 ("System Data broken down", "Every part, in plain English, with Apple's fixes", "—"),
                 ("Cleanup sorted by risk", "Yes", "—"),
-                ("Deletes go to the Trash", "Yes", "Yes"),
+                ("Deletes go to the Trash", "By default", "Yes"),
                 ("Source available", "Yes, on GitHub", "—"),
             ]},
             {"id": "switch", "html": """
@@ -407,14 +407,14 @@ PAGES = [
         <h3>What Mole does better</h3>
         <p>Breadth in one command. An uninstaller, a maintenance command that refreshes caches and system services, live system stats, and scripting from Terminal, Raycast, or Alfred. If you want one tool for all of it, Mole is a strong free choice.</p>
         <h3>What Disk Forecast does better</h3>
-        <p>Warning you ahead of time, explaining every item in plain English, and making every cleanup reversible until you empty the Trash. It's a Mac app you never have to remember to run.</p>
+        <p>Warning you ahead of time, explaining every item in plain English, and making every cleanup reversible until you empty the Trash, unless you choose to delete right away. It's a Mac app you never have to remember to run.</p>
             """, "table": [
                 ("Price", "Free", "Free command-line tool; Mac app $19 once for 2 Macs"),
                 ("Where it runs", "Menu bar app", "Terminal, plus a separate paid app"),
                 ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
                 ("System Data broken down", "Every part, in plain English, with Apple's fixes", "—"),
                 ("Cleanup sorted by risk", "Yes", "—"),
-                ("Deletes go to the Trash", "Yes, always", "Some commands; purge deletes permanently"),
+                ("Deletes go to the Trash", "By default", "Some commands; purge deletes permanently"),
                 ("Preview before deleting", "Every item listed and explained", "Yes, with --dry-run"),
                 ("Uninstalls apps", "No", "Yes"),
                 ("Live CPU and memory stats", "No", "Yes"),
@@ -536,14 +536,14 @@ PAGES = [
         <h3>What OnyX does better</h3>
         <p>Maintenance. Verifying system files, rebuilding databases and indexes, running macOS's maintenance tasks, and changing hidden settings are OnyX's job, and Disk Forecast does none of it.</p>
         <h3>What Disk Forecast does better</h3>
-        <p>Disk space. It warns you weeks before the disk fills, shows which folders grew and when, explains every item it lists in plain English, and sends what you clear to the Trash, so you can change your mind until you empty it.</p>
+        <p>Disk space. It warns you weeks before the disk fills, shows which folders grew and when, explains every item it lists in plain English, and sends what you clear to the Trash by default, so you can change your mind until you empty it.</p>
             """, "table": [
                 ("Price", "Free", "Free, with donations"),
                 ("Where it runs", "Menu bar app", "Window app, opened when needed"),
                 ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
                 ("Shows the folders taking the most space", "Yes", "—"),
                 ("Clears caches and logs", "Yes, each one explained", "Yes"),
-                ("Deletes go to the Trash", "Yes, always", "—"),
+                ("Deletes go to the Trash", "By default", "—"),
                 ("Rebuilds databases and indexes", "No", "Yes"),
                 ("Hidden settings for Finder, Dock, and Safari", "No", "Yes"),
                 ("Versions", "One app for macOS 14 and later", "A separate build for each macOS"),
@@ -1254,7 +1254,7 @@ TRASH = {
         ("How do I empty the Trash on my Mac?", "Click the Trash icon in the Dock, then click Empty in the top-right corner of the window. You can also choose Finder › Empty Trash, or press Shift-Command-Delete. macOS asks you to confirm first."),
         ("Where is the Trash on a Mac?", "At the right end of the Dock, or the bottom if your Dock is on the side. The files themselves are in a hidden folder in your home folder, ~/.Trash, and each external drive keeps its own."),
         ("Can I make the Trash empty automatically?", "Yes. In Finder, choose Finder › Settings, click Advanced, and turn on Remove items from the Trash after 30 days. Anything that's been in the Trash for 30 days is deleted for good."),
-        ("Why won't my Trash empty?", "Usually an app still has one of the files open. Quit that app, or restart, and try again. A locked file won't delete either: select it, choose File › Get Info, and turn off Locked."),
+        ("Why won't my Trash empty?", "Usually an app still has one of the files open. Quit that app, or restart, and try again. A locked file won't delete either: select it, choose File › Get Info, and turn off Locked. If Finder says a pathname is too long, the folder is nested deeper than Finder can delete, which happens with node_modules and git worktrees; drag it out of the Trash and delete it from Terminal, or let Disk Forecast empty the Trash."),
         ("I emptied the Trash but didn't get any space back. Why?", "Local Time Machine snapshots can keep deleted files on the disk until macOS removes the snapshot. Purgeable space can also make the number in Finder move slowly. Give it a few minutes, then check local snapshots."),
         ("Can I get files back after emptying the Trash?", "Only from a backup, like Time Machine. Before you empty it, you can put anything back: select it in the Trash and choose File › Put Back."),
     ],
@@ -1282,7 +1282,8 @@ TRASH = {
 
         <h2 style="margin-top:56px">When the Trash won't empty</h2>
         <ul>
-          <li><strong>“The operation can't be completed because the item is in use.”</strong> An app still has the file open. Quit the app it belongs to and try again. If you can't tell which one, restart and empty the Trash first thing.</li>
+          <li><strong>“The operation can't be completed because the item is in use.”</strong> An app still has the file open. Quit the app it belongs to and try again. If you can't tell which one, restart and empty the Trash first thing. A program can even be running from inside the Trash, like a tool an AI agent started from a <code>node_modules</code> folder you deleted.</li>
+          <li><strong>“Can't move it to the Trash because its pathname is too long.”</strong> The folder is nested deeper than Finder can handle, which happens with <code>node_modules</code> and git worktrees. Drag it out of the Trash to your home folder, then delete it in Terminal with <code>rm -r ~/</code> followed by its name. Terminal can't reach it while it's still in the Trash.</li>
           <li><strong>A locked file.</strong> Select it in the Trash, choose <strong>File › Get Info</strong>, and turn off <strong>Locked</strong>.</li>
           <li><strong>You don't have permission.</strong> The file belongs to another user or to the system. In <strong>File › Get Info</strong>, open <strong>Sharing &amp; Permissions</strong>, click the lock, and give yourself Read &amp; Write.</li>
           <li><strong>An external drive.</strong> Its Trash only empties while it's connected. Plug it back in, then empty the Trash.</li>
@@ -1298,7 +1299,7 @@ TRASH = {
     """,
     "shortcut": """
           <h2>Disk Forecast and the Trash</h2>
-          <p>Disk Forecast never deletes anything itself. Everything you clear goes to the Trash, so you can put it back until you empty it. After a cleanup, it tells you how much it moved, and its <strong>Open Trash</strong> button takes you straight there to check before you empty it. It&#39;s free.</p>
+          <p>Disk Forecast shows what&#39;s in your Trash in its menu, like <strong>Empty Trash: 8.4 GB…</strong>, and empties it after you confirm. It works on what Finder gives up on, like folders whose path is too long and locked files. Anything an app still has open stays, and Disk Forecast names the app so you can quit it. Everything you clear goes to the Trash first, unless you choose <strong>Delete Immediately</strong>. It&#39;s free.</p>
     """,
     "mockup": "cleanup",
     "cta": "Know before it's full.",
@@ -1664,7 +1665,7 @@ BEST_FREE = {
         {{TABLE:picks}}
 
         <h3 style="margin-top:40px">1. Disk Forecast</h3>
-        <p>Free, source available, for macOS 14 or later. It shows free space in the menu bar and, after 3 days of history, when your disk will be full. Its cleanup list sorts what it finds into “Safe to clear,” like caches, logs, and old build folders, and “Worth a look,” like big downloads, AI models, and virtual machines. Every item has a one-line explanation, and everything goes to the Trash. It saves folder sizes after each scan, so it can show which folders grew since any day, and its <code>diskforecast</code> command gives the same answers to scripts and AI agents like Claude Code. Its System Data window explains snapshots, simulators, and the rest, and runs Apple's own tool for each fix after showing you the command. It doesn't draw a treemap, uninstall apps, or find duplicates.</p>
+        <p>Free, source available, for macOS 14 or later. It shows free space in the menu bar and, after 3 days of history, when your disk will be full. Its cleanup list sorts what it finds into “Safe to clear,” like caches, logs, and old build folders, and “Worth a look,” like big downloads, AI models, and virtual machines. Every item has a one-line explanation, and everything goes to the Trash unless you choose to delete it. It saves folder sizes after each scan, so it can show which folders grew since any day, and its <code>diskforecast</code> command gives the same answers to scripts and AI agents like Claude Code. Its System Data window explains snapshots, simulators, and the rest, and runs Apple's own tool for each fix after showing you the command. It doesn't draw a treemap, uninstall apps, or find duplicates.</p>
 
         <h3>2. GrandPerspective</h3>
         <p>A free treemap of any folder or drive: every file a rectangle, sized by its space. It's open source under the GPL, updated in September 2026 for macOS 14 and later, and native on Apple silicon. It's free from its website, or $2.99 on the Mac App Store. It shows sizes, not meanings. <a href="/alternatives/grandperspective">GrandPerspective compared</a>.</p>
@@ -1808,7 +1809,7 @@ CLEANMYMAC_SAFE = {
         ("Is CleanMyMac worth it?", "If you use most of the suite, like the malware scans, the app updater, and the uninstaller, it can be. If you mainly open it because your disk is full, free tools reclaim the same space for nothing."),
         ("How much is CleanMyMac?", "On the Mac App Store as of October 2026: $9.99 a month or $39.99 a year, Plus at $15.99 a month or $65.99 a year, and a one-time CleanMyMac X purchase at $89.99. MacPaw's own site advertises plans from $3.33 a month. Prices vary by region and change over time."),
         ("Is there a free version of CleanMyMac?", "There's a free trial, and the App Store download itself is free, with plans sold as in-app purchases. The free options on this page cover disk space without a subscription."),
-        ("Can I use CleanMyMac and Disk Forecast together?", "Yes. They don't conflict. Disk Forecast only moves files to the Trash when you ask it to."),
+        ("Can I use CleanMyMac and Disk Forecast together?", "Yes. They don't conflict. Disk Forecast only moves or deletes files when you ask it to."),
     ],
     "html": """
         <h2>Is CleanMyMac malware?</h2>
