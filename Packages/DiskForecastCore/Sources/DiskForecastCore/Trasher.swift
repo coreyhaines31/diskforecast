@@ -153,6 +153,16 @@ public struct Trasher: Sendable {
         return report
     }
 
+    /// The entries a running program is using, under that program's name, so a confirmation can
+    /// say up front what will stay.
+    public static func busy(_ entries: [CleanupEntry], openFiles: OpenFiles) -> [String: [CleanupEntry]] {
+        var busy: [String: [CleanupEntry]] = [:]
+        for entry in entries {
+            if let user = openFiles.user(of: resolved(entry.path)) { busy[user, default: []].append(entry) }
+        }
+        return busy
+    }
+
     static func isOutOfSpace(_ error: Error) -> Bool {
         let error = error as NSError
         if error.domain == NSCocoaErrorDomain && error.code == NSFileWriteOutOfSpaceError { return true }

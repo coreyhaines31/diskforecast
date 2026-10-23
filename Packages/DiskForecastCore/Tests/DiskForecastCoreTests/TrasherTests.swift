@@ -38,6 +38,13 @@ struct TrasherTests {
         #expect(FileManager.default.fileExists(atPath: open))
     }
 
+    @Test func saysWhichEntriesAreBusyBeforeMoving() {
+        let cursor = CleanupEntry(path: home.path + "/Library/Caches/com.todesktop.cursor", bytes: 5)
+        let idle = CleanupEntry(path: home.path + "/Library/Caches/com.example.idle", bytes: 5)
+        let openFiles = OpenFiles(processes: [(name: "Cursor", paths: [cursor.path + "/Cache_Data/data_0"])])
+        #expect(Trasher.busy([cursor, idle], openFiles: openFiles) == ["Cursor": [cursor]])
+    }
+
     @Test func findsFilesAnotherProcessHasOpen() throws {
         try write("Library/Caches/com.example.app/blob", bytes: 10)
         let tail = Process()
