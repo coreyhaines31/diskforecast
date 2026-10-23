@@ -10,6 +10,7 @@ struct GeneralSettingsView: View {
     @State private var checksForUpdates: Bool
     @State private var launchesAtLogin = SMAppService.mainApp.status == .enabled
     @AppStorage(Preferences.menuBarDisplayKey) private var menuBarDisplay = MenuBarDisplay.freeSpace
+    @AppStorage(Preferences.notifiesBeforeFullKey) private var notifiesBeforeFull = true
     @State private var commandPath = CommandLineInstaller.installedPath
     @State private var commandNote: String?
     @State private var copiedPrompt = false
@@ -27,6 +28,8 @@ struct GeneralSettingsView: View {
                 Picker("Menu bar shows", selection: $menuBarDisplay) {
                     ForEach(MenuBarDisplay.allCases) { Text($0.title).tag($0) }
                 }
+                Toggle("Notify me before my disk fills", isOn: $notifiesBeforeFull)
+                    .help("When the forecast says full within a week, or space runs low. At most once a day.")
             }
             commandLineSection
             Section {
