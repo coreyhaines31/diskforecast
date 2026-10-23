@@ -112,7 +112,7 @@ Click the menu bar item:
 
 - **Free space and the forecast** at the top, with a **Low on space** warning when you're under 10% (or 20 GB) free. Click the warning to open Cleanup.
 - **The chart.** Click it, or choose **Forecast…**, to open the Forecast window.
-- **Taking the most space:** the five biggest folders. Click one to show it in Finder.
+- **Taking the most space:** the five biggest folders. Each one lists what Cleanup knows inside it, which opens Cleanup at that item, and Show in Finder.
 - **Safe to clear: 12 GB…** moves everything in the Safe to clear group to the Trash, after a confirmation that lists what's included.
 - **Open Cleanup…** to review both groups and pick exactly what to move. **Copy Agent Prompt** copies what you picked as instructions for a coding agent like Claude Code or Codex instead: only those paths, each checked first, with git checks before a checkout goes.
 - **System Data…** to see what macOS counts as System Data and fix the parts you can.
