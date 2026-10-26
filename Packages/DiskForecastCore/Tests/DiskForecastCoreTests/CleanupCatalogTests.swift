@@ -73,6 +73,7 @@ struct CleanupCatalogTests {
         try write("Library/Logs/Example/log.txt", bytes: 1_500_000)
         try write(".cache/huggingface/hub/models--org--model/weights", bytes: 3_000_000)
         try write(".cache/pip/http/blob", bytes: 1_200_000)
+        try write("Library/pnpm/store/v10/files/00/blob", bytes: 2_000_000)
         try write("code/old/package.json", bytes: 10, modified: old)
         try write("code/old/node_modules/pkg/index.js", bytes: 2_000_000)
         let installed = home.path + "/code/old/node_modules"
