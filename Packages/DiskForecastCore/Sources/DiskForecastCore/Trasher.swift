@@ -86,6 +86,9 @@ public struct Trasher: Sendable {
 
     private func isInScratchSession(_ path: String) -> Bool {
         guard path.hasPrefix(agentScratch + "/") else { return false }
+        // Anyone can create folders in /private/tmp, so only trust one this user owns.
+        var info = stat()
+        guard lstat(agentScratch, &info) == 0, info.st_uid == getuid() else { return false }
         return path.dropFirst(agentScratch.count + 1).split(separator: "/").count >= 2
     }
 
