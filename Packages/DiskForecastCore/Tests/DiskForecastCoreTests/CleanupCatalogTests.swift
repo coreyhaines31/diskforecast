@@ -66,6 +66,29 @@ struct CleanupCatalogTests {
         #expect(items["package-caches"] == nil)
     }
 
+    @Test func findsTempFilesOfFinishedClaudeCodeSessions() async throws {
+        let scratch = home.appending(path: "scratch")
+        let project = home.path.replacingOccurrences(of: "/", with: "-") + "-code-my-app"
+        try write("code/my-app/README.md", bytes: 10)
+        let old = now.addingTimeInterval(-5 * 86_400)
+        for (session, modified) in [("finished", old), ("running", now)] {
+            let relative = "scratch/\(project)/\(session)"
+            try write(relative + "/scratchpad/clone/blob", bytes: 2_000_000)
+            for path in [relative + "/scratchpad", relative] {
+                let url = home.appending(path: path)
+                try FileManager.default.setAttributes([.modificationDate: modified], ofItemAtPath: url.path)
+            }
+        }
+
+        let homeScan = await DiskScanner(options: .init(root: home, excludedPaths: [scratch.path])).scan()
+        let scratchScan = await DiskScanner(options: .init(root: scratch)).scan()
+        let items = CleanupCatalog(home: home.path, now: now, agentScratch: scratchScan).items(from: homeScan)
+        let entries = items.first { $0.id == "agent-leftovers" }?.entries ?? []
+        #expect(entries.map(\.path) == [scratch.path + "/\(project)/finished"])
+        #expect(entries.first?.detail == "In ~/code/my-app · last used 5 days ago")
+        #expect(entries.first.map { $0.bytes >= 2_000_000 } == true)
+    }
+
     @Test func groupsKnownLocations() async throws {
         let old = now.addingTimeInterval(-90 * 86_400)
         try write("Library/Caches/com.example.app/blob", bytes: 2_000_000)
@@ -73,6 +96,7 @@ struct CleanupCatalogTests {
         try write("Library/Logs/Example/log.txt", bytes: 1_500_000)
         try write(".cache/huggingface/hub/models--org--model/weights", bytes: 3_000_000)
         try write(".cache/pip/http/blob", bytes: 1_200_000)
+        try write("Library/pnpm/store/v10/files/00/blob", bytes: 2_000_000)
         try write("code/old/package.json", bytes: 10, modified: old)
         try write("code/old/node_modules/pkg/index.js", bytes: 2_000_000)
         let installed = home.path + "/code/old/node_modules"

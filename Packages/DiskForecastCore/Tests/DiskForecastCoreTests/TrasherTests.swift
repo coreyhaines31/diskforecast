@@ -107,6 +107,16 @@ struct TrasherTests {
         #expect(report.moved.isEmpty)
         #expect(FileManager.default.fileExists(atPath: home.path + "/Library"))
     }
+
+    @Test func movesClaudeCodeSessionsButNotTheirParents() throws {
+        let scratch = FileManager.default.temporaryDirectory.appending(path: "claude-\(UUID().uuidString)")
+        let session = scratch.appending(path: "-Users-me-code-app/2f1c")
+        try FileManager.default.createDirectory(at: session, withIntermediateDirectories: true)
+        let trasher = Trasher(home: home.path, agentScratch: scratch.path)
+        #expect(trasher.refusal(for: session.path) == nil)
+        #expect(trasher.refusal(for: session.deletingLastPathComponent().path) == .outsideHome)
+        #expect(trasher.refusal(for: scratch.path) == .outsideHome)
+    }
 }
 
 struct TrasherReportTests {

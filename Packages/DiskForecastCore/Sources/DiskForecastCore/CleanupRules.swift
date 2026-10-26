@@ -90,20 +90,21 @@ extension CleanupCatalog {
             ) { catalog, scan in catalog.children(of: "Library/Developer/Xcode/Archives", in: scan) },
             CleanupRule(
                 id: "agent-leftovers", title: "Left behind by coding agents",
-                explanation: "Tools coding agents download to do their work: packages npx runs, like MCP servers, "
-                    + "browsers for Playwright, Puppeteer, and agent-browser, and older Claude Code versions. The "
-                    + "newest browser and Claude Code stay, and anything still running is left alone. The rest "
-                    + "downloads again when an agent needs it.",
+                explanation: "What coding agents download and leave: npx packages like MCP servers, browsers for "
+                    + "Playwright, Puppeteer, and agent-browser, older Claude Code versions, and temp files from "
+                    + "Claude Code sessions idle for 2 days. The newest of each and anything in use stay.",
                 group: .safeToClear
             ) { catalog, scan in catalog.agentLeftovers(scan) },
             CleanupRule(
                 id: "package-caches", title: "Package manager caches",
-                explanation: "Downloads kept by npm, pnpm, Bun, Cargo, Gradle, pip, and friends so installs are "
+                explanation: "Downloads kept by npm, Bun, Cargo, Gradle, pip, and friends so installs are "
                     + "faster. They fill back up as you install packages.",
                 group: .safeToClear
             ) { catalog, scan in
+                // Not the pnpm store: projects share its files, so deleting it frees far less than its
+                // size. pnpm store prune is the right tool.
                 catalog.fixed([
-                    ".npm/_cacache", "Library/pnpm/store", ".bun/install/cache",
+                    ".npm/_cacache", ".bun/install/cache",
                     ".cargo/registry", ".gradle/caches", ".gradle/wrapper/dists"
                 ]) + catalog.children(of: ".cache", in: scan) {
                     ["huggingface", "lm-studio", "puppeteer"].contains($0)

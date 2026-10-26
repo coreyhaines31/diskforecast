@@ -22,6 +22,8 @@ final class ScanModel {
     /// What's in the Trash, measured after each scan and each change to it. Nil until measured, or
     /// without Full Disk Access, which reading the Trash needs.
     private(set) var trashBytes: Int64?
+    /// Claude Code's temp folder, scanned beside the home folder since it's outside it.
+    private var agentScratch: ScanResult?
     /// Something slow underway that the menu should mention, like emptying the Trash.
     var activity: String? {
         didSet { onChange?() }
@@ -99,8 +101,11 @@ final class ScanModel {
             }
         }
         Task {
+            async let scratch = Self.scanAgentScratch()
             let result = await scanner.scan()
+            let scratchResult = await scratch
             guard generation == self.generation else { return }
+            agentScratch = scratchResult
             await finish(result: result, fullAccess: fullAccess)
         }
         for folder in separate {
@@ -124,6 +129,11 @@ final class ScanModel {
         state = .done
         onChange?()
         measureTrash()
+    }
+
+    private nonisolated static func scanAgentScratch() async -> ScanResult? {
+        guard FileManager.default.fileExists(atPath: AgentScratch.folder) else { return nil }
+        return await DiskScanner(options: .init(root: URL(filePath: AgentScratch.folder))).scan()
     }
 
     func measureTrash() {
@@ -161,7 +171,9 @@ final class ScanModel {
 
     private func rebuildItems() async {
         guard let result else { return }
-        let catalog = CleanupCatalog(home: home, staleAfterDays: Preferences.staleAfterDays)
+        let catalog = CleanupCatalog(
+            home: home, staleAfterDays: Preferences.staleAfterDays, agentScratch: agentScratch
+        )
         items = await Task.detached(priority: .utility) { catalog.items(from: result) }.value
     }
 

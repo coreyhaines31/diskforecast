@@ -1,8 +1,8 @@
 import Foundation
 
-/// Moves things to the Trash, and only things it's safe to move: inside the home folder, never
-/// the home folder or one of its standard folders, and never through a link that leads out.
-/// Nothing is ever deleted outright.
+/// Moves things to the Trash, or deletes them when asked, and only things it's safe to remove:
+/// inside the home folder or a Claude Code session's temp files, never the home folder or one of
+/// its standard folders, and never through a link that leads out.
 public struct Trasher: Sendable {
     public enum Refusal: Error, Equatable, CustomStringConvertible {
         case outsideHome
@@ -61,9 +61,13 @@ public struct Trasher: Sendable {
     ]
 
     public let home: String
+    /// Claude Code's temp folder. The one place outside home it moves things from, and only
+    /// whole sessions or what's inside them.
+    let agentScratch: String
 
-    public init(home: String) {
+    public init(home: String, agentScratch: String = AgentScratch.folder) {
         self.home = Self.resolved(home)
+        self.agentScratch = Self.resolved(agentScratch)
     }
 
     /// Why a path can't go to the Trash, or nil when it can.
@@ -72,12 +76,20 @@ public struct Trasher: Sendable {
         let name = (path as NSString).lastPathComponent
         guard !name.isEmpty, name != ".", name != ".." else { return .protectedFolder }
         let full = parent + "/" + name
-        guard full.hasPrefix(home + "/") else { return .outsideHome }
+        guard full.hasPrefix(home + "/") || isInScratchSession(full) else { return .outsideHome }
         if parent == home && Self.protectedNames.contains(name) { return .protectedFolder }
         if full == home + "/Library/Caches" || full == home + "/Library/Logs" { return .protectedFolder }
         var info = stat()
         guard lstat(full, &info) == 0 else { return .missing }
         return nil
+    }
+
+    private func isInScratchSession(_ path: String) -> Bool {
+        guard path.hasPrefix(agentScratch + "/") else { return false }
+        // Anyone can create folders in /private/tmp, so only trust one this user owns.
+        var info = stat()
+        guard lstat(agentScratch, &info) == 0, info.st_uid == getuid() else { return false }
+        return path.dropFirst(agentScratch.count + 1).split(separator: "/").count >= 2
     }
 
     /// Moves each path to the Trash. `sizes` reports what each one held, for the total. Deeper
