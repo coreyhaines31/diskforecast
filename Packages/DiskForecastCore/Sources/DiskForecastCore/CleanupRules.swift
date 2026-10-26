@@ -90,11 +90,9 @@ extension CleanupCatalog {
             ) { catalog, scan in catalog.children(of: "Library/Developer/Xcode/Archives", in: scan) },
             CleanupRule(
                 id: "agent-leftovers", title: "Left behind by coding agents",
-                explanation: "Tools coding agents download to do their work: packages npx runs, like MCP servers, "
-                    + "browsers for Playwright, Puppeteer, and agent-browser, and older Claude Code versions. Also "
-                    + "the temp files of Claude Code sessions untouched for 2 days, which Claude Code never "
-                    + "removes. The newest browser and Claude Code stay, and anything still running is left "
-                    + "alone. The rest downloads again when an agent needs it.",
+                explanation: "What coding agents download and leave: npx packages like MCP servers, browsers for "
+                    + "Playwright, Puppeteer, and agent-browser, older Claude Code versions, and temp files from "
+                    + "Claude Code sessions idle for 2 days. The newest of each and anything in use stay.",
                 group: .safeToClear
             ) { catalog, scan in catalog.agentLeftovers(scan) },
             CleanupRule(

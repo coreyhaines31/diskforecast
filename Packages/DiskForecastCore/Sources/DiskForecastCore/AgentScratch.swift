@@ -29,14 +29,27 @@ extension CleanupCatalog {
     }
 
     /// The project folder a session ran in. Claude Code names the folder after its path with every
-    /// slash turned into a dash, so this guesses the slashes back and keeps the guess only if it exists.
+    /// slash turned into a dash, so this rebuilds the path from folders that exist, since a dash
+    /// can also be part of a folder's name.
     func projectLabel(_ project: String) -> String {
         let homeName = home.replacingOccurrences(of: "/", with: "-")
         guard project.hasPrefix(homeName) else { return project }
-        let rest = String(project.dropFirst(homeName.count))
-        guard !rest.isEmpty else { return "~" }
-        let guess = rest.replacingOccurrences(of: "-", with: "/")
-        return FileManager.default.fileExists(atPath: home + guess) ? "~" + guess : "~/" + rest.dropFirst()
+        let parts = project.dropFirst(homeName.count).split(separator: "-", omittingEmptySubsequences: false)
+        guard parts.count > 1, let path = Self.rebuild(parts.dropFirst().map(String.init), under: home) else {
+            return parts.count > 1 ? "~/" + parts.dropFirst().joined(separator: "-") : "~"
+        }
+        return "~" + path.dropFirst(home.count)
+    }
+
+    /// Joins the parts with slashes or dashes, taking the longest folder name that exists at each level.
+    private static func rebuild(_ parts: [String], under base: String) -> String? {
+        guard !parts.isEmpty else { return base }
+        for count in stride(from: parts.count, through: 1, by: -1) {
+            let candidate = base + "/" + parts.prefix(count).joined(separator: "-")
+            guard FileManager.default.fileExists(atPath: candidate) else { continue }
+            if let path = rebuild(Array(parts.dropFirst(count)), under: candidate) { return path }
+        }
+        return nil
     }
 
     private static func folders(in path: String) -> [String] {
