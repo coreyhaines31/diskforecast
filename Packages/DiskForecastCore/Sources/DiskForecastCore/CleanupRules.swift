@@ -91,9 +91,10 @@ extension CleanupCatalog {
             CleanupRule(
                 id: "agent-leftovers", title: "Left behind by coding agents",
                 explanation: "Tools coding agents download to do their work: packages npx runs, like MCP servers, "
-                    + "browsers for Playwright, Puppeteer, and agent-browser, and older Claude Code versions. The "
-                    + "newest browser and Claude Code stay, and anything still running is left alone. The rest "
-                    + "downloads again when an agent needs it.",
+                    + "browsers for Playwright, Puppeteer, and agent-browser, and older Claude Code versions. Also "
+                    + "the temp files of Claude Code sessions untouched for 2 days, which Claude Code never "
+                    + "removes. The newest browser and Claude Code stay, and anything still running is left "
+                    + "alone. The rest downloads again when an agent needs it.",
                 group: .safeToClear
             ) { catalog, scan in catalog.agentLeftovers(scan) },
             CleanupRule(

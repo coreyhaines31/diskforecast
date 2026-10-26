@@ -82,6 +82,8 @@ public struct CleanupCatalog: Sendable {
     public let home: String
     public let staleAfterDays: Int
     public let now: Date
+    /// A separate scan of Claude Code's temp folders, which sit outside the home folder.
+    public let agentScratch: ScanResult?
     /// What removing a checkout would lose. Swappable for tests.
     let gitState: @Sendable (String) -> GitState?
 
@@ -90,12 +92,13 @@ public struct CleanupCatalog: Sendable {
     static let minimumDownloadBytes: Int64 = 10_000_000
 
     public init(
-        home: String, staleAfterDays: Int = 30, now: Date = Date(),
+        home: String, staleAfterDays: Int = 30, now: Date = Date(), agentScratch: ScanResult? = nil,
         gitState: @escaping @Sendable (String) -> GitState? = GitState.read(at:)
     ) {
         self.home = home.hasSuffix("/") ? String(home.dropLast()) : home
         self.staleAfterDays = staleAfterDays
         self.now = now
+        self.agentScratch = agentScratch
         self.gitState = gitState
     }
 
@@ -107,13 +110,13 @@ public struct CleanupCatalog: Sendable {
         for rule in rules {
             let entries = rule.candidates(self, scan).compactMap { candidate -> CleanupEntry? in
                 guard !claimed.contains(where: { candidate.path == $0 || candidate.path.hasPrefix($0 + "/") }),
-                      var bytes = scan.allocatedSize(of: candidate.path)
+                      var bytes = size(of: candidate.path, in: scan)
                 else { return nil }
                 for inner in claimed where inner.hasPrefix(candidate.path + "/") {
-                    bytes -= scan.allocatedSize(of: inner) ?? 0
+                    bytes -= size(of: inner, in: scan) ?? 0
                 }
-                let companions = candidate.companions.filter { scan.allocatedSize(of: $0) != nil }
-                bytes += companions.reduce(0) { $0 + (scan.allocatedSize(of: $1) ?? 0) }
+                let companions = candidate.companions.filter { size(of: $0, in: scan) != nil }
+                bytes += companions.reduce(0) { $0 + (size(of: $1, in: scan) ?? 0) }
                 return CleanupEntry(
                     path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name,
                     companions: companions
@@ -129,6 +132,10 @@ public struct CleanupCatalog: Sendable {
             ))
         }
         return items.sorted { $0.bytes > $1.bytes }
+    }
+
+    private func size(of path: String, in scan: ScanResult) -> Int64? {
+        scan.allocatedSize(of: path) ?? agentScratch?.allocatedSize(of: path)
     }
 
     // MARK: Sources
@@ -283,7 +290,7 @@ public struct CleanupCatalog: Sendable {
     }
 
     func agentLeftovers(_ scan: ScanResult) -> [Candidate] {
-        var found = [Candidate(path: path(".npm/_npx"), name: "npx packages")]
+        var found = [Candidate(path: path(".npm/_npx"), name: "npx packages")] + claudeSessions()
         found += olderVersions(in: ".local/share/claude/versions", scan: scan) { "Claude Code \($0)" }
         found += olderVersions(in: ".agent-browser/browsers", scan: scan) { "agent-browser \($0)" }
         // Playwright keeps one folder per browser build, like chromium-1140 and webkit-2083.

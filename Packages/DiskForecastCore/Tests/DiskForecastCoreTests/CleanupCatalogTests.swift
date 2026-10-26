@@ -66,6 +66,29 @@ struct CleanupCatalogTests {
         #expect(items["package-caches"] == nil)
     }
 
+    @Test func findsTempFilesOfFinishedClaudeCodeSessions() async throws {
+        let scratch = home.appending(path: "scratch")
+        let project = home.path.replacingOccurrences(of: "/", with: "-") + "-code-app"
+        try write("code/app/README.md", bytes: 10)
+        let old = now.addingTimeInterval(-5 * 86_400)
+        for (session, modified) in [("finished", old), ("running", now)] {
+            let relative = "scratch/\(project)/\(session)"
+            try write(relative + "/scratchpad/clone/blob", bytes: 2_000_000)
+            for path in [relative + "/scratchpad", relative] {
+                let url = home.appending(path: path)
+                try FileManager.default.setAttributes([.modificationDate: modified], ofItemAtPath: url.path)
+            }
+        }
+
+        let homeScan = await DiskScanner(options: .init(root: home, excludedPaths: [scratch.path])).scan()
+        let scratchScan = await DiskScanner(options: .init(root: scratch)).scan()
+        let items = CleanupCatalog(home: home.path, now: now, agentScratch: scratchScan).items(from: homeScan)
+        let entries = items.first { $0.id == "agent-leftovers" }?.entries ?? []
+        #expect(entries.map(\.path) == [scratch.path + "/\(project)/finished"])
+        #expect(entries.first?.detail == "In ~/code/app · last used 5 days ago")
+        #expect(entries.first.map { $0.bytes >= 2_000_000 } == true)
+    }
+
     @Test func groupsKnownLocations() async throws {
         let old = now.addingTimeInterval(-90 * 86_400)
         try write("Library/Caches/com.example.app/blob", bytes: 2_000_000)
