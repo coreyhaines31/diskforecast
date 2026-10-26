@@ -98,12 +98,14 @@ extension CleanupCatalog {
             ) { catalog, scan in catalog.agentLeftovers(scan) },
             CleanupRule(
                 id: "package-caches", title: "Package manager caches",
-                explanation: "Downloads kept by npm, pnpm, Bun, Cargo, Gradle, pip, and friends so installs are "
+                explanation: "Downloads kept by npm, Bun, Cargo, Gradle, pip, and friends so installs are "
                     + "faster. They fill back up as you install packages.",
                 group: .safeToClear
             ) { catalog, scan in
+                // Not the pnpm store: projects share its files, so deleting it frees far less than its
+                // size. pnpm store prune is the right tool.
                 catalog.fixed([
-                    ".npm/_cacache", "Library/pnpm/store", ".bun/install/cache",
+                    ".npm/_cacache", ".bun/install/cache",
                     ".cargo/registry", ".gradle/caches", ".gradle/wrapper/dists"
                 ]) + catalog.children(of: ".cache", in: scan) {
                     ["huggingface", "lm-studio", "puppeteer"].contains($0)
