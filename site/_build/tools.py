@@ -137,7 +137,7 @@ npm cache clean --force                # empty _cacache</code></pre>
         <p>Using Yarn instead? See <a href="/clear-cache/yarn">how to clear Yarn cache</a>. All the others: <a href="/clear-cache">clear cache by tool</a>.</p>
     """,
     "finds": """
-          <p>Disk Forecast lists <code>~/.npm/_cacache</code> and <code>~/.npm/_npx</code> as separate entries under <strong>Cleanup › Safe to clear › Package manager caches</strong>, next to the pnpm store and Bun&#39;s cache. Your <code>node_modules</code> folders show up too, only where a <code>package.json</code> sits beside them: under <strong>Build folders in old projects</strong> if the project hasn&#39;t changed in 30 days, or <strong>Build folders in active projects</strong> if it has. Everything goes to the Trash. It&#39;s free.</p>
+          <p>Disk Forecast lists <code>~/.npm/_cacache</code> under <strong>Cleanup › Safe to clear › Package manager caches</strong>, next to Bun&#39;s cache, and <code>~/.npm/_npx</code> under <strong>Left behind by coding agents</strong>. It leaves the pnpm store out: projects share its files, so trashing it frees much less than its size, and <code>pnpm store prune</code> is the right tool. Your <code>node_modules</code> folders show up too, only where a <code>package.json</code> sits beside them: under <strong>Build folders in old projects</strong> if the project hasn&#39;t changed in 30 days, or <strong>Build folders in active projects</strong> if it has. Everything goes to the Trash unless you choose to delete it. It&#39;s free.</p>
     """,
     "mockup": "cleanup",
     "related": ["/clear-cache/yarn", "/clear-cache/docker", "/clear-cache/homebrew"],
