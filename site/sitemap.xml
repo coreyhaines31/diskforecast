@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://diskforecast.com/</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://diskforecast.com/</loc><lastmod>2026-10-26</lastmod></url>
   <url><loc>https://diskforecast.com/guides</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/how-to-check-storage-on-mac</loc><lastmod>2026-10-23</lastmod></url>
   <url><loc>https://diskforecast.com/free-up-space-on-mac</loc><lastmod>2026-10-20</lastmod></url>
-  <url><loc>https://diskforecast.com/how-to-clear-cache-on-mac</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://diskforecast.com/how-to-clear-cache-on-mac</loc><lastmod>2026-10-26</lastmod></url>
   <url><loc>https://diskforecast.com/what-is-system-data-on-mac</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/system-data</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/purgeable-space-mac</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/time-machine-local-snapshots</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/other-users-and-shared-mac</loc><lastmod>2026-10-20</lastmod></url>
-  <url><loc>https://diskforecast.com/empty-trash-mac</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://diskforecast.com/empty-trash-mac</loc><lastmod>2026-10-26</lastmod></url>
   <url><loc>https://diskforecast.com/is-256gb-enough-for-mac</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/other-storage-mac</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/memory-vs-storage-mac</loc><lastmod>2026-10-23</lastmod></url>
   <url><loc>https://diskforecast.com/command-line</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/clear-cache</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/clear-cache/docker</loc><lastmod>2026-10-20</lastmod></url>
-  <url><loc>https://diskforecast.com/clear-cache/npm</loc><lastmod>2026-10-23</lastmod></url>
-  <url><loc>https://diskforecast.com/clear-cache/pip</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://diskforecast.com/clear-cache/npm</loc><lastmod>2026-10-26</lastmod></url>
+  <url><loc>https://diskforecast.com/clear-cache/pip</loc><lastmod>2026-10-26</lastmod></url>
   <url><loc>https://diskforecast.com/clear-cache/teams</loc><lastmod>2026-10-23</lastmod></url>
-  <url><loc>https://diskforecast.com/clear-cache/vscode</loc><lastmod>2026-10-23</lastmod></url>
-  <url><loc>https://diskforecast.com/clear-cache/yarn</loc><lastmod>2026-10-23</lastmod></url>
-  <url><loc>https://diskforecast.com/clear-cache/xcode</loc><lastmod>2026-10-23</lastmod></url>
-  <url><loc>https://diskforecast.com/clear-cache/gradle</loc><lastmod>2026-10-23</lastmod></url>
-  <url><loc>https://diskforecast.com/clear-cache/go</loc><lastmod>2026-10-23</lastmod></url>
-  <url><loc>https://diskforecast.com/clear-cache/cargo</loc><lastmod>2026-10-23</lastmod></url>
-  <url><loc>https://diskforecast.com/clear-cache/homebrew</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://diskforecast.com/clear-cache/vscode</loc><lastmod>2026-10-26</lastmod></url>
+  <url><loc>https://diskforecast.com/clear-cache/yarn</loc><lastmod>2026-10-26</lastmod></url>
+  <url><loc>https://diskforecast.com/clear-cache/xcode</loc><lastmod>2026-10-26</lastmod></url>
+  <url><loc>https://diskforecast.com/clear-cache/gradle</loc><lastmod>2026-10-26</lastmod></url>
+  <url><loc>https://diskforecast.com/clear-cache/go</loc><lastmod>2026-10-26</lastmod></url>
+  <url><loc>https://diskforecast.com/clear-cache/cargo</loc><lastmod>2026-10-26</lastmod></url>
+  <url><loc>https://diskforecast.com/clear-cache/homebrew</loc><lastmod>2026-10-26</lastmod></url>
   <url><loc>https://diskforecast.com/ai-models</loc><lastmod>2026-10-20</lastmod></url>
-  <url><loc>https://diskforecast.com/ai-models/ollama</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://diskforecast.com/ai-models/ollama</loc><lastmod>2026-10-26</lastmod></url>
   <url><loc>https://diskforecast.com/ai-models/apple-intelligence</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/taking-up-space</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/taking-up-space/sleepimage</loc><lastmod>2026-10-20</lastmod></url>
@@ -36,8 +36,8 @@
   <url><loc>https://diskforecast.com/taking-up-space/messages</loc><lastmod>2026-10-23</lastmod></url>
   <url><loc>https://diskforecast.com/taking-up-space/dropbox</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/taking-up-space/icloud-drive</loc><lastmod>2026-10-20</lastmod></url>
-  <url><loc>https://diskforecast.com/taking-up-space/developer-files</loc><lastmod>2026-10-23</lastmod></url>
-  <url><loc>https://diskforecast.com/taking-up-space/git-worktrees</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://diskforecast.com/taking-up-space/developer-files</loc><lastmod>2026-10-26</lastmod></url>
+  <url><loc>https://diskforecast.com/taking-up-space/git-worktrees</loc><lastmod>2026-10-26</lastmod></url>
   <url><loc>https://diskforecast.com/taking-up-space/photos</loc><lastmod>2026-10-23</lastmod></url>
   <url><loc>https://diskforecast.com/taking-up-space/mail</loc><lastmod>2026-10-23</lastmod></url>
   <url><loc>https://diskforecast.com/alternatives</loc><lastmod>2026-10-20</lastmod></url>
@@ -50,9 +50,9 @@
   <url><loc>https://diskforecast.com/alternatives/mole</loc><lastmod>2026-10-23</lastmod></url>
   <url><loc>https://diskforecast.com/alternatives/disk-inventory-x</loc><lastmod>2026-10-23</lastmod></url>
   <url><loc>https://diskforecast.com/alternatives/onyx</loc><lastmod>2026-10-23</lastmod></url>
-  <url><loc>https://diskforecast.com/best-free-mac-cleaner</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://diskforecast.com/best-free-mac-cleaner</loc><lastmod>2026-10-26</lastmod></url>
   <url><loc>https://diskforecast.com/disk-space-analyzer-mac</loc><lastmod>2026-10-23</lastmod></url>
-  <url><loc>https://diskforecast.com/is-cleanmymac-safe</loc><lastmod>2026-10-23</lastmod></url>
+  <url><loc>https://diskforecast.com/is-cleanmymac-safe</loc><lastmod>2026-10-26</lastmod></url>
   <url><loc>https://diskforecast.com/alternatives/compare</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://diskforecast.com/privacy</loc><lastmod>2026-10-20</lastmod></url>
 </urlset>
