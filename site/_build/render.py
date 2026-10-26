@@ -73,6 +73,7 @@ def head(title, description, path):
   <link rel="stylesheet" href="{FONTS}">
   <link rel="stylesheet" href="/site.css">
   <script src="https://cdn.usefathom.com/script.js" data-site="CNKCFAST" defer></script>
+  <script src="https://ingest.getuserproof.com/sdk.js" data-site="7ebfab50-cd1b-48c6-9227-f2cafb6e669f" defer></script>
 </head>
 <body>
 '''
