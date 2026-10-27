@@ -31,10 +31,20 @@ enum TrashFlow {
     /// "\n\nCursor is open, so 1.2 GB of this stays. Quit it first to include everything."
     private static func busyNote(_ busy: [String: [CleanupEntry]]) -> String {
         guard !busy.isEmpty else { return "" }
-        let bytes = busy.values.joined().reduce(0) { $0 + $1.bytes }
-        let apps = busy.keys.sorted()
-        return "\n\n\(appsPhrase(apps)) open, so \(Bytes.format(bytes)) of this stays. Quit "
-            + (apps.count == 1 ? "it" : "them") + " first to include everything."
+        let apps = busy.keys.sorted().filter { $0 != OpenFiles.claudeCode }
+        var notes: [String] = []
+        if !apps.isEmpty {
+            let bytes = apps.compactMap { busy[$0] }.joined().reduce(0) { $0 + $1.bytes }
+            notes.append("\(appsPhrase(apps)) open, so \(Bytes.format(bytes)) of this stays. Quit "
+                + (apps.count == 1 ? "it" : "them") + " first to include everything.")
+        }
+        // Claude Code runs in a terminal, so it's ended with /exit rather than quit.
+        if let versions = busy[OpenFiles.claudeCode] {
+            let bytes = versions.reduce(0) { $0 + $1.bytes }
+            notes.append("Claude Code sessions are using \(versions.map(\.name).formatted(.list(type: .and))), so "
+                + "\(Bytes.format(bytes)) stays. Type /exit in those sessions first to include everything.")
+        }
+        return "\n\n" + notes.joined(separator: " ")
     }
 
     /// Deleting can take a while, so it runs off the main thread while the menu says so.
@@ -69,6 +79,8 @@ enum TrashFlow {
             buttons = ["Done", "Empty Trash…"]
             if !report.moved.isEmpty { buttons.append("Undo") }
         }
+        let blockers = QuitBlockers.plan(report.blockers)
+        if !blockers.isEmpty { buttons.insert("Quit and Try Again…", at: 1) }
         for title in buttons {
             done.addButton(withTitle: title).hasDestructiveAction = title == "Delete Instead"
         }
@@ -79,7 +91,22 @@ enum TrashFlow {
             dispose(entries.filter { !moved.contains($0.path) }, permanently: true, scan: scan, disk: disk)
         case "Empty Trash…": confirmAndEmptyTrash(scan: scan, disk: disk)
         case "Undo": undo(scan: scan, disk: disk)
+        case "Quit and Try Again…": quitAndRetry(blockers, report: report, of: entries, scan: scan, disk: disk)
         default: break
+        }
+    }
+
+    private static func quitAndRetry(
+        _ blockers: QuitBlockers.Plan, report: Trasher.Report, of entries: [CleanupEntry],
+        scan: ScanModel, disk: DiskStatus
+    ) {
+        let failed = Set(report.failed.map(\.path))
+        let retry = entries.filter { failed.contains($0.path) }
+        guard QuitBlockers.confirm(blockers, trasher: Trasher(home: scan.home), retrying: retry.count) else { return }
+        scan.activity = "Quitting…"
+        Task {
+            await QuitBlockers.quit(blockers)
+            dispose(retry, permanently: report.deleted, scan: scan, disk: disk)
         }
     }
 

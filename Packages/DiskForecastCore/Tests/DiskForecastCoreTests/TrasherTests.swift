@@ -38,6 +38,57 @@ struct TrasherTests {
         #expect(FileManager.default.fileExists(atPath: open))
     }
 
+    @Test func namesTheClaudeCodeSessionsStillRunningAVersion() throws {
+        try write(".local/share/claude/versions/2.1.304", bytes: 10)
+        let version = home.path + "/.local/share/claude/versions/2.1.304"
+        let first = Date(timeIntervalSince1970: 1_792_000_000)
+        let places = [(home.path, first), (home.path + "/code/app", first + 86_400), (home.path, first + 3_600)]
+        let sessions = places.enumerated().map { index, place in
+            OpenFiles.Program(
+                name: "Claude Code", paths: [version], folder: place.0, started: place.1, app: "Terminal",
+                pid: pid_t(index + 1)
+            )
+        }
+        let entry = CleanupEntry(path: version, bytes: 10, name: "Claude Code 2.1.304")
+        let trasher = Trasher(home: home.path)
+        let report = trasher.trash([entry], openFiles: OpenFiles(programs: sessions))
+        let day = { (date: Date) in date.formatted(.dateTime.month(.abbreviated).day()) }
+        #expect(report.failureLines() == [
+            "• Claude Code 2.1.304 is in use by 3 Claude Code sessions: 2 in Terminal at ~ (since "
+                + "\(day(first))) and 1 in Terminal at ~/code/app (since \(day(first + 86_400))). Type /exit in "
+                + "each, then try again."
+        ])
+        #expect(trasher.runningReason("Claude Code 2.1.304", sessions: [sessions[1]])
+            == "Claude Code 2.1.304 is in use by a Claude Code session in Terminal at ~/code/app (since "
+            + "\(day(first + 86_400))). Type /exit in it, then try again.")
+        #expect(report.blockers.map(\.pid) == [1, 2, 3])
+        #expect(FileManager.default.fileExists(atPath: version))
+    }
+
+    @Test func recognizesClaudeCodeByWhereItRuns() throws {
+        let version = home.appending(path: ".local/share/claude/versions/9.9.9")
+        let folder = version.deletingLastPathComponent()
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        try FileManager.default.copyItem(atPath: "/bin/sleep", toPath: version.path)
+        // A copied system binary only runs once it's signed as its own.
+        let sign = try Process.run(URL(filePath: "/usr/bin/codesign"), arguments: ["-f", "-s", "-", version.path])
+        sign.waitUntilExit()
+        let session = Process()
+        session.executableURL = version
+        session.arguments = ["30"]
+        session.currentDirectoryURL = home
+        try session.run()
+        defer { session.terminate() }
+        Thread.sleep(forTimeInterval: 0.3)
+
+        #expect(OpenFiles.isClaudeCode(session.processIdentifier))
+        let found = try #require(OpenFiles.current().users(of: version.path).first)
+        #expect(found.name == "Claude Code")
+        #expect(found.pid == session.processIdentifier)
+        #expect(found.folder.map(Trasher.resolved) == home.path)
+        #expect(!OpenFiles.isClaudeCode(getpid()))
+    }
+
     @Test func saysWhichEntriesAreBusyBeforeMoving() {
         let cursor = CleanupEntry(path: home.path + "/Library/Caches/com.todesktop.cursor", bytes: 5)
         let idle = CleanupEntry(path: home.path + "/Library/Caches/com.example.idle", bytes: 5)
