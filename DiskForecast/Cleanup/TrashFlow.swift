@@ -79,6 +79,8 @@ enum TrashFlow {
             buttons = ["Done", "Empty Trash…"]
             if !report.moved.isEmpty { buttons.append("Undo") }
         }
+        let blockers = QuitBlockers.plan(report.blockers)
+        if !blockers.isEmpty { buttons.insert("Quit and Try Again…", at: 1) }
         for title in buttons {
             done.addButton(withTitle: title).hasDestructiveAction = title == "Delete Instead"
         }
@@ -89,7 +91,22 @@ enum TrashFlow {
             dispose(entries.filter { !moved.contains($0.path) }, permanently: true, scan: scan, disk: disk)
         case "Empty Trash…": confirmAndEmptyTrash(scan: scan, disk: disk)
         case "Undo": undo(scan: scan, disk: disk)
+        case "Quit and Try Again…": quitAndRetry(blockers, report: report, of: entries, scan: scan, disk: disk)
         default: break
+        }
+    }
+
+    private static func quitAndRetry(
+        _ blockers: QuitBlockers.Plan, report: Trasher.Report, of entries: [CleanupEntry],
+        scan: ScanModel, disk: DiskStatus
+    ) {
+        let failed = Set(report.failed.map(\.path))
+        let retry = entries.filter { failed.contains($0.path) }
+        guard QuitBlockers.confirm(blockers, trasher: Trasher(home: scan.home), retrying: retry.count) else { return }
+        scan.activity = "Quitting…"
+        Task {
+            await QuitBlockers.quit(blockers)
+            dispose(retry, permanently: report.deleted, scan: scan, disk: disk)
         }
     }
 
