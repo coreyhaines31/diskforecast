@@ -30,6 +30,8 @@ public struct Trasher: Sendable {
         public var diskFull = false
         /// Deleted outright rather than moved to the Trash, so there's nothing to put back.
         public var deleted = false
+        /// Reasons that already name what they're about, so they're listed without folder names.
+        var namedReasons: Set<String> = []
 
         /// One line per reason, naming up to three folders by their parent and name, since many
         /// failures share a reason and a folder name like node_modules.
@@ -44,7 +46,7 @@ public struct Trasher: Sendable {
                 let all = paths[reason] ?? []
                 let names = all.prefix(3).map(Self.label).joined(separator: ", ")
                 let more = all.count > 3 ? " and \(all.count - 3) more" : ""
-                return "• \(names)\(more): \(reason)"
+                return namedReasons.contains(reason) ? "• \(reason)" : "• \(names)\(more): \(reason)"
             }
         }
 
@@ -98,7 +100,7 @@ public struct Trasher: Sendable {
     public func trash(
         _ paths: [String], sizes: [String: Int64] = [:], openFiles: OpenFiles = .current()
     ) -> Report {
-        dispose(paths, sizes: sizes, openFiles: openFiles, permanently: false)
+        dispose(paths, sizes: sizes, names: [:], openFiles: openFiles, permanently: false)
     }
 
     /// Deletes each path outright, with the same safety checks as moving it to the Trash. For when
@@ -106,11 +108,11 @@ public struct Trasher: Sendable {
     public func delete(
         _ paths: [String], sizes: [String: Int64] = [:], openFiles: OpenFiles = .current()
     ) -> Report {
-        dispose(paths, sizes: sizes, openFiles: openFiles, permanently: true)
+        dispose(paths, sizes: sizes, names: [:], openFiles: openFiles, permanently: true)
     }
 
     private func dispose(
-        _ paths: [String], sizes: [String: Int64], openFiles: OpenFiles, permanently: Bool
+        _ paths: [String], sizes: [String: Int64], names: [String: String], openFiles: OpenFiles, permanently: Bool
     ) -> Report {
         var report = Report()
         report.deleted = permanently
@@ -123,8 +125,16 @@ public struct Trasher: Sendable {
                 report.failed.append((path, refusal.description))
                 continue
             }
-            if let user = openFiles.user(of: Self.resolved(path)) {
-                report.failed.append((path, "\(user) is using it. Quit \(user), then try again."))
+            let users = openFiles.users(of: Self.resolved(path))
+            if let user = users.first?.name {
+                let sessions = users.filter { $0.name == OpenFiles.claudeCode }
+                if user == OpenFiles.claudeCode {
+                    let reason = runningReason(names[path] ?? "It", sessions: sessions)
+                    report.failed.append((path, reason))
+                    if names[path] != nil { report.namedReasons.insert(reason) }
+                } else {
+                    report.failed.append((path, "\(user) is using it. Quit \(user), then try again."))
+                }
                 continue
             }
             do {
@@ -152,17 +162,64 @@ public struct Trasher: Sendable {
         _ entries: [CleanupEntry], permanently: Bool = false, openFiles: OpenFiles = .current()
     ) -> Report {
         let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
-        var report = dispose(entries.map(\.path), sizes: sizes, openFiles: openFiles, permanently: permanently)
+        let names = Dictionary(entries.map { ($0.path, $0.name) }) { first, _ in first }
+        var report = dispose(
+            entries.map(\.path), sizes: sizes, names: names, openFiles: openFiles, permanently: permanently
+        )
         let moved = Set(report.moved)
         let companions = dispose(
-            entries.filter { moved.contains($0.path) }.flatMap(\.companions), sizes: [:],
+            entries.filter { moved.contains($0.path) }.flatMap(\.companions), sizes: [:], names: [:],
             openFiles: openFiles, permanently: permanently
         )
         report.moved += companions.moved
         report.inTrash.merge(companions.inTrash) { first, _ in first }
         report.failed += companions.failed
+        report.namedReasons.formUnion(companions.namedReasons)
         report.diskFull = report.diskFull || companions.diskFull
         return report
+    }
+
+    /// Claude Code runs in a terminal, so there's no app to quit: name the sessions by the app
+    /// they're in, their folder, and since when. "Claude Code 2.1.304 is in use by 3 Claude Code sessions:
+    /// 2 in Terminal at ~ (since Oct 20) and 1 in Terminal at ~/code/app (since Oct 22). Type /exit in
+    /// each, then try again."
+    func runningReason(_ name: String, sessions: [OpenFiles.Program]) -> String {
+        let oldestFirst = sessions.sorted { ($0.started ?? .distantPast) < ($1.started ?? .distantPast) }
+        struct Group {
+            let place: String
+            let since: Date?
+            var count = 1
+        }
+        var groups: [Group] = []
+        for session in oldestFirst {
+            var place: [String] = []
+            if let app = session.app { place.append("in " + app) }
+            if let folder = session.folder {
+                place.append("at " + (folder == home ? "~" : folder.hasPrefix(home + "/")
+                    ? "~" + folder.dropFirst(home.count) : folder))
+            }
+            let key = place.joined(separator: " ")
+            if let index = groups.firstIndex(where: { $0.place == key }) {
+                groups[index].count += 1
+            } else {
+                groups.append(Group(place: key, since: session.started))
+            }
+        }
+        let described = groups.prefix(3).map { group in
+            let since = group.since.map { " (since " + $0.formatted(.dateTime.month(.abbreviated).day()) + ")" } ?? ""
+            let count = sessions.count > 1 ? "\(group.count) " : ""
+            return (count + group.place + since).trimmingCharacters(in: .whitespaces)
+        }.filter { !$0.isEmpty }
+        let shown = groups.prefix(described.count).reduce(0) { $0 + $1.count }
+        var list = described
+        if shown < sessions.count, !list.isEmpty { list.append("\(sessions.count - shown) more") }
+        if sessions.count == 1 {
+            let place = list.first.map { " " + $0 } ?? ""
+            return "\(name) is in use by a Claude Code session\(place). Type /exit in it, then try again."
+        }
+        let places = list.isEmpty ? "" : ": " + list.formatted(.list(type: .and))
+        return "\(name) is in use by \(sessions.count) Claude Code sessions\(places). Type /exit in each, "
+            + "then try again."
     }
 
     /// The entries a running program is using, under that program's name, so a confirmation can

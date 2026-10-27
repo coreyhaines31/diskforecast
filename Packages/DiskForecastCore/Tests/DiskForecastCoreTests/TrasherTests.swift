@@ -38,6 +38,28 @@ struct TrasherTests {
         #expect(FileManager.default.fileExists(atPath: open))
     }
 
+    @Test func namesTheClaudeCodeSessionsStillRunningAVersion() throws {
+        try write(".local/share/claude/versions/2.1.304", bytes: 10)
+        let version = home.path + "/.local/share/claude/versions/2.1.304"
+        let first = Date(timeIntervalSince1970: 1_792_000_000)
+        let sessions = [(home.path, first), (home.path + "/code/app", first + 86_400), (home.path, first + 3_600)].map {
+            OpenFiles.Program(name: "Claude Code", paths: [version], folder: $0.0, started: $0.1, app: "Terminal")
+        }
+        let entry = CleanupEntry(path: version, bytes: 10, name: "Claude Code 2.1.304")
+        let trasher = Trasher(home: home.path)
+        let report = trasher.trash([entry], openFiles: OpenFiles(programs: sessions))
+        let day = { (date: Date) in date.formatted(.dateTime.month(.abbreviated).day()) }
+        #expect(report.failureLines() == [
+            "• Claude Code 2.1.304 is in use by 3 Claude Code sessions: 2 in Terminal at ~ (since "
+                + "\(day(first))) and 1 in Terminal at ~/code/app (since \(day(first + 86_400))). Type /exit in "
+                + "each, then try again."
+        ])
+        #expect(trasher.runningReason("Claude Code 2.1.304", sessions: [sessions[1]])
+            == "Claude Code 2.1.304 is in use by a Claude Code session in Terminal at ~/code/app (since "
+            + "\(day(first + 86_400))). Type /exit in it, then try again.")
+        #expect(FileManager.default.fileExists(atPath: version))
+    }
+
     @Test func saysWhichEntriesAreBusyBeforeMoving() {
         let cursor = CleanupEntry(path: home.path + "/Library/Caches/com.todesktop.cursor", bytes: 5)
         let idle = CleanupEntry(path: home.path + "/Library/Caches/com.example.idle", bytes: 5)
