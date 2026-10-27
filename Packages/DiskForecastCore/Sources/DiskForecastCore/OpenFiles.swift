@@ -12,6 +12,9 @@ public struct OpenFiles: Sendable {
         public var folder: String?
         public var started: Date?
         public var app: String?
+        public var pid: pid_t = 0
+        /// The app it belongs to, for quitting it.
+        public var bundle: String?
     }
 
     let programs: [Program]
@@ -34,6 +37,10 @@ public struct OpenFiles: Sendable {
         let programs = pids.prefix(Int(max(found, 0))).compactMap { pid -> Program? in
             guard pid > 0, pid != own, let executable = executablePath(pid) else { return nil }
             var program = Program(name: name(pid, executable: executable), paths: [executable] + openPaths(pid))
+            program.pid = pid
+            if let end = executable.range(of: ".app/") {
+                program.bundle = String(executable[..<end.lowerBound]) + ".app"
+            }
             if program.name == claudeCode {
                 program.folder = workingFolder(pid)
                 program.started = startTime(pid)

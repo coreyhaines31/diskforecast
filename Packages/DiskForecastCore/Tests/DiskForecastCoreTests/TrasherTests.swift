@@ -42,8 +42,12 @@ struct TrasherTests {
         try write(".local/share/claude/versions/2.1.304", bytes: 10)
         let version = home.path + "/.local/share/claude/versions/2.1.304"
         let first = Date(timeIntervalSince1970: 1_792_000_000)
-        let sessions = [(home.path, first), (home.path + "/code/app", first + 86_400), (home.path, first + 3_600)].map {
-            OpenFiles.Program(name: "Claude Code", paths: [version], folder: $0.0, started: $0.1, app: "Terminal")
+        let places = [(home.path, first), (home.path + "/code/app", first + 86_400), (home.path, first + 3_600)]
+        let sessions = places.enumerated().map { index, place in
+            OpenFiles.Program(
+                name: "Claude Code", paths: [version], folder: place.0, started: place.1, app: "Terminal",
+                pid: pid_t(index + 1)
+            )
         }
         let entry = CleanupEntry(path: version, bytes: 10, name: "Claude Code 2.1.304")
         let trasher = Trasher(home: home.path)
@@ -57,6 +61,7 @@ struct TrasherTests {
         #expect(trasher.runningReason("Claude Code 2.1.304", sessions: [sessions[1]])
             == "Claude Code 2.1.304 is in use by a Claude Code session in Terminal at ~/code/app (since "
             + "\(day(first + 86_400))). Type /exit in it, then try again.")
+        #expect(report.blockers.map(\.pid) == [1, 2, 3])
         #expect(FileManager.default.fileExists(atPath: version))
     }
 

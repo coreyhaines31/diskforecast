@@ -32,6 +32,8 @@ public struct Trasher: Sendable {
         public var deleted = false
         /// Reasons that already name what they're about, so they're listed without folder names.
         var namedReasons: Set<String> = []
+        /// The programs that kept something here, for offering to quit them.
+        public var blockers: [OpenFiles.Program] = []
 
         /// One line per reason, naming up to three folders by their parent and name, since many
         /// failures share a reason and a folder name like node_modules.
@@ -127,6 +129,7 @@ public struct Trasher: Sendable {
             }
             let users = openFiles.users(of: Self.resolved(path))
             if let user = users.first?.name {
+                report.blockers += users.filter { user in !report.blockers.contains { $0.pid == user.pid } }
                 let sessions = users.filter { $0.name == OpenFiles.claudeCode }
                 if user == OpenFiles.claudeCode {
                     let reason = runningReason(names[path] ?? "It", sessions: sessions)
@@ -175,6 +178,7 @@ public struct Trasher: Sendable {
         report.inTrash.merge(companions.inTrash) { first, _ in first }
         report.failed += companions.failed
         report.namedReasons.formUnion(companions.namedReasons)
+        report.blockers += companions.blockers.filter { user in !report.blockers.contains { $0.pid == user.pid } }
         report.diskFull = report.diskFull || companions.diskFull
         return report
     }
@@ -184,6 +188,19 @@ public struct Trasher: Sendable {
     /// 2 in Terminal at ~ (since Oct 20) and 1 in Terminal at ~/code/app (since Oct 22). Type /exit in
     /// each, then try again."
     func runningReason(_ name: String, sessions: [OpenFiles.Program]) -> String {
+        let list = describe(sessions)
+        if sessions.count == 1 {
+            let place = list.first.map { " " + $0 } ?? ""
+            return "\(name) is in use by a Claude Code session\(place). Type /exit in it, then try again."
+        }
+        let places = list.isEmpty ? "" : ": " + list.formatted(.list(type: .and))
+        return "\(name) is in use by \(sessions.count) Claude Code sessions\(places). Type /exit in each, "
+            + "then try again."
+    }
+
+    /// Claude Code sessions grouped by app and folder, oldest first: "2 in Terminal at ~ (since Oct 20)".
+    /// A lone session has no count, and past `limit` groups the rest are counted as "3 more".
+    public func describe(_ sessions: [OpenFiles.Program], limit: Int = 3) -> [String] {
         let oldestFirst = sessions.sorted { ($0.started ?? .distantPast) < ($1.started ?? .distantPast) }
         struct Group {
             let place: String
@@ -205,7 +222,7 @@ public struct Trasher: Sendable {
                 groups.append(Group(place: key, since: session.started))
             }
         }
-        let described = groups.prefix(3).map { group in
+        let described = groups.prefix(limit).map { group in
             let since = group.since.map { " (since " + $0.formatted(.dateTime.month(.abbreviated).day()) + ")" } ?? ""
             let count = sessions.count > 1 ? "\(group.count) " : ""
             return (count + group.place + since).trimmingCharacters(in: .whitespaces)
@@ -213,13 +230,7 @@ public struct Trasher: Sendable {
         let shown = groups.prefix(described.count).reduce(0) { $0 + $1.count }
         var list = described
         if shown < sessions.count, !list.isEmpty { list.append("\(sessions.count - shown) more") }
-        if sessions.count == 1 {
-            let place = list.first.map { " " + $0 } ?? ""
-            return "\(name) is in use by a Claude Code session\(place). Type /exit in it, then try again."
-        }
-        let places = list.isEmpty ? "" : ": " + list.formatted(.list(type: .and))
-        return "\(name) is in use by \(sessions.count) Claude Code sessions\(places). Type /exit in each, "
-            + "then try again."
+        return list
     }
 
     /// The entries a running program is using, under that program's name, so a confirmation can
