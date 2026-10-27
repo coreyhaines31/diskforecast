@@ -65,6 +65,30 @@ struct TrasherTests {
         #expect(FileManager.default.fileExists(atPath: version))
     }
 
+    @Test func recognizesClaudeCodeByWhereItRuns() throws {
+        let version = home.appending(path: ".local/share/claude/versions/9.9.9")
+        let folder = version.deletingLastPathComponent()
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        try FileManager.default.copyItem(atPath: "/bin/sleep", toPath: version.path)
+        // A copied system binary only runs once it's signed as its own.
+        let sign = try Process.run(URL(filePath: "/usr/bin/codesign"), arguments: ["-f", "-s", "-", version.path])
+        sign.waitUntilExit()
+        let session = Process()
+        session.executableURL = version
+        session.arguments = ["30"]
+        session.currentDirectoryURL = home
+        try session.run()
+        defer { session.terminate() }
+        Thread.sleep(forTimeInterval: 0.3)
+
+        #expect(OpenFiles.isClaudeCode(session.processIdentifier))
+        let found = try #require(OpenFiles.current().users(of: version.path).first)
+        #expect(found.name == "Claude Code")
+        #expect(found.pid == session.processIdentifier)
+        #expect(found.folder.map(Trasher.resolved) == home.path)
+        #expect(!OpenFiles.isClaudeCode(getpid()))
+    }
+
     @Test func saysWhichEntriesAreBusyBeforeMoving() {
         let cursor = CleanupEntry(path: home.path + "/Library/Caches/com.todesktop.cursor", bytes: 5)
         let idle = CleanupEntry(path: home.path + "/Library/Caches/com.example.idle", bytes: 5)

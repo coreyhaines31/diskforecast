@@ -53,6 +53,11 @@ public struct OpenFiles: Sendable {
 
     public static let claudeCode = "Claude Code"
 
+    /// Whether `pid` is still a Claude Code session, checked again just before ending one.
+    public static func isClaudeCode(_ pid: pid_t) -> Bool {
+        pid > 0 && executablePath(pid).map { name(pid, executable: $0) == claudeCode } == true
+    }
+
     /// The name of a program using `path` or something inside it, or nil when nothing is.
     public func user(of path: String) -> String? {
         users(of: path).first?.name
