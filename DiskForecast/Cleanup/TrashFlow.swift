@@ -32,9 +32,21 @@ enum TrashFlow {
     private static func busyNote(_ busy: [String: [CleanupEntry]]) -> String {
         guard !busy.isEmpty else { return "" }
         let bytes = busy.values.joined().reduce(0) { $0 + $1.bytes }
-        let apps = busy.keys.sorted()
-        return "\n\n\(appsPhrase(apps)) open, so \(Bytes.format(bytes)) of this stays. Quit "
-            + (apps.count == 1 ? "it" : "them") + " first to include everything."
+        let apps = busy.keys.sorted().filter { $0 != OpenFiles.claudeCode }
+        var notes: [String] = []
+        if !apps.isEmpty {
+            notes.append("\(appsPhrase(apps)) open, so \(Bytes.format(bytes)) of this stays. Quit "
+                + (apps.count == 1 ? "it" : "them") + " first to include everything.")
+        }
+        // Claude Code runs in a terminal, so it's ended with /exit rather than quit.
+        if let versions = busy[OpenFiles.claudeCode] {
+            let names = versions.map(\.name).formatted(.list(type: .and))
+            let stays = apps.isEmpty ? "\(Bytes.format(bytes)) of this stays"
+                : versions.count == 1 ? "it stays" : "they stay"
+            notes.append("\(names) \(versions.count == 1 ? "is" : "are") still running in Claude Code sessions, so "
+                + "\(stays). Type /exit in those sessions first to include everything.")
+        }
+        return "\n\n" + notes.joined(separator: " ")
     }
 
     /// Deleting can take a while, so it runs off the main thread while the menu says so.
