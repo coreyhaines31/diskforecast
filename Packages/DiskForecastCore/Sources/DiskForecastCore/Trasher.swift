@@ -128,10 +128,10 @@ public struct Trasher: Sendable {
             let users = openFiles.users(of: Self.resolved(path))
             if let user = users.first?.name {
                 let sessions = users.filter { $0.name == OpenFiles.claudeCode }
-                if user == OpenFiles.claudeCode, let name = names[path] {
-                    let reason = runningReason(name, sessions: sessions)
+                if user == OpenFiles.claudeCode {
+                    let reason = runningReason(names[path] ?? "It", sessions: sessions)
                     report.failed.append((path, reason))
-                    report.namedReasons.insert(reason)
+                    if names[path] != nil { report.namedReasons.insert(reason) }
                 } else {
                     report.failed.append((path, "\(user) is using it. Quit \(user), then try again."))
                 }
@@ -180,7 +180,7 @@ public struct Trasher: Sendable {
     }
 
     /// Claude Code runs in a terminal, so there's no app to quit: name the sessions by the app
-    /// they're in, their folder, and since when. "Claude Code 2.1.304 is still running in 3 sessions:
+    /// they're in, their folder, and since when. "Claude Code 2.1.304 is in use by 3 Claude Code sessions:
     /// 2 in Terminal at ~ (since Oct 20) and 1 in Terminal at ~/code/app (since Oct 22). Type /exit in
     /// each, then try again."
     func runningReason(_ name: String, sessions: [OpenFiles.Program]) -> String {
@@ -215,10 +215,10 @@ public struct Trasher: Sendable {
         if shown < sessions.count, !list.isEmpty { list.append("\(sessions.count - shown) more") }
         if sessions.count == 1 {
             let place = list.first.map { " " + $0 } ?? ""
-            return "\(name) is still running in a Claude Code session\(place). Type /exit in it, then try again."
+            return "\(name) is in use by a Claude Code session\(place). Type /exit in it, then try again."
         }
         let places = list.isEmpty ? "" : ": " + list.formatted(.list(type: .and))
-        return "\(name) is still running in \(sessions.count) Claude Code sessions\(places). Type /exit in each, "
+        return "\(name) is in use by \(sessions.count) Claude Code sessions\(places). Type /exit in each, "
             + "then try again."
     }
 

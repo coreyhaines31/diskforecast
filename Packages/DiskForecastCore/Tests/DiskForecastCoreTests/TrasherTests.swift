@@ -50,12 +50,12 @@ struct TrasherTests {
         let report = trasher.trash([entry], openFiles: OpenFiles(programs: sessions))
         let day = { (date: Date) in date.formatted(.dateTime.month(.abbreviated).day()) }
         #expect(report.failureLines() == [
-            "• Claude Code 2.1.304 is still running in 3 Claude Code sessions: 2 in Terminal at ~ (since "
+            "• Claude Code 2.1.304 is in use by 3 Claude Code sessions: 2 in Terminal at ~ (since "
                 + "\(day(first))) and 1 in Terminal at ~/code/app (since \(day(first + 86_400))). Type /exit in "
                 + "each, then try again."
         ])
         #expect(trasher.runningReason("Claude Code 2.1.304", sessions: [sessions[1]])
-            == "Claude Code 2.1.304 is still running in a Claude Code session in Terminal at ~/code/app (since "
+            == "Claude Code 2.1.304 is in use by a Claude Code session in Terminal at ~/code/app (since "
             + "\(day(first + 86_400))). Type /exit in it, then try again.")
         #expect(FileManager.default.fileExists(atPath: version))
     }
