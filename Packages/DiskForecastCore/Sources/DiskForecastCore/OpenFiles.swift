@@ -4,29 +4,59 @@ import Foundation
 /// still using goes to the Trash. A trashed cache an app keeps writing to stops Finder from
 /// emptying the Trash.
 public struct OpenFiles: Sendable {
-    /// Each process's name and the paths it has open.
-    let processes: [(name: String, paths: [String])]
+    public struct Program: Sendable {
+        public let name: String
+        let paths: [String]
+        /// Where it runs, since when, and the terminal app it's in, for telling apart Claude Code
+        /// sessions, which have no window of their own to quit.
+        public var folder: String?
+        public var started: Date?
+        public var app: String?
+    }
+
+    let programs: [Program]
+
+    init(programs: [Program]) {
+        self.programs = programs
+    }
+
+    init(processes: [(name: String, paths: [String])]) {
+        programs = processes.map { Program(name: $0.name, paths: $0.paths) }
+    }
 
     /// What every process this user can see has open right now.
     public static func current() -> OpenFiles {
         let estimate = proc_listallpids(nil, 0)
-        guard estimate > 0 else { return OpenFiles(processes: []) }
+        guard estimate > 0 else { return OpenFiles(programs: []) }
         var pids = [pid_t](repeating: 0, count: Int(estimate) + 64)
         let found = pids.withUnsafeMutableBytes { proc_listallpids($0.baseAddress, Int32($0.count)) }
         let own = getpid()
-        let processes = pids.prefix(Int(max(found, 0))).compactMap { pid -> (String, [String])? in
+        let programs = pids.prefix(Int(max(found, 0))).compactMap { pid -> Program? in
             guard pid > 0, pid != own, let executable = executablePath(pid) else { return nil }
-            return (name(pid, executable: executable), [executable] + openPaths(pid))
+            var program = Program(name: name(pid, executable: executable), paths: [executable] + openPaths(pid))
+            if program.name == claudeCode {
+                program.folder = workingFolder(pid)
+                program.started = startTime(pid)
+                program.app = hostApp(pid)
+            }
+            return program
         }
-        return OpenFiles(processes: processes)
+        return OpenFiles(programs: programs)
     }
+
+    public static let claudeCode = "Claude Code"
 
     /// The name of a program using `path` or something inside it, or nil when nothing is.
     public func user(of path: String) -> String? {
+        users(of: path).first?.name
+    }
+
+    /// Every program using `path` or something inside it.
+    public func users(of path: String) -> [Program] {
         let folder = path.hasSuffix("/") ? String(path.dropLast()) : path
-        return processes.first { process in
-            process.paths.contains { $0 == folder || $0.hasPrefix(folder + "/") }
-        }?.name
+        return programs.filter { program in
+            program.paths.contains { $0 == folder || $0.hasPrefix(folder + "/") }
+        }
     }
 
     private static func executablePath(_ pid: pid_t) -> String? {
@@ -35,8 +65,10 @@ public struct OpenFiles: Sendable {
         return String(cString: buffer)
     }
 
-    /// The app a helper process belongs to, so "Cursor Helper (GPU)" reads as Cursor.
+    /// The app a helper process belongs to, so "Cursor Helper (GPU)" reads as Cursor. Claude Code
+    /// runs from a file named after its version, like 2.1.309.
     private static func name(_ pid: pid_t, executable: String) -> String {
+        if executable.contains("/claude/versions/") { return claudeCode }
         if let app = executable.split(separator: "/").first(where: { $0.hasSuffix(".app") }) {
             return String(app.dropLast(4))
         }
@@ -44,6 +76,39 @@ public struct OpenFiles: Sendable {
         proc_name(pid, &buffer, UInt32(buffer.count))
         let name = String(cString: buffer)
         return name.isEmpty ? (executable as NSString).lastPathComponent : name
+    }
+
+    private static func workingFolder(_ pid: pid_t) -> String? {
+        var info = proc_vnodepathinfo()
+        let size = Int32(MemoryLayout<proc_vnodepathinfo>.size)
+        guard proc_pidinfo(pid, PROC_PIDVNODEPATHINFO, 0, &info, size) == size else { return nil }
+        let path = withUnsafeBytes(of: info.pvi_cdir.vip_path) {
+            String(cString: $0.bindMemory(to: CChar.self).baseAddress!)
+        }
+        return path.isEmpty ? nil : path
+    }
+
+    private static func startTime(_ pid: pid_t) -> Date? {
+        bsdInfo(pid).map { Date(timeIntervalSince1970: TimeInterval($0.pbi_start_tvsec)) }
+    }
+
+    /// The app a process was started from, like the terminal a command runs in.
+    private static func hostApp(_ pid: pid_t) -> String? {
+        var current = pid
+        for _ in 0..<10 {
+            guard let parent = bsdInfo(current).map({ pid_t($0.pbi_ppid) }), parent > 1 else { return nil }
+            if let app = executablePath(parent)?.split(separator: "/").first(where: { $0.hasSuffix(".app") }) {
+                return String(app.dropLast(4))
+            }
+            current = parent
+        }
+        return nil
+    }
+
+    private static func bsdInfo(_ pid: pid_t) -> proc_bsdinfo? {
+        var info = proc_bsdinfo()
+        let size = Int32(MemoryLayout<proc_bsdinfo>.size)
+        return proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &info, size) == size ? info : nil
     }
 
     private static func openPaths(_ pid: pid_t) -> [String] {
