@@ -13,7 +13,7 @@ NOTARY_PROFILE=midnightoil-notary Scripts/release.sh 1.2.1
 2. Notarizes and staples the app, builds the DMG, and notarizes and staples that.
 3. Checks the app inside the DMG with Gatekeeper.
 4. Signs the update with Sparkle and writes `appcast.xml`.
-5. Publishes a GitHub release `v<version>` with the DMG and `appcast.xml`.
+5. Packs the Claude Desktop extension (`mcpb/dist/diskforecast.mcpb`) and publishes a GitHub release `v<version>` with the DMG, `appcast.xml`, and `diskforecast.mcpb`. The README and website link to `releases/latest/download/diskforecast.mcpb`, so every release needs it.
 6. Bumps the version and checksum in the Homebrew cask.
 
 The build number is the commit count, so it always goes up.
@@ -25,6 +25,14 @@ The build number is the commit count, so it always goes up.
 - **Sparkle key:** the EdDSA private key in the login keychain under the account `diskforecast`. The script passes `--account diskforecast`, so another app's key is never used. The public key is `SUPublicEDKey` in `project.yml`. For CI, put the private key in `SPARKLE_KEY_FILE`.
 - **Homebrew:** `Casks/diskforecast.rb` in [coreyhaines31/homebrew-tap](https://github.com/coreyhaines31/homebrew-tap).
 - **GitHub CLI:** `gh` signed in with push access to this repo and the tap.
+- **Node:** Node 20+ and npm, to pack the extension.
+
+If a release went out without the extension, attach it by hand:
+
+```sh
+cd mcpb && npm ci && npm run pack
+gh release upload v<version> dist/diskforecast.mcpb --repo coreyhaines31/diskforecast --clobber
+```
 
 ## From CI
 

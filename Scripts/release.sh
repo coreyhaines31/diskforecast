@@ -11,6 +11,7 @@
 #   - the Sparkle EdDSA private key in the keychain under the "diskforecast" account, or
 #     SPARKLE_KEY_FILE pointing at it (CI)
 #   - gh authenticated with push access to coreyhaines31/diskforecast
+#   - Node 20+ and npm, to pack the Claude Desktop extension in mcpb/
 set -euo pipefail
 
 VERSION="${1:?usage: Scripts/release.sh <version>}"
@@ -117,8 +118,13 @@ mkdir -p "$BUILD/appcast" && cp "$DMG" "$BUILD/appcast/"
   --link "$SITE" \
   "$BUILD/appcast"
 
+echo "▶ Packing the Claude Desktop extension"
+(cd mcpb && npm ci --silent && npm run --silent pack >/dev/null)
+MCPB=mcpb/dist/diskforecast.mcpb
+
 echo "▶ Publishing GitHub release v$VERSION"
-gh release create "v$VERSION" "$DMG" "$BUILD/appcast/appcast.xml" \
+# Every release carries diskforecast.mcpb so releases/latest/download/diskforecast.mcpb keeps working.
+gh release create "v$VERSION" "$DMG" "$BUILD/appcast/appcast.xml" "$MCPB" \
   --repo "$REPO" --target main --title "$APP_NAME $VERSION" --generate-notes
 
 echo "▶ Updating the Homebrew cask"

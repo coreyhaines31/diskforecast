@@ -163,6 +163,12 @@ If you installed with Homebrew before the command existed, run `brew reinstall -
 When my Mac is low on disk space, use the `diskforecast` command (run `diskforecast --help`). Start with `diskforecast status` and `diskforecast changes --days 30` to explain what's filling the disk, then `diskforecast cleanup` to see what can be reclaimed. Show me what you'd move and ask before running `diskforecast trash <id> --yes`. Never delete files directly.
 ```
 
+### Use Disk Forecast from Claude Desktop
+
+Download [`diskforecast.mcpb`](https://github.com/coreyhaines31/diskforecast/releases/latest/download/diskforecast.mcpb) and double-click it (or drag it onto Claude Desktop) to install the Disk Forecast extension. Then ask Claude things like *why is my disk full?*, *what filled it up this month?*, or *what can I safely clean up?*
+
+The extension runs the `diskforecast` tool from your installed Disk Forecast app, so install Disk Forecast first. It only reads: Claude can't move or delete anything through it. The source is in [`mcpb/`](mcpb/); `cd mcpb && npm install && npm run pack` builds `mcpb/dist/diskforecast.mcpb`, and `npm test` calls every tool on your Mac.
+
 ## Privacy and safety
 
 - Disk Forecast reads file sizes and names. It never reads file contents.
