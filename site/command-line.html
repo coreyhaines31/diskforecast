@@ -85,6 +85,9 @@ sudo ln -sf "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast" /usr/l
 <pre class="wrap"><code>When my Mac is low on disk space, use the `diskforecast` command (run `diskforecast --help`). Start with `diskforecast status` and `diskforecast changes --days 30` to explain what's filling the disk, then `diskforecast cleanup` to see what can be reclaimed. Show me what you'd move and ask before running `diskforecast trash &lt;id&gt; --yes`. Never delete files directly.</code></pre>
         <p>Then ask in plain words: “why is my disk almost full?”, “what grew this month?”, or “clear what's safe, but show me first.”</p>
 
+        <h2 style="margin-top:56px">Use it in Claude Desktop</h2>
+        <p>Not using Claude Code? Download <a href="https://github.com/coreyhaines31/diskforecast/releases/latest/download/diskforecast.mcpb">diskforecast.mcpb</a> and double-click it, or drag it onto Claude Desktop, and choose Install. Claude can then read your forecast, what grew, and the cleanup list. The extension only reads: moving anything to the Trash stays in the app. <a href="/#claude">More about the extension</a>.</p>
+
         <h2 style="margin-top:56px">Why it's safe to hand to an agent</h2>
         <ul>
           <li><strong>Only what's on the list.</strong> <code>trash</code> takes item IDs and paths from the cleanup list, and refuses everything else, including your Documents, Desktop, and anything outside your home folder.</li>
