@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/mcpb/main/schemas/mcpb-manifest-v0.4.schema.json",
+  "manifest_version": "0.4",
+  "name": "diskforecast",
+  "display_name": "Disk Forecast",
+  "version": "0.1.0",
+  "description": "Ask Claude what's eating your Mac's disk, what you can clean up, and how fast it's filling.",
+  "long_description": "Disk Forecast is a free menu bar app that tells you when your Mac's disk will be full, explains where the space went, and shows what's safe to clear. This extension lets Claude read the same answers through Disk Forecast's `diskforecast` command line tool.\n\nAsk things like \"why is my disk full?\", \"what filled it up this month?\", or \"what can I safely clean up?\".\n\nRequires the Disk Forecast app (https://diskforecast.com). Everything is read-only: Claude can't move or delete anything. Disk Forecast covers disk space, not CPU or memory.",
+  "author": {
+    "name": "Corey Haines",
+    "url": "https://diskforecast.com"
+  },
+  "homepage": "https://diskforecast.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coreyhaines31/diskforecast"
+  },
+  "support": "https://github.com/coreyhaines31/diskforecast/issues",
+  "license": "FSL-1.1-MIT",
+  "icon": "icon.png",
+  "keywords": ["mac", "macos", "disk space", "storage", "system data", "cleanup"],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.mjs",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.mjs"],
+      "env": {
+        "DISKFORECAST_CLI": "${user_config.diskforecast_cli}"
+      }
+    }
+  },
+  "user_config": {
+    "diskforecast_cli": {
+      "type": "file",
+      "title": "Disk Forecast command line tool (optional)",
+      "description": "Leave empty to find Disk Forecast automatically in Applications, Homebrew, or Spotlight.",
+      "required": false
+    }
+  },
+  "tools": [
+    { "name": "disk_status", "description": "Free space, how fast the disk is filling, and how much is safe to clear" },
+    { "name": "disk_changes", "description": "Which folders grew or shrank over the last N days" },
+    { "name": "cleanup_list", "description": "What can be reclaimed, and why each item is safe or worth a look" }
+  ],
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin"],
+    "runtimes": { "node": ">=20.0.0" }
+  }
+}
