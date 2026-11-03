@@ -85,7 +85,7 @@ extension CleanupCatalog {
                 id: "whatsapp", title: "WhatsApp media",
                 explanation: "Photos, videos, and voice messages WhatsApp keeps on this Mac. A known sync bug can "
                     + "fill this with copies no chat uses, so it grows far past what WhatsApp's own storage "
-                    + "screen shows. Remove media in WhatsApp's Settings under Storage. If it stays this big, "
+                    + "screen shows. Remove media in WhatsApp's storage settings. If it stays this big, "
                     + "logging out of WhatsApp on this Mac and back in clears it; chats sync again from your phone.",
                 group: .worthALook, action: .useApp(name: "WhatsApp", bundleID: "net.whatsapp.WhatsApp"),
                 minimumBytes: CleanupCatalog.minimumWhatsAppBytes
