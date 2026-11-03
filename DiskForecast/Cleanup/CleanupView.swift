@@ -205,15 +205,19 @@ private struct CleanupItemRow: View {
                             .foregroundStyle(selectedCount > 0 ? Color.accentColor : .secondary)
                     }
                     .buttonStyle(.borderless)
-                case .useTool:
+                case .useTool, .useApp:
                     Image(systemName: "wrench.and.screwdriver").foregroundStyle(.secondary)
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(item.title).font(.body.weight(.medium))
                     Text(item.explanation).font(.callout).foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
-                    if case .useTool = item.action {
+                    switch item.action {
+                    case .trash: EmptyView()
+                    case .useTool:
                         Button("Reclaim in System Data…", action: openSystemData).controlSize(.small)
+                    case .useApp(let name, let bundleID):
+                        Button("Open \(name)") { Self.open(bundleID) }.controlSize(.small)
                     }
                 }
                 Spacer()
@@ -222,6 +226,11 @@ private struct CleanupItemRow: View {
         }
         .padding(.vertical, 2)
         .onChange(of: focused, initial: true) { if focused { expanded = true } }
+    }
+
+    private static func open(_ bundleID: String) {
+        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else { return }
+        NSWorkspace.shared.openApplication(at: url, configuration: .init())
     }
 
     private var checkboxSymbol: String {

@@ -161,7 +161,10 @@ public struct CLICleanupItem: Codable, Equatable, Sendable {
         title = item.title
         explanation = item.explanation
         group = item.group.rawValue
-        if case .useTool(let name) = item.action { tool = name }
+        switch item.action {
+        case .trash: tool = nil
+        case .useTool(let name), .useApp(let name, _): tool = name
+        }
         bytes = item.bytes
         entries = item.entries.map { CLICleanupEntry(path: $0.path, bytes: $0.bytes, detail: $0.detail) }
     }

@@ -130,8 +130,12 @@ public enum CLITrashTargets {
                 )
             }
             for (item, found) in matched {
-                if case .useTool(let tool) = item.action {
+                switch item.action {
+                case .trash: break
+                case .useTool(let tool):
                     throw CLIUsageError("\(item.title) is reclaimed with \(tool)'s own command, not the Trash.")
+                case .useApp(let app, _):
+                    throw CLIUsageError("\(item.title) is reclaimed in \(app) itself, not the Trash.")
                 }
                 entries.append(contentsOf: found.filter { !entries.contains($0) })
             }

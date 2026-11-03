@@ -65,6 +65,36 @@ extension CleanupCatalog {
                 return apps.map { CleanupCatalog.Candidate(path: catalog.path($0.0), name: $0.1) }
             },
             CleanupRule(
+                id: "screen-studio", title: "Screen Studio projects",
+                explanation: "Each project keeps its raw screen, camera, and microphone recordings so you can "
+                    + "edit it again. Once you've exported the video, the project is often no longer needed, "
+                    + "but moving it to the Trash means you can't change that video later.",
+                group: .worthALook
+            ) { catalog, scan in
+                catalog.children(of: "Screen Studio Projects", in: scan) { !$0.hasSuffix(".screenstudio") }
+                    .map { project in
+                        let changed = CleanupCatalog.files(in: project.path, recursive: true).map(\.modified).max()
+                        return CleanupCatalog.Candidate(
+                            path: project.path,
+                            detail: changed.map { "Last changed \(Age.phrase(from: $0, to: catalog.now))" },
+                            name: ((project.path as NSString).lastPathComponent as NSString).deletingPathExtension
+                        )
+                    }
+            },
+            CleanupRule(
+                id: "whatsapp", title: "WhatsApp media",
+                explanation: "Photos, videos, and voice messages WhatsApp keeps on this Mac. A known sync bug can "
+                    + "fill this with copies no chat uses, so it grows far past what WhatsApp's own storage "
+                    + "screen shows. Remove media in WhatsApp's storage settings. If it stays this big, "
+                    + "logging out of WhatsApp on this Mac and back in clears it; chats sync again from your phone.",
+                group: .worthALook, action: .useApp(name: "WhatsApp", bundleID: "net.whatsapp.WhatsApp"),
+                minimumBytes: CleanupCatalog.minimumWhatsAppBytes
+            ) { catalog, _ in
+                [CleanupCatalog.Candidate(
+                    path: catalog.path("Library/Group Containers/group.net.whatsapp.WhatsApp.shared"), name: "WhatsApp"
+                )]
+            },
+            CleanupRule(
                 id: "xcode-derived-data", title: "Xcode DerivedData",
                 explanation: "Xcode's build products and indexes. Xcode rebuilds them the next time you build.",
                 group: .safeToClear
@@ -95,6 +125,14 @@ extension CleanupCatalog {
                     + "Claude Code sessions idle for 2 days. The newest of each and anything in use stay.",
                 group: .safeToClear
             ) { catalog, scan in catalog.agentLeftovers(scan) },
+            CleanupRule(
+                id: "agent-history", title: "Old coding agent conversations",
+                explanation: "Claude Code and Codex conversations nobody has opened in \(staleAfterDays)+ days. "
+                    + "Claude Code removes its own after 30 days unless its cleanupPeriodDays setting says otherwise; "
+                    + "Codex keeps everything. "
+                    + "Moving them to the Trash means claude --resume and codex resume can't pick them up again.",
+                group: .worthALook
+            ) { catalog, scan in catalog.agentHistory(scan) },
             CleanupRule(
                 id: "package-caches", title: "Package manager caches",
                 explanation: "Downloads kept by npm, Bun, Cargo, Gradle, pip, and friends so installs are "
