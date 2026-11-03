@@ -65,6 +65,23 @@ extension CleanupCatalog {
                 return apps.map { CleanupCatalog.Candidate(path: catalog.path($0.0), name: $0.1) }
             },
             CleanupRule(
+                id: "screen-studio", title: "Screen Studio projects",
+                explanation: "Each project keeps its raw screen, camera, and microphone recordings so you can "
+                    + "edit it again. Once you've exported the video, the project is often no longer needed, "
+                    + "but moving it to the Trash means you can't change that video later.",
+                group: .worthALook
+            ) { catalog, scan in
+                catalog.children(of: "Screen Studio Projects", in: scan) { !$0.hasSuffix(".screenstudio") }
+                    .map { project in
+                        let changed = CleanupCatalog.files(in: project.path, recursive: true).map(\.modified).max()
+                        return CleanupCatalog.Candidate(
+                            path: project.path,
+                            detail: changed.map { "Last changed \(Age.phrase(from: $0, to: catalog.now))" },
+                            name: ((project.path as NSString).lastPathComponent as NSString).deletingPathExtension
+                        )
+                    }
+            },
+            CleanupRule(
                 id: "xcode-derived-data", title: "Xcode DerivedData",
                 explanation: "Xcode's build products and indexes. Xcode rebuilds them the next time you build.",
                 group: .safeToClear

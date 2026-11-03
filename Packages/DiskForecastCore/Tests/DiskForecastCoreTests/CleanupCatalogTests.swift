@@ -89,6 +89,16 @@ struct CleanupCatalogTests {
         #expect(entries.first.map { $0.bytes >= 2_000_000 } == true)
     }
 
+    @Test func listsScreenStudioProjects() async throws {
+        let old = now.addingTimeInterval(-60 * 86_400)
+        let recording = "Screen Studio Projects/Launch demo.screenstudio/recording/display.mp4"
+        try write(recording, bytes: 2_000_000, modified: old)
+        try write("Screen Studio Projects/notes.txt", bytes: 2_000_000)
+        let entries = await items()["screen-studio"]?.entries ?? []
+        #expect(entries.map(\.name) == ["Launch demo"])
+        #expect(entries.first?.detail == "Last changed 2 months ago")
+    }
+
     @Test func findsOldCodingAgentConversations() async throws {
         let old = now.addingTimeInterval(-45 * 86_400)
         let project = ".claude/projects/-code-my-app"
