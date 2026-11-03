@@ -96,6 +96,14 @@ extension CleanupCatalog {
                 group: .safeToClear
             ) { catalog, scan in catalog.agentLeftovers(scan) },
             CleanupRule(
+                id: "agent-history", title: "Old coding agent conversations",
+                explanation: "Claude Code and Codex conversations nobody has opened in \(staleAfterDays)+ days. "
+                    + "Claude Code removes its own after 30 days unless its cleanupPeriodDays setting says otherwise; "
+                    + "Codex keeps everything. "
+                    + "Moving them to the Trash means claude --resume and codex resume can't pick them up again.",
+                group: .worthALook
+            ) { catalog, scan in catalog.agentHistory(scan) },
+            CleanupRule(
                 id: "package-caches", title: "Package manager caches",
                 explanation: "Downloads kept by npm, Bun, Cargo, Gradle, pip, and friends so installs are "
                     + "faster. They fill back up as you install packages.",

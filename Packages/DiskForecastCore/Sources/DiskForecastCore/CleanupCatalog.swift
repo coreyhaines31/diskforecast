@@ -102,7 +102,7 @@ public struct CleanupCatalog: Sendable {
         self.gitState = gitState
     }
 
-    private var staleCutoff: Date { now.addingTimeInterval(-Double(staleAfterDays) * 86_400) }
+    var staleCutoff: Date { now.addingTimeInterval(-Double(staleAfterDays) * 86_400) }
 
     public func items(from scan: ScanResult) -> [CleanupItem] {
         var claimed: [String] = []

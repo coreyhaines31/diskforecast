@@ -89,6 +89,30 @@ struct CleanupCatalogTests {
         #expect(entries.first.map { $0.bytes >= 2_000_000 } == true)
     }
 
+    @Test func findsOldCodingAgentConversations() async throws {
+        let old = now.addingTimeInterval(-45 * 86_400)
+        let project = ".claude/projects/-code-my-app"
+        for (session, modified) in [("a", old), ("b", old.addingTimeInterval(-86_400)), ("recent", now)] {
+            try write("\(project)/\(session).jsonl", bytes: 1_000_000, modified: modified)
+        }
+        try write("\(project)/a/subagents/agent-1.jsonl", bytes: 1_000_000)
+        try write("\(project)/memory/MEMORY.md", bytes: 10)
+        let first = home.appending(path: "\(project)/a.jsonl")
+        let line = #"{"type":"user","cwd":"\#(home.path)/code/my-app"}"# + "\n"
+        try (line + String(repeating: " ", count: 1_000_000)).write(to: first, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.modificationDate: old], ofItemAtPath: first.path)
+        try write(".codex/sessions/2026/06/01/rollout-1.jsonl", bytes: 2_000_000, modified: old)
+        try write(".codex/sessions/2099/01/01/rollout-2.jsonl", bytes: 2_000_000)
+
+        let entries = await items()["agent-history"]?.entries ?? []
+        let claude = try #require(entries.first { $0.name == "Claude Code: my-app" })
+        #expect(claude.path == first.path)
+        #expect(claude.detail == "~/code/my-app · 2 conversations, the newest 6 weeks ago")
+        #expect(Set(claude.companions) == [home.path + "/\(project)/b.jsonl", home.path + "/\(project)/a"])
+        #expect(claude.bytes >= 3_000_000)
+        #expect(entries.map(\.name).sorted() == ["Claude Code: my-app", "Codex: June 2026"])
+    }
+
     @Test func groupsKnownLocations() async throws {
         let old = now.addingTimeInterval(-90 * 86_400)
         try write("Library/Caches/com.example.app/blob", bytes: 2_000_000)
