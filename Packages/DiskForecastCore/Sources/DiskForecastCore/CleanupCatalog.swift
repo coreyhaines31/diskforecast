@@ -19,6 +19,8 @@ public enum CleanupAction: Sendable, Equatable {
     case trash
     /// Reclaimed with the owning tool's own command, from the System Data window.
     case useTool(String)
+    /// Reclaimed inside the app itself, which the list offers to open.
+    case useApp(name: String, bundleID: String)
 }
 
 public struct CleanupEntry: Sendable, Hashable, Identifiable {
@@ -90,6 +92,8 @@ public struct CleanupCatalog: Sendable {
     /// Entries smaller than this aren't worth listing.
     static let minimumEntryBytes: Int64 = 1_000_000
     static let minimumDownloadBytes: Int64 = 10_000_000
+    /// WhatsApp's media is only worth a mention when it's far past normal, as with its sync bug.
+    static let minimumWhatsAppBytes: Int64 = 5_000_000_000
 
     public init(
         home: String, staleAfterDays: Int = 30, now: Date = Date(), agentScratch: ScanResult? = nil,

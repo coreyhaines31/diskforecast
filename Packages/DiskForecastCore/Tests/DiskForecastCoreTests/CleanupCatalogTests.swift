@@ -89,6 +89,11 @@ struct CleanupCatalogTests {
         #expect(entries.first.map { $0.bytes >= 2_000_000 } == true)
     }
 
+    @Test func leavesANormalSizedWhatsAppAlone() async throws {
+        try write("Library/Group Containers/group.net.whatsapp.WhatsApp.shared/Message/Media/a.jpg", bytes: 2_000_000)
+        #expect(await items()["whatsapp"] == nil)
+    }
+
     @Test func listsScreenStudioProjects() async throws {
         let old = now.addingTimeInterval(-60 * 86_400)
         let recording = "Screen Studio Projects/Launch demo.screenstudio/recording/display.mp4"

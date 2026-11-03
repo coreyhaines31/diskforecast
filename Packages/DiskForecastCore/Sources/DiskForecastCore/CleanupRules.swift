@@ -82,6 +82,19 @@ extension CleanupCatalog {
                     }
             },
             CleanupRule(
+                id: "whatsapp", title: "WhatsApp media",
+                explanation: "Photos, videos, and voice messages WhatsApp keeps on this Mac. A known sync bug can "
+                    + "fill this with copies no chat uses, so it grows far past what WhatsApp's own storage "
+                    + "screen shows. Remove media in WhatsApp's Settings under Storage. If it stays this big, "
+                    + "logging out of WhatsApp on this Mac and back in clears it; chats sync again from your phone.",
+                group: .worthALook, action: .useApp(name: "WhatsApp", bundleID: "net.whatsapp.WhatsApp"),
+                minimumBytes: CleanupCatalog.minimumWhatsAppBytes
+            ) { catalog, _ in
+                [CleanupCatalog.Candidate(
+                    path: catalog.path("Library/Group Containers/group.net.whatsapp.WhatsApp.shared"), name: "WhatsApp"
+                )]
+            },
+            CleanupRule(
                 id: "xcode-derived-data", title: "Xcode DerivedData",
                 explanation: "Xcode's build products and indexes. Xcode rebuilds them the next time you build.",
                 group: .safeToClear
