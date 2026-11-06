@@ -56,18 +56,29 @@ final class ScanModel {
         safeToClear.reduce(0) { $0 + $1.bytes }
     }
 
-    /// Scans now, then twice a day.
+    /// Scans now, then about twice a day. A scan nobody asked for runs at background priority, and
+    /// one that falls due on battery waits for the charger, unless the last scan is over a day and a half old.
     func start() {
-        scan()
+        scan(automatic: true)
         guard scheduleTimer == nil else { return }
-        scheduleTimer = Timer.scheduledTimer(withTimeInterval: 12 * 3_600, repeats: true) { _ in
-            MainActor.assumeIsolated { self.scan() }
+        scheduleTimer = Timer.scheduledTimer(withTimeInterval: 30 * 60, repeats: true) { _ in
+            MainActor.assumeIsolated { self.scanIfDue() }
         }
-        scheduleTimer?.tolerance = 600
+        scheduleTimer?.tolerance = 300
     }
 
-    func scan() {
+    private func scanIfDue() {
+        guard let finishedAt else { return }
+        let age = Date().timeIntervalSince(finishedAt)
+        guard age >= 12 * 3_600 else { return }
+        guard !PowerSource.isOnBattery || age >= 36 * 3_600 else { return }
+        scan(automatic: true)
+    }
+
+    /// `automatic` is for scans nobody is waiting on: they yield the fast cores and the disk.
+    func scan(automatic: Bool = false) {
         guard !isScanning else { return }
+        let priority: QualityOfService = automatic ? .background : .utility
         #if DEBUG
         if DemoMode.isOn {
             result = Demo.scan(home: home)
@@ -87,7 +98,7 @@ final class ScanModel {
             ? FullDiskAccess.alwaysSkipped(home: home) : FullDiskAccess.protectedFolders(home: home)
         let separate = fullAccess ? [] : FullDiskAccess.promptedFolders(home: home)
         let scanner = DiskScanner(options: .init(
-            root: URL(filePath: home), excludedPaths: protected.union(separate)
+            root: URL(filePath: home), excludedPaths: protected.union(separate), priority: priority
         ))
         self.scanner = scanner
         pendingFolders = separate
@@ -101,7 +112,7 @@ final class ScanModel {
             }
         }
         Task {
-            async let scratch = Self.scanAgentScratch()
+            async let scratch = Self.scanAgentScratch(priority: priority)
             let result = await scanner.scan()
             let scratchResult = await scratch
             guard generation == self.generation else { return }
@@ -111,7 +122,7 @@ final class ScanModel {
         for folder in separate {
             Task {
                 let branch = await DiskScanner(options: .init(
-                    root: URL(filePath: folder), excludedPaths: protected
+                    root: URL(filePath: folder), excludedPaths: protected, priority: priority
                 )).scan()
                 await graft(branch, folder: folder, generation: generation)
             }
@@ -131,9 +142,9 @@ final class ScanModel {
         measureTrash()
     }
 
-    private nonisolated static func scanAgentScratch() async -> ScanResult? {
+    private nonisolated static func scanAgentScratch(priority: QualityOfService) async -> ScanResult? {
         guard FileManager.default.fileExists(atPath: AgentScratch.folder) else { return nil }
-        return await DiskScanner(options: .init(root: URL(filePath: AgentScratch.folder))).scan()
+        return await DiskScanner(options: .init(root: URL(filePath: AgentScratch.folder), priority: priority)).scan()
     }
 
     func measureTrash() {
