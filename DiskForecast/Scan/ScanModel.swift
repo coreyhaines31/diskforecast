@@ -38,6 +38,7 @@ final class ScanModel {
     private var scanner: DiskScanner?
     private var progressTimer: Timer?
     private var scheduleTimer: Timer?
+    private var scanIsAutomatic = false
     let home: String = {
         let path = URL.homeDirectory.path(percentEncoded: false)
         return path.count > 1 && path.hasSuffix("/") ? String(path.dropLast()) : path
@@ -75,9 +76,15 @@ final class ScanModel {
         scan(automatic: true)
     }
 
-    /// `automatic` is for scans nobody is waiting on: they yield the fast cores and the disk.
+    /// `automatic` is for scans nobody is waiting on: they yield the fast cores and the disk. Asking for a
+    /// scan during a slow automatic one restarts it at full speed.
     func scan(automatic: Bool = false) {
-        guard !isScanning else { return }
+        if isScanning {
+            guard !automatic, scanIsAutomatic else { return }
+            scanner?.cancel()
+            progressTimer?.invalidate()
+        }
+        scanIsAutomatic = automatic
         let priority: QualityOfService = automatic ? .background : .utility
         #if DEBUG
         if DemoMode.isOn {
@@ -104,13 +111,7 @@ final class ScanModel {
         pendingFolders = separate
         state = .scanning(files: 0)
         onChange?()
-        progressTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            MainActor.assumeIsolated {
-                guard self.isScanning else { return }
-                self.state = .scanning(files: scanner.progress.files)
-                self.onChange?()
-            }
-        }
+        showProgress(of: scanner)
         Task {
             async let scratch = Self.scanAgentScratch(priority: priority)
             let result = await scanner.scan()
@@ -119,7 +120,23 @@ final class ScanModel {
             agentScratch = scratchResult
             await finish(result: result, fullAccess: fullAccess)
         }
-        for folder in separate {
+        scanSeparately(separate, excluding: protected, priority: priority, generation: generation)
+    }
+
+    private func showProgress(of scanner: DiskScanner) {
+        progressTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            MainActor.assumeIsolated {
+                guard self.isScanning else { return }
+                self.state = .scanning(files: scanner.progress.files)
+                self.onChange?()
+            }
+        }
+    }
+
+    /// Folders macOS guards with a prompt, measured on their own so a pending prompt doesn't hold up the rest.
+    private func scanSeparately(_ folders: [String], excluding protected: Set<String>,
+                                priority: QualityOfService, generation: Int) {
+        for folder in folders {
             Task {
                 let branch = await DiskScanner(options: .init(
                     root: URL(filePath: folder), excludedPaths: protected, priority: priority
