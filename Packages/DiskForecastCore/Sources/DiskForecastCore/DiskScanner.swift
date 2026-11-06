@@ -20,6 +20,8 @@ public final class DiskScanner: @unchecked Sendable {
         /// How long a folder can take to open before the scan finishes without it. macOS holds
         /// the first read of a guarded folder until its permission prompt is answered.
         public var stallTimeout: TimeInterval
+        /// `.background` keeps an unattended scan on the efficiency cores with throttled disk reads.
+        public var priority: QualityOfService
 
         public init(
             root: URL,
@@ -28,7 +30,8 @@ public final class DiskScanner: @unchecked Sendable {
             largestFileLimit: Int = 50,
             diskImageThreshold: Int64 = 50_000_000,
             workerCount: Int = ProcessInfo.processInfo.activeProcessorCount,
-            stallTimeout: TimeInterval = 10
+            stallTimeout: TimeInterval = 10,
+            priority: QualityOfService = .utility
         ) {
             self.root = root
             self.excludedPaths = excludedPaths
@@ -37,6 +40,7 @@ public final class DiskScanner: @unchecked Sendable {
             self.diskImageThreshold = diskImageThreshold
             self.workerCount = max(1, workerCount)
             self.stallTimeout = stallTimeout
+            self.priority = priority
         }
     }
 
@@ -104,7 +108,7 @@ public final class DiskScanner: @unchecked Sendable {
             let thread = Thread { [self] in
                 continuation.resume(returning: scanBlocking())
             }
-            thread.qualityOfService = .utility
+            thread.qualityOfService = options.priority
             thread.start()
         }
     }
@@ -123,7 +127,7 @@ public final class DiskScanner: @unchecked Sendable {
 
         for _ in 0..<options.workerCount {
             let worker = Thread { [self] in work() }
-            worker.qualityOfService = .utility
+            worker.qualityOfService = options.priority
             worker.stackSize = 1 << 20
             worker.start()
         }
