@@ -120,6 +120,21 @@ struct CleanupCatalogTests {
         #expect(catalog.items(from: scan).first { $0.id == "signal-attachments" } == nil)
     }
 
+    @Test func pointsAtEachTelegramDesktopAccountsMedia() async throws {
+        let tdata = "Library/Application Support/Telegram Desktop/tdata/"
+        try write(tdata + "user_data/cache/0/file", bytes: 2_000_000)
+        try write(tdata + "user_data#2/media_cache/0/file", bytes: 2_000_000)
+        try write(tdata + "emoji/set_0", bytes: 2_000_000)
+        try write(tdata + "D877F783D5D3EF8C/maps", bytes: 2_000_000)
+        let scan = await DiskScanner(options: .init(root: home, diskImageThreshold: 1_000_000)).scan()
+        let catalog = CleanupCatalog(home: home.path, now: now)
+        let rule = try #require(catalog.rules.first { $0.id == "telegram-desktop" })
+        #expect(Set(rule.candidates(catalog, scan).map(\.path))
+            == [home.path + "/" + tdata + "user_data", home.path + "/" + tdata + "user_data#2"])
+        // Normal amounts aren't listed.
+        #expect(catalog.items(from: scan).first { $0.id == "telegram-desktop" } == nil)
+    }
+
     @Test func listsScreenStudioProjects() async throws {
         let old = now.addingTimeInterval(-60 * 86_400)
         let recording = "Screen Studio Projects/Launch demo.screenstudio/recording/display.mp4"

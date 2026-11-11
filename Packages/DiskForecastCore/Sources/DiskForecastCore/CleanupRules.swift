@@ -147,6 +147,20 @@ extension CleanupCatalog {
                 }
             },
             CleanupRule(
+                id: "telegram-desktop", title: "Telegram Desktop media",
+                explanation: "Photos, videos, and files Telegram Desktop saved from your chats. They stay in "
+                    + "Telegram's cloud, so clearing them only means downloading again what you open. In Telegram "
+                    + "Desktop, Settings › Advanced › Manage local storage clears them.",
+                group: .worthALook, action: .useApp(name: "Telegram Desktop", bundleID: "com.tdesktop.Telegram"),
+                minimumBytes: CleanupCatalog.minimumChatMediaBytes
+            ) { catalog, scan in
+                // One user_data folder per account: user_data, user_data#2, and so on.
+                catalog.children(of: "Library/Application Support/Telegram Desktop/tdata", in: scan) {
+                    !$0.hasPrefix("user_data")
+                }
+                .map { CleanupCatalog.Candidate(path: $0.path, name: "Telegram Desktop") }
+            },
+            CleanupRule(
                 id: "xcode-derived-data", title: "Xcode DerivedData",
                 explanation: "Xcode's build products and indexes. Xcode rebuilds them the next time you build.",
                 group: .safeToClear
