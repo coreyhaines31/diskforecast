@@ -107,6 +107,19 @@ struct CleanupCatalogTests {
         #expect(catalog.items(from: scan).first { $0.id == "telegram" } == nil)
     }
 
+    @Test func pointsAtSignalsAttachments() async throws {
+        let signal = "Library/Application Support/Signal/"
+        try write(signal + "attachments.noindex/ab/abcdef", bytes: 2_000_000)
+        try write(signal + "Local Storage/leveldb/000001.log", bytes: 10)
+        let scan = await DiskScanner(options: .init(root: home, diskImageThreshold: 1_000_000)).scan()
+        let catalog = CleanupCatalog(home: home.path, now: now)
+        let rule = try #require(catalog.rules.first { $0.id == "signal-attachments" })
+        #expect(rule.candidates(catalog, scan).map(\.path) == [home.path + "/" + signal + "attachments.noindex"])
+        #expect(rule.action == .useApp(name: "Signal", bundleID: "org.whispersystems.signal-desktop"))
+        // Normal amounts aren't listed.
+        #expect(catalog.items(from: scan).first { $0.id == "signal-attachments" } == nil)
+    }
+
     @Test func listsScreenStudioProjects() async throws {
         let old = now.addingTimeInterval(-60 * 86_400)
         let recording = "Screen Studio Projects/Launch demo.screenstudio/recording/display.mp4"
