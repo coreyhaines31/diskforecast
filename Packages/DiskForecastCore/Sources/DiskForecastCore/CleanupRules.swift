@@ -89,9 +89,14 @@ extension CleanupCatalog {
                     + "logging out of WhatsApp on this Mac and back in clears it; chats sync again from your phone.",
                 group: .worthALook, action: .useApp(name: "WhatsApp", bundleID: "net.whatsapp.WhatsApp"),
                 minimumBytes: CleanupCatalog.minimumWhatsAppBytes
-            ) { catalog, _ in
-                [CleanupCatalog.Candidate(
-                    path: catalog.path("Library/Group Containers/group.net.whatsapp.WhatsApp.shared"), name: "WhatsApp"
+            ) { catalog, scan in
+                let container = catalog.path("Library/Group Containers/group.net.whatsapp.WhatsApp.shared")
+                // Only read WhatsApp's database when the item will be listed.
+                let listed = (scan.allocatedSize(of: container) ?? 0) >= CleanupCatalog.minimumWhatsAppBytes
+                return [CleanupCatalog.Candidate(
+                    path: container,
+                    detail: listed ? WhatsAppChats.detail(container: container, scan: scan) : nil,
+                    name: "WhatsApp"
                 )]
             },
             CleanupRule(
