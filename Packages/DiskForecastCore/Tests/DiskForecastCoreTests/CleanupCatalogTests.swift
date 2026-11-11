@@ -94,6 +94,19 @@ struct CleanupCatalogTests {
         #expect(await items()["whatsapp"] == nil)
     }
 
+    @Test func pointsAtEachTelegramAccountsMedia() async throws {
+        let stable = "Library/Group Containers/6N38VWS5BX.ru.keepcoder.Telegram/stable/"
+        try write(stable + "account-111/postbox/media/photo-1", bytes: 2_000_000)
+        try write(stable + "account-111/postbox/db/db_sqlite", bytes: 2_000_000)
+        try write(stable + "accounts-metadata/media/avatar", bytes: 2_000_000)
+        let scan = await DiskScanner(options: .init(root: home, diskImageThreshold: 1_000_000)).scan()
+        let catalog = CleanupCatalog(home: home.path, now: now)
+        let rule = try #require(catalog.rules.first { $0.id == "telegram" })
+        #expect(rule.candidates(catalog, scan).map(\.path) == [home.path + "/" + stable + "account-111/postbox/media"])
+        // Normal amounts of media aren't listed.
+        #expect(catalog.items(from: scan).first { $0.id == "telegram" } == nil)
+    }
+
     @Test func listsScreenStudioProjects() async throws {
         let old = now.addingTimeInterval(-60 * 86_400)
         let recording = "Screen Studio Projects/Launch demo.screenstudio/recording/display.mp4"
@@ -175,6 +188,20 @@ struct CleanupCatalogTests {
         #expect(Set(entries.map { "\($0.name)/\($0.detail ?? "")" })
             == ["Cursor/Cache", "Cursor/CachedExtensionVSIXs", "Figma/DesktopProfile/v39/Code Cache"])
         #expect(items["app-support-caches"]?.group == .safeToClear)
+    }
+
+    @Test func findsWebCachesInsideAppStoreContainers() async throws {
+        let slack = "Library/Containers/com.tinyspeck.slackmacgap/Data/Library/Application Support/Slack/"
+        try write(slack + "Local Storage/leveldb/000001.log", bytes: 10)
+        try write(slack + "Cache/Cache_Data/data_0", bytes: 2_000_000)
+        try write(slack + "IndexedDB/https_app.slack.com_0.indexeddb.leveldb/000003.log", bytes: 2_000_000)
+        let apple = "Library/Containers/com.apple.Notes/Data/Library/Application Support/Notes/"
+        try write(apple + "Local Storage/leveldb/000001.log", bytes: 10)
+        try write(apple + "Cache/data_0", bytes: 2_000_000)
+
+        let entries = try #require(await items()["app-support-caches"]?.entries)
+        #expect(entries.map(\.path) == [home.path + "/" + slack + "Cache"])
+        #expect(entries.first?.name == "Slack")
     }
 
     @Test func findsEditorDataForDeletedProjects() async throws {

@@ -89,10 +89,48 @@ extension CleanupCatalog {
                     + "logging out of WhatsApp on this Mac and back in clears it; chats sync again from your phone.",
                 group: .worthALook, action: .useApp(name: "WhatsApp", bundleID: "net.whatsapp.WhatsApp"),
                 minimumBytes: CleanupCatalog.minimumWhatsAppBytes
-            ) { catalog, _ in
-                [CleanupCatalog.Candidate(
-                    path: catalog.path("Library/Group Containers/group.net.whatsapp.WhatsApp.shared"), name: "WhatsApp"
+            ) { catalog, scan in
+                let container = catalog.path("Library/Group Containers/group.net.whatsapp.WhatsApp.shared")
+                // Only read WhatsApp's database when the item will be listed.
+                let listed = (scan.allocatedSize(of: container) ?? 0) >= CleanupCatalog.minimumWhatsAppBytes
+                return [CleanupCatalog.Candidate(
+                    path: container,
+                    detail: listed ? WhatsAppChats.detail(container: container, scan: scan) : nil,
+                    name: "WhatsApp"
                 )]
+            },
+            CleanupRule(
+                id: "messages-attachments", title: "Messages attachments",
+                explanation: "Photos, videos, and files from your conversations in Messages. Delete them in "
+                    + "Messages, or in System Settings › General › Storage › Messages, which lists the largest. "
+                    + "Moving them to the Trash yourself would leave broken attachments in your conversations.",
+                group: .worthALook, action: .useApp(name: "Messages", bundleID: "com.apple.MobileSMS"),
+                minimumBytes: CleanupCatalog.minimumChatMediaBytes
+            ) { catalog, scan in
+                let messages = catalog.path("Library/Messages")
+                let attachments = messages + "/Attachments"
+                // Only read Messages' database when the item will be listed.
+                let listed = (scan.allocatedSize(of: attachments) ?? 0) >= CleanupCatalog.minimumChatMediaBytes
+                return [CleanupCatalog.Candidate(
+                    path: attachments,
+                    detail: listed ? MessagesChats.detail(messages: messages, scan: scan) : nil,
+                    name: "Messages"
+                )]
+            },
+            CleanupRule(
+                id: "telegram", title: "Telegram media",
+                explanation: "Photos, videos, and files Telegram saved from your chats. They stay in Telegram's "
+                    + "cloud, so clearing them here only means downloading again what you open. In Telegram, "
+                    + "Settings › Data and Storage › Storage Usage shows which chats use the most and clears them.",
+                group: .worthALook, action: .useApp(name: "Telegram", bundleID: "ru.keepcoder.Telegram"),
+                minimumBytes: CleanupCatalog.minimumChatMediaBytes
+            ) { catalog, scan in
+                catalog.children(of: "Library/Group Containers/6N38VWS5BX.ru.keepcoder.Telegram/stable", in: scan) {
+                    !$0.hasPrefix("account-")
+                }
+                .map { account in
+                    CleanupCatalog.Candidate(path: account.path + "/postbox/media", name: "Telegram")
+                }
             },
             CleanupRule(
                 id: "xcode-derived-data", title: "Xcode DerivedData",

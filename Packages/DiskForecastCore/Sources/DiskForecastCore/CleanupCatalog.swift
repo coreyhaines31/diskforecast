@@ -94,6 +94,8 @@ public struct CleanupCatalog: Sendable {
     static let minimumDownloadBytes: Int64 = 10_000_000
     /// WhatsApp's media is only worth a mention when it's far past normal, as with its sync bug.
     static let minimumWhatsAppBytes: Int64 = 5_000_000_000
+    /// Chat apps' saved media is only worth a mention once it's big enough to matter.
+    static let minimumChatMediaBytes: Int64 = 2_000_000_000
 
     public init(
         home: String, staleAfterDays: Int = 30, now: Date = Date(), agentScratch: ScanResult? = nil,
@@ -181,15 +183,20 @@ public struct CleanupCatalog: Sendable {
     }
 
     /// Cache folders that apps built on web tech (VS Code, Cursor, Slack, Figma) keep next to their
-    /// data in Application Support. Only folders beside Local Storage or Session Storage count, so a
-    /// folder that merely happens to be named Cache isn't listed.
+    /// data in Application Support, including inside the container an App Store app keeps it in.
+    /// Only folders beside Local Storage or Session Storage count, so a folder that merely happens
+    /// to be named Cache isn't listed.
     func appSupportCaches(_ scan: ScanResult) -> [Candidate] {
         let names: Set<String> = [
             "Cache", "Code Cache", "GPUCache", "DawnCache", "DawnGraphiteCache", "DawnWebGPUCache",
             "GrShaderCache", "ShaderCache", "CachedData", "CachedExtensionVSIXs"
         ]
         let tree = scan.tree
-        guard let support = tree.node(at: path("Library/Application Support")) else { return [] }
+        // Containers are only scanned with Full Disk Access; without it there are none to visit.
+        let containers = tree.node(at: path("Library/Containers")).map { tree.children[Int($0)].map(Int.init) } ?? []
+        let supports = [path("Library/Application Support")] + containers
+            .filter { !tree.names[$0].hasPrefix("com.apple.") }
+            .map { tree.path(of: $0) + "/Data/Library/Application Support" }
         var found: [Candidate] = []
         func visit(_ node: Int, app: String, within: [String]) {
             let children = tree.children[node].map(Int.init)
@@ -205,8 +212,10 @@ public struct CleanupCatalog: Sendable {
                 }
             }
         }
-        for app in tree.children[support].map(Int.init) where !tree.names[app].hasPrefix("com.apple.") {
-            visit(app, app: tree.names[app], within: [])
+        for support in supports.compactMap({ tree.node(at: $0) }) {
+            for app in tree.children[Int(support)].map(Int.init) where !tree.names[app].hasPrefix("com.apple.") {
+                visit(app, app: tree.names[app], within: [])
+            }
         }
         return found
     }
