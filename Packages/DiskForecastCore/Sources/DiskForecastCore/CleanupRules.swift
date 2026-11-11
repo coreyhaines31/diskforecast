@@ -100,6 +100,24 @@ extension CleanupCatalog {
                 )]
             },
             CleanupRule(
+                id: "messages-attachments", title: "Messages attachments",
+                explanation: "Photos, videos, and files from your conversations in Messages. Delete them in "
+                    + "Messages, or in System Settings › General › Storage › Messages, which lists the largest. "
+                    + "Moving them to the Trash yourself would leave broken attachments in your conversations.",
+                group: .worthALook, action: .useApp(name: "Messages", bundleID: "com.apple.MobileSMS"),
+                minimumBytes: CleanupCatalog.minimumChatMediaBytes
+            ) { catalog, scan in
+                let messages = catalog.path("Library/Messages")
+                let attachments = messages + "/Attachments"
+                // Only read Messages' database when the item will be listed.
+                let listed = (scan.allocatedSize(of: attachments) ?? 0) >= CleanupCatalog.minimumChatMediaBytes
+                return [CleanupCatalog.Candidate(
+                    path: attachments,
+                    detail: listed ? MessagesChats.detail(messages: messages, scan: scan) : nil,
+                    name: "Messages"
+                )]
+            },
+            CleanupRule(
                 id: "telegram", title: "Telegram media",
                 explanation: "Photos, videos, and files Telegram saved from your chats. They stay in Telegram's "
                     + "cloud, so clearing them here only means downloading again what you open. In Telegram, "
