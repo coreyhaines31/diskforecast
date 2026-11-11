@@ -94,6 +94,8 @@ public struct CleanupCatalog: Sendable {
     static let minimumDownloadBytes: Int64 = 10_000_000
     /// WhatsApp's media is only worth a mention when it's far past normal, as with its sync bug.
     static let minimumWhatsAppBytes: Int64 = 5_000_000_000
+    /// Chat apps' saved media is only worth a mention once it's big enough to matter.
+    static let minimumChatMediaBytes: Int64 = 2_000_000_000
 
     public init(
         home: String, staleAfterDays: Int = 30, now: Date = Date(), agentScratch: ScanResult? = nil,

@@ -100,6 +100,21 @@ extension CleanupCatalog {
                 )]
             },
             CleanupRule(
+                id: "telegram", title: "Telegram media",
+                explanation: "Photos, videos, and files Telegram saved from your chats. They stay in Telegram's "
+                    + "cloud, so clearing them here only means downloading again what you open. In Telegram, "
+                    + "Settings › Data and Storage › Storage Usage shows which chats use the most and clears them.",
+                group: .worthALook, action: .useApp(name: "Telegram", bundleID: "ru.keepcoder.Telegram"),
+                minimumBytes: CleanupCatalog.minimumChatMediaBytes
+            ) { catalog, scan in
+                catalog.children(of: "Library/Group Containers/6N38VWS5BX.ru.keepcoder.Telegram/stable", in: scan) {
+                    !$0.hasPrefix("account-")
+                }
+                .map { account in
+                    CleanupCatalog.Candidate(path: account.path + "/postbox/media", name: "Telegram")
+                }
+            },
+            CleanupRule(
                 id: "xcode-derived-data", title: "Xcode DerivedData",
                 explanation: "Xcode's build products and indexes. Xcode rebuilds them the next time you build.",
                 group: .safeToClear
