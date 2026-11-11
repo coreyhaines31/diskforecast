@@ -118,6 +118,20 @@ extension CleanupCatalog {
                 )]
             },
             CleanupRule(
+                id: "signal-attachments", title: "Signal attachments",
+                explanation: "Photos, videos, and files from your Signal conversations. Signal keeps them "
+                    + "encrypted and only on your devices, so they can't be downloaded again. Delete the "
+                    + "conversations or messages you don't need in Signal; moving these files to the Trash "
+                    + "would leave broken attachments.",
+                group: .worthALook,
+                action: .useApp(name: "Signal", bundleID: "org.whispersystems.signal-desktop"),
+                minimumBytes: CleanupCatalog.minimumChatMediaBytes
+            ) { catalog, _ in
+                [CleanupCatalog.Candidate(
+                    path: catalog.path("Library/Application Support/Signal/attachments.noindex"), name: "Signal"
+                )]
+            },
+            CleanupRule(
                 id: "telegram", title: "Telegram media",
                 explanation: "Photos, videos, and files Telegram saved from your chats. They stay in Telegram's "
                     + "cloud, so clearing them here only means downloading again what you open. In Telegram, "
@@ -131,6 +145,20 @@ extension CleanupCatalog {
                 .map { account in
                     CleanupCatalog.Candidate(path: account.path + "/postbox/media", name: "Telegram")
                 }
+            },
+            CleanupRule(
+                id: "telegram-desktop", title: "Telegram Desktop media",
+                explanation: "Photos, videos, and files Telegram Desktop saved from your chats. They stay in "
+                    + "Telegram's cloud, so clearing them only means downloading again what you open. In Telegram "
+                    + "Desktop, Settings › Advanced › Manage local storage clears them.",
+                group: .worthALook, action: .useApp(name: "Telegram Desktop", bundleID: "com.tdesktop.Telegram"),
+                minimumBytes: CleanupCatalog.minimumChatMediaBytes
+            ) { catalog, scan in
+                // One user_data folder per account: user_data, user_data#2, and so on.
+                catalog.children(of: "Library/Application Support/Telegram Desktop/tdata", in: scan) {
+                    !$0.hasPrefix("user_data")
+                }
+                .map { CleanupCatalog.Candidate(path: $0.path, name: "Telegram Desktop") }
             },
             CleanupRule(
                 id: "xcode-derived-data", title: "Xcode DerivedData",

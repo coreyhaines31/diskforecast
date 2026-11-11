@@ -183,7 +183,7 @@ MESSAGES = {
         <p>Messages is one of several folders that grow on their own. See also <a href="/taking-up-space/iphone-backups">iPhone backups</a>, <a href="/taking-up-space/icloud-drive">iCloud Drive</a>, and <a href="/taking-up-space">everything else taking up space</a>.</p>
     """,
     "finds": """
-          <p>Disk Forecast won&#39;t delete Messages attachments: that belongs to Messages, which keeps track of every file. Without Full Disk Access, it skips <code>~/Library/Messages</code> entirely, so it never sets off a permission prompt. With Full Disk Access, it measures the folder, and if Messages is one of your biggest, it appears under <strong>Taking the most space</strong> in the menu. Then the forecast shows whether changing Keep Messages slowed the growth. It&#39;s free.</p>
+          <p>Disk Forecast won&#39;t delete Messages attachments: that belongs to Messages, which keeps track of every file. Without Full Disk Access, it skips <code>~/Library/Messages</code> entirely, so it never sets off a permission prompt. With Full Disk Access, it measures the folder, and if Messages is one of your biggest, it appears under <strong>Taking the most space</strong> in the menu. Past 2 GB, Cleanup lists Messages attachments under <strong>Worth a look</strong> and names the conversations taking the most, so you know which ones to trim. Attachments already moved to iCloud don&#39;t count. Then the forecast shows whether changing Keep Messages slowed the growth. It&#39;s free.</p>
     """,
     "mockup": "menu",
     "related": ["/taking-up-space/iphone-backups", "/taking-up-space/icloud-drive", "/free-up-space-on-mac"],
