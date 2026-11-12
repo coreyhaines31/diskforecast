@@ -70,8 +70,9 @@ struct MessagesChatsTests {
         )
         let detail = try #require(await detail())
         #expect(detail.hasPrefix("Biggest chats: Family "))
-        // A conversation with no name goes by its phone number or email.
-        #expect(detail.contains(", +16195550100 "))
+        // A conversation with no name never shows its phone number or email.
+        #expect(detail.contains(", An unnamed chat "))
+        #expect(!detail.contains("+16195550100"))
     }
 
     @Test func skipsAttachmentsNoLongerOnThisMac() async throws {

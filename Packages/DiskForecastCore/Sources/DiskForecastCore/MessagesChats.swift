@@ -6,7 +6,7 @@ import Foundation
 enum MessagesChats {
     static func detail(messages: String, scan: ScanResult, limit: Int = 3) -> String? {
         let query = """
-            SELECT c.ROWID, COALESCE(NULLIF(c.display_name, ''), c.chat_identifier), a.filename
+            SELECT c.ROWID, NULLIF(c.display_name, ''), a.filename
             FROM attachment a
             JOIN message_attachment_join ma ON ma.attachment_id = a.ROWID
             JOIN chat_message_join cm ON cm.message_id = ma.message_id
