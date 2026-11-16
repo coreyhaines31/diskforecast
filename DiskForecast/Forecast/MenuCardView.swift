@@ -2,14 +2,18 @@ import DiskForecastCore
 import PanelKit
 import SwiftUI
 
-/// The Brushed card at the top of the menu: a percent-full meter on the metal fascia, then the
-/// days-to-full counter with the forecast phrase. Clicking it opens the Forecast window.
+/// The Brushed card at the top of the menu: a percent-full meter on the metal fascia, the
+/// days-to-full counter with the forecast phrase, then the last 30 days and the forecast as a
+/// small chart. Clicking it opens the Forecast window.
 struct MenuCardView: View {
     static let width: CGFloat = 380
     private static let volumeName = (try? URL(filePath: "/").resourceValues(forKeys: [.volumeNameKey]))?
         .volumeName ?? "Macintosh HD"
 
+    private static let dayFormat = Date.FormatStyle.dateTime.month(.abbreviated).day()
+
     let disk: DiskStatus
+    let grewMost: (name: String, bytes: Int64)?
     let open: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
@@ -26,6 +30,23 @@ struct MenuCardView: View {
                 .accessibilityValue(disk.forecastPhrase)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 12)
+            let series = ForecastSeries(disk: disk, days: 30)
+            if series.history.count >= 2 {
+                chartHeader(theme)
+                ForecastChart(chartConfig(series))
+                if let grewMost {
+                    HStack(spacing: 4) {
+                        Text("Grew most this week:")
+                        Text(grewMost.name).lineLimit(1).truncationMode(.middle)
+                        Text((grewMost.bytes > 0 ? "+" : "−") + Bytes.format(abs(grewMost.bytes))).monospacedDigit()
+                    }
+                    .font(PanelFont.body(11.5))
+                    .foregroundStyle(theme.sub)
+                    .padding(.horizontal, 14)
+                    .padding(.top, 2)
+                    .padding(.bottom, 10)
+                }
+            }
         }
         .background(theme.background)
         .foregroundStyle(theme.ink)
@@ -40,6 +61,58 @@ struct MenuCardView: View {
         .frame(width: Self.width)
         .contentShape(Rectangle())
         .onTapGesture(perform: open)
+    }
+
+    /// "Free space" with the way into the Forecast window, styled like a PanelKit section header.
+    private func chartHeader(_ theme: PanelTheme) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text("Free space")
+                .font(PanelFont.condensed(10, .semibold))
+                .tracking(2)
+                .textCase(.uppercase)
+                .foregroundStyle(theme.sub)
+                .accessibilityAddTraits(.isHeader)
+            Spacer(minLength: 8)
+            Text("Open Forecast…")
+                .font(PanelFont.body(11, .medium))
+                .foregroundStyle(theme.isDark ? Color(red: 0.56, green: 0.69, blue: 1) : PanelAccent.diskForecast)
+                .accessibilityAddTraits(.isButton)
+        }
+        .padding(.top, 12)
+        .padding(.bottom, 6)
+        .padding(.horizontal, 14)
+        .overlay(alignment: .top) {
+            Rectangle().fill(theme.line).frame(height: 1)
+        }
+    }
+
+    /// Space used over the range, rising towards capacity, with the dashed forecast to full.
+    private func chartConfig(_ series: ForecastSeries) -> ForecastConfig {
+        let capacity = Double(disk.capacityBytes) / 1_000_000_000
+        let used = series.history.map { capacity - $0.gigabytes }
+        let lowest = used.min() ?? 0
+        let span = max(series.end.timeIntervalSince(series.start), 1)
+        let today = series.history.last?.date ?? series.end
+        let full = series.fullDate.flatMap { $0 <= series.end ? $0 : nil }
+        var endLabel: String?
+        if let full {
+            endLabel = "Full \(full.formatted(Self.dayFormat))"
+        } else if !series.projection.isEmpty {
+            endLabel = series.end.formatted(Self.dayFormat)
+        }
+        var config = ForecastConfig(
+            history: used,
+            lowerBound: max(0, lowest - (capacity - lowest) * 0.4),
+            limit: capacity,
+            todayPosition: min(max(today.timeIntervalSince(series.start) / span, 0.05), 0.955),
+            startLabel: series.start.formatted(Self.dayFormat),
+            endLabel: endLabel,
+            limitLabel: Bytes.format(disk.capacityBytes),
+            endIsAlarm: full != nil,
+            accessibilityLabel: "Space used over the last 30 days. \(disk.forecastPhrase)"
+        )
+        config.projection = series.projection.last.map { capacity - $0.gigabytes }
+        return config
     }
 
     private static let meter = MeterConfig(

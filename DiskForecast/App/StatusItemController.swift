@@ -90,7 +90,6 @@ final class StatusItemController: NSObject, NSMenuDelegate {
                 .withSymbolConfiguration(symbol)
             menu.addItem(item)
         }
-        addChart(to: menu)
         menu.addItem(.separator())
         addConsumers(to: menu)
         addReclaim(to: menu)
@@ -105,29 +104,15 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         menu.addItem(ClosureMenuItem("Quit \(Brand.name)", keyEquivalent: "q") { NSApp.terminate(nil) })
     }
 
-    /// The Brushed card: free space, percent full and days to full. Clicking it opens Forecast.
+    /// The Brushed card: free space, percent full, days to full and, once there are two days to
+    /// draw, the last 30 days as a small chart. Clicking it opens Forecast.
     private func addCard(to menu: NSMenu) {
         let open = { [weak self, weak menu] in
             menu?.cancelTracking()
             self?.openForecast()
         }
-        let view = NSHostingView(rootView: MenuCardView(disk: disk, open: open))
-        view.frame.size = view.fittingSize
-        let item = NSMenuItem()
-        item.view = view
-        menu.addItem(item)
-    }
-
-    /// The last 30 days as a small chart, once there are two days to draw. Clicking it opens
-    /// the Forecast window.
-    private func addChart(to menu: NSMenu) {
-        guard disk.history.samples.count >= 2 else { return }
-        let open = { [weak self, weak menu] in
-            menu?.cancelTracking()
-            self?.openForecast()
-        }
         let grewMost = SnapshotComparison.grewMostThisWeek(in: snapshots)
-        let view = NSHostingView(rootView: MenuForecastView(disk: disk, grewMost: grewMost, open: open))
+        let view = NSHostingView(rootView: MenuCardView(disk: disk, grewMost: grewMost, open: open))
         view.frame.size = view.fittingSize
         let item = NSMenuItem()
         item.view = view
