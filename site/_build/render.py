@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Renders site/alternatives/*.html, the roundups, the alternatives hub, the guides, and /privacy from pages.py,
 the per-tool pages under /clear-cache and /ai-models and their hubs from tools.py,
-rewrites the homepage footer list and JSON-LD between their <!-- alternatives --> and <!-- schema --> markers,
+rewrites the homepage footer and JSON-LD between their <!-- footer --> and <!-- schema --> markers,
 and writes sitemap.xml.
 
     python3 site/_build/render.py
@@ -113,27 +113,43 @@ def footer_guides():
 
 
 FAMILY = [
-    ("Green Room", "https://greenroomformac.com", "Check your camera, mic, and speakers"),
-    ("WiFi or ISP", "https://wifiorisp.com", "Is slow internet your Wi-Fi or your ISP?"),
-    ("Midnight Oil", "https://midnightoil.app", "Keep your Mac awake"),
-    ("Spare", "https://spareformac.com", "See what's using your Mac"),
-    ("On Hand", "https://onhandformac.com", "A clipboard manager for your Mac"),
-    ("Coat Check", "https://coatcheckformac.com", "Reach the menu bar icons the notch hides"),
-    ("Fuel Gauge", "https://fuelgauge.app", "Know if you'll make it to reset"),
+    ("fuel", "Fuel Gauge", "https://fuelgauge.app", "Know if you'll make it to reset"),
+    ("spare", "Spare", "https://spareformac.com", "See what's using your Mac"),
+    ("disk", "Disk Forecast", SITE, "Know before your Mac runs out of space"),
+    ("oil", "Midnight Oil", "https://midnightoil.app", "Keep your Mac awake"),
+    ("wifi", "WiFi or ISP", "https://wifiorisp.com", "Is slow internet your Wi-Fi or your ISP?"),
+    ("green", "Green Room", "https://greenroomformac.com", "Check your camera, mic, and speakers"),
+    ("hand", "On Hand", "https://onhandformac.com", "A clipboard manager for your Mac"),
+    ("coat", "Coat Check", "https://coatcheckformac.com", "Reach the menu bar icons the notch hides"),
 ]
 
 
 def footer_family():
-    """Corey's other free Mac apps, cross-linked from every footer."""
-    links = "".join(f'<a href="{url}" title="{esc(desc)}">{esc(name)}</a>' for name, url, desc in FAMILY)
-    return f'      <nav class="footer-alts" aria-label="More free Mac apps"><a class="label" href="https://github.com/coreyhaines31">More free Mac apps</a>{links}</nav>\n'
+    """The eight free Mac apps as a panel of icons, cross-linked from every footer. This one is marked current."""
+    items = "".join(
+        f'<li><a href="{url}/" title="{esc(desc)}"{" aria-current=\"page\"" if key == "disk" else ""}>'
+        f'<img src="/images/family/{key}.png" alt="" width="56" height="56" loading="lazy">{esc(name)}</a></li>'
+        for key, name, url, desc in FAMILY)
+    return f'''    <nav class="bx-family" aria-label="More free Mac apps">
+      <div class="wrap">
+        <a class="bx-eyebrow" href="https://github.com/coreyhaines31">More free Mac apps</a>
+        <ul>{items}</ul>
+      </div>
+    </nav>
+'''
 
 
 def footer():
     return f'''  <footer>
-    <div class="wrap">
-{footer_guides()}{footer_alternatives()}{footer_family()}      <div class="footer-links"><span>© 2026 Corey Haines. <a href="{REPO}/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
-      <div class="footer-links"><a href="{REPO}">GitHub</a><a href="{REPO}/releases">Releases</a><a href="{REPO}/issues">Issues</a><a href="/privacy">Privacy</a></div>
+{footer_family()}    <div class="footer-lists">
+      <div class="wrap">
+{footer_guides()}{footer_alternatives()}      </div>
+    </div>
+    <div class="bx-footer">
+      <div class="wrap">
+        <div class="footer-links"><span>© 2026 Corey Haines. <a href="{REPO}/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+        <div class="footer-links"><a href="{REPO}">GitHub</a><a href="{REPO}/releases">Releases</a><a href="{REPO}/issues">Issues</a><a href="/privacy">Privacy</a></div>
+      </div>
     </div>
   </footer>
 '''
@@ -145,13 +161,13 @@ def homepage():
 
 
 def render_homepage_footer():
-    """The homepage is hand-written; keep its footer lists in sync between the markers."""
+    """The homepage is hand-written; keep its footer in sync between the markers."""
     path = os.path.join(ROOT, "index.html")
     page = homepage()
-    start, end = "<!-- alternatives -->\n", "<!-- /alternatives -->"
+    start, end = "<!-- footer -->\n", "  <!-- /footer -->"
     i, j = page.index(start) + len(start), page.index(end)
     with open(path, "w") as f:
-        f.write(page[:i] + footer_guides() + footer_alternatives() + footer_family() + "      " + page[j:])
+        f.write(page[:i] + footer() + page[j:])
 
 
 def homepage_schema():
