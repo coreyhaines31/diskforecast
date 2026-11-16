@@ -2,8 +2,8 @@ import DiskForecastCore
 import PanelKit
 import SwiftUI
 
-/// The Peak meter: a 50 x 5 dot-matrix LED bar in a black recess, amber for used space, red for
-/// the Trash and dark for free space, over a three-column legend.
+/// The Peak meter: a 50 x 5 dot-matrix LED bar in a black recess, each category in its own LED
+/// colour (red for the Trash) and dark for free space, over a three-column legend.
 struct PeakStorageMeter: View {
     static let columnCount = 50
     static let rowCount = 5
@@ -46,8 +46,7 @@ struct PeakStorageMeter: View {
                     drainProgress: state.drainProgress(at: time.date),
                     highlighted: state.highlighted,
                     isMeasuring: reading.breakdown == nil,
-                    used: theme.caution,
-                    trash: theme.stop
+                    measuring: PanelTheme.dark.caution
                 )
             }
             .aspectRatio(PeakDots.aspectRatio(boundaries: boundaryCount), contentMode: .fit)
@@ -124,7 +123,7 @@ struct PeakStorageMeter: View {
 
     private func ledColor(_ entry: StorageLegendEntry) -> Color {
         guard entry.bytes > 0 else { return theme.color(for: .off) }
-        return entry.category == .trash ? theme.stop : theme.caution
+        return entry.category.ledColor(onDark: theme.isDark)
     }
 
     private var columns: [StorageCategory?] {
@@ -160,8 +159,11 @@ struct PeakDots: View {
     let drainProgress: Double?
     let highlighted: StorageCategory?
     let isMeasuring: Bool
-    let used: Color
-    let trash: Color
+    /// Used space while a scan runs and there are no categories yet.
+    let measuring: Color
+
+    /// The recess is black in both appearances, so the dots always take the bright colours.
+    private var trash: Color { StorageCategory.trash.ledColor(onDark: true) }
 
     /// Width over height for the grid, in dot units.
     static func aspectRatio(boundaries: Int) -> CGFloat {
@@ -194,7 +196,7 @@ struct PeakDots: View {
                         if let drain, drain.contains(index) { draining.append(rect) }
                         continue
                     }
-                    let color = owner == .trash ? trash : used
+                    let color = isMeasuring ? measuring : owner.ledColor(onDark: true)
                     if isMeasuring {
                         context.fill(circle, with: .color(color.opacity(0.35)))
                     } else if let highlighted, highlighted != owner {

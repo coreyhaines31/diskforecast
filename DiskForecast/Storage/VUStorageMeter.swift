@@ -3,7 +3,7 @@ import PanelKit
 import SwiftUI
 
 /// The VU view: the card's fascia meter already shows percent full, so this adds one engraved row
-/// per category, largest first, with a tape scaled to the largest.
+/// per category, largest first, with a tape scaled to the largest, both lit in the category's colour.
 struct VUStorageMeter: View {
     let reading: StorageReading
     let state: StorageMeterState
@@ -36,20 +36,19 @@ struct VUStorageMeter: View {
             ForEach(legend) { entry in
                 let isLast = entry.id == legend.last?.id
                 let dimmed = state.highlighted.map { $0 != entry.category } ?? false
+                let lit = entry.bytes > 0
+                let color = entry.category.ledColor(onDark: theme.isDark)
                 StorageLegendButton(entry: entry, state: state) {
                     HStack(spacing: 8) {
-                        StorageLED(
-                            color: entry.category == .trash && entry.bytes > 0 ? theme.stop : theme.color(for: .off),
-                            glows: entry.category == .trash && entry.bytes > 0
-                        )
-                        .frame(width: 10)
+                        StorageLED(color: lit ? color : theme.color(for: .off), glows: lit)
+                            .frame(width: 10)
                         Text(entry.title)
                             .font(PanelFont.body(12.5, .medium))
                             .foregroundStyle(theme.ink)
                             .lineLimit(1)
                             .frame(width: 118, alignment: .leading)
-                        Tape(largest > 0 ? max(0.015, Double(entry.bytes) / Double(largest)) : 0)
-                            .accessibilityHidden(true)
+                        CategoryTape(fraction: largest > 0 ? max(0.015, Double(entry.bytes) / Double(largest)) : 0,
+                                     color: color)
                         // The highlighted row also names its share of the disk.
                         Text(state.highlighted == entry.category && entry.bytes > 0
                              ? "\(entry.size) · \(entry.percentOfDisk)%" : entry.size)
@@ -69,5 +68,27 @@ struct VUStorageMeter: View {
             }
         }
         .padding(.horizontal, -4)
+    }
+}
+
+/// PanelKit's tape, filled in a category's colour instead of graphite.
+private struct CategoryTape: View {
+    let fraction: Double
+    let color: Color
+
+    @Environment(\.panelTheme) private var theme
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Rectangle().fill(theme.track)
+                Rectangle()
+                    .fill(color)
+                    .frame(width: proxy.size.width * min(max(fraction, 0), 1))
+            }
+        }
+        .frame(height: 5)
+        .clipShape(RoundedRectangle(cornerRadius: 1))
+        .accessibilityHidden(true)
     }
 }
