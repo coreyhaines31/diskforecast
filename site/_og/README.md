@@ -6,6 +6,6 @@ Remotion source for `images/og.mp4` (the `og:video` iMessage and Discord autopla
 cd site/_og && npm install && npm run render
 ```
 
-`npm run studio` opens a live preview. `OgVideo.tsx` is the shared shell (color field, glass card, brand, headline) and takes its text and colors as props in `Root.tsx`; `ForecastCard.tsx` is the Disk Forecast animation on the right. The loop ends on its first frame, so keep the first and last frames identical when changing the timing.
+`npm run studio` opens a live preview. `OgVideo.tsx` is the shared Brushed shell (brushed aluminium, brand, pilot-light badge, Barlow Semi Condensed headline, a black mount on the right) and takes its text and accent as props in `Root.tsx`; `ForecastCard.tsx` is the Disk Forecast animation on the mount. The loop ends on its first frame, so keep the first and last frames identical when changing the timing.
 
 This folder is in `.vercelignore`, so none of it is deployed.

@@ -14,14 +14,11 @@ export const RemotionRoot = () => (
       {
         name: 'Disk Forecast',
         icon: 'icon.svg',
+        badge: 'Free for Mac',
         headline: 'Know before your Mac runs',
         headlineAccent: 'out of space.',
         sub: 'Free for macOS · diskforecast.com',
-        accent: '#0a6cdf',
-        accentInk: '#0a5cc0',
-        accentFill: '#2f86ef',
-        field: ['#9ccdff', '#ffd98a', '#bfeedd', '#cdd2ff'],
-        tint: '15,30,55',
+        accent: '#2f63d3',
       } satisfies OgVideoProps
     }
   />
