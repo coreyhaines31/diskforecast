@@ -24,6 +24,8 @@ final class ScanModel {
     private(set) var trashBytes: Int64?
     /// Claude Code's temp folder, scanned beside the home folder since it's outside it.
     private var agentScratch: ScanResult?
+    /// The size of /Applications, measured beside the home folder for the storage meter. Nil until measured.
+    private(set) var applicationsBytes: Int64?
     /// Something slow underway that the menu should mention, like emptying the Trash.
     var activity: String? {
         didSet { onChange?() }
@@ -90,6 +92,7 @@ final class ScanModel {
         if DemoMode.isOn {
             result = Demo.scan(home: home)
             items = Demo.cleanupItems(home: home)
+            applicationsBytes = Demo.applicationsBytes
             scannedWithFullDiskAccess = true
             finishedAt = Date()
             state = .done
@@ -114,10 +117,13 @@ final class ScanModel {
         showProgress(of: scanner)
         Task {
             async let scratch = Self.scanAgentScratch(priority: priority)
+            async let applications = Self.measureApplications(priority: priority)
             let result = await scanner.scan()
             let scratchResult = await scratch
+            let applicationsResult = await applications
             guard generation == self.generation else { return }
             agentScratch = scratchResult
+            applicationsBytes = applicationsResult
             await finish(result: result, fullAccess: fullAccess)
         }
         scanSeparately(separate, excluding: protected, priority: priority, generation: generation)
@@ -162,6 +168,11 @@ final class ScanModel {
     private nonisolated static func scanAgentScratch(priority: QualityOfService) async -> ScanResult? {
         guard FileManager.default.fileExists(atPath: AgentScratch.folder) else { return nil }
         return await DiskScanner(options: .init(root: URL(filePath: AgentScratch.folder), priority: priority)).scan()
+    }
+
+    private nonisolated static func measureApplications(priority: QualityOfService) async -> Int64? {
+        let result = await DiskScanner(options: .init(root: URL(filePath: "/Applications"), priority: priority)).scan()
+        return result.tree.directoryCount > 0 ? result.tree.totalSize : nil
     }
 
     func measureTrash() {
