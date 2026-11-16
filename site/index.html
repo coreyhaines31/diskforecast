@@ -327,6 +327,18 @@ Don't change any other settings and don't delete anything.</pre>
           </div>
           <!-- /mockup:system-data -->
         </div>
+        <p class="lead-p center">Every fix opens a confirmation that shows the exact command before anything runs, and if one doesn&#39;t finish, you see what it said. Here&#39;s what each one does.</p>
+        <div class="table-card glass days"><div class="table-scroll"><table class="compare">
+          <thead><tr><th scope="col">In System Data</th><th scope="col">What the fix runs</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Local Time Machine snapshots</th><td><code>tmutil deletelocalsnapshots</code>, once per snapshot. Your backups on the backup disk aren&#39;t touched.</td></tr>
+            <tr><th scope="row">Spotlight index</th><td><code>mdutil -E /</code>, after macOS asks for your password. Search results are incomplete while it rebuilds.</td></tr>
+            <tr><th scope="row">Simulators</th><td><code>xcrun simctl delete unavailable</code> for simulators whose runtime is gone, or <code>xcrun simctl runtime delete</code> for one runtime. Xcode downloads it again when you need it.</td></tr>
+            <tr><th scope="row">Docker</th><td><code>docker system prune -f</code>. Running containers, volumes, and tagged images stay. Start Docker first so it can be measured.</td></tr>
+            <tr><th scope="row">Apple Intelligence and Siri models</th><td>Nothing runs. It opens System Settings, where turning Apple Intelligence off removes its models.</td></tr>
+            <tr><th scope="row">Purgeable space</th><td>Nothing to run. It&#39;s already counted as free, and macOS hands it back when an app needs room.</td></tr>
+          </tbody>
+        </table></div></div>
       </div>
     </section>
 
