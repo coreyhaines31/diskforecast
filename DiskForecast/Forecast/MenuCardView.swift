@@ -100,12 +100,15 @@ struct MenuCardView: View {
         } else if !series.projection.isEmpty {
             endLabel = series.end.formatted(Self.dayFormat)
         }
+        let todayPosition = min(max(today.timeIntervalSince(series.start) / span, 0.05), 0.955)
         var config = ForecastConfig(
             history: used,
             lowerBound: max(0, lowest - (capacity - lowest) * 0.4),
             limit: capacity,
-            todayPosition: min(max(today.timeIntervalSince(series.start) / span, 0.05), 0.955),
+            todayPosition: todayPosition,
             startLabel: series.start.formatted(Self.dayFormat),
+            // Today sits under the end label when the disk fills within days, so it gives way.
+            todayLabel: endLabel != nil && todayPosition > 0.72 ? "" : "Today",
             endLabel: endLabel,
             limitLabel: Bytes.format(disk.capacityBytes),
             endIsAlarm: full != nil,
