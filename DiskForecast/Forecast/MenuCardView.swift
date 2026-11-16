@@ -38,7 +38,7 @@ struct MenuCardView: View {
                     HStack(spacing: 4) {
                         Text("Grew most this week:")
                         Text(grewMost.name).lineLimit(1).truncationMode(.middle)
-                        Text((grewMost.bytes > 0 ? "+" : "−") + Bytes.format(abs(grewMost.bytes))).monospacedDigit()
+                        DeltaText(delta: grewMost.bytes)
                     }
                     .font(PanelFont.body(11.5))
                     .foregroundStyle(theme.sub)
