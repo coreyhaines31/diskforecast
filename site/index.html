@@ -620,6 +620,35 @@ Don't change any other settings and don't delete anything.</pre>
           <div><h3>Stays on your Mac</h3><p>No telemetry, no account. The only network call checks for updates, and you can turn it off.</p></div>
           <div><h3>Free. Really.</h3><p>No trial, no subscription. Source on GitHub, signed and notarized by Apple.</p></div>
         </div>
+        <div class="cols3" style="margin-top:14px">
+          <div class="glass">
+            <h3>What it reads</h3>
+            <ul class="ticks">
+              <li>Names and sizes of the files in your home folder. To name your biggest chats, it reads WhatsApp&#39;s and Messages&#39; own databases on your Mac, read-only.</li>
+              <li>Free space on the startup disk, once an hour.</li>
+              <li>With Full Disk Access, the folders macOS guards: Mail, Messages, Safari, iCloud Drive, and other apps&#39; containers.</li>
+              <li>Its own history in <code>~/Library/Application Support/Disk Forecast</code>: a reading a day and folder sizes, 120 days of each.</li>
+            </ul>
+          </div>
+          <div class="glass">
+            <h3>What it never does</h3>
+            <ul class="ticks">
+              <li>Scan cloud drives in <code>~/Library/CloudStorage</code>, like Google Drive, Dropbox, and OneDrive.</li>
+              <li>Download iCloud files that macOS offloaded to make room.</li>
+              <li>Ask for Photos, Music, or TV access. Without Full Disk Access, those libraries are skipped.</li>
+              <li>Send anything about your disk anywhere. There&#39;s no analytics in the app.</li>
+            </ul>
+          </div>
+          <div class="glass">
+            <h3>What it asks for</h3>
+            <ul class="ticks">
+              <li><b>Full Disk Access</b>Optional. Without it, macOS asks once each for Desktop, Documents, and Downloads.</li>
+              <li><b>Notifications</b>The first time it has something to warn you about.</li>
+              <li><b>Your password</b>Only to rebuild the Spotlight index, and macOS asks, not the app.</li>
+              <li><b>Launch at login</b>On from the first launch, so readings continue after a restart. Off in Settings.</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
