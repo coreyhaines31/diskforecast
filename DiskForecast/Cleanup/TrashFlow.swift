@@ -135,75 +135,6 @@ enum TrashFlow {
         return (title, details.joined(separator: "\n\n"))
     }
 
-    /// Empties the Trash itself rather than through Finder, which stops at paths that are too long
-    /// and at anything an app still has open.
-    static func confirmAndEmptyTrash(scan: ScanModel, disk: DiskStatus) {
-        let bin = TrashBin(home: scan.home)
-        NSApp.activate()
-        guard let contents = try? bin.contents() else {
-            needAccessToEmpty()
-            return
-        }
-        guard !contents.isEmpty else {
-            let alert = NSAlert()
-            alert.messageText = "The Trash is already empty"
-            alert.runModal()
-            return
-        }
-        let openFiles = OpenFiles.current()
-        let confirm = NSAlert()
-        confirm.messageText = scan.trashBytes.map { "Permanently delete the \(Bytes.format($0)) in the Trash?" }
-            ?? "Permanently delete everything in the Trash?"
-        var text = "\(contents.count.formatted()) item\(contents.count == 1 ? "" : "s"). This can't be undone."
-        let busy = Set(contents.compactMap(openFiles.user(of:))).sorted()
-        if !busy.isEmpty {
-            text += " \(appsPhrase(busy)) still using some of them, so those stay until you quit "
-                + (busy.count == 1 ? "it." : "them.")
-        }
-        confirm.informativeText = text
-        confirm.addButton(withTitle: "Empty Trash").hasDestructiveAction = true
-        confirm.addButton(withTitle: "Cancel")
-        guard confirm.runModal() == .alertFirstButtonReturn else { return }
-
-        let before = disk.freeBytes
-        scan.activity = "Emptying the Trash…"
-        Task {
-            let report = await Task.detached(priority: .userInitiated) {
-                try? bin.empty(openFiles: openFiles)
-            }.value
-            scan.activity = nil
-            TrashHistory.clear()
-            disk.refresh()
-            scan.measureTrash()
-            let done = NSAlert()
-            let freed = max(0, disk.freeBytes - before)
-            done.messageText = report?.moved.isEmpty == false ? "Emptied the Trash" : "The Trash wasn't emptied"
-            var details = freed > 0 ? ["\(Bytes.format(freed)) is free again."] : []
-            if let report, !report.failed.isEmpty {
-                details.append(
-                    "Left \(report.failed.count) in the Trash:\n" + report.failureLines().joined(separator: "\n")
-                )
-            }
-            done.informativeText = details.joined(separator: "\n\n")
-            done.runModal()
-        }
-    }
-
-    private static func needAccessToEmpty() {
-        let alert = NSAlert()
-        alert.messageText = "\(Brand.name) needs Full Disk Access to empty the Trash"
-        alert.informativeText = "macOS only lets apps with Full Disk Access see what's in the Trash. Turn it "
-            + "on in System Settings, or empty the Trash from Finder."
-        alert.addButton(withTitle: "Open System Settings")
-        alert.addButton(withTitle: "Open Trash")
-        alert.addButton(withTitle: "Cancel")
-        switch alert.runModal() {
-        case .alertFirstButtonReturn: FullDiskAccess.openSettings()
-        case .alertSecondButtonReturn: openTrash()
-        default: break
-        }
-    }
-
     /// "Cursor is", "Cursor and Notion are", "Cursor, Notion, and Slack are".
     static func appsPhrase(_ apps: [String]) -> String {
         apps.formatted(.list(type: .and)) + (apps.count == 1 ? " is" : " are")
@@ -275,6 +206,82 @@ enum TrashFlow {
     static func openTrash() {
         if let trash = FileManager.default.urls(for: .trashDirectory, in: .userDomainMask).first {
             NSWorkspace.shared.open(trash)
+        }
+    }
+}
+
+// MARK: - Emptying the Trash
+
+extension TrashFlow {
+    /// Empties the Trash itself rather than through Finder, which stops at paths that are too long
+    /// and at anything an app still has open. `onEmptied` gets what the Trash held, once something
+    /// was actually deleted.
+    static func confirmAndEmptyTrash(scan: ScanModel, disk: DiskStatus, onEmptied: ((Int64) -> Void)? = nil) {
+        let bin = TrashBin(home: scan.home)
+        NSApp.activate()
+        guard let contents = try? bin.contents() else {
+            needAccessToEmpty()
+            return
+        }
+        guard !contents.isEmpty else {
+            let alert = NSAlert()
+            alert.messageText = "The Trash is already empty"
+            alert.runModal()
+            return
+        }
+        let openFiles = OpenFiles.current()
+        let confirm = NSAlert()
+        confirm.messageText = scan.trashBytes.map { "Permanently delete the \(Bytes.format($0)) in the Trash?" }
+            ?? "Permanently delete everything in the Trash?"
+        var text = "\(contents.count.formatted()) item\(contents.count == 1 ? "" : "s"). This can't be undone."
+        let busy = Set(contents.compactMap(openFiles.user(of:))).sorted()
+        if !busy.isEmpty {
+            text += " \(appsPhrase(busy)) still using some of them, so those stay until you quit "
+                + (busy.count == 1 ? "it." : "them.")
+        }
+        confirm.informativeText = text
+        confirm.addButton(withTitle: "Empty Trash").hasDestructiveAction = true
+        confirm.addButton(withTitle: "Cancel")
+        guard confirm.runModal() == .alertFirstButtonReturn else { return }
+
+        let before = disk.freeBytes
+        let held = scan.trashBytes
+        scan.activity = "Emptying the Trash…"
+        Task {
+            let report = await Task.detached(priority: .userInitiated) {
+                try? bin.empty(openFiles: openFiles)
+            }.value
+            scan.activity = nil
+            TrashHistory.clear()
+            disk.refresh()
+            scan.measureTrash()
+            let freed = max(0, disk.freeBytes - before)
+            if report?.moved.isEmpty == false { onEmptied?(held ?? freed) }
+            let done = NSAlert()
+            done.messageText = report?.moved.isEmpty == false ? "Emptied the Trash" : "The Trash wasn't emptied"
+            var details = freed > 0 ? ["\(Bytes.format(freed)) is free again."] : []
+            if let report, !report.failed.isEmpty {
+                details.append(
+                    "Left \(report.failed.count) in the Trash:\n" + report.failureLines().joined(separator: "\n")
+                )
+            }
+            done.informativeText = details.joined(separator: "\n\n")
+            done.runModal()
+        }
+    }
+
+    private static func needAccessToEmpty() {
+        let alert = NSAlert()
+        alert.messageText = "\(Brand.name) needs Full Disk Access to empty the Trash"
+        alert.informativeText = "macOS only lets apps with Full Disk Access see what's in the Trash. Turn it "
+            + "on in System Settings, or empty the Trash from Finder."
+        alert.addButton(withTitle: "Open System Settings")
+        alert.addButton(withTitle: "Open Trash")
+        alert.addButton(withTitle: "Cancel")
+        switch alert.runModal() {
+        case .alertFirstButtonReturn: FullDiskAccess.openSettings()
+        case .alertSecondButtonReturn: openTrash()
+        default: break
         }
     }
 }
