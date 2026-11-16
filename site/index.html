@@ -434,6 +434,35 @@ Don't change any other settings and don't delete anything.</pre>
       </div>
     </section>
 
+    <section id="confirm" class="lit">
+      <div class="wrap">
+        <div class="cli-split">
+          <div>
+            <h2>Nothing goes without asking.</h2>
+            <p>Move to Trash… opens one dialog with the total, what&#39;s in each category, and anything that has to stay. Files a running app or a Claude Code session still has open are left where they are, because the app would keep using the trashed copy.</p>
+            <ul class="leds">
+              <li><b>Trash by default.</b> Delete Immediately is there when you need the space now, and it says it can&#39;t be undone.</li>
+              <li><b>Undo.</b> It puts back everything the last run moved, from the app or with <code>diskforecast undo</code>, until you quit.</li>
+              <li><b>Quit and Try Again…</b> It names each app and Claude Code session first. Apps quit the usual way, so one with unsaved work asks, and Claude Code conversations pick up again with <code>claude --resume</code>.</li>
+              <li><b>Disk too full for the Trash?</b> Moving to the Trash needs a little free space. It tells you, and offers Delete Instead or Empty Trash.</li>
+              <li><b>Empty Trash…</b> It deletes even what Finder can&#39;t, like folders whose paths are too long, after asking with the item count.</li>
+              <li><b>Home folder only.</b> It moves things inside your home folder, plus Claude Code&#39;s own temp sessions. Never your home folder or its standard folders, and never through a link that leads out.</li>
+            </ul>
+          </div>
+          <div class="stage">
+            <div class="mk mk-alert" role="img" aria-label="The confirmation dialog: Move 8.7 GB to the Trash? You can put anything back from the Trash until you empty it. Delete Immediately frees the space now, but can't be undone. Cursor is open, so 1.2 GB of this stays. Quit it first to include everything. It lists each category with its size and what's in it, then the buttons Move to Trash, Cancel, and Delete Immediately.">
+              <img src="/images/icon.svg" alt="" width="54" height="54">
+              <b>Move 8.7 GB to the Trash?</b>
+              <p>You can put anything back from the Trash until you empty it. Delete Immediately frees the space now, but can&#39;t be undone.</p>
+              <p>Cursor is open, so 1.2 GB of this stays. Quit it first to include everything.</p>
+              <div class="mk-sum"><span>Build folders in old projects</span><span>4.6 GB</span><small>shop/node_modules, blog/node_modules and 41 more</small><span>App caches</span><span>2.2 GB</span><small>com.spotify.client, Google and 38 more</small><span>Editor and chat app caches</span><span>1.9 GB</span><small>Cursor, Slack and Discord</small></div>
+              <div class="mk-btns"><span class="pri">Move to Trash</span><span>Cancel</span><span class="red">Delete Immediately</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="agents" class="lit">
       <div class="wrap">
         <div class="cli-split">
