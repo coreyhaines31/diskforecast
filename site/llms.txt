@@ -69,7 +69,7 @@
 - [DaisyDisk](https://diskforecast.com/alternatives/daisydisk): The visual standard. A $9.99 picture of your disk, sold on the App Store and direct.
 - [CleanMyMac](https://diskforecast.com/alternatives/cleanmymac): The big suite. From $39.99 a year, or $89.99 once.
 - [GrandPerspective](https://diskforecast.com/alternatives/grandperspective): The free treemap. Every file a block, and the judgment is up to you.
-- [OmniDiskSweeper](https://diskforecast.com/alternatives/omnidisksweeper): The classic free size list. Last built in 2018, for Intel.
+- [OmniDiskSweeper](https://diskforecast.com/alternatives/omnidisksweeper): The classic free size list, from The Omni Group.
 - [WinDirStat for Mac](https://diskforecast.com/alternatives/windirstat-mac): WinDirStat, WizTree, and TreeSize, and what runs on a Mac.
 - [Mole](https://diskforecast.com/alternatives/mole): The popular open-source cleaner you run in Terminal.
 - [Disk Inventory X](https://diskforecast.com/alternatives/disk-inventory-x): The treemap many Mac users learned on. Last updated in 2019.

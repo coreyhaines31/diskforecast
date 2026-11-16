@@ -20,7 +20,7 @@ PAGES = [
         "card_blurb": "The closest match. Paid, fast-moving, and packed with tools.",
         "cta": "Get the forecast, free.",
         "faqs": [
-            ("How much does DiskBuddy cost?", "DiskBuddy launched at $19 with a limited run of launch copies, and its site has since listed it at $49. Check DiskBuddy's site for the current price."),
+            ("How much does DiskBuddy cost?", "As of November 16, 2026, DiskBuddy's site lists it at $9 once while 400 launch copies last, then $49, with one key for Mac and Windows and no free tier. Check DiskBuddy's site for the current price."),
             ("Does DiskBuddy move files to the Trash?", "Yes. DiskBuddy sends deletions to the Trash, and so does Disk Forecast, unless you choose Delete Immediately."),
             ("Does DiskBuddy tell you when your disk will be full?", "We couldn't find a forecast in DiskBuddy's own materials as of October 2026. In Disk Forecast it's the headline feature: a countdown in the menu bar, built from your own daily history."),
             ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
@@ -31,22 +31,22 @@ PAGES = [
         <p>DiskBuddy launched on September 5, 2026, changed hands about a month later, and shipped version 2.0 on September 23 and 3.0 on October 4. It's ambitious. There's an overview, a space map, a tiered cleanup list, duplicates, apps, a monitor, snapshots, activity, compression, a menu bar item, and a finder for local LLM models.</p>
         <p>It sends deletions to the Trash, it scans about 3 million files in roughly 20 seconds by its own numbers, and one license covers a Mac and a Windows PC.</p>
         <h3>Where it stops</h3>
-        <p><strong>It's paid, and the price has moved.</strong> It launched at $19 with a counter of copies left, and the site now lists $49.</p>
+        <p><strong>It's paid, and the price has moved.</strong> Its site now lists $9 for 400 launch copies, then $49, with no free tier or trial.</p>
         <p><strong>It answers “what's using my space?”</strong> We couldn't find anything in its materials that answers “when will I run out?”, which is the question Disk Forecast is built around.</p>
-        <p><strong>System Data gets a snapshots view.</strong> Disk Forecast breaks System Data into every part it can measure, explains each in plain English, and fixes it with Apple's own tools.</p>
+        <p><strong>System Data gets a guide, not a breakdown.</strong> DiskBuddy's site links to an article about System Data, and its Snapshots feature compares a saved scan with today's. Disk Forecast breaks System Data into every part it can measure, explains each in plain English, and fixes it with Apple's own tools.</p>
             """},
             {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs DiskBuddy</h2>
-        <p>DiskBuddy facts come from its launch and release posts, September to October 2026.</p>
+        <p>DiskBuddy facts come from its launch and release posts, September to October 2026, and its site, checked November 16, 2026.</p>
         {{TABLE}}
         <h3>What DiskBuddy does better</h3>
         <p>Breadth. Duplicates, an apps view, compression, activity history, and a Windows version on the same license. If you want one paid app that does all of it, DiskBuddy is a good one.</p>
         <h3>What Disk Forecast does better</h3>
         <p>It tells you ahead of time. Free space and a countdown sit in the menu bar, System Data comes with a plain-English explanation for every part, and the whole thing is free with the source on GitHub.</p>
             """, "table": [
-                ("Price", "Free", "$19 at launch, now $49"),
+                ("Price", "Free", "$9 for 400 launch copies, then $49"),
                 ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
-                ("System Data broken down", "Every part, in plain English, with Apple's fixes", "Snapshots view"),
+                ("System Data broken down", "Every part, in plain English, with Apple's fixes", "A guide on its site"),
                 ("Cleanup sorted by risk", "Yes", "Yes"),
                 ("Deletes go to the Trash", "By default", "Yes"),
                 ("Finds local AI models", "Ollama, LM Studio, Hugging Face", "Yes"),
@@ -238,24 +238,24 @@ PAGES = [
         ],
     },
     # ------------------------------------------------------------------ OmniDiskSweeper
-    # Targets "omnidisksweeper" (450/mo US, KD 5). Facts: omnigroup.com/more, and the 1.11 app itself
-    # (lipo: x86_64 only; signed and notarized by The Omni Group on 2018-09-23), checked 2026-10-06.
+    # Targets "omnidisksweeper" (450/mo US, KD 5). Facts: omnigroup.com/more (its latest link serves 1.16), and the 1.16
+    # app itself (lipo: x86_64 arm64; LSMinimumSystemVersion 11.0; signed by The Omni Group 2025-09-12, notarized), checked 2026-11-16.
     {
         "slug": "omnidisksweeper",
         "competitor": "OmniDiskSweeper",
         "title": "OmniDiskSweeper for Mac, compared with a free alternative",
-        "description": "OmniDiskSweeper is the free size list from The Omni Group, last built in 2018 for Intel. Disk Forecast is a free alternative that says when your disk fills.",
+        "description": "OmniDiskSweeper is the free size list from The Omni Group. Disk Forecast is a free alternative that says when your disk will fill, and why.",
         "eyebrow": "OmniDiskSweeper alternative",
         "h1": "OmniDiskSweeper lists the biggest files. Disk Forecast <em>says when you'll run out.</em>",
-        "lede": "OmniDiskSweeper has been the plain, free way to find big files on a Mac for years: every folder, largest first, with a Trash button. Its newest version, 1.11, was built in 2018 for Intel Macs. Here's how it compares with Disk Forecast today.",
-        "tldr": "OmniDiskSweeper still works as a quick size list, and it's free. But version 1.11 is an Intel app from 2018, so an Apple silicon Mac runs it through Rosetta 2, which Apple says stays available for general use through macOS 27. Disk Forecast is free too, runs natively on Apple silicon and Intel, and adds a countdown to a full disk, System Data explained, and a cleanup list sorted by risk.",
+        "lede": "OmniDiskSweeper has been the plain, free way to find big files on a Mac for years: every folder, largest first, with a Trash button. Its latest version, 1.16, runs natively on Apple silicon and Intel and needs macOS 11 or later. Here's how it compares with Disk Forecast today.",
+        "tldr": "OmniDiskSweeper is a quick, free size list, and version 1.16 runs natively on Apple silicon. Disk Forecast is free too, and adds a countdown to a full disk, System Data explained, and a cleanup list sorted by risk.",
         "card_title": "OmniDiskSweeper",
-        "card_blurb": "The classic free size list. Last built in 2018, for Intel.",
+        "card_blurb": "The classic free size list, from The Omni Group.",
         "cta": "Know before it's full.",
         "faqs": [
             ("Is OmniDiskSweeper free?", "Yes. The Omni Group offers it as a free download from its website, with no purchase or account."),
-            ("Does OmniDiskSweeper work on Apple silicon?", "Version 1.11, the newest on Omni's site as of October 2026, contains Intel code only. On an Apple silicon Mac it runs through Rosetta 2, which Apple says stays available as a general-purpose tool through macOS 27."),
-            ("Is OmniDiskSweeper still updated?", "Omni's download page lists versions up to 1.11, for macOS 10.13 High Sierra, and the 1.11 app was signed in September 2018. We couldn't find a newer release."),
+            ("Does OmniDiskSweeper work on Apple silicon?", "Yes. Version 1.16, the latest download on Omni's site as of November 2026, is a universal app that runs natively on Apple silicon and Intel. It needs macOS 11 or later."),
+            ("Is OmniDiskSweeper still updated?", "Yes. The latest version, 1.16, was signed in September 2025. Omni's page links to it as the latest download, alongside older versions for earlier macOS releases."),
             ("Is OmniDiskSweeper safe?", "It's signed and notarized by The Omni Group, and it moves files to the Trash when you ask it to. The risk is the same as with any size list: it shows how big something is, not whether you still need it."),
             ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
         ],
@@ -265,22 +265,22 @@ PAGES = [
         <p>OmniDiskSweeper does one thing. It scans a drive and shows its folders in columns, sorted largest to smallest, like Finder's column view with sizes attached. Click the biggest folder, then the biggest folder inside that, and you find the 30 GB you forgot about in under a minute. Omni's own description is exactly that: it “shows you the files on your drive, largest to smallest, and lets you quickly Trash or open them.”</p>
         <p>It's free, it comes from The Omni Group, the company behind OmniFocus and OmniGraffle, and the app is signed and notarized. For a long time it was the first answer to “what's filling my Mac?”</p>
         <h3>Where it stops</h3>
-        <p><strong>It hasn't changed since 2018.</strong> The newest download on Omni's site is version 1.11, listed for macOS 10.13 High Sierra. We checked the app inside: it was signed in September 2018 and contains Intel code only. On an Apple silicon Mac, macOS runs it through Rosetta 2, and Apple says Rosetta stays available as a general-purpose tool through macOS 27.</p>
+        <p><strong>Updated, but still a snapshot.</strong> Version 1.16, signed in September 2025, runs natively on Apple silicon and Intel and needs macOS 11 or later. It still shows sizes as they are right now, with no history of what grew or when.</p>
         <p><strong>Sizes, not meanings.</strong> A list tells you a folder is 18 GB. It can't tell you that the folder is Xcode's DerivedData, that Xcode rebuilds it on the next build, and that clearing it is safe. Disk Forecast puts a one-line explanation next to everything it lists.</p>
         <p><strong>It waits for you.</strong> You open OmniDiskSweeper after macOS has already warned you. Disk Forecast checks free space every hour and tells you weeks ahead.</p>
             """},
             {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs OmniDiskSweeper</h2>
-        <p>OmniDiskSweeper facts come from Omni's download page and the 1.11 app itself, checked in October 2026.</p>
+        <p>OmniDiskSweeper facts come from Omni's download page and the 1.16 app itself, checked in November 2026.</p>
         {{TABLE}}
         <h3>What OmniDiskSweeper does better</h3>
         <p>Drilling into any folder on any drive in a plain column view. If all you want is sizes, nothing is simpler, and it costs nothing.</p>
         <h3>What Disk Forecast does better</h3>
-        <p>It runs natively on Apple silicon, watches your disk all day, explains what it finds, and breaks down System Data with Apple's own fixes. It's free, with the source on GitHub.</p>
+        <p>It watches your disk all day, explains what it finds, and breaks down System Data with Apple's own fixes. It's free, with the source on GitHub.</p>
             """, "table": [
                 ("Price", "Free", "Free"),
-                ("Latest version", "Actively developed", "1.11, signed September 2018"),
-                ("Apple silicon", "Native", "Intel only, runs through Rosetta 2"),
+                ("Latest version", "Actively developed", "1.16, signed September 2025"),
+                ("Apple silicon", "Native", "Native"),
                 ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
                 ("How it shows your disk", "Lists sorted by size, each item explained", "Columns sorted by size"),
                 ("System Data broken down", "Every part, in plain English, with Apple's fixes", "—"),
@@ -584,7 +584,7 @@ HUB = {
     "html": """
         <h2>How we compare</h2>
         <p>Every page here draws on the competitor's own site, store listing, and release posts as of October 2026, and says plainly what the other app does better. Where we couldn't confirm a feature either way, the table shows “—” instead of guessing. If something is out of date, <a href="https://github.com/coreyhaines31/diskforecast/issues">open an issue</a> and we'll fix it.</p>
-        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, from $39.99 a year or $89.99 once. <strong>Mole</strong> is the open-source cleaner for Terminal. <strong>OnyX</strong> is the free maintenance utility. <strong>OmniDiskSweeper</strong> and <strong>Disk Inventory X</strong> are the free classics, both Intel only and unchanged for years. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
+        <p>The short version of the category: <strong>DaisyDisk</strong> is the beautiful one. <strong>GrandPerspective</strong> is the free treemap. <strong>DiskBuddy</strong> is the new, fast-moving one with the most tools. <strong>CleanMyMac</strong> is the big suite, from $39.99 a year or $89.99 once. <strong>Mole</strong> is the open-source cleaner for Terminal. <strong>OnyX</strong> is the free maintenance utility. <strong>OmniDiskSweeper</strong> is the free classic list, now native on Apple silicon. <strong>Disk Inventory X</strong> is the free classic treemap, Intel only and unchanged for years. Disk Forecast is free with its source on GitHub, and it's built for the question none of them lead with: when will I run out?</p>
         <p>To see them all at once, start with <a href="/alternatives/compare">every app side by side</a>. Coming from Windows? <a href="/alternatives/windirstat-mac">WinDirStat for Mac</a> covers what runs here.</p>
     """,
 }
@@ -1674,7 +1674,7 @@ BEST_FREE = {
         <p>A free treemap of any folder or drive: every file a rectangle, sized by its space. It's open source under the GPL, updated in September 2026 for macOS 14 and later, and native on Apple silicon. It's free from its website, or $2.99 on the Mac App Store. It shows sizes, not meanings. <a href="/alternatives/grandperspective">GrandPerspective compared</a>.</p>
 
         <h3>3. OmniDiskSweeper</h3>
-        <p>The Omni Group's free column view of folder sizes, largest first, with a button to send what you pick to the Trash. It's quick to learn. Version 1.11 dates from 2018 and contains Intel code only, so on Apple silicon it runs through Rosetta 2. <a href="/alternatives/omnidisksweeper">OmniDiskSweeper compared</a>.</p>
+        <p>The Omni Group's free column view of folder sizes, largest first, with a button to send what you pick to the Trash. It's quick to learn. Version 1.16, from September 2025, runs natively on Apple silicon and Intel. <a href="/alternatives/omnidisksweeper">OmniDiskSweeper compared</a>.</p>
 
         <h3>4. Mole</h3>
         <p>A free, open-source command-line cleaner by tw93, licensed under GPL-3.0. One command, <code>mo</code>, cleans caches, uninstalls apps, explores disk usage, and shows live system stats, with a <code>--dry-run</code> preview for anything that deletes. Note that <code>mo purge</code> deletes permanently. A separate Mac app costs $19. <a href="/alternatives/mole">Mole compared</a>.</p>
@@ -1699,7 +1699,7 @@ BEST_FREE = {
     "tables": {"picks": {"head": ["App", "Good at", "Price", "Apple silicon"], "min_width": 600, "rows": [
         ("Disk Forecast", "Knowing when you'll run out, then reclaiming space safely", "Free", "Native"),
         ("GrandPerspective", "A treemap of a whole drive", "Free, or $2.99 on the App Store", "Native"),
-        ("OmniDiskSweeper", "A plain list of folder sizes", "Free", "Intel only, through Rosetta 2"),
+        ("OmniDiskSweeper", "A plain list of folder sizes", "Free", "Native"),
         ("Mole", "Cleaning, uninstalling, and stats from Terminal", "Free; $19 for the Mac app", "Native"),
         ("AppCleaner", "Removing an app and its leftover files", "Free", "—"),
         ("Storage settings", "A first look, built into macOS", "Built in", "Native"),
@@ -1775,9 +1775,9 @@ ANALYZER = {
         ("DaisyDisk", "$9.99 one-time", "Interactive rings", "Native", "4.34.2, July 2026"),
         ("GrandPerspective", "Free, or $2.99 on the App Store", "Treemap", "Native", "3.8.1, September 2026"),
         ("WizTreeMac", "Free for personal use", "Treemap and file list", "Native", "1.00, September 2026"),
-        ("DiskBuddy", "$49", "Space map and lists", "—", "3.0, October 2026"),
+        ("DiskBuddy", "$9 for launch copies, then $49", "Space map and lists", "—", "3.0, October 2026"),
         ("Mole", "Free; $19 for the Mac app", "Disk explorer in Terminal", "Native", "1.58.0, October 2026"),
-        ("OmniDiskSweeper", "Free", "Columns sorted by size", "Intel only", "1.11, 2018"),
+        ("OmniDiskSweeper", "Free", "Columns sorted by size", "Native", "1.16, September 2025"),
         ("Disk Inventory X", "Free", "Treemap", "Intel only", "1.3, December 2019"),
         ("Storage settings and Finder", "Built in", "Categories and folder sizes", "Native", "Part of macOS"),
     ]}},
@@ -1869,7 +1869,7 @@ COMPARE = {
     "eyebrow": "Comparison",
     "h1": "DaisyDisk vs CleanMyMac, <em>and every other Mac disk app.</em>",
     "lede": "One table for every Mac storage app we've compared, then a short, fair answer for the matchups people search for most.",
-    "tldr": "DaisyDisk is the best picture of your disk, for $9.99 once. CleanMyMac is a paid suite, from $39.99 a year or $89.99 once, where disk cleanup is one part of many. GrandPerspective is the free treemap. OmniDiskSweeper is a free size list that hasn't changed since 2018. Disk Forecast is free, and it's built around the question the others don't lead with: when will your disk be full?",
+    "tldr": "DaisyDisk is the best picture of your disk, for $9.99 once. CleanMyMac is a paid suite, from $39.99 a year or $89.99 once, where disk cleanup is one part of many. GrandPerspective is the free treemap. OmniDiskSweeper is the free size list, native on Apple silicon since 1.16. Disk Forecast is free, and it's built around the question the others don't lead with: when will your disk be full?",
     "card_title": "Every app, side by side",
     "card_blurb": "DaisyDisk vs CleanMyMac, and every other matchup, in one table.",
     "footer": "Compare all apps",
@@ -1877,7 +1877,7 @@ COMPARE = {
     "faqs": [
         ("Which is better, DaisyDisk or CleanMyMac?", "They do different jobs. DaisyDisk shows what's on your disk as an interactive picture, for $9.99 once. CleanMyMac is a paid suite with cleanup, malware scans, and app tools, from $39.99 a year or $89.99 once. For seeing and clearing disk space alone, DaisyDisk is the better buy."),
         ("Is DaisyDisk better than GrandPerspective?", "DaisyDisk is more polished and easier to explore, and it costs $9.99. GrandPerspective draws a plainer treemap for free, and its source is open. Both are maintained and run natively on Apple silicon."),
-        ("Should I use OmniDiskSweeper or DaisyDisk?", "On an Apple silicon Mac, DaisyDisk: it's native and updated in 2026. OmniDiskSweeper is free but hasn't been updated since 2018 and runs through Rosetta 2. If you want free and current, try GrandPerspective or Disk Forecast."),
+        ("Should I use OmniDiskSweeper or DaisyDisk?", "Both run natively on Apple silicon. Pick DaisyDisk, $9.99 once, for an interactive picture of your disk. Pick OmniDiskSweeper for a plain list of folder sizes, free. For a warning before the disk fills, add Disk Forecast."),
         ("Which Mac disk apps are free?", "Disk Forecast, GrandPerspective, OmniDiskSweeper, Disk Inventory X, and Mole's command-line tool are free, and WizTreeMac is free for personal use. DaisyDisk, DiskBuddy, and CleanMyMac are paid."),
         ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
     ],
@@ -1896,8 +1896,8 @@ COMPARE = {
         <p><strong>Pick DaisyDisk</strong> if you'll explore your disk often and want it to feel good. <strong>Pick GrandPerspective</strong> if you want the same answer for free.</p>
 
         <h2 style="margin-top:56px">OmniDiskSweeper vs DaisyDisk</h2>
-        <p><strong>OmniDiskSweeper</strong> is a free list of folders sorted by size, from The Omni Group. It's the plainest tool here, and that's its appeal. But version 1.11 dates from 2018 and contains Intel code only, so on Apple silicon it runs through Rosetta 2. <strong>DaisyDisk</strong> is native on Apple silicon, updated in 2026, and costs $9.99.</p>
-        <p><strong>Pick DaisyDisk</strong> on a current Mac. If you want OmniDiskSweeper's plain list for free and native, Disk Forecast's top-folders list and Finder's Calculate all sizes are the closest.</p>
+        <p><strong>OmniDiskSweeper</strong> is a free list of folders sorted by size, from The Omni Group. It's the plainest tool here, and that's its appeal. Version 1.16, from September 2025, runs natively on Apple silicon and Intel. <strong>DaisyDisk</strong> is native too, updated in 2026, and costs $9.99.</p>
+        <p><strong>Pick DaisyDisk</strong> if you want to explore your disk as a picture. <strong>Pick OmniDiskSweeper</strong> if a free, plain list of sizes is all you need.</p>
 
         <h2 style="margin-top:56px">Where Disk Forecast fits</h2>
         <p>Every other app in the table answers “what's using my space?” Disk Forecast starts one step earlier. It sits in the menu bar, checks free space every hour, and after 3 days says when your disk will be full and which folders grew. When it's time to reclaim space, it explains every item, sends what you clear to the Trash, and breaks System Data into its parts with Apple's own fixes. It's free, with the source on GitHub. It doesn't draw a map, so it pairs well with DaisyDisk or GrandPerspective.</p>
@@ -1907,11 +1907,11 @@ COMPARE = {
         ("DaisyDisk", "$9.99 one-time", "Interactive rings", "Native", "4.34.2, July 2026", "No"),
         ("CleanMyMac", "From $39.99 a year, or $89.99 once (App Store)", "—", "Native", "5.7.1, October 2026", "No"),
         ("GrandPerspective", "Free, or $2.99 on the App Store", "Treemap", "Native", "3.8.1, September 2026", "Yes, GPL"),
-        ("OmniDiskSweeper", "Free", "Columns sorted by size", "Intel only", "1.11, 2018", "—"),
+        ("OmniDiskSweeper", "Free", "Columns sorted by size", "Native", "1.16, September 2025", "—"),
         ("Disk Inventory X", "Free", "Treemap", "Intel only", "1.3, December 2019", "Yes, GPL"),
         ("WizTreeMac", "Free for personal use", "Treemap and file list", "Native", "1.00, September 2026", "—"),
         ("Mole", "Free; $19 for the Mac app", "Disk explorer in Terminal", "Native", "1.58.0, October 2026", "Command-line tool, GPL-3.0"),
-        ("DiskBuddy", "$49", "Space map and lists", "—", "3.0, October 2026", "—"),
+        ("DiskBuddy", "$9 for launch copies, then $49", "Space map and lists", "—", "3.0, October 2026", "—"),
     ]}},
     "shortcut": """
           <h2>The one that tells you when.</h2>
