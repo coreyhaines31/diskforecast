@@ -16,10 +16,9 @@ struct MenuCardView: View {
     let grewMost: (name: String, bytes: Int64)?
     let open: () -> Void
 
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.panelTheme) private var theme
 
     var body: some View {
-        let theme = PanelTheme.resolve(colorScheme)
         VStack(alignment: .leading, spacing: 0) {
             Fascia(nameplate: "Disk", timestamp: capacityLine, detail: Self.volumeName, label: "Free space") {
                 Meter(Self.meter, value: percentFull, accessibilityValue: "\(percentFullWhole) percent full")
@@ -32,7 +31,7 @@ struct MenuCardView: View {
                 .padding(.vertical, 12)
             let series = ForecastSeries(disk: disk, days: 30)
             if series.history.count >= 2 {
-                chartHeader(theme)
+                SectionHeader("Free space", actionTitle: "Open Forecast…", action: open)
                 ForecastChart(chartConfig(series))
                 if let grewMost {
                     HStack(spacing: 4) {
@@ -61,29 +60,6 @@ struct MenuCardView: View {
         .frame(width: Self.width)
         .contentShape(Rectangle())
         .onTapGesture(perform: open)
-    }
-
-    /// "Free space" with the way into the Forecast window, styled like a PanelKit section header.
-    private func chartHeader(_ theme: PanelTheme) -> some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text("Free space")
-                .font(PanelFont.condensed(10, .semibold))
-                .tracking(2)
-                .textCase(.uppercase)
-                .foregroundStyle(theme.sub)
-                .accessibilityAddTraits(.isHeader)
-            Spacer(minLength: 8)
-            Text("Open Forecast…")
-                .font(PanelFont.body(11, .medium))
-                .foregroundStyle(theme.isDark ? Color(red: 0.56, green: 0.69, blue: 1) : PanelAccent.diskForecast)
-                .accessibilityAddTraits(.isButton)
-        }
-        .padding(.top, 12)
-        .padding(.bottom, 6)
-        .padding(.horizontal, 14)
-        .overlay(alignment: .top) {
-            Rectangle().fill(theme.line).frame(height: 1)
-        }
     }
 
     /// Space used over the range, rising towards capacity, with the dashed forecast to full.
