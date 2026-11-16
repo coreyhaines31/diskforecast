@@ -60,7 +60,7 @@ struct ForecastView: View {
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                ForecastChart(series: series)
+                FreeSpaceChart(series: series)
                     .frame(maxWidth: .infinity, minHeight: 200, idealHeight: 240, maxHeight: 280)
                 facts(series)
             }

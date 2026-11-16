@@ -18,7 +18,7 @@ struct MenuForecastView: View {
                     Text("Open Forecast…").foregroundStyle(Color.accentColor)
                 }
                 .font(.caption)
-                ForecastChart(series: series, compact: true)
+                FreeSpaceChart(series: series, compact: true)
                     .frame(height: 72)
                 HStack {
                     Text(series.start.formatted(Self.dayFormat))

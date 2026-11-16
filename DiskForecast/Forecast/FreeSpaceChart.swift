@@ -4,7 +4,7 @@ import SwiftUI
 
 /// Free space over time as a filled line, with the forecast as a dashed line to where the disk
 /// would be full. The compact style drops the axes for the menu.
-struct ForecastChart: View {
+struct FreeSpaceChart: View {
     let series: ForecastSeries
     var compact = false
 
