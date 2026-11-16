@@ -16,8 +16,24 @@ enum MenuBarDisplay: String, CaseIterable, Identifiable {
     }
 }
 
+/// How the menu card draws the storage meter.
+enum StorageMeterStyle: String, CaseIterable, Identifiable {
+    case peak
+    case vuMeter = "vu"
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .peak: "Peak meter"
+        case .vuMeter: "VU meter"
+        }
+    }
+}
+
 enum Preferences {
     static let menuBarDisplayKey = "menuBarDisplay"
+    static let storageMeterStyleKey = "storageMeterStyle"
     static let staleAfterDaysKey = "staleAfterDays"
     static let onboardingDoneKey = "onboardingDone"
     static let appliedLaunchAtLoginDefaultKey = "appliedLaunchAtLoginDefault"
@@ -27,6 +43,7 @@ enum Preferences {
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
             menuBarDisplayKey: MenuBarDisplay.freeSpace.rawValue,
+            storageMeterStyleKey: StorageMeterStyle.peak.rawValue,
             staleAfterDaysKey: 30,
             onboardingDoneKey: false,
             notifiesBeforeFullKey: true
@@ -35,6 +52,10 @@ enum Preferences {
 
     static var menuBarDisplay: MenuBarDisplay {
         MenuBarDisplay(rawValue: UserDefaults.standard.string(forKey: menuBarDisplayKey) ?? "") ?? .freeSpace
+    }
+
+    static var storageMeterStyle: StorageMeterStyle {
+        StorageMeterStyle(rawValue: UserDefaults.standard.string(forKey: storageMeterStyleKey) ?? "") ?? .peak
     }
 
     static var staleAfterDays: Int {
