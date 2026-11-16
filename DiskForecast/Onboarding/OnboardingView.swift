@@ -8,7 +8,8 @@ struct OnboardingView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 12) {
-                Image(systemName: "internaldrive").font(.system(size: 36)).foregroundStyle(.tint)
+                Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 48, height: 48)
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading) {
                     Text("Let \(Brand.name) see the whole disk").font(.title2.bold())
                     Text("Optional, and you can change it any time.").foregroundStyle(.secondary)
