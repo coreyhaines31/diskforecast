@@ -378,6 +378,62 @@ Don't change any other settings and don't delete anything.</pre>
       </div>
     </section>
 
+    <section id="rules" class="lit">
+      <div class="wrap">
+        <div class="head center">
+          <h2>Every cleanup rule, in plain English.</h2>
+          <p>29 rules, each explained in the app the way it is here. Anything under 1 MB isn&#39;t listed, and downloads under 10 MB aren&#39;t either. An “old” project is one you haven&#39;t changed in 30 days; set anything from 7 to 365 days in Settings › Scanning.</p>
+        </div>
+        <div class="cols3">
+          <div class="glass">
+            <span class="tag">Safe to clear · checked</span>
+            <h3>Rebuilds itself</h3>
+            <ul class="ticks">
+              <li><b>Build folders in old projects</b>node_modules, build, and package folders in projects you haven&#39;t touched lately.</li>
+              <li><b>Package manager caches</b>npm, Bun, Cargo, Gradle, pip, and friends. Not the pnpm store, which projects share.</li>
+              <li><b>Left behind by coding agents</b>npx packages, Playwright and Puppeteer browsers, older Claude Code versions, idle session temp files.</li>
+              <li><b>Xcode DerivedData</b>Build products and indexes, rebuilt on the next build.</li>
+              <li><b>Xcode device support</b>Debug symbols, copied again when you plug the device in.</li>
+              <li><b>Simulator caches</b>Rebuilt by the Simulator. Simulators and their apps aren&#39;t touched.</li>
+              <li><b>Leftover worktree data</b>Git&#39;s records for worktrees whose folder is gone, like <code>git worktree prune</code>.</li>
+              <li><b>Editor and chat app caches</b>VS Code, Cursor, Slack, Discord, Figma. Settings, sign-ins, and history stay.</li>
+              <li><b>App caches</b>Apps recreate what they need. macOS&#39;s own caches are left alone.</li>
+              <li><b>Logs</b>Useful for troubleshooting, then rarely read again.</li>
+            </ul>
+          </div>
+          <div class="glass">
+            <span class="tag">Worth a look · unchecked</span>
+            <h3>Your call</h3>
+            <ul class="ticks">
+              <li><b>Ollama, LM Studio, and Hugging Face models</b>Local AI models, each downloadable again.</li>
+              <li><b>Git worktrees</b>Each shows changes and commits that exist only there. The branch and its commits stay.</li>
+              <li><b>Old coding agent conversations</b>Claude Code and Codex chats nobody has opened in 30 days.</li>
+              <li><b>Build folders in active projects</b>Safe, but you&#39;ll wait for a reinstall or rebuild.</li>
+              <li><b>Editor data for deleted projects</b>Open tabs and, in Cursor, chat history for projects no longer on your Mac.</li>
+              <li><b>Xcode archives</b>Keep the ones you still read crash reports for.</li>
+              <li><b>Screen Studio projects</b>Raw recordings behind videos you may have already exported.</li>
+              <li><b>Screen recordings</b>Screenpipe and Rewind history. Lowering their retention keeps recent days.</li>
+              <li><b>Virtual machines</b>Parallels, UTM, and VMware, usually many gigabytes each.</li>
+              <li><b>Disk images and installers</b>DMG, ISO, and PKG files you&#39;ve already installed from.</li>
+              <li><b>Big downloads</b>Large files and folders in Downloads.</li>
+            </ul>
+          </div>
+          <div class="glass">
+            <span class="tag">Handed back · their own app</span>
+            <h3>Cleared where it&#39;s safe</h3>
+            <ul class="ticks">
+              <li><b>WhatsApp media</b>Past 5 GB, with the biggest chats named. A known sync bug can fill it past what WhatsApp shows. Opens WhatsApp.</li>
+              <li><b>Messages attachments</b>Past 2 GB, with the biggest conversations. Trashing them by hand would leave broken attachments. Opens Messages.</li>
+              <li><b>Signal attachments</b>Encrypted and only on your devices, so they can&#39;t be downloaded again. Opens Signal.</li>
+              <li><b>Telegram and Telegram Desktop media</b>Still in Telegram&#39;s cloud. Its own storage settings clear it by chat.</li>
+              <li><b>Docker disk image</b>One file holding everything Docker stores. Reclaimed with Docker&#39;s own prune in System Data, not by deleting the file.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="lead-p center">WhatsApp, Messages, and Telegram keep their media in folders macOS guards, so they show up once Full Disk Access is on. Missing a folder you know about? Use Suggest a Rule from the menu.</p>
+      </div>
+    </section>
+
     <section id="agents" class="lit">
       <div class="wrap">
         <div class="cli-split">
