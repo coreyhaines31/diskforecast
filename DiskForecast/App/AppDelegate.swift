@@ -1,5 +1,6 @@
 import AppKit
 import DiskForecastCore
+import PanelKit
 import ServiceManagement
 
 @MainActor
@@ -40,6 +41,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Preferences.registerDefaults()
+        PanelFont.register()
         #if !DEBUG
         applyLaunchAtLoginDefault()
         #endif
