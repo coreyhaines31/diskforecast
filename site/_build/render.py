@@ -37,7 +37,7 @@ GITHUB_ICON = ('<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
 # The two main calls to action, everywhere a page offers the download.
 CTAS = (f'<a class="btn" href="{DOWNLOAD}">{DOWNLOAD_ICON}Download free</a>\n'
         f'        <a class="btn-quiet" href="{REPO}">{GITHUB_ICON}View source code</a>')
-FONTS = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+FONTS = "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@300;600;700&display=swap"
 
 
 def esc(t):
@@ -64,18 +64,20 @@ def head(title, description, path):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{esc(title)}">
   <meta name="twitter:description" content="{esc(description)}">
-  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#e2e3e2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#131314" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/images/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="{FONTS}">
+  <link rel="stylesheet" href="/brushed.css">
+  <link rel="stylesheet" href="/popover.css">
   <link rel="stylesheet" href="/site.css">
   <script async src="https://tracerkit.com/t.js" data-key="tk_OpbWb03p6ADayMMC"></script>
   <script src="https://ingest.getuserproof.com/sdk.js" data-site="7ebfab50-cd1b-48c6-9227-f2cafb6e669f" defer></script>
 </head>
-<body>
+<body class="bx">
 '''
 
 
