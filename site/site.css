@@ -343,3 +343,6 @@ section.tight { padding: 56px 0; }
 .more-links a:not(.label):hover { color: var(--ink); box-shadow: inset 0 0 0 1px var(--bx-ink2); }
 .compare th code { white-space: nowrap; }
 .prose pre.wrap { white-space: pre-wrap; }
+
+/* The kit's .bx-wrap keeps a fixed 20px gutter; match the page's own so left edges line up on phones */
+.bx-section .bx-wrap { padding-left: max(var(--gutter), env(safe-area-inset-left, 0px)); padding-right: max(var(--gutter), env(safe-area-inset-right, 0px)); }
