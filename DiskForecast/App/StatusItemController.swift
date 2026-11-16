@@ -26,7 +26,6 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         let menu = NSMenu()
         menu.delegate = self
         statusItem.menu = menu
-        statusItem.button?.image = NSImage(systemSymbolName: "internaldrive", accessibilityDescription: Brand.name)
         statusItem.button?.imagePosition = .imageLeading
         update()
     }
@@ -36,6 +35,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     func update() {
         guard let button = statusItem.button else { return }
+        button.image = Self.reel(for: disk)
         switch Preferences.menuBarDisplay {
         case .freeSpace: button.title = disk.capacityBytes > 0 ? Bytes.format(disk.freeBytes) : ""
         case .percentFree: button.title = disk.capacityBytes > 0 ? "\(Int((disk.percentFree * 100).rounded()))%" : ""
@@ -46,6 +46,25 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         if let openMenu {
             rebuild(openMenu)
         }
+    }
+
+    /// The tape reel glyph: the fuller the disk, the more tape fills the reel's windows.
+    private static func reel(for disk: DiskStatus) -> NSImage? {
+        let state: String
+        if disk.capacityBytes <= 0 {
+            state = "roomy"
+        } else if disk.lowSpaceWarning != nil || disk.percentFree <= 0.2 {
+            state = "nearlyFull"
+        } else if disk.percentFree <= 0.6 {
+            state = "filling"
+        } else {
+            state = "roomy"
+        }
+        let image = NSImage(named: "reel-\(state)")
+        image?.isTemplate = true
+        image?.size = NSSize(width: 18, height: 18)
+        image?.accessibilityDescription = Brand.name
+        return image
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
