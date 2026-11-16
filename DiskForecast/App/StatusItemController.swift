@@ -1,5 +1,6 @@
 import AppKit
 import DiskForecastCore
+import PanelKit
 import SwiftUI
 
 /// The menu bar item: free space as its title, and the menu built fresh each time it opens.
@@ -71,7 +72,6 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     private func rebuild(_ menu: NSMenu) {
         menu.removeAllItems()
-        addCard(to: menu)
         if let warning = disk.lowSpaceWarning {
             let item = ClosureMenuItem("\(warning). Reclaim space…") { [weak self] in self?.openCleanup() }
             let symbol = NSImage.SymbolConfiguration(paletteColors: [.systemOrange])
@@ -91,6 +91,8 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         updates.isEnabled = updater.canCheck
         menu.addItem(updates)
         menu.addItem(ClosureMenuItem("Quit \(Brand.name)", keyEquivalent: "q") { NSApp.terminate(nil) })
+        // Last, so the card can take the width the other items give the menu.
+        addCard(to: menu)
     }
 
     /// The Brushed card: free space, percent full, days to full and, once there are two days to
@@ -101,11 +103,8 @@ final class StatusItemController: NSObject, NSMenuDelegate {
             self?.openForecast()
         }
         let grewMost = SnapshotComparison.grewMostThisWeek(in: snapshots)
-        let view = NSHostingView(rootView: MenuCardView(disk: disk, grewMost: grewMost, open: open))
-        view.frame.size = view.fittingSize
-        let item = NSMenuItem()
-        item.view = view
-        menu.addItem(item)
+        let card = MenuCardView(disk: disk, menuWidth: menu.size.width, grewMost: grewMost, open: open)
+        menu.insertItem(.panelCard(card), at: 0)
     }
 
     private func addConsumers(to menu: NSMenu) {

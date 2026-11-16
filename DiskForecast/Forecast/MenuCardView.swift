@@ -6,20 +6,21 @@ import SwiftUI
 /// days-to-full counter with the forecast phrase, then the last 30 days and the forecast as a
 /// small chart. Clicking it opens the Forecast window.
 struct MenuCardView: View {
-    static let width: CGFloat = 380
     private static let volumeName = (try? URL(filePath: "/").resourceValues(forKeys: [.volumeNameKey]))?
         .volumeName ?? "Macintosh HD"
 
     private static let dayFormat = Date.FormatStyle.dateTime.month(.abbreviated).day()
 
     let disk: DiskStatus
+    /// The menu's real width; the folder rows' size column makes it wider than PanelKit's 340.
+    let menuWidth: CGFloat
     let grewMost: (name: String, bytes: Int64)?
     let open: () -> Void
 
     @Environment(\.panelTheme) private var theme
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        MenuCard(accent: PanelAccent.diskForecast, menuWidth: menuWidth) {
             Fascia(nameplate: "Disk", timestamp: capacityLine, detail: Self.volumeName, label: "Free space") {
                 Meter(Self.meter, value: percentFull, accessibilityValue: "\(percentFullWhole) percent full")
             }
@@ -47,17 +48,6 @@ struct MenuCardView: View {
                 }
             }
         }
-        .background(theme.background)
-        .foregroundStyle(theme.ink)
-        .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 7, style: .continuous)
-                .strokeBorder(Color.black.opacity(theme.isDark ? 0.5 : 0.12), lineWidth: 1)
-        )
-        .panelAccent(PanelAccent.diskForecast)
-        .padding(.horizontal, 5)
-        .padding(.bottom, 5)
-        .frame(width: Self.width)
         .contentShape(Rectangle())
         .onTapGesture(perform: open)
     }
