@@ -49,21 +49,10 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     }
 
     /// The tape reel glyph: the fuller the disk, the more tape fills the reel's windows.
-    private static func reel(for disk: DiskStatus) -> NSImage? {
-        let state: String
-        if disk.capacityBytes <= 0 {
-            state = "roomy"
-        } else if disk.lowSpaceWarning != nil || disk.percentFree <= 0.2 {
-            state = "nearlyFull"
-        } else if disk.percentFree <= 0.6 {
-            state = "filling"
-        } else {
-            state = "roomy"
-        }
-        let image = NSImage(named: "reel-\(state)")
-        image?.isTemplate = true
-        image?.size = NSSize(width: 18, height: 18)
-        image?.accessibilityDescription = Brand.name
+    private static func reel(for disk: DiskStatus) -> NSImage {
+        let used = disk.capacityBytes > 0 ? 1 - disk.percentFree : 0
+        let image = ReelGlyph.image(ReelGlyph.state(percentUsed: used, isLow: disk.lowSpaceWarning != nil))
+        image.accessibilityDescription = Brand.name
         return image
     }
 
