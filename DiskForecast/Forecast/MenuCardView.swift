@@ -62,13 +62,12 @@ struct MenuCardView: View {
         .onTapGesture(perform: open)
     }
 
-    /// Space used over the range, rising towards capacity, with the dashed forecast to full.
+    /// Space used over the range, rising towards capacity, with the dashed forecast to full. The
+    /// labels over the line's start and today give free space, as the old menu chart did.
     private func chartConfig(_ series: ForecastSeries) -> ForecastConfig {
         let capacity = Double(disk.capacityBytes) / 1_000_000_000
-        let used = series.history.map { capacity - $0.gigabytes }
-        let lowest = used.min() ?? 0
-        let span = max(series.end.timeIntervalSince(series.start), 1)
-        let today = series.history.last?.date ?? series.end
+        let points = series.history.map { ForecastPoint($0.date, capacity - $0.gigabytes) }
+        let lowest = points.map(\.value).min() ?? 0
         let full = series.fullDate.flatMap { $0 <= series.end ? $0 : nil }
         var endLabel: String?
         if let full {
@@ -76,22 +75,24 @@ struct MenuCardView: View {
         } else if !series.projection.isEmpty {
             endLabel = series.end.formatted(Self.dayFormat)
         }
-        let todayPosition = min(max(today.timeIntervalSince(series.start) / span, 0.05), 0.955)
-        var config = ForecastConfig(
-            history: used,
+        return ForecastConfig(
+            points: points,
+            projection: series.projection.last.map { ForecastPoint($0.date, capacity - $0.gigabytes) },
+            domain: series.start...max(series.end, series.start.addingTimeInterval(86_400)),
             lowerBound: max(0, lowest - (capacity - lowest) * 0.4),
             limit: capacity,
-            todayPosition: todayPosition,
             startLabel: series.start.formatted(Self.dayFormat),
-            // Today sits under the end label when the disk fills within days, so it gives way.
-            todayLabel: endLabel != nil && todayPosition > 0.72 ? "" : "Today",
             endLabel: endLabel,
             limitLabel: Bytes.format(disk.capacityBytes),
+            startValueLabel: series.history.first.map { Self.freeLabel($0.gigabytes) },
+            todayValueLabel: series.history.last.map { Self.freeLabel($0.gigabytes) },
             endIsAlarm: full != nil,
             accessibilityLabel: "Space used over the last 30 days. \(disk.forecastPhrase)"
         )
-        config.projection = series.projection.last.map { capacity - $0.gigabytes }
-        return config
+    }
+
+    private static func freeLabel(_ gigabytes: Double) -> String {
+        "\(Bytes.format(Int64(gigabytes * 1_000_000_000))) free"
     }
 
     private static let meter = MeterConfig(
