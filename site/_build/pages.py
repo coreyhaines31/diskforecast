@@ -20,7 +20,7 @@ PAGES = [
         "card_blurb": "The closest match. Paid, fast-moving, and packed with tools.",
         "cta": "Get the forecast, free.",
         "faqs": [
-            ("How much does DiskBuddy cost?", "DiskBuddy launched at $19 with a limited run of launch copies, and its site has since listed it at $49. Check DiskBuddy's site for the current price."),
+            ("How much does DiskBuddy cost?", "As of November 16, 2026, DiskBuddy's site lists it at $9 once while 400 launch copies last, then $49, with one key for Mac and Windows and no free tier. Check DiskBuddy's site for the current price."),
             ("Does DiskBuddy move files to the Trash?", "Yes. DiskBuddy sends deletions to the Trash, and so does Disk Forecast, unless you choose Delete Immediately."),
             ("Does DiskBuddy tell you when your disk will be full?", "We couldn't find a forecast in DiskBuddy's own materials as of October 2026. In Disk Forecast it's the headline feature: a countdown in the menu bar, built from your own daily history."),
             ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
@@ -31,22 +31,22 @@ PAGES = [
         <p>DiskBuddy launched on September 5, 2026, changed hands about a month later, and shipped version 2.0 on September 23 and 3.0 on October 4. It's ambitious. There's an overview, a space map, a tiered cleanup list, duplicates, apps, a monitor, snapshots, activity, compression, a menu bar item, and a finder for local LLM models.</p>
         <p>It sends deletions to the Trash, it scans about 3 million files in roughly 20 seconds by its own numbers, and one license covers a Mac and a Windows PC.</p>
         <h3>Where it stops</h3>
-        <p><strong>It's paid, and the price has moved.</strong> It launched at $19 with a counter of copies left, and the site now lists $49.</p>
+        <p><strong>It's paid, and the price has moved.</strong> Its site now lists $9 for 400 launch copies, then $49, with no free tier or trial.</p>
         <p><strong>It answers “what's using my space?”</strong> We couldn't find anything in its materials that answers “when will I run out?”, which is the question Disk Forecast is built around.</p>
-        <p><strong>System Data gets a snapshots view.</strong> Disk Forecast breaks System Data into every part it can measure, explains each in plain English, and fixes it with Apple's own tools.</p>
+        <p><strong>System Data gets a guide, not a breakdown.</strong> DiskBuddy's site links to an article about System Data, and its Snapshots feature compares a saved scan with today's. Disk Forecast breaks System Data into every part it can measure, explains each in plain English, and fixes it with Apple's own tools.</p>
             """},
             {"id": "compare", "lit": True, "html": """
         <h2>Disk Forecast vs DiskBuddy</h2>
-        <p>DiskBuddy facts come from its launch and release posts, September to October 2026.</p>
+        <p>DiskBuddy facts come from its launch and release posts, September to October 2026, and its site, checked November 16, 2026.</p>
         {{TABLE}}
         <h3>What DiskBuddy does better</h3>
         <p>Breadth. Duplicates, an apps view, compression, activity history, and a Windows version on the same license. If you want one paid app that does all of it, DiskBuddy is a good one.</p>
         <h3>What Disk Forecast does better</h3>
         <p>It tells you ahead of time. Free space and a countdown sit in the menu bar, System Data comes with a plain-English explanation for every part, and the whole thing is free with the source on GitHub.</p>
             """, "table": [
-                ("Price", "Free", "$19 at launch, now $49"),
+                ("Price", "Free", "$9 for 400 launch copies, then $49"),
                 ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
-                ("System Data broken down", "Every part, in plain English, with Apple's fixes", "Snapshots view"),
+                ("System Data broken down", "Every part, in plain English, with Apple's fixes", "A guide on its site"),
                 ("Cleanup sorted by risk", "Yes", "Yes"),
                 ("Deletes go to the Trash", "By default", "Yes"),
                 ("Finds local AI models", "Ollama, LM Studio, Hugging Face", "Yes"),
@@ -1775,7 +1775,7 @@ ANALYZER = {
         ("DaisyDisk", "$9.99 one-time", "Interactive rings", "Native", "4.34.2, July 2026"),
         ("GrandPerspective", "Free, or $2.99 on the App Store", "Treemap", "Native", "3.8.1, September 2026"),
         ("WizTreeMac", "Free for personal use", "Treemap and file list", "Native", "1.00, September 2026"),
-        ("DiskBuddy", "$49", "Space map and lists", "—", "3.0, October 2026"),
+        ("DiskBuddy", "$9 for launch copies, then $49", "Space map and lists", "—", "3.0, October 2026"),
         ("Mole", "Free; $19 for the Mac app", "Disk explorer in Terminal", "Native", "1.58.0, October 2026"),
         ("OmniDiskSweeper", "Free", "Columns sorted by size", "Intel only", "1.11, 2018"),
         ("Disk Inventory X", "Free", "Treemap", "Intel only", "1.3, December 2019"),
@@ -1911,7 +1911,7 @@ COMPARE = {
         ("Disk Inventory X", "Free", "Treemap", "Intel only", "1.3, December 2019", "Yes, GPL"),
         ("WizTreeMac", "Free for personal use", "Treemap and file list", "Native", "1.00, September 2026", "—"),
         ("Mole", "Free; $19 for the Mac app", "Disk explorer in Terminal", "Native", "1.58.0, October 2026", "Command-line tool, GPL-3.0"),
-        ("DiskBuddy", "$49", "Space map and lists", "—", "3.0, October 2026", "—"),
+        ("DiskBuddy", "$9 for launch copies, then $49", "Space map and lists", "—", "3.0, October 2026", "—"),
     ]}},
     "shortcut": """
           <h2>The one that tells you when.</h2>
