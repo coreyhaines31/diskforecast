@@ -82,7 +82,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     private func rebuild(_ menu: NSMenu) {
         menu.removeAllItems()
-        menu.addItem(label("\(Bytes.format(disk.freeBytes)) free of \(Bytes.format(disk.capacityBytes))"))
+        addCard(to: menu)
         if let warning = disk.lowSpaceWarning {
             let item = ClosureMenuItem("\(warning). Reclaim space…") { [weak self] in self?.openCleanup() }
             let symbol = NSImage.SymbolConfiguration(paletteColors: [.systemOrange])
@@ -90,7 +90,6 @@ final class StatusItemController: NSObject, NSMenuDelegate {
                 .withSymbolConfiguration(symbol)
             menu.addItem(item)
         }
-        menu.addItem(label(disk.forecastPhrase))
         addChart(to: menu)
         menu.addItem(.separator())
         addConsumers(to: menu)
@@ -104,6 +103,19 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         updates.isEnabled = updater.canCheck
         menu.addItem(updates)
         menu.addItem(ClosureMenuItem("Quit \(Brand.name)", keyEquivalent: "q") { NSApp.terminate(nil) })
+    }
+
+    /// The Brushed card: free space, percent full and days to full. Clicking it opens Forecast.
+    private func addCard(to menu: NSMenu) {
+        let open = { [weak self, weak menu] in
+            menu?.cancelTracking()
+            self?.openForecast()
+        }
+        let view = NSHostingView(rootView: MenuCardView(disk: disk, open: open))
+        view.frame.size = view.fittingSize
+        let item = NSMenuItem()
+        item.view = view
+        menu.addItem(item)
     }
 
     /// The last 30 days as a small chart, once there are two days to draw. Clicking it opens
