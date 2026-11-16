@@ -35,8 +35,8 @@ GITHUB_ICON = ('<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                '.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 '
                '.21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>')
 # The two main calls to action, everywhere a page offers the download.
-CTAS = (f'<a class="btn" href="{DOWNLOAD}">{DOWNLOAD_ICON}Download free</a>\n'
-        f'        <a class="btn-quiet" href="{REPO}">{GITHUB_ICON}View source code</a>')
+CTAS = (f'<a class="bx-btn" href="{DOWNLOAD}">{DOWNLOAD_ICON}Download free</a>\n'
+        f'        <a class="bx-btn sec" href="{REPO}">{GITHUB_ICON}View source code</a>')
 FONTS = "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@300;600;700&display=swap"
 
 
@@ -83,17 +83,16 @@ def head(title, description, path):
 
 
 def nav():
-    return f'''  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-  <div class="nav">
-    <div class="wrap">
-      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+    return f'''  <div class="nav">
+    <div class="wrap bx-nav">
+      <a class="bx-brand" href="/"><img src="/images/icon.svg" alt="" width="32" height="32"> Disk Forecast</a>
       <nav>
         <a href="/#forecast">Features</a>
         <a href="/guides">Guides</a>
         <a href="/system-data">System Data</a>
         <a href="/alternatives">Compare</a>
         <a href="/#faq">FAQ</a>
-        <a class="btn" href="{DOWNLOAD}">Download</a>
+        <a class="bx-btn" href="{DOWNLOAD}">Download</a>
       </nav>
     </div>
   </div>
