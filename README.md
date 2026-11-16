@@ -80,7 +80,7 @@ Install Disk Forecast, a free macOS menu bar app (https://github.com/coreyhaines
 4. Open it: `open -a "Disk Forecast"`.
 5. Open the Full Disk Access settings for me:
    open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
-   Then tell me to turn on Disk Forecast there (it's optional), that its drive icon with my free space is now in the menu bar, and that from now on I can ask you why my disk is filling up or what's safe to clear. You'll use the `diskforecast` command (see `diskforecast --help`; if it isn't on the PATH, it's at "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast").
+   Then tell me to turn on Disk Forecast there (it's optional), that its tape reel icon with my free space is now in the menu bar, and that from now on I can ask you why my disk is filling up or what's safe to clear. You'll use the `diskforecast` command (see `diskforecast --help`; if it isn't on the PATH, it's at "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast").
 
 Don't change any other settings and don't delete anything.
 ```
@@ -89,7 +89,7 @@ The app is signed with a Developer ID and notarized by Apple, so it opens withou
 
 ## First run
 
-1. **Open the app.** It has no Dock icon. Look for a drive icon with your free space (like **142 GB**) in the menu bar, near the clock.
+1. **Open the app.** It has no Dock icon. Look for a tape reel icon with your free space (like **142 GB**) in the menu bar, near the clock.
 2. **Choose how much it can see.** A window asks for **Full Disk Access**. It's optional:
    - **Open System Settings** → turn on **Disk Forecast** under Privacy & Security › Full Disk Access (click **+** and choose it from Applications if it isn't listed) → come back. The app notices on its own.
    - **Continue with home folder only** to measure just your home folder. Folders macOS guards, like Mail, Messages, and other apps' containers, are skipped and show up as unexplained space.
