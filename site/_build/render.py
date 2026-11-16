@@ -125,11 +125,13 @@ FAMILY = [
 
 
 def footer_family():
-    """The eight free Mac apps as a panel of icons, cross-linked from every footer. This one is marked current."""
+    """The free Mac apps as a panel of icons, cross-linked from every footer. This one is marked current; Kill Cord is coming soon."""
     items = "".join(
         f'<li><a href="{url}/" title="{esc(desc)}"{" aria-current=\"page\"" if key == "disk" else ""}>'
         f'<img src="/images/family/{key}.png" alt="" width="56" height="56" loading="lazy">{esc(name)}</a></li>'
         for key, name, url, desc in FAMILY)
+    items += ('<li><span class="soon" title="Coming soon: see your API spend before the bill does">'
+              '<img src="/images/family/kill.png" alt="" width="56" height="56" loading="lazy">Kill Cord</span></li>')
     return f'''    <nav class="bx-family" aria-label="More free Mac apps">
       <div class="wrap">
         <a class="bx-eyebrow" href="https://github.com/coreyhaines31">More free Mac apps</a>
