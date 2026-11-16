@@ -7,6 +7,8 @@ public enum Demo {
     static let gigabyte: Int64 = 1_000_000_000
     public static let capacityBytes: Int64 = 494 * gigabyte
     public static let freeBytes: Int64 = 142 * gigabyte
+    /// The size of /Applications.
+    public static let applicationsBytes: Int64 = 38 * gigabyte
 
     /// Folder sizes under the home folder, by relative path. Leaves hold the bytes.
     static let folders: [(String, Double)] = [
