@@ -5,44 +5,53 @@
 <head>
 <meta charset="utf-8">
 <title>Disk Forecast social card</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@300;600;700&display=swap">
+<link rel="stylesheet" href="../brushed.css">
+<link rel="stylesheet" href="../popover.css">
 <style>
   * { box-sizing: border-box; }
+  :root { --bx-accent: #2f63d3; color-scheme: light; }
   html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
-  body { position: relative; background: #f5f6f8; color: #1d1d1f; letter-spacing: -0.012em;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
-  .sky i { position: absolute; border-radius: 50%; opacity: 0.85; }
-  .sky i:nth-child(1) { width: 760px; height: 760px; left: -220px; top: -260px; background: radial-gradient(circle, #9ccdff, transparent 68%); }
-  .sky i:nth-child(2) { width: 640px; height: 640px; right: -160px; top: -240px; background: radial-gradient(circle, #ffd98a, transparent 68%); }
-  .sky i:nth-child(3) { width: 600px; height: 600px; left: 380px; top: 250px; background: radial-gradient(circle, #bfeedd, transparent 68%); }
-  .sky i:nth-child(4) { width: 520px; height: 520px; right: -60px; top: 230px; background: radial-gradient(circle, #cdd2ff, transparent 68%); }
-  .glass { position: relative; background: rgba(255,255,255,0.58); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.04), 0 1px 2px rgba(15,30,55,0.05), 0 14px 40px rgba(15,30,55,0.10); }
-  .card { position: absolute; inset: 44px 52px; border-radius: 44px; padding: 0 64px; display: flex; flex-direction: column; justify-content: center; }
-  .menubar { position: absolute; top: 22px; right: 28px; display: flex; align-items: center; gap: 18px; font-size: 21px; color: #1d1d1f; white-space: nowrap; }
-  .pill { display: flex; align-items: center; gap: 10px; padding: 9px 18px 9px 14px; border-radius: 999px; font-weight: 600; font-variant-numeric: tabular-nums;
-    background: rgba(255,255,255,0.78); box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgba(15,30,55,0.08), 0 8px 22px rgba(15,30,55,0.12); }
-  .pill svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-  .pill .sep { color: #6e6e73; font-weight: 400; }
-  .pill .full { color: #0a6cdf; }
-  .clock { color: #3a3a3f; font-weight: 500; }
-  .brand { display: flex; align-items: center; gap: 20px; font-size: 38px; font-weight: 600; letter-spacing: -0.025em; }
-  .brand img { width: 92px; height: 92px; filter: drop-shadow(0 10px 20px rgba(15,30,55,0.22)); }
-  h1 { margin: 34px 0 0; font-size: 84px; line-height: 1.0; font-weight: 700; letter-spacing: -0.045em; max-width: 960px; }
-  h1 em { font-style: normal; color: #0a6cdf; }
-  .sub { margin-top: 26px; font-size: 26px; color: #55555b; letter-spacing: -0.015em; }
+  body { position: relative; background: var(--bx-brush); color: var(--bx-ink); font-family: var(--bx-body); -webkit-font-smoothing: antialiased; }
+  .copy { position: absolute; left: 72px; top: 70px; width: 580px; height: 490px; display: flex; flex-direction: column; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 18px; font: 700 38px/1 var(--bx-display); }
+  .brand img { width: 80px; height: 80px; }
+  .bx-badge { font-size: 17px; padding: 9px 16px 9px 13px; gap: 12px; }
+  .bx-badge i { width: 10px; height: 10px; box-shadow: 0 0 8px var(--bx-accent); }
+  h1 { margin: 22px 0 0; font: 600 84px/.97 var(--bx-display); }
+  h1 span { font-weight: 300; white-space: nowrap; }
+  .sub { font-size: 26px; color: var(--bx-ink2); }
+  .bx-mount { position: absolute; left: 690px; top: 70px; width: 438px; height: 490px; padding: 0; place-content: center; }
+  .pop { width: 340px; transform: scale(1.12); }
+  .pop .menuwrap { background: none; box-shadow: none; padding: 0; }
+  .pop .mcard { margin: 0; box-shadow: 0 18px 40px rgba(0,0,0,.32), 0 0 0 .5px rgba(0,0,0,.35); border-radius: 10px; }
 </style>
 </head>
 <body>
-  <div class="sky"><i></i><i></i><i></i><i></i></div>
-  <div class="card glass">
-    <div class="menubar">
-      <span class="pill"><svg viewBox="0 0 24 24"><path d="M5.5 9.5 7.3 5.6A2 2 0 0 1 9.1 4.5h5.8a2 2 0 0 1 1.8 1.1l1.8 3.9"/><rect x="3.5" y="9.5" width="17" height="9" rx="2.2"/><path d="M8.5 14h.01M11 14h.01M13.5 14h.01M16 14h.01"/></svg>142 GB <span class="sep">·</span> <span class="full">Full in ~41 days</span></span>
-      <span class="clock">Mon 9:41 AM</span>
-    </div>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="alu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1f2f2"></stop><stop offset=".55" stop-color="#cfd1d2"></stop><stop offset="1" stop-color="#b9bbbd"></stop></linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2=".3"><stop offset=".15" stop-color="#fff" stop-opacity="0"></stop><stop offset=".42" stop-color="#fff" stop-opacity=".55"></stop><stop offset=".7" stop-color="#fff" stop-opacity="0"></stop></linearGradient>
+    <pattern id="brush" width="100" height="1.4" patternUnits="userSpaceOnUse"><rect width="100" height=".45" fill="#fff" opacity=".35"></rect><rect y=".8" width="100" height=".3" fill="#000" opacity=".05"></rect></pattern>
+    <linearGradient id="chrome" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbfbfb"></stop><stop offset=".35" stop-color="#8c8e90"></stop><stop offset=".55" stop-color="#eeeff0"></stop><stop offset=".8" stop-color="#6e7072"></stop><stop offset="1" stop-color="#d9dadb"></stop></linearGradient>
+    <radialGradient id="spun" cx=".45" cy=".4" r=".65"><stop offset="0" stop-color="#ffffff"></stop><stop offset=".45" stop-color="#c9cbcd"></stop><stop offset=".8" stop-color="#8f9193"></stop><stop offset="1" stop-color="#b8babc"></stop></radialGradient>
+    <radialGradient id="face" cx=".5" cy="1.1" r="1"><stop offset="0" stop-color="#e2ddcf"></stop><stop offset=".7" stop-color="#f4f2eb"></stop></radialGradient>
+    <radialGradient id="faceLit" cx=".5" cy="1.1" r="1"><stop offset="0" stop-color="#e4b768"></stop><stop offset=".75" stop-color="#f6dfaa"></stop></radialGradient>
+    <radialGradient id="glass" cx=".38" cy=".32" r=".7"><stop offset="0" stop-color="#4a5566"></stop><stop offset=".35" stop-color="#151a22"></stop><stop offset="1" stop-color="#05070a"></stop></radialGradient>
+    <linearGradient id="black" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2b2c"></stop><stop offset="1" stop-color="#141415"></stop></linearGradient>
+  </defs>
+</svg>
+  <div class="copy">
     <div class="brand"><img src="../images/icon.svg" alt="">Disk Forecast</div>
-    <h1>Know before your Mac runs <em>out of space.</em></h1>
+    <div>
+      <span class="bx-badge"><i></i>Free for Mac</span>
+      <h1>Know before your Mac runs <span>out of space.</span></h1>
+    </div>
     <div class="sub">Free for macOS · diskforecast.com</div>
+  </div>
+  <div class="bx-mount">
+    <span class="bx-screw"></span><span class="bx-screw"></span><span class="bx-screw"></span><span class="bx-screw"></span>
+    <div class="pop light" style="--acc:#2f63d3"><div class="menuwrap"><div class="mcard"><div class="fas"><div class="fh"><span class="np"><i></i>DISK</span><span class="ts">214 GB free of 994 GB</span></div><svg viewBox="0 0 312 104" role="img" aria-label="Disk meter, 78 percent full"><defs><clipPath id="m2"><rect x="3" y="3" width="306" height="98" rx="4"></rect></clipPath></defs><rect x="1.5" y="1.5" width="309" height="101" rx="5.5" fill="url(#chrome)"></rect><rect x="3" y="3" width="306" height="98" rx="4" fill="url(#face)"></rect><g clip-path="url(#m2)"><path d="M74.03 57.12A118 118 0 0 1 237.97 57.12" fill="none" stroke="#1d1d1d" stroke-width="1"></path><path d="M225.17 43.94A120 120 0 0 1 239.36 55.68" fill="none" stroke="#d1381f" stroke-width="3.2"></path><line x1="74.03" y1="57.12" x2="69.17" y2="52.08" stroke="#1d1d1d" stroke-width="1.4"></line><line x1="80.78" y1="51.08" x2="78.23" y2="48" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="87.98" y1="45.58" x2="85.68" y2="42.31" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="95.58" y1="40.64" x2="93.53" y2="37.21" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="103.53" y1="36.31" x2="100.42" y2="30.04" stroke="#1d1d1d" stroke-width="1.4"></line><line x1="111.8" y1="32.59" x2="110.3" y2="28.88" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="120.32" y1="29.52" x2="119.11" y2="25.71" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="129.05" y1="27.12" x2="128.14" y2="23.22" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="137.95" y1="25.39" x2="136.88" y2="18.47" stroke="#1d1d1d" stroke-width="1.4"></line><line x1="146.95" y1="24.35" x2="146.64" y2="20.36" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="156" y1="24" x2="156" y2="20" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="165.05" y1="24.35" x2="165.36" y2="20.36" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="174.05" y1="25.39" x2="175.12" y2="18.47" stroke="#1d1d1d" stroke-width="1.4"></line><line x1="182.95" y1="27.12" x2="183.86" y2="23.22" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="191.68" y1="29.52" x2="192.89" y2="25.71" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="200.2" y1="32.59" x2="201.7" y2="28.88" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="208.47" y1="36.31" x2="211.58" y2="30.04" stroke="#1d1d1d" stroke-width="1.4"></line><line x1="216.42" y1="40.64" x2="218.47" y2="37.21" stroke="#1d1d1d" stroke-width="0.8"></line><line x1="224.02" y1="45.58" x2="226.32" y2="42.31" stroke="#d1381f" stroke-width="0.8"></line><line x1="231.22" y1="51.08" x2="233.77" y2="48" stroke="#d1381f" stroke-width="0.8"></line><line x1="237.97" y1="57.12" x2="242.83" y2="52.08" stroke="#d1381f" stroke-width="1.4"></line><text x="63.61" y="49.73" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="10.5" fill="#1d1d1d">0</text><text x="96.86" y="26.27" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="10.5" fill="#1d1d1d">20</text><text x="135.65" y="13.97" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="10.5" fill="#1d1d1d">40</text><text x="176.35" y="13.97" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="10.5" fill="#1d1d1d">60</text><text x="215.14" y="26.27" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="10.5" fill="#1d1d1d">80</text><text x="248.39" y="49.73" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="600" font-size="10.5" fill="#d1381f">100</text><text x="156" y="82" text-anchor="middle" font-family="Barlow Semi Condensed, sans-serif" font-weight="300" font-size="20" letter-spacing="3" fill="#1d1d1d" opacity=".85">% FULL</text><line x1="156" y1="142" x2="209.66" y2="26.89" stroke="#1d1d1d" stroke-width="1.5" stroke-linecap="round"></line><ellipse cx="156" cy="106" rx="49.92" ry="14" fill="#1b1b1b" opacity="0.8"></ellipse><rect x="3" y="3" width="306" height="14" fill="#fff" opacity="0.18"></rect></g><circle cx="11" cy="11" r="3" fill="#1b1b1b" opacity=".75"></circle></svg><div class="labs"><span class="lo">Macintosh HD</span><span class="ls">Free space</span></div></div><div class="verdict"><div class="counter"><span class="drum"><b>0</b><b>4</b><b>1</b></span><p><b>Days to full</b>Full in ~41 days · using 5.1 GB a day</p></div></div></div></div></div>
   </div>
 </body>
 </html>

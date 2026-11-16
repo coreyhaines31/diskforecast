@@ -1,7 +1,8 @@
 import {Easing, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
-import {INK, INK_2} from './OgVideo';
+import {DISPLAY, INK, INK_2, MUTED, STOP} from './OgVideo';
 
-// Disk Forecast's free-space card: disk use climbs and free space ticks down to 142 GB, the forecast line reaches
+// Disk Forecast's free-space card, in Brushed materials (matte card, black label strip, graphite tape, ink lines;
+// colour only in the forecast reading and the red full mark): disk use climbs and free space ticks down to 142 GB, the forecast line reaches
 // full, the verdict lands, then the line drains back to where it starts, so the loop has no seam.
 const W = 372;
 const H = 150;
@@ -22,7 +23,9 @@ const STANDARD = Easing.bezier(0.4, 0, 0.2, 1);
 const IN_OUT = Easing.bezier(0.65, 0, 0.35, 1);
 const OUT_EASE = Easing.bezier(0, 0, 0.2, 1);
 
-export const ForecastCard = ({accentInk, accentFill, tint}: {accentInk: string; accentFill: string; tint: string}) => {
+const GRAPHITE = '#2c2c2d';
+
+export const ForecastCard = ({accent}: {accent: string}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const t = frame / fps;
@@ -52,45 +55,46 @@ export const ForecastCard = ({accentInk, accentFill, tint}: {accentInk: string; 
 
   return (
     <div
-      style={{width: '100%', height: '100%', boxSizing: 'border-box', padding: '30px 32px', borderRadius: 30, background: 'rgba(251,251,253,0.9)',
-        boxShadow: `0 0 0 1px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.05), 0 16px 36px rgba(${tint},0.12)`, fontVariantNumeric: 'tabular-nums'}}
+      style={{position: 'relative', width: '100%', height: '100%', boxSizing: 'border-box', padding: '24px 18px', borderRadius: 10, background: '#eeeeed',
+        boxShadow: '0 18px 40px rgba(0,0,0,.32), 0 0 0 .5px rgba(0,0,0,.35)', fontVariantNumeric: 'tabular-nums'}}
     >
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
         <div>
-          <div style={{fontSize: 28, fontWeight: 600, letterSpacing: '-0.02em', color: INK}}>Macintosh HD</div>
-          <div style={{fontSize: 22, color: INK_2, marginTop: 2}}>Free of {DISK} GB</div>
+          <div style={{display: 'inline-block', fontFamily: DISPLAY, fontSize: 15, fontWeight: 600, letterSpacing: '0.26em', textTransform: 'uppercase',
+            background: '#1b1b1b', color: '#d8d9da', padding: '6px 10px', borderRadius: 2}}>Macintosh HD</div>
+          <div style={{fontSize: 22, color: INK_2, marginTop: 8}}>Free of {DISK} GB</div>
         </div>
-        <div style={{fontSize: 54, fontWeight: 700, letterSpacing: '-0.04em', color: accentInk, lineHeight: 1}}>
+        <div style={{fontFamily: DISPLAY, fontSize: 62, fontWeight: 600, color: INK, lineHeight: 1}}>
           {Math.round(DISK - gb)}
-          <span style={{fontSize: 28, letterSpacing: '-0.02em', marginLeft: 4}}>GB</span>
+          <span style={{fontSize: 30, fontWeight: 300, marginLeft: 4}}>GB</span>
         </div>
       </div>
-      <div style={{position: 'relative', height: 10, borderRadius: 5, background: 'rgba(0,0,0,0.08)', margin: '18px 0 20px', overflow: 'hidden'}}>
-        <div style={{position: 'absolute', inset: 0, width: `${(gb / DISK) * 100}%`, borderRadius: 5, background: accentFill}} />
+      <div style={{position: 'relative', height: 8, borderRadius: 1, background: '#d6d7d7', margin: '18px 0 20px', overflow: 'hidden'}}>
+        <div style={{position: 'absolute', inset: 0, width: `${(gb / DISK) * 100}%`, background: GRAPHITE}} />
       </div>
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{display: 'block', overflow: 'visible'}}>
-        <line x1={0} y1={y(DISK)} x2={W} y2={y(DISK)} stroke="#8e8e93" strokeWidth={2} strokeDasharray="3 5" opacity={0.6} />
+        <line x1={0} y1={y(DISK)} x2={W} y2={y(DISK)} stroke="#66686a" strokeWidth={1.5} strokeDasharray="4 4" opacity={0.8} />
         <line x1={0} y1={H - 4} x2={W} y2={H - 4} stroke="rgba(0,0,0,0.12)" strokeWidth={2} />
-        <path d={area} fill={accentFill} opacity={0.14} />
-        <path d={d} fill="none" stroke={accentFill} strokeWidth={4} strokeLinejoin="round" />
+        <path d={area} fill={GRAPHITE} opacity={0.08} />
+        <path d={d} fill="none" stroke={GRAPHITE} strokeWidth={3} strokeLinejoin="round" />
         <g opacity={fadeOut}>
           {proj > 0.001 && (
-            <path d={`M${NOW * W} ${y(TODAY)} L${projX * W} ${y(projGb)}`} fill="none" stroke={accentFill} strokeWidth={4} strokeDasharray="7 8" />
+            <path d={`M${NOW * W} ${y(TODAY)} L${projX * W} ${y(projGb)}`} fill="none" stroke={accent} strokeWidth={3} strokeDasharray="8 6" />
           )}
-          <line x1={OUT * W} y1={y(DISK)} x2={OUT * W} y2={H - 4} stroke={accentInk} strokeWidth={2} strokeDasharray="4 5" opacity={verdictIn * 0.7} />
-          {dot > 0.01 && <circle cx={OUT * W} cy={y(DISK)} r={9 * dot} fill={accentInk} stroke="#fff" strokeWidth={3 * Math.min(1, dot)} />}
+          <line x1={OUT * W} y1={y(DISK)} x2={OUT * W} y2={H - 4} stroke={STOP} strokeWidth={1.5} strokeDasharray="4 5" opacity={verdictIn * 0.7} />
+          {dot > 0.01 && <circle cx={OUT * W} cy={y(DISK)} r={8 * dot} fill={STOP} stroke="#eeeeed" strokeWidth={3 * Math.min(1, dot)} />}
         </g>
-        <circle cx={xNow * W} cy={y(gb)} r={7} fill={accentFill} stroke="#fff" strokeWidth={3} />
+        <circle cx={xNow * W} cy={y(gb)} r={6.5} fill={GRAPHITE} stroke="#eeeeed" strokeWidth={3} />
       </svg>
-      <div style={{position: 'relative', height: 28, marginTop: 8, fontSize: 20, color: INK_2, whiteSpace: 'nowrap'}}>
+      <div style={{position: 'relative', height: 28, marginTop: 8, fontFamily: DISPLAY, fontSize: 17, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: MUTED, whiteSpace: 'nowrap'}}>
         <span style={{position: 'absolute', left: 0}}>Sep 5</span>
         <span style={{position: 'absolute', right: 0}}>Dec 1</span>
       </div>
-      <div style={{position: 'absolute', marginTop: 18, fontSize: 30, fontWeight: 600, letterSpacing: '-0.02em', color: '#8e8e93', opacity: watching}}>
+      <div style={{position: 'absolute', marginTop: 18, fontFamily: DISPLAY, fontSize: 32, fontWeight: 300, color: MUTED, opacity: watching}}>
         Measuring your pace…
       </div>
       <div style={{marginTop: 18, opacity: shown, transform: `translateY(${(1 - verdictIn) * 8}px)`}}>
-        <div style={{fontSize: 38, fontWeight: 700, letterSpacing: '-0.03em', color: accentInk}}>Full in ~41 days</div>
+        <div style={{fontFamily: DISPLAY, fontSize: 42, fontWeight: 600, color: INK, lineHeight: 1.05}}>Full in ~41 days</div>
         <div style={{fontSize: 22, color: INK_2, marginTop: 4}}>Nov 15 · using 3.5 GB a day</div>
       </div>
     </div>

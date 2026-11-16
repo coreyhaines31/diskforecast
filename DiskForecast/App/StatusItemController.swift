@@ -1,5 +1,6 @@
 import AppKit
 import DiskForecastCore
+import PanelKit
 import SwiftUI
 
 /// The menu bar item: free space as its title, and the menu built fresh each time it opens.
@@ -26,7 +27,6 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         let menu = NSMenu()
         menu.delegate = self
         statusItem.menu = menu
-        statusItem.button?.image = NSImage(systemSymbolName: "internaldrive", accessibilityDescription: Brand.name)
         statusItem.button?.imagePosition = .imageLeading
         update()
     }
@@ -36,6 +36,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     func update() {
         guard let button = statusItem.button else { return }
+        button.image = Self.reel(for: disk)
         switch Preferences.menuBarDisplay {
         case .freeSpace: button.title = disk.capacityBytes > 0 ? Bytes.format(disk.freeBytes) : ""
         case .percentFree: button.title = disk.capacityBytes > 0 ? "\(Int((disk.percentFree * 100).rounded()))%" : ""
@@ -46,6 +47,14 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         if let openMenu {
             rebuild(openMenu)
         }
+    }
+
+    /// The tape reel glyph: the fuller the disk, the more tape fills the reel's windows.
+    private static func reel(for disk: DiskStatus) -> NSImage {
+        let used = disk.capacityBytes > 0 ? 1 - disk.percentFree : 0
+        let image = ReelGlyph.image(ReelGlyph.state(percentUsed: used, isLow: disk.lowSpaceWarning != nil))
+        image.accessibilityDescription = Brand.name
+        return image
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
@@ -63,7 +72,6 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     private func rebuild(_ menu: NSMenu) {
         menu.removeAllItems()
-        menu.addItem(label("\(Bytes.format(disk.freeBytes)) free of \(Bytes.format(disk.capacityBytes))"))
         if let warning = disk.lowSpaceWarning {
             let item = ClosureMenuItem("\(warning). Reclaim space…") { [weak self] in self?.openCleanup() }
             let symbol = NSImage.SymbolConfiguration(paletteColors: [.systemOrange])
@@ -71,8 +79,6 @@ final class StatusItemController: NSObject, NSMenuDelegate {
                 .withSymbolConfiguration(symbol)
             menu.addItem(item)
         }
-        menu.addItem(label(disk.forecastPhrase))
-        addChart(to: menu)
         menu.addItem(.separator())
         addConsumers(to: menu)
         addReclaim(to: menu)
@@ -85,22 +91,20 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         updates.isEnabled = updater.canCheck
         menu.addItem(updates)
         menu.addItem(ClosureMenuItem("Quit \(Brand.name)", keyEquivalent: "q") { NSApp.terminate(nil) })
+        // Last, so the card can take the width the other items give the menu.
+        addCard(to: menu)
     }
 
-    /// The last 30 days as a small chart, once there are two days to draw. Clicking it opens
-    /// the Forecast window.
-    private func addChart(to menu: NSMenu) {
-        guard disk.history.samples.count >= 2 else { return }
+    /// The Brushed card: free space, percent full, days to full and, once there are two days to
+    /// draw, the last 30 days as a small chart. Clicking it opens Forecast.
+    private func addCard(to menu: NSMenu) {
         let open = { [weak self, weak menu] in
             menu?.cancelTracking()
             self?.openForecast()
         }
         let grewMost = SnapshotComparison.grewMostThisWeek(in: snapshots)
-        let view = NSHostingView(rootView: MenuForecastView(disk: disk, grewMost: grewMost, open: open))
-        view.frame.size = view.fittingSize
-        let item = NSMenuItem()
-        item.view = view
-        menu.addItem(item)
+        let card = MenuCardView(disk: disk, menuWidth: menu.size.width, grewMost: grewMost, open: open)
+        menu.insertItem(.panelCard(card), at: 0)
     }
 
     private func addConsumers(to menu: NSMenu) {

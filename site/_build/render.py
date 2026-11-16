@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Renders site/alternatives/*.html, the roundups, the alternatives hub, the guides, and /privacy from pages.py,
 the per-tool pages under /clear-cache and /ai-models and their hubs from tools.py,
-rewrites the homepage footer list and JSON-LD between their <!-- alternatives --> and <!-- schema --> markers,
+rewrites the homepage footer and JSON-LD between their <!-- footer --> and <!-- schema --> markers,
 and writes sitemap.xml.
 
     python3 site/_build/render.py
@@ -35,9 +35,9 @@ GITHUB_ICON = ('<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                '.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 '
                '.21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>')
 # The two main calls to action, everywhere a page offers the download.
-CTAS = (f'<a class="btn" href="{DOWNLOAD}">{DOWNLOAD_ICON}Download free</a>\n'
-        f'        <a class="btn-quiet" href="{REPO}">{GITHUB_ICON}View source code</a>')
-FONTS = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+CTAS = (f'<a class="bx-btn" href="{DOWNLOAD}">{DOWNLOAD_ICON}Download free</a>\n'
+        f'        <a class="bx-btn sec" href="{REPO}">{GITHUB_ICON}View source code</a>')
+FONTS = "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@300;600;700&display=swap"
 
 
 def esc(t):
@@ -64,33 +64,35 @@ def head(title, description, path):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{esc(title)}">
   <meta name="twitter:description" content="{esc(description)}">
-  <meta name="theme-color" content="#dceaf6" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0b141e" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#e2e3e2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#131314" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" href="/images/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/images/icon.png">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="{FONTS}">
+  <link rel="stylesheet" href="/brushed.css">
+  <link rel="stylesheet" href="/popover.css">
   <link rel="stylesheet" href="/site.css">
   <script async src="https://tracerkit.com/t.js" data-key="tk_OpbWb03p6ADayMMC"></script>
   <script src="https://ingest.getuserproof.com/sdk.js" data-site="7ebfab50-cd1b-48c6-9227-f2cafb6e669f" defer></script>
 </head>
-<body>
+<body class="bx">
 '''
 
 
 def nav():
-    return f'''  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-  <div class="nav">
-    <div class="wrap">
-      <a class="brand" href="/"><img src="/images/icon.svg" alt="" width="28" height="28"> Disk Forecast</a>
+    return f'''  <div class="nav">
+    <div class="wrap bx-nav">
+      <a class="bx-brand" href="/"><img src="/images/icon.svg" alt="" width="32" height="32"> Disk Forecast</a>
       <nav>
         <a href="/#forecast">Features</a>
         <a href="/guides">Guides</a>
         <a href="/system-data">System Data</a>
         <a href="/alternatives">Compare</a>
         <a href="/#faq">FAQ</a>
-        <a class="btn" href="{DOWNLOAD}">Download</a>
+        <a class="bx-btn" href="{DOWNLOAD}">Download</a>
       </nav>
     </div>
   </div>
@@ -111,27 +113,43 @@ def footer_guides():
 
 
 FAMILY = [
-    ("Green Room", "https://greenroomformac.com", "Check your camera, mic, and speakers"),
-    ("WiFi or ISP", "https://wifiorisp.com", "Is slow internet your Wi-Fi or your ISP?"),
-    ("Midnight Oil", "https://midnightoil.app", "Keep your Mac awake"),
-    ("Spare", "https://spareformac.com", "See what's using your Mac"),
-    ("On Hand", "https://onhandformac.com", "A clipboard manager for your Mac"),
-    ("Coat Check", "https://coatcheckformac.com", "Reach the menu bar icons the notch hides"),
-    ("Fuel Gauge", "https://fuelgauge.app", "Know if you'll make it to reset"),
+    ("fuel", "Fuel Gauge", "https://fuelgauge.app", "Know if you'll make it to reset"),
+    ("spare", "Spare", "https://spareformac.com", "See what's using your Mac"),
+    ("disk", "Disk Forecast", SITE, "Know before your Mac runs out of space"),
+    ("oil", "Midnight Oil", "https://midnightoil.app", "Keep your Mac awake"),
+    ("wifi", "WiFi or ISP", "https://wifiorisp.com", "Is slow internet your Wi-Fi or your ISP?"),
+    ("green", "Green Room", "https://greenroomformac.com", "Check your camera, mic, and speakers"),
+    ("hand", "On Hand", "https://onhandformac.com", "A clipboard manager for your Mac"),
+    ("coat", "Coat Check", "https://coatcheckformac.com", "Reach the menu bar icons the notch hides"),
 ]
 
 
 def footer_family():
-    """Corey's other free Mac apps, cross-linked from every footer."""
-    links = "".join(f'<a href="{url}" title="{esc(desc)}">{esc(name)}</a>' for name, url, desc in FAMILY)
-    return f'      <nav class="footer-alts" aria-label="More free Mac apps"><a class="label" href="https://github.com/coreyhaines31">More free Mac apps</a>{links}</nav>\n'
+    """The eight free Mac apps as a panel of icons, cross-linked from every footer. This one is marked current."""
+    items = "".join(
+        f'<li><a href="{url}/" title="{esc(desc)}"{" aria-current=\"page\"" if key == "disk" else ""}>'
+        f'<img src="/images/family/{key}.png" alt="" width="56" height="56" loading="lazy">{esc(name)}</a></li>'
+        for key, name, url, desc in FAMILY)
+    return f'''    <nav class="bx-family" aria-label="More free Mac apps">
+      <div class="wrap">
+        <a class="bx-eyebrow" href="https://github.com/coreyhaines31">More free Mac apps</a>
+        <ul>{items}</ul>
+      </div>
+    </nav>
+'''
 
 
 def footer():
     return f'''  <footer>
-    <div class="wrap">
-{footer_guides()}{footer_alternatives()}{footer_family()}      <div class="footer-links"><span>© 2026 Corey Haines. <a href="{REPO}/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
-      <div class="footer-links"><a href="{REPO}">GitHub</a><a href="{REPO}/releases">Releases</a><a href="{REPO}/issues">Issues</a><a href="/privacy">Privacy</a></div>
+{footer_family()}    <div class="footer-lists">
+      <div class="wrap">
+{footer_guides()}{footer_alternatives()}      </div>
+    </div>
+    <div class="bx-footer">
+      <div class="wrap">
+        <div class="footer-links"><span>© 2026 Corey Haines. <a href="{REPO}/blob/main/LICENSE">FSL-1.1-MIT License</a>.</span></div>
+        <div class="footer-links"><a href="{REPO}">GitHub</a><a href="{REPO}/releases">Releases</a><a href="{REPO}/issues">Issues</a><a href="/privacy">Privacy</a></div>
+      </div>
     </div>
   </footer>
 '''
@@ -143,13 +161,13 @@ def homepage():
 
 
 def render_homepage_footer():
-    """The homepage is hand-written; keep its footer lists in sync between the markers."""
+    """The homepage is hand-written; keep its footer in sync between the markers."""
     path = os.path.join(ROOT, "index.html")
     page = homepage()
-    start, end = "<!-- alternatives -->\n", "<!-- /alternatives -->"
+    start, end = "<!-- footer -->\n", "  <!-- /footer -->"
     i, j = page.index(start) + len(start), page.index(end)
     with open(path, "w") as f:
-        f.write(page[:i] + footer_guides() + footer_alternatives() + footer_family() + "      " + page[j:])
+        f.write(page[:i] + footer() + page[j:])
 
 
 def homepage_schema():
