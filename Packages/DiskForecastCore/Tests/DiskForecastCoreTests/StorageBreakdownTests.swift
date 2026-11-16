@@ -109,6 +109,15 @@ struct StorageBreakdownTests {
         #expect(gigabytes(homeApps, .apps) == 1)
     }
 
+    @Test func applicationsAddToHomeClaimsWithoutOverlap() {
+        // /Applications is outside the home scan, so it adds to ~/Applications and takes nothing
+        // from any home category; System Data figures never enter the sum.
+        let result = breakdown([("Applications/Tool.app", 1), ("Movies", 10)], applications: 40, trash: 0)
+        #expect(gigabytes(result, .apps) == 41)
+        #expect(gigabytes(result, .movies) == 10)
+        #expect(gigabytes(result, .other) == 300 - 41 - 10)
+    }
+
     @Test func sharesAreInMeterOrderAndBySizeIsLargestFirst() {
         let result = breakdown([("Music", 30), ("Movies", 10), ("Pictures", 20)])
         let order = result.shares.map(\.category)
