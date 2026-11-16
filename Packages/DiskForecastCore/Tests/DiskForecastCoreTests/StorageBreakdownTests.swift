@@ -98,6 +98,7 @@ struct StorageBreakdownTests {
         #expect(result.unmeasured == [.trash])
         #expect(!result.isComplete)
         #expect(result.otherTitle == "Not measured")
+        #expect(result.explanation(of: .other).contains("Full Disk Access"))
         #expect(result.shares.reduce(0) { $0 + $1.bytes } == result.usedBytes)
     }
 

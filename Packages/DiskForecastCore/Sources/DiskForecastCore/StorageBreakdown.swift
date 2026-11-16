@@ -116,6 +116,11 @@ public struct StorageBreakdown: Sendable {
         category == .other ? otherTitle : category.title
     }
 
+    public func explanation(of category: StorageCategory) -> String {
+        guard category == .other, !isComplete else { return category.explanation }
+        return "macOS, app data, and folders only Full Disk Access can measure, like Mail, Messages, and the Trash"
+    }
+
     /// Splits used space between the claims. A claim inside one already counted adds nothing, and
     /// one around earlier claims adds only what they didn't count, so nothing is counted twice.
     public init(
