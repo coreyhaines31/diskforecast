@@ -12,6 +12,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let snapshots: FolderSnapshotStore
     private let updater: Updater
     private weak var openMenu: NSMenu?
+    private let meterState = StorageMeterState()
     var openCleanup: () -> Void = {}
     var openSystemData: () -> Void = {}
     var openForecast: () -> Void = {}
@@ -68,6 +69,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     func menuDidClose(_ menu: NSMenu) {
         openMenu = nil
+        meterState.menuClosed()
     }
 
     private func rebuild(_ menu: NSMenu) {
@@ -103,8 +105,61 @@ final class StatusItemController: NSObject, NSMenuDelegate {
             self?.openForecast()
         }
         let grewMost = SnapshotComparison.grewMostThisWeek(in: snapshots)
-        let card = MenuCardView(disk: disk, menuWidth: menu.size.width, grewMost: grewMost, open: open)
+        let card = MenuCardView(
+            disk: disk, menuWidth: menu.size.width, grewMost: grewMost, storage: storageSection(in: menu), open: open
+        )
         menu.insertItem(.panelCard(card), at: 0)
+    }
+
+    /// The storage meter, in the style chosen in Settings. Its Empty Trash key goes through the
+    /// same confirmation as the menu item, after closing the menu.
+    private func storageSection(in menu: NSMenu) -> StorageMeterSection {
+        let emptyTrash = { [weak self, weak menu] in
+            menu?.cancelTracking()
+            Task { @MainActor in self?.emptyTrash() }
+        }
+        let grantAccess = { [weak self, weak menu] in
+            menu?.cancelTracking()
+            self?.grantAccess()
+        }
+        return StorageMeterSection(
+            style: Preferences.storageMeterStyle, reading: storageReading(), state: meterState,
+            emptyTrash: emptyTrash, grantAccess: grantAccess
+        )
+    }
+
+    private func emptyTrash() {
+        TrashFlow.confirmAndEmptyTrash(scan: scan, disk: disk) { [meterState] in meterState.trashEmptied($0) }
+    }
+
+    /// Categories once a scan has finished; while one runs, used space alone, so nothing stale shows.
+    private func storageReading() -> StorageReading {
+        let used = max(0, disk.capacityBytes - disk.freeBytes)
+        var breakdown: StorageBreakdown?
+        if !scan.isScanning, let result = scan.result {
+            breakdown = StorageBreakdown(
+                home: scan.home, scan: result, items: scan.items, capacityBytes: disk.capacityBytes,
+                volumeUsedBytes: used, applicationsBytes: scan.applicationsBytes, trashBytes: scan.trashBytes,
+                fullDiskAccess: scan.scannedWithFullDiskAccess
+            )
+        }
+        var measuring = "Not measured yet"
+        if case .scanning(let files) = scan.state {
+            measuring = "Measuring… \(files.formatted(.number.notation(.compactName))) files"
+        }
+        return StorageReading(
+            breakdown: breakdown, capacityBytes: disk.capacityBytes, usedBytes: breakdown?.usedBytes ?? used,
+            measuring: measuring, footer: storageFooter()
+        )
+    }
+
+    private func storageFooter() -> StorageFooter {
+        if let activity = scan.activity { return .activity(activity) }
+        let trash = scan.trashBytes
+        if let emptied = meterState.recentlyEmptied(), (trash ?? 0) < 1_000_000 { return .emptied(emptied) }
+        guard FullDiskAccess.isGranted else { return .needsAccess }
+        guard let trash else { return .activity("Measuring the Trash…") }
+        return trash >= 1_000_000 ? .trash(trash) : .empty
     }
 
     private func addConsumers(to menu: NSMenu) {
@@ -197,9 +252,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         if let activity = scan.activity {
             menu.addItem(label(activity))
         } else if let trash = scan.trashBytes, trash >= 1_000_000 {
-            menu.addItem(ClosureMenuItem("Empty Trash: \(Bytes.format(trash))…") { [self] in
-                TrashFlow.confirmAndEmptyTrash(scan: scan, disk: disk)
-            })
+            menu.addItem(ClosureMenuItem("Empty Trash: \(Bytes.format(trash))…") { [weak self] in self?.emptyTrash() })
         }
         menu.addItem(ClosureMenuItem("Open Cleanup…") { [weak self] in self?.openCleanup() })
         menu.addItem(ClosureMenuItem("System Data…") { [weak self] in self?.openSystemData() })

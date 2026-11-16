@@ -3,8 +3,8 @@ import PanelKit
 import SwiftUI
 
 /// The Brushed card at the top of the menu: a percent-full meter on the metal fascia, the
-/// days-to-full counter with the forecast phrase, then the last 30 days and the forecast as a
-/// small chart. Clicking it opens the Forecast window.
+/// days-to-full counter with the forecast phrase, the last 30 days and the forecast as a small
+/// chart, then the storage meter. Clicking above the storage meter opens the Forecast window.
 struct MenuCardView: View {
     private static let volumeName = (try? URL(filePath: "/").resourceValues(forKeys: [.volumeNameKey]))?
         .volumeName ?? "Macintosh HD"
@@ -15,12 +15,22 @@ struct MenuCardView: View {
     /// The menu's real width; the folder rows' size column makes it wider than PanelKit's 340.
     let menuWidth: CGFloat
     let grewMost: (name: String, bytes: Int64)?
+    let storage: StorageMeterSection
     let open: () -> Void
 
     @Environment(\.panelTheme) private var theme
 
     var body: some View {
         MenuCard(accent: PanelAccent.diskForecast, menuWidth: menuWidth) {
+            forecast
+                .contentShape(Rectangle())
+                .onTapGesture(perform: open)
+            storage
+        }
+    }
+
+    private var forecast: some View {
+        VStack(alignment: .leading, spacing: 0) {
             Fascia(nameplate: "Disk", timestamp: capacityLine, detail: Self.volumeName, label: "Free space") {
                 Meter(Self.meter, value: percentFull, accessibilityValue: "\(percentFullWhole) percent full")
             }
@@ -48,8 +58,6 @@ struct MenuCardView: View {
                 }
             }
         }
-        .contentShape(Rectangle())
-        .onTapGesture(perform: open)
     }
 
     /// Space used over the range, rising towards capacity, with the dashed forecast to full. The
