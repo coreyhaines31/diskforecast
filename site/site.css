@@ -63,6 +63,7 @@ p { margin: 0 0 1em; }
 .fineprint code { font-size: 12.5px; overflow-wrap: anywhere; background: var(--bx-field); padding: 2px 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .stars { display: inline-flex; align-items: center; gap: 7px; margin-top: 18px; padding: 6px 12px; border-radius: 4px; font-size: 14px; font-weight: 500; color: var(--ink); box-shadow: inset 0 0 0 1px var(--bx-ink2); }
 .stars:hover { text-decoration: none; }
+.stars[data-stars-pending] { visibility: hidden; }
 .stars svg { color: var(--ink-2); }
 
 /* Home hero: brushed aluminium, copy beside the mounted menu */
