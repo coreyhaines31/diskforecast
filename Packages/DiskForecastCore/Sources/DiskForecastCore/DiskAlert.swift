@@ -37,11 +37,15 @@ public enum DiskAlert: String, Sendable, Equatable {
         if let grewMost {
             body.append("\(grewMost.name) grew \(Bytes.format(grewMost.bytes)) this week.")
         }
-        if let trashBytes, trashBytes >= 1_000_000_000 {
-            body.append("Emptying the Trash gets back \(Bytes.format(trashBytes)).")
-        } else {
-            body.append("Open Cleanup to see what you can clear.")
-        }
+        body.append(Self.quickestSpace(trashBytes: trashBytes))
         return (title, body.joined(separator: " "))
+    }
+
+    /// Where to get space back fastest: the Trash when it holds a gigabyte or more, otherwise Cleanup.
+    static func quickestSpace(trashBytes: Int64?) -> String {
+        if let trashBytes, trashBytes >= 1_000_000_000 {
+            return "Emptying the Trash gets back \(Bytes.format(trashBytes))."
+        }
+        return "Open Cleanup to see what you can clear."
     }
 }
