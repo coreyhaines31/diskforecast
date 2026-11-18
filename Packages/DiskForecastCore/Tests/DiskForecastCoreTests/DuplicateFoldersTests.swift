@@ -73,6 +73,18 @@ struct DuplicateFoldersTests {
         #expect(await find().isEmpty)
     }
 
+    @Test func skipsACopyWhoseSmallFileWasEdited() async throws {
+        try write(trip, in: ["Desktop/Trip", "Downloads/Trip"])
+        try write(["notes.txt": 5_000], in: ["Desktop/Trip", "Downloads/Trip"])
+        // Ten more bytes in a file too small to be one of those whose contents are compared: the
+        // same blocks on disk, so only the exact length shows the edit.
+        let handle = try FileHandle(forWritingTo: home.appending(path: "Downloads/Trip/notes.txt"))
+        try handle.seekToEnd()
+        try handle.write(contentsOf: Data(repeating: 7, count: 10))
+        try handle.close()
+        #expect(await find().isEmpty)
+    }
+
     @Test func skipsFoldersWithDifferentFiles() async throws {
         try write(trip, in: ["Desktop/Trip", "Downloads/Trip"])
         try FileManager.default.moveItem(

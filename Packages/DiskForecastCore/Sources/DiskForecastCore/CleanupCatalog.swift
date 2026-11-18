@@ -340,16 +340,6 @@ public struct CleanupCatalog: Sendable {
         }
     }
 
-    func duplicateFolders(_ scan: ScanResult) -> [Candidate] {
-        DuplicateFolders.find(in: scan, home: home, minimumBytes: Self.minimumDuplicateBytes).map { copy in
-            let original = "~" + copy.original.dropFirst(home.count)
-            return Candidate(
-                path: copy.path, detail: "Same files as \(original)", name: Trasher.Report.label(copy.path),
-                bytes: copy.bytes
-            )
-        }
-    }
-
     func diskImages(_ scan: ScanResult) -> [Candidate] {
         scan.diskImages.map { Candidate(path: $0.path, detail: "Modified \(Age.phrase(from: $0.modified, to: now))") }
     }

@@ -12,9 +12,11 @@ public struct DuplicateFolder: Sendable, Hashable {
 }
 
 /// Finds folders stored twice, starting from the scan so nothing new is listed or prompted for.
-/// Candidates share a name, a size, and a number of subfolders. Each pair is then confirmed by
-/// listing both folders' files and comparing their sizes, and by comparing the contents of the
-/// largest few files in sampled chunks. Only folders above the size floor are ever read.
+/// Candidates share a name, a size, and a number of subfolders. Each pair is then checked by
+/// listing both folders' files and comparing their exact lengths, and by comparing the contents of
+/// the largest few files in sampled chunks. That is strong evidence, not proof: smaller files are
+/// never read, so the list says what was checked instead of calling the folders identical. Only
+/// folders above the size floor are ever read.
 enum DuplicateFolders {
     /// How far apart two copies' sizes can be, as a share of the larger.
     static let sizeTolerance = 0.05
@@ -142,8 +144,11 @@ enum DuplicateFolders {
         else { return nil }
         var pairs: [(copy: File, original: File)] = []
         for (relative, file) in copyFiles {
+            // Space on disk is rounded to whole blocks, so an edited small file usually keeps it. The
+            // exact length is what tells an edited copy from an untouched one.
             guard let other = originalFiles[relative], other.type == file.type,
-                  other.entry.allocatedBytes == file.entry.allocatedBytes
+                  other.entry.allocatedBytes == file.entry.allocatedBytes,
+                  file.type != .file || length(of: file.path) == length(of: other.path)
             else { return nil }
             pairs.append((file, other))
         }
@@ -162,6 +167,12 @@ enum DuplicateFolders {
             if file.entry.cloneReferences > 1 { return total + (BulkReader.privateSize(of: file.path) ?? 0) }
             return total + file.entry.allocatedBytes
         }
+    }
+
+    /// A file's exact length in bytes, or nil when it can't be read.
+    static func length(of path: String) -> Int64? {
+        var info = stat()
+        return lstat(path, &info) == 0 ? Int64(info.st_size) : nil
     }
 
     /// Every file under a scanned folder by its path inside it. Only folders the scan reached are
@@ -222,5 +233,17 @@ enum DuplicateFolders {
             else { return false }
         }
         return true
+    }
+}
+
+extension CleanupCatalog {
+    func duplicateFolders(_ scan: ScanResult) -> [Candidate] {
+        DuplicateFolders.find(in: scan, home: home, minimumBytes: Self.minimumDuplicateBytes).map { copy in
+            let original = "~" + copy.original.dropFirst(home.count)
+            return Candidate(
+                path: copy.path, detail: "Same file names and sizes as \(original)",
+                name: Trasher.Report.label(copy.path), bytes: copy.bytes
+            )
+        }
     }
 }
