@@ -24,6 +24,7 @@ struct ForecastView: View {
     let openSystemData: () -> Void
     @State private var range = Range.month
     @State private var comparison: SnapshotComparison?
+    @State private var keepsChanging: KeepsChanging?
 
     var body: some View {
         let series = ForecastSeries(disk: disk, days: range.rawValue)
@@ -64,6 +65,9 @@ struct ForecastView: View {
                     .frame(maxWidth: .infinity, minHeight: 200, idealHeight: 240, maxHeight: 280)
                 facts(series)
             }
+            if let keepsChanging {
+                KeepsChangingView(keepsChanging: keepsChanging)
+            }
             WhatChangedView(comparison: comparison, home: scan.home, openSystemData: openSystemData)
                 .frame(maxHeight: .infinity, alignment: .top)
             Text(Self.footnote)
@@ -73,9 +77,10 @@ struct ForecastView: View {
         }
         .padding(24)
         .frame(minWidth: 560, minHeight: 640)
-        .task(id: "\(range.rawValue)-\(scan.finishedAt?.timeIntervalSince1970 ?? 0)") {
+        .task(id: "\(range.rawValue)-\(scan.finishedAt?.timeIntervalSince1970 ?? 0)-\(disk.forecastPhrase)") {
             let start = series.start
             comparison = SnapshotComparison(store: snapshots, since: start)
+            keepsChanging = KeepsChanging(store: snapshots, outlook: disk.outlook)
         }
     }
 
