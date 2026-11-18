@@ -82,7 +82,12 @@ Install Disk Forecast, a free macOS menu bar app (https://github.com/coreyhaines
    open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
    Then tell me to turn on Disk Forecast there (it's optional), that its tape reel icon with my free space is now in the menu bar, and that from now on I can ask you why my disk is filling up or what's safe to clear. You'll use the `diskforecast` command (see `diskforecast --help`; if it isn't on the PATH, it's at "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast").
 
-Don't change any other settings and don't delete anything.
+6. Ask me whether future agent sessions should know about it. Only if I say yes, append this to your own global instructions file (~/.claude/CLAUDE.md for Claude Code, ~/.codex/AGENTS.md for Codex), unless it's already there, and tell me which file you changed:
+
+   ## Disk space
+   Disk Forecast is installed. For disk questions, or on "No space left on device", run `diskforecast status`, then `diskforecast cleanup` (see `diskforecast --help`; if it isn't on the PATH, it's at "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast"). Only move things to the Trash when I say so.
+
+Apart from that, don't change any other settings and don't delete anything.
 ```
 
 The app is signed with a Developer ID and notarized by Apple, so it opens without warnings. It updates itself through [Sparkle](https://sparkle-project.org). It isn't on the App Store because the App Store's sandbox can't measure the whole disk.
