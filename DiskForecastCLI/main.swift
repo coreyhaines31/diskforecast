@@ -54,8 +54,10 @@ func send(_ request: CLIRequest) -> CLIResponse? {
     guard socket >= 0 else { return nil }
     defer { close(socket) }
     setsockopt(socket, SOL_SOCKET, SO_NOSIGPIPE, [Int32(1)], socklen_t(MemoryLayout<Int32>.size))
-    // Moving many things to the Trash can take a while; a stuck app still can't hold this up forever.
-    var timeout = timeval(tv_sec: 60, tv_usec: 0)
+    // Moving many things to the Trash can take a while, and comparing a copy of a big folder with its
+    // original longer; a stuck app still can't hold this up forever.
+    let trashing = request.action == .trash && request.confirmed == true
+    var timeout = timeval(tv_sec: trashing ? 1_800 : 60, tv_usec: 0)
     setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, socklen_t(MemoryLayout<timeval>.size))
     setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, &timeout, socklen_t(MemoryLayout<timeval>.size))
     guard var address = socketAddress() else { fail("The path to Disk Forecast's socket is too long.") }

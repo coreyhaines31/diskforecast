@@ -19,7 +19,7 @@ final class CLICommands {
         self.open = open
     }
 
-    func handle(_ request: CLIRequest) -> CLIResponse {
+    func handle(_ request: CLIRequest) async -> CLIResponse {
         switch request.action {
         case .status:
             return statusResponse()
@@ -34,7 +34,7 @@ final class CLICommands {
             scan.scan()
             return CLIResponse(status: status())
         case .trash:
-            return trash(request.targets ?? [], confirmed: request.confirmed ?? false)
+            return await trash(request.targets ?? [], confirmed: request.confirmed ?? false)
         case .undo:
             return undo()
         case .open:
@@ -101,7 +101,7 @@ final class CLICommands {
         return CLIResponse(changes: changes)
     }
 
-    private func trash(_ targets: [String], confirmed: Bool) -> CLIResponse {
+    private func trash(_ targets: [String], confirmed: Bool) async -> CLIResponse {
         guard scan.result != nil else { return notScannedYet() }
         let entries: [CleanupEntry]
         do {
@@ -116,7 +116,8 @@ final class CLICommands {
             ))
         }
         let trasher = Trasher(home: scan.home)
-        let report = trasher.trash(entries)
+        // Comparing a copy of a folder with its original can take minutes, so it runs off the main thread.
+        let report = await Task.detached(priority: .userInitiated) { trasher.trash(entries) }.value
         TrashHistory.record(report, trasher: trasher)
         scan.remove(Set(report.moved))
         disk.refresh()

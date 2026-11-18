@@ -106,7 +106,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case .settings: self?.settingsWindow.show()
             }
         }
-        cliServer = CLIServer { commands.handle($0) }
+        cliServer = CLIServer { await commands.handle($0) }
         cliServer?.start()
     }
 
