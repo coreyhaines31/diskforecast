@@ -225,6 +225,18 @@ struct FolderChurnTests {
         #expect(FolderChurns.churn(in: window).map(\.path) == ["Downloads", "code"])
     }
 
+    @Test func carriesTheFoldersInsideThroughTheCommandLineAndReadsAnAppWithout() throws {
+        let inner = FolderChurn(path: "code/app/.next", movedBytes: 30 * gigabyte, netBytes: 2 * gigabyte)
+        let code = FolderChurn(path: "code", movedBytes: 120 * gigabyte, netBytes: -8 * gigabyte, inside: [inner])
+        let encoded = try JSONEncoder().encode(CLIFolderChurn(code))
+        #expect(try JSONDecoder().decode(CLIFolderChurn.self, from: encoded).churn == code)
+
+        let older = Data(#"{"path":"code","movedBytes":120000000000,"netBytes":-8000000000}"#.utf8)
+        let decoded = try JSONDecoder().decode(CLIFolderChurn.self, from: older)
+        #expect(decoded.inside == nil)
+        #expect(decoded.churn.inside.isEmpty)
+    }
+
     @Test func describesTheMovementInPlainWords() {
         let grew = FolderChurn(path: "code/app/.next", movedBytes: 41 * gigabyte, netBytes: 12 * gigabyte)
         #expect(grew.summary(days: 9) == "moved 41 GB over 9 days, ended 12 GB up")

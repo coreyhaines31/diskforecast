@@ -217,11 +217,19 @@ public struct CLIFolderChurn: Codable, Equatable, Sendable {
     public var movedBytes: Int64
     /// The same changes with their signs. Negative when it ended up smaller.
     public var netBytes: Int64
+    /// The few folders inside this one that moved back and forth most. Nil when none did enough to
+    /// list, and from apps older than this field.
+    public var inside: [CLIFolderChurn]?
 
     public init(_ churn: FolderChurn) {
         path = churn.path
         movedBytes = churn.movedBytes
         netBytes = churn.netBytes
+        inside = churn.inside.isEmpty ? nil : churn.inside.map(CLIFolderChurn.init)
+    }
+
+    public var churn: FolderChurn {
+        FolderChurn(path: path, movedBytes: movedBytes, netBytes: netBytes, inside: (inside ?? []).map(\.churn))
     }
 }
 
