@@ -41,7 +41,8 @@
   "tools": [
     { "name": "disk_status", "description": "Free space, how fast the disk is filling, and how much is safe to clear" },
     { "name": "disk_changes", "description": "Which folders grew or shrank over the last N days" },
-    { "name": "cleanup_list", "description": "What can be reclaimed, and why each item is safe or worth a look" }
+    { "name": "cleanup_list", "description": "What can be reclaimed, and why each item is safe or worth a look" },
+    { "name": "submit_feedback", "description": "Drafts a GitHub issue link about a missing or broken tool for you to review and submit; sends nothing" }
   ],
   "compatibility": {
     "claude_desktop": ">=0.10.0",
