@@ -44,7 +44,8 @@ struct GeneralSettingsView: View {
                     Button("Check Now") { updater.checkForUpdates() }
                 }
             } footer: {
-                Text("Update checks are the only thing that goes online. Nothing about your disk ever leaves your Mac.")
+                Text("Update checks are the only thing that goes online, unless you turn on worktree pull requests "
+                    + "in Scanning. Nothing about your disk ever leaves your Mac.")
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
