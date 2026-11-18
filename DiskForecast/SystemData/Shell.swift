@@ -1,3 +1,4 @@
+import DiskForecastCore
 import Foundation
 
 /// Runs Apple's and other tools' own commands, the only way System Data fixes reclaim space.
@@ -10,7 +11,18 @@ enum Shell {
 
     static let searchPath = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/homebrew/bin"
 
-    static func run(_ executable: String, _ arguments: [String], environment: [String: String] = [:]) async -> Output {
+    /// Long enough for the slowest read, `docker system df` or a first `simctl list` that has to start
+    /// the simulator service.
+    static let readTimeout: TimeInterval = 120
+    /// For fixes that remove data, which can take minutes: pruning a large Docker build cache, or
+    /// deleting a simulator runtime.
+    static let fixTimeout: TimeInterval = 15 * 60
+
+    /// Runs `executable`, stopping it after `timeout` seconds; nil waits as long as it takes.
+    static func run(
+        _ executable: String, _ arguments: [String], environment: [String: String] = [:],
+        timeout: TimeInterval? = readTimeout
+    ) async -> Output {
         await Task.detached(priority: .utility) {
             let process = Process()
             process.executableURL = URL(filePath: executable)
@@ -22,21 +34,28 @@ enum Shell {
             let pipe = Pipe()
             process.standardOutput = pipe
             process.standardError = pipe
+            let result: TimedProcess.Result
             do {
-                try process.run()
+                result = try TimedProcess.run(process, output: pipe, timeout: timeout)
             } catch {
                 return Output(status: -1, text: error.localizedDescription)
             }
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            process.waitUntilExit()
-            return Output(status: process.terminationStatus, text: String(bytes: data, encoding: .utf8) ?? "")
+            if result.timedOut, let timeout {
+                let limit = Duration.seconds(timeout).formatted(.units(allowed: [.minutes, .seconds], width: .wide))
+                return Output(status: -1, text: "It didn't finish within \(limit), so Disk Forecast stopped it.")
+            }
+            return Output(status: result.status, text: String(bytes: result.data, encoding: .utf8) ?? "")
         }.value
     }
 
-    /// Runs a shell command as an administrator, after macOS asks for the password.
+    /// Runs a shell command as an administrator, after macOS asks for the password. No timeout: the
+    /// password prompt waits on a person, and stopping osascript wouldn't stop the command it started.
     static func runAsAdministrator(_ command: String) async -> Output {
         let escaped = command.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"")
-        return await run("/usr/bin/osascript", ["-e", "do shell script \"\(escaped)\" with administrator privileges"])
+        return await run(
+            "/usr/bin/osascript", ["-e", "do shell script \"\(escaped)\" with administrator privileges"],
+            timeout: nil
+        )
     }
 
     static func quoted(_ argument: String) -> String {
