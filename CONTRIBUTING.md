@@ -37,7 +37,7 @@ These keep Disk Forecast something people can trust with their disk:
 
 - **Files only go to the Trash.** Never delete anything outright. All cleanup goes through `Trasher`, which refuses anything outside the home folder.
 - **System Data fixes use the tool's own command** (`tmutil`, `xcrun simctl`, `docker`), show that command, and ask before running it.
-- **No telemetry.** The only network request is Sparkle's update check.
+- **No telemetry.** The only network request is Sparkle's update check. The one opt-in exception is worktree pull request checks, which run the user's own `gh` only when they turn the setting on.
 - **Plain language.** Explain what something is and whether it's safe to clear. Don't promise speed: say "reclaim" and "explain", never "optimize", "boost", or "speed up".
 
 ## Before you open a pull request

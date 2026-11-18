@@ -52,6 +52,8 @@ public enum Forecast {
         /// Changing by less than 100 MB on a typical day.
         case steady
         case gaining(bytesPerDay: Double)
+        /// Free space went up, but mostly in one day, like after a cleanup. Not a pace to plan on.
+        case cleared(bytes: Int64)
     }
 
     public static func outlook(
@@ -68,7 +70,23 @@ public enum Forecast {
         if rate < -noiseBytesPerDay {
             return .filling(daysUntilFull: Double(currentFreeBytes) / -rate, bytesPerDay: rate)
         }
-        return rate > noiseBytesPerDay ? .gaining(bytesPerDay: rate) : .steady
+        guard rate > noiseBytesPerDay else { return .steady }
+        if let cleared = oneDayRise(history: history, now: now, calendar: calendar) {
+            return .cleared(bytes: cleared)
+        }
+        return .gaining(bytesPerDay: rate)
+    }
+
+    /// The biggest rise between two readings in the window, when it's more than all the other
+    /// rises put together: free space came back in one go, not day by day.
+    static func oneDayRise(history: UsageHistory, now: Date, calendar: Calendar) -> Int64? {
+        guard let start = calendar.date(byAdding: .day, value: -windowDays, to: calendar.startOfDay(for: now)) else {
+            return nil
+        }
+        let recent = history.samples.filter { $0.day >= start }
+        let rises = zip(recent, recent.dropFirst()).map { $1.freeBytes - $0.freeBytes }.filter { $0 > 0 }
+        guard let biggest = rises.max(), biggest > rises.reduce(0, +) - biggest else { return nil }
+        return biggest
     }
 
     /// Whether the disk is low on space whatever the trend: under 10% free, or under 20 GB.

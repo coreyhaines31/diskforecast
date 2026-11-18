@@ -33,13 +33,19 @@ public struct CleanupEntry: Sendable, Hashable, Identifiable {
     /// Paths that go to the Trash with it, like a worktree's records in its repository. Counted
     /// in `bytes`.
     public let companions: [String]
+    /// A worktree branch's pull request, when that's been looked up.
+    public let pullRequest: PullRequestState?
 
-    public init(path: String, bytes: Int64, detail: String? = nil, name: String? = nil, companions: [String] = []) {
+    public init(
+        path: String, bytes: Int64, detail: String? = nil, name: String? = nil, companions: [String] = [],
+        pullRequest: PullRequestState? = nil
+    ) {
         self.path = path
         self.bytes = bytes
         self.detail = detail
         self.name = name ?? (path as NSString).lastPathComponent
         self.companions = companions
+        self.pullRequest = pullRequest
     }
 }
 
@@ -88,6 +94,8 @@ public struct CleanupCatalog: Sendable {
     public let agentScratch: ScanResult?
     /// What removing a checkout would lose. Swappable for tests.
     let gitState: @Sendable (String) -> GitState?
+    /// A worktree's pull request, by path. Nil when it wasn't looked up.
+    let pullRequest: @Sendable (String) -> PullRequestState?
 
     /// Entries smaller than this aren't worth listing.
     static let minimumEntryBytes: Int64 = 1_000_000
@@ -101,13 +109,15 @@ public struct CleanupCatalog: Sendable {
 
     public init(
         home: String, staleAfterDays: Int = 30, now: Date = Date(), agentScratch: ScanResult? = nil,
-        gitState: @escaping @Sendable (String) -> GitState? = GitState.read(at:)
+        gitState: @escaping @Sendable (String) -> GitState? = GitState.read(at:),
+        pullRequest: @escaping @Sendable (String) -> PullRequestState? = { _ in nil }
     ) {
         self.home = home.hasSuffix("/") ? String(home.dropLast()) : home
         self.staleAfterDays = staleAfterDays
         self.now = now
         self.agentScratch = agentScratch
         self.gitState = gitState
+        self.pullRequest = pullRequest
     }
 
     var staleCutoff: Date { now.addingTimeInterval(-Double(staleAfterDays) * 86_400) }
@@ -127,7 +137,7 @@ public struct CleanupCatalog: Sendable {
                 bytes += companions.reduce(0) { $0 + (size(of: $1, in: scan) ?? 0) }
                 return CleanupEntry(
                     path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name,
-                    companions: companions
+                    companions: companions, pullRequest: candidate.pullRequest
                 )
             }
             .filter { $0.bytes >= rule.minimumBytes }
@@ -153,6 +163,7 @@ public struct CleanupCatalog: Sendable {
         var detail: String?
         var name: String?
         var companions: [String] = []
+        var pullRequest: PullRequestState?
         /// What removing it frees, when that isn't its size in the scan.
         var bytes: Int64?
     }
@@ -252,6 +263,8 @@ public struct CleanupCatalog: Sendable {
         scan.worktrees.map { worktree in
             var parts = [worktree.repository]
             if let state = gitState(worktree.path) { parts.append(state.summary) }
+            let pullRequest = pullRequest(worktree.path)
+            if let phrase = pullRequest?.phrase { parts.append(phrase) }
             parts.append("last changed \(Age.phrase(from: worktree.modified, to: now))")
             // Its records go too, as with git worktree remove; they can hold whole submodule copies.
             // Only when they point back at this checkout, as git's own do, so a stray .git file
@@ -259,7 +272,7 @@ public struct CleanupCatalog: Sendable {
             let pointsBack = Self.checkoutGitFile(recordedIn: worktree.gitDirectory) == worktree.path + "/.git"
             return Candidate(
                 path: worktree.path, detail: parts.joined(separator: " · "),
-                companions: pointsBack ? [worktree.gitDirectory] : []
+                companions: pointsBack ? [worktree.gitDirectory] : [], pullRequest: pullRequest
             )
         }
     }
