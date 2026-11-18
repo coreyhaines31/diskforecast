@@ -162,6 +162,8 @@ sudo ln -sf "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast" /usr/l
 
 If you installed with Homebrew before the command existed, run `brew reinstall --cask diskforecast` once to link it.
 
+**Telling your agents it's there:** in the same section, **Note for Claude Code** and **Note for Codex** add a short "Disk space" note to `~/.claude/CLAUDE.md` or `~/.codex/AGENTS.md`, so future sessions reach for `diskforecast status` and `diskforecast cleanup` instead of a slow `du` scan. **Add…** shows the exact text and file first, and only appends it to the end; **Remove** takes out just that note. It's the same note the install prompt above offers to add.
+
 **For AI agents:** paste this into Claude Code or Codex, or add it to your `CLAUDE.md` or `AGENTS.md`:
 
 ```text
