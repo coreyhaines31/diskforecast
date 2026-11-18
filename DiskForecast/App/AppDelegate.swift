@@ -141,10 +141,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Preferences.appliedLaunchAtLoginDefault = true
     }
 
-    /// Saves today's folder sizes, so later scans can say what grew.
+    /// Saves today's folder sizes, with the System Data that's quick to read, so later scans can say
+    /// what grew.
     private func recordSnapshot(of result: ScanResult) {
         disk.refresh()
-        try? snapshots.save(FolderSnapshot(tree: result.tree, freeBytes: disk.freeBytes, at: Date()))
+        let freeBytes = disk.freeBytes
+        let purgeableBytes = disk.purgeableBytes
+        let date = Date()
+        Task {
+            let listed = await Shell.run("/usr/bin/tmutil", ["listlocalsnapshots", "/"])
+            let reading = SystemDataReading(
+                purgeableBytes: purgeableBytes,
+                localSnapshotCount: listed.succeeded ? LocalSnapshots.parse(listed.text).count : nil
+            )
+            try? snapshots.save(
+                FolderSnapshot(tree: result.tree, freeBytes: freeBytes, systemData: reading, at: date)
+            )
+        }
     }
 
     /// Polls while onboarding is open, since granting access in System Settings posts nothing.
