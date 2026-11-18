@@ -143,12 +143,16 @@ func describe(_ status: CLIStatus) -> String {
 func describe(_ changes: CLIChanges) -> String {
     let format = Date.FormatStyle().month(.abbreviated).day()
     var lines = ["What changed from \(changes.since.formatted(format)) to \(changes.until.formatted(format)):"]
+    var anyFirstMeasured = false
     func add(_ folders: [CLIFolderChange], depth: Int) {
         for folder in folders {
             let name = depth == 0 ? "~/" + folder.path : (folder.path as NSString).lastPathComponent
-            let new = folder.oldBytes == 0 ? " (new)" : folder.newBytes == 0 ? " (gone)" : ""
-            let size = signed(folder.delta).padding(toLength: 9, withPad: " ", startingAt: 0)
-            lines.append(String(repeating: "  ", count: depth + 1) + size + " " + name + new)
+            let note = folder.firstMeasured ? " (first measured)"
+                : folder.oldBytes == 0 ? " (new)" : folder.newBytes == 0 ? " (gone)" : ""
+            let amount = folder.firstMeasured ? Bytes.format(folder.newBytes) : signed(folder.delta)
+            let size = amount.padding(toLength: 9, withPad: " ", startingAt: 0)
+            lines.append(String(repeating: "  ", count: depth + 1) + size + " " + name + note)
+            anyFirstMeasured = anyFirstMeasured || folder.firstMeasured
             add(folder.children, depth: depth + 1)
         }
     }
@@ -158,6 +162,13 @@ func describe(_ changes: CLIChanges) -> String {
         lines.append("  \(size) Outside your home folder (System Data, other accounts, and apps)")
     }
     if lines.count == 1 { lines.append("  No folder changed by more than 500 MB.") }
+    if anyFirstMeasured {
+        lines.append("")
+        lines.append(
+            "First measured: the earlier scan couldn't read these folders, for example while Full Disk Access "
+                + "was off, so their size isn't counted as growth."
+        )
+    }
     return lines.joined(separator: "\n")
 }
 
