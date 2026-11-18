@@ -277,6 +277,15 @@ extension CleanupCatalog {
                 group: .safeToClear
             ) { catalog, scan in catalog.children(of: "Library/Logs", in: scan) },
             CleanupRule(
+                id: "duplicate-folders", title: "Folders stored twice",
+                explanation: "Large folders that look like copies of another folder: the same file names and "
+                    + "exact sizes, and matching contents in their largest files. Smaller files aren't compared "
+                    + "byte for byte, so open both before removing one. Each says where the other is, and its "
+                    + "size is what removing it frees. Copies that share their storage, as copies Finder makes "
+                    + "on the same disk do, cost nothing and aren't listed.",
+                group: .worthALook, minimumBytes: CleanupCatalog.minimumDuplicateBytes
+            ) { catalog, scan in catalog.duplicateFolders(scan) },
+            CleanupRule(
                 id: "downloads", title: "Big downloads",
                 explanation: "Large files and folders in Downloads. Most were needed once.",
                 group: .worthALook, minimumBytes: CleanupCatalog.minimumDownloadBytes
