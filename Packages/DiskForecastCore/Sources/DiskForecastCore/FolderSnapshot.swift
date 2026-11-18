@@ -73,7 +73,9 @@ public struct FolderChange: Sendable, Equatable, Identifiable {
     /// How much it grew or shrank. Zero for a folder measured for the first time.
     public var delta: Int64 { isFirstMeasured ? 0 : newBytes - oldBytes - firstMeasuredBytes }
     /// Absent, or too small to record, in the earlier snapshot, which did measure where it is.
-    public var isNew: Bool { oldBytes == 0 && !isFirstMeasured }
+    public var isNew: Bool { oldBytes == 0 && !isFirstMeasured && !listedForFirstMeasured }
+    /// What was measured for the first time: the folder itself, or the folders inside it.
+    public var firstMeasuredSize: Int64 { isFirstMeasured ? newBytes : firstMeasuredBytes }
     public var isGone: Bool { newBytes == 0 }
     public var name: String { (path as NSString).lastPathComponent }
     /// Whether the snapshots recorded anything below this folder.
@@ -82,12 +84,14 @@ public struct FolderChange: Sendable, Equatable, Identifiable {
     public let isFirstMeasured: Bool
     /// Bytes in folders inside this one that the earlier scan couldn't measure, left out of `delta`.
     public let firstMeasuredBytes: Int64
+    /// Listed for what was measured for the first time, not for growing or shrinking.
+    public let listedForFirstMeasured: Bool
 }
 
 public enum FolderChanges {
     /// Folders directly under `parent` ("" for the top level) whose size changed by at least
-    /// `threshold`, biggest change first, then the folders at least that big that were measured
-    /// for the first time, biggest first.
+    /// `threshold`, biggest change first. Then, biggest first, the ones where at least that much
+    /// was measured for the first time, in them or as them.
     public static func changes(
         from old: FolderSnapshot,
         to new: FolderSnapshot,
@@ -101,20 +105,22 @@ public enum FolderChanges {
         let paths = Set(old.folders.keys.filter(isChild)).union(new.folders.keys.filter(isChild))
         let all = Set(old.folders.keys).union(new.folders.keys)
         return paths.compactMap { path -> FolderChange? in
-            let change = FolderChange(
-                path: path,
-                oldBytes: old.folders[path] ?? 0,
-                newBytes: new.folders[path] ?? 0,
+            let oldBytes = old.folders[path] ?? 0
+            let newBytes = new.folders[path] ?? 0
+            let firstMeasured = isFirstMeasured(path, from: old, to: new)
+            let inside = firstMeasuredBytes(under: path, from: old, to: new)
+            let grew = !firstMeasured && abs(newBytes - oldBytes - inside) >= threshold
+            guard grew || (firstMeasured ? newBytes : inside) >= threshold else { return nil }
+            return FolderChange(
+                path: path, oldBytes: oldBytes, newBytes: newBytes,
                 hasChildren: all.contains { $0.hasPrefix(path + "/") },
-                isFirstMeasured: isFirstMeasured(path, from: old, to: new),
-                firstMeasuredBytes: firstMeasuredBytes(under: path, from: old, to: new)
+                isFirstMeasured: firstMeasured, firstMeasuredBytes: inside, listedForFirstMeasured: !grew
             )
-            let size = change.isFirstMeasured ? change.newBytes : abs(change.delta)
-            return size >= threshold ? change : nil
         }
         .sorted { first, second in
-            if first.isFirstMeasured != second.isFirstMeasured { return second.isFirstMeasured }
-            return first.isFirstMeasured ? first.newBytes > second.newBytes : abs(first.delta) > abs(second.delta)
+            if first.listedForFirstMeasured != second.listedForFirstMeasured { return second.listedForFirstMeasured }
+            return first.listedForFirstMeasured
+                ? first.firstMeasuredSize > second.firstMeasuredSize : abs(first.delta) > abs(second.delta)
         }
     }
 

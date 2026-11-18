@@ -130,6 +130,26 @@ struct FolderSnapshotTests {
         #expect(code[0].isNew && !code[0].isFirstMeasured && code[0].delta == 4 * gigabyte)
     }
 
+    @Test func listsAFolderThatOnlyHoldsFirstMeasuredFoldersWithThem() {
+        let old = FolderSnapshot(
+            day: day, homeBytes: 30 * gigabyte, freeBytes: 0,
+            folders: ["Library": 30 * gigabyte, "Downloads": 9 * gigabyte],
+            unmeasured: ["Library/Metadata/CoreSpotlight"]
+        )
+        let new = FolderSnapshot(
+            day: day, homeBytes: 34 * gigabyte, freeBytes: 0,
+            folders: ["Library": 34 * gigabyte, "Library/Metadata": 4 * gigabyte,
+                      "Library/Metadata/CoreSpotlight": 4 * gigabyte, "Downloads": 6 * gigabyte]
+        )
+        let top = FolderChanges.changes(from: old, to: new)
+        #expect(top.map(\.path) == ["Downloads", "Library"])
+        #expect(!top[0].listedForFirstMeasured)
+        #expect(top[1].listedForFirstMeasured && top[1].firstMeasuredSize == 4 * gigabyte)
+        let library = FolderChanges.changes(from: old, to: new, under: "Library")
+        #expect(library.map(\.path) == ["Library/Metadata"])
+        #expect(library[0].listedForFirstMeasured && !library[0].isFirstMeasured && !library[0].isNew)
+    }
+
     @Test func leavesFirstMeasuredFoldersOutOfTheHomeFolderTotal() {
         let (old, new) = accessGranted
         // 6 GB more used, all of it the home folder's real growth: Caches and code/new-app.
