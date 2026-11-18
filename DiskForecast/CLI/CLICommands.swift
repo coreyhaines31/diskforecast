@@ -51,7 +51,8 @@ final class CLICommands {
                 + "Turn it on in System Settings › Privacy & Security › Full Disk Access.")
         }
         let weekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-        if let gap = SnapshotComparison(store: snapshots, since: weekAgo)?.freeSpaceGap {
+        if let gap = SnapshotComparison(store: snapshots, since: weekAgo)?.freeSpaceGap,
+           gap.isWorthAStatusNote(capacityBytes: disk.capacityBytes) {
             notes.append(gap.statusNote(days: 7))
         }
         return CLIResponse(notes: notes, status: status())

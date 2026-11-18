@@ -37,6 +37,17 @@ struct FreeSpaceGapTests {
             + "It saves purgeable space, local Time Machine snapshots, and swap with each scan from now on.")
     }
 
+    @Test func statusLineWaitsForTwentyGigabytesOrAShareOfTheDisk() throws {
+        #expect(FreeSpaceGap.statusThreshold(capacityBytes: 256 * gigabyte) == 20 * gigabyte)
+        #expect(FreeSpaceGap.statusThreshold(capacityBytes: 1_000 * gigabyte) == 50 * gigabyte)
+        // 12 GB used outside the home folder is explained in `changes`, but not worth a status line.
+        let small = try #require(FreeSpaceGap(from: snapshot(home: 500, free: 80), to: snapshot(home: 500, free: 68)))
+        #expect(!small.isWorthAStatusNote(capacityBytes: 500 * gigabyte))
+        let large = try #require(FreeSpaceGap(from: snapshot(home: 500, free: 12), to: snapshot(home: 491, free: 82)))
+        #expect(large.isWorthAStatusNote(capacityBytes: 500 * gigabyte))
+        #expect(!large.isWorthAStatusNote(capacityBytes: 2_000 * gigabyte))
+    }
+
     @Test func namesTheSystemDataThatChangedOverTheSamePeriod() throws {
         let old = snapshot(home: 500, free: 12, systemData: .init(purgeableBytes: 30 * gigabyte, localSnapshotCount: 6))
         let new = snapshot(home: 491, free: 82, systemData: .init(purgeableBytes: 12 * gigabyte, localSnapshotCount: 0))
