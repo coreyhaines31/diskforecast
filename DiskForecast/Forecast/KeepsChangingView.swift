@@ -10,7 +10,7 @@ struct KeepsChanging {
     let until: Date
     let folders: [FolderChurn]
 
-    var days: Int { Int((until.timeIntervalSince(since) / 86_400).rounded()) }
+    var days: Int { FolderChurns.days(from: since, to: until) }
 
     init?(store: FolderSnapshotStore, outlook: Forecast.Outlook, now: Date = Date()) {
         guard case .swinging = outlook else { return nil }

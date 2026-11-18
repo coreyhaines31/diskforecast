@@ -93,6 +93,13 @@ public enum FolderChurns {
         }
     }
 
+    /// Calendar days from the first snapshot used to the last, counted the way the dates read, so
+    /// "Nov 2 to Nov 17" is 15 days even when a snapshot's day began in another time zone.
+    public static func days(from since: Date, to until: Date, calendar: Calendar = .current) -> Int {
+        calendar.dateComponents([.day], from: calendar.startOfDay(for: since), to: calendar.startOfDay(for: until))
+            .day ?? 0
+    }
+
     /// The candidates to list, ranked: each one that a folder inside it doesn't stand for, and that
     /// isn't inside another one listed.
     private static func select(_ candidates: [FolderChurn]) -> [FolderChurn] {

@@ -202,6 +202,20 @@ struct FolderChurnTests {
         #expect(library?.inside.map(\.path) == ["Library/Caches"])
     }
 
+    @Test func countsTheDaysTheHeadingShows() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "America/Los_Angeles")!
+        let isoDate = ISO8601DateFormatter()
+        // Saved while the Mac was set to New York, read back in Los Angeles: Nov 2 9 PM to Nov 17.
+        let since = isoDate.date(from: "2026-11-03T05:00:00Z")!
+        let until = isoDate.date(from: "2026-11-17T08:00:00Z")!
+        #expect(FolderChurns.days(from: since, to: until, calendar: calendar) == 15)
+        // Across the end of daylight saving time: Oct 25 to Nov 8.
+        let before = isoDate.date(from: "2026-10-25T07:00:00Z")!
+        let after = isoDate.date(from: "2026-11-08T08:00:00Z")!
+        #expect(FolderChurns.days(from: before, to: after, calendar: calendar) == 14)
+    }
+
     @Test func ranksByHowMuchMovedBackAndForth() {
         let window = snapshots([
             ["code": 10 * gigabyte, "Downloads": 10 * gigabyte],
