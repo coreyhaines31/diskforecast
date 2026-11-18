@@ -3,7 +3,7 @@
   "manifest_version": "0.4",
   "name": "diskforecast",
   "display_name": "Disk Forecast",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Ask Claude what's eating your Mac's disk, what you can clean up, and how fast it's filling.",
   "long_description": "Disk Forecast is a free menu bar app that tells you when your Mac's disk will be full, explains where the space went, and shows what's safe to clear. This extension lets Claude read the same answers through Disk Forecast's `diskforecast` command line tool.\n\nAsk things like \"why is my disk full?\", \"what filled it up this month?\", or \"what can I safely clean up?\".\n\nRequires the Disk Forecast app (https://diskforecast.com). Everything is read-only: Claude can't move or delete anything. Disk Forecast covers disk space, not CPU or memory.",
   "author": {
@@ -41,7 +41,8 @@
   "tools": [
     { "name": "disk_status", "description": "Free space, how fast the disk is filling, and how much is safe to clear" },
     { "name": "disk_changes", "description": "Which folders grew or shrank over the last N days" },
-    { "name": "cleanup_list", "description": "What can be reclaimed, and why each item is safe or worth a look" }
+    { "name": "cleanup_list", "description": "What can be reclaimed, and why each item is safe or worth a look" },
+    { "name": "submit_feedback", "description": "Drafts a GitHub issue link about a missing or broken tool for you to review and submit; sends nothing" }
   ],
   "compatibility": {
     "claude_desktop": ">=0.10.0",

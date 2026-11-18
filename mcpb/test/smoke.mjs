@@ -26,7 +26,7 @@ const fakeCalls = [
   ["json-error", "disk_status", {}, fails, "fake json error"],
   ["stderr", "disk_status", {}, fails, "fake stderr error"],
 ];
-const expectedTools = ["cleanup_list", "disk_changes", "disk_status"];
+const expectedTools = ["cleanup_list", "disk_changes", "disk_status", "submit_feedback"];
 const server = process.env.SERVER ?? new URL("../server/index.mjs", import.meta.url).pathname;
 const fakeCli = new URL("./fake-cli.sh", import.meta.url).pathname;
 const max = Number(process.env.SMOKE_CHARS ?? 600);
