@@ -1,7 +1,8 @@
 import Foundation
 
 /// Catches a disk filling within minutes, which the hourly reading and the two-week trend can't
-/// see. While space is low, free space is read every minute and the last ten minutes decide.
+/// see. Free space is read every five minutes, and every minute while space is low or falling fast;
+/// the last ten minutes decide.
 public enum FastFill {
     /// Free space at one moment.
     public struct Reading: Sendable, Equatable {
@@ -15,6 +16,8 @@ public enum FastFill {
     }
 
     public static let checkInterval: TimeInterval = 60
+    public static let backgroundInterval: TimeInterval = 300
+    /// Ten minutes still holds two five-minute readings when the timer fires up to 30 seconds late.
     static let window: TimeInterval = 600
     /// Warn when the disk would be full within the hour at the recent pace.
     static let warnWithin: TimeInterval = 3_600
@@ -22,9 +25,21 @@ public enum FastFill {
     static let minimumFall: Int64 = 1_000_000_000
     static let quietPeriod: TimeInterval = 900
 
-    /// Whether to read free space every minute: only while it's low, since that's when minutes count.
-    public static func shouldWatch(freeBytes: Int64, capacityBytes: Int64) -> Bool {
-        Forecast.isLow(freeBytes: freeBytes, capacityBytes: capacityBytes)
+    /// Watch every minute while the recent pace would fill the disk within this long. Three times the
+    /// warning's hour, so the minute readings are already there when a fill speeds up.
+    static let watchWithin: TimeInterval = 10_800
+
+    /// Whether to read free space every minute rather than every five: while it's low, or while the
+    /// last ten minutes fell fast enough to fill the disk within three hours, since that's when
+    /// minutes count.
+    public static func shouldWatch(readings: [Reading], capacityBytes: Int64, now: Date = Date()) -> Bool {
+        let recent = trimmed(readings, now: now).sorted { $0.date < $1.date }
+        guard let first = recent.first, let last = recent.last else { return false }
+        if Forecast.isLow(freeBytes: last.freeBytes, capacityBytes: capacityBytes) { return true }
+        let fell = first.freeBytes - last.freeBytes
+        let seconds = last.date.timeIntervalSince(first.date)
+        guard fell > 0, seconds > 0 else { return false }
+        return Double(max(0, last.freeBytes)) / (Double(fell) / seconds) <= watchWithin
     }
 
     /// The readings from the last ten minutes, the only ones the rate looks at.
