@@ -136,6 +136,26 @@ struct CLIChangesTests {
         #expect(changes.folders[0].delta == 3 * gigabyte)
         #expect(changes.outsideHomeBytes == 2 * gigabyte)
     }
+
+    @Test func marksFoldersMeasuredForTheFirstTime() {
+        let gigabyte: Int64 = 1_000_000_000
+        let day = Date(timeIntervalSince1970: 1_790_000_000)
+        let old = FolderSnapshot(
+            day: day, homeBytes: 20 * gigabyte, freeBytes: 100 * gigabyte, folders: ["Library": 20 * gigabyte],
+            unmeasured: ["Library/Messages"]
+        )
+        let new = FolderSnapshot(
+            day: day.addingTimeInterval(7 * 86_400), homeBytes: 37 * gigabyte, freeBytes: 99 * gigabyte,
+            folders: ["Library": 37 * gigabyte, "Library/Messages": 16 * gigabyte]
+        )
+        let changes = CLIChanges(from: old, to: new)
+        #expect(changes.folders.map(\.delta) == [gigabyte])
+        #expect(changes.folders[0].firstMeasuredBytes == 16 * gigabyte)
+        #expect(changes.folders[0].children.map(\.firstMeasured) == [true])
+        #expect(changes.folders[0].children.map(\.listedForFirstMeasured) == [true])
+        #expect(!changes.folders[0].listedForFirstMeasured)
+        #expect(changes.outsideHomeBytes == 0)
+    }
 }
 
 struct CLIHeadroomTests {

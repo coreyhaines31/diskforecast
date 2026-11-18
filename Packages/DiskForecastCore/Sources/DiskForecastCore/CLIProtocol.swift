@@ -139,12 +139,15 @@ public struct CLIChanges: Codable, Equatable, Sendable {
         self.outsideHomeBytes = outsideHomeBytes
     }
 
-    /// Every folder that changed by 500 MB or more, each with the folders inside it that did.
+    /// Every folder that changed by 500 MB or more, each with the folders inside it that did, and
+    /// the ones where that much was measured for the first time.
     public init(from old: FolderSnapshot, to new: FolderSnapshot) {
         func changes(under parent: String) -> [CLIFolderChange] {
             FolderChanges.changes(from: old, to: new, under: parent).map { change in
                 CLIFolderChange(
                     path: change.path, oldBytes: change.oldBytes, newBytes: change.newBytes,
+                    firstMeasured: change.isFirstMeasured, firstMeasuredBytes: change.firstMeasuredBytes,
+                    listedForFirstMeasured: change.listedForFirstMeasured,
                     children: change.hasChildren ? changes(under: change.path) : []
                 )
             }
@@ -161,14 +164,26 @@ public struct CLIFolderChange: Codable, Equatable, Sendable {
     public var path: String
     public var oldBytes: Int64
     public var newBytes: Int64
+    /// The earlier scan couldn't measure this folder, so its size isn't growth.
+    public var firstMeasured: Bool
+    /// Bytes in folders inside this one that the earlier scan couldn't measure, left out of `delta`.
+    public var firstMeasuredBytes: Int64
+    /// Listed for what was measured for the first time, not for growing or shrinking.
+    public var listedForFirstMeasured: Bool
     public var children: [CLIFolderChange]
 
-    public var delta: Int64 { newBytes - oldBytes }
+    public var delta: Int64 { firstMeasured ? 0 : newBytes - oldBytes - firstMeasuredBytes }
 
-    public init(path: String, oldBytes: Int64, newBytes: Int64, children: [CLIFolderChange] = []) {
+    public init(
+        path: String, oldBytes: Int64, newBytes: Int64, firstMeasured: Bool = false, firstMeasuredBytes: Int64 = 0,
+        listedForFirstMeasured: Bool = false, children: [CLIFolderChange] = []
+    ) {
         self.path = path
         self.oldBytes = oldBytes
         self.newBytes = newBytes
+        self.firstMeasured = firstMeasured
+        self.firstMeasuredBytes = firstMeasuredBytes
+        self.listedForFirstMeasured = listedForFirstMeasured
         self.children = children
     }
 }

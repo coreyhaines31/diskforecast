@@ -170,18 +170,35 @@ func describe(_ changes: CLIChanges) -> String {
     func add(_ folders: [CLIFolderChange], depth: Int) {
         for folder in folders {
             let name = depth == 0 ? "~/" + folder.path : (folder.path as NSString).lastPathComponent
-            let new = folder.oldBytes == 0 ? " (new)" : folder.newBytes == 0 ? " (gone)" : ""
-            let size = signed(folder.delta).padding(toLength: 9, withPad: " ", startingAt: 0)
-            lines.append(String(repeating: "  ", count: depth + 1) + size + " " + name + new)
+            let note: String
+            let amount: String
+            if folder.listedForFirstMeasured {
+                note = folder.firstMeasured ? " (first measured)" : " (first measured inside)"
+                amount = Bytes.format(folder.firstMeasured ? folder.newBytes : folder.firstMeasuredBytes)
+            } else {
+                note = folder.oldBytes == 0 ? " (new)" : folder.newBytes == 0 ? " (gone)" : ""
+                amount = signed(folder.delta)
+            }
+            let size = amount.padding(toLength: 9, withPad: " ", startingAt: 0)
+            lines.append(String(repeating: "  ", count: depth + 1) + size + " " + name + note)
             add(folder.children, depth: depth + 1)
         }
     }
-    add(changes.folders, depth: 0)
+    let firstMeasured = changes.folders.filter(\.listedForFirstMeasured)
+    add(changes.folders.filter { !$0.listedForFirstMeasured }, depth: 0)
     if abs(changes.outsideHomeBytes) >= 1_000_000_000 {
         let size = signed(changes.outsideHomeBytes).padding(toLength: 9, withPad: " ", startingAt: 0)
         lines.append("  \(size) Outside your home folder (System Data, other accounts, and apps)")
     }
     if lines.count == 1 { lines.append("  No folder changed by more than 500 MB.") }
+    if !firstMeasured.isEmpty || lines.contains(where: { $0.contains("(first measured") }) {
+        lines.append("")
+        lines.append(
+            "First measured: the earlier scan couldn't read these folders, for example while Full Disk Access "
+                + "was off, so their size isn't counted as growth."
+        )
+        add(firstMeasured, depth: 0)
+    }
     return lines.joined(separator: "\n")
 }
 

@@ -144,7 +144,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Saves today's folder sizes, so later scans can say what grew.
     private func recordSnapshot(of result: ScanResult) {
         disk.refresh()
-        try? snapshots.save(FolderSnapshot(tree: result.tree, freeBytes: disk.freeBytes, at: Date()))
+        let unmeasured = result.skippedPaths + result.stalledPaths + result.deniedSamples
+        try? snapshots.save(FolderSnapshot(
+            tree: result.tree, freeBytes: disk.freeBytes, at: Date(), unmeasured: unmeasured
+        ))
     }
 
     /// Polls while onboarding is open, since granting access in System Settings posts nothing.

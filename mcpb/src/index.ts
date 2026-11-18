@@ -51,7 +51,8 @@ server.registerTool(
     title: "What's been filling the disk",
     description:
       "Which folders grew or shrank over the last N days, as a tree of home-relative paths with oldBytes and newBytes " +
-      "(oldBytes 0 means new), plus outsideHomeBytes for System Data, other accounts, and apps. " +
+      "(oldBytes 0 means new; firstMeasured means the earlier scan couldn't read it, so it isn't growth, and " +
+      "firstMeasuredBytes inside a folder isn't growth either), plus outsideHomeBytes for System Data, other accounts, and apps. " +
       "Use for 'what's eating my disk?' or 'what filled it up this month?'.",
     inputSchema: {
       days: z
