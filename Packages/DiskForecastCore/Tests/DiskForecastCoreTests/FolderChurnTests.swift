@@ -6,12 +6,14 @@ struct FolderChurnTests {
     let gigabyte: Int64 = 1_000_000_000
     let start = Date(timeIntervalSince1970: 1_790_000_000)
 
-    /// One snapshot a day, each holding the folders given for it.
-    func snapshots(_ days: [[String: Int64]], unmeasured: [[String]?]? = nil) -> [FolderSnapshot] {
+    /// One snapshot a day, each holding the folders given for it and, unless `steady` is false, a
+    /// Music folder that never changes, so no snapshot is empty.
+    func snapshots(_ days: [[String: Int64]], unmeasured: [[String]?]? = nil, steady: Bool = true) -> [FolderSnapshot] {
         days.enumerated().map { index, folders in
             FolderSnapshot(
                 day: start.addingTimeInterval(Double(index) * 86_400), homeBytes: 0, freeBytes: 0,
-                folders: folders, unmeasured: unmeasured?[index] ?? []
+                folders: steady ? folders.merging(["Music": 5 * gigabyte]) { $1 } : folders,
+                unmeasured: unmeasured?[index] ?? []
             )
         }
     }
@@ -65,6 +67,16 @@ struct FolderChurnTests {
         #expect(FolderChurns.churn(in: window) == [
             FolderChurn(path: "Library/Mail", movedBytes: 40 * gigabyte, netBytes: 0)
         ])
+    }
+
+    @Test func skipsAScanThatRecordedNoFolders() {
+        // An old snapshot with nothing in it can't say it missed everything, but it did.
+        let window = snapshots(
+            [["code": 30 * gigabyte], [:], ["code": 30 * gigabyte], ["code": 31 * gigabyte]],
+            unmeasured: [nil, nil, nil, nil], steady: false
+        )
+        #expect(FolderChurns.churn(in: window).isEmpty)
+        #expect(FolderChurns.churn(in: Array(window.prefix(3))).isEmpty)
     }
 
     @Test func aFolderFirstMeasuredPartWayThroughStartsFromItsSize() {
