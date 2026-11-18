@@ -53,6 +53,16 @@ public struct FreeSpaceGap: Sendable, Equatable {
         comparedNames = compared
     }
 
+    /// How far outside-the-home-folder change has to go before `diskforecast status` mentions it: 20 GB, or
+    /// 5% of the disk when that's more. Smaller changes are ordinary, so only `changes` explains them.
+    public static func statusThreshold(capacityBytes: Int64) -> Int64 {
+        max(20_000_000_000, capacityBytes / 20)
+    }
+
+    public func isWorthAStatusNote(capacityBytes: Int64) -> Bool {
+        abs(outsideHomeBytes) >= Self.statusThreshold(capacityBytes: capacityBytes)
+    }
+
     /// One line for `diskforecast status`, pointing at `diskforecast changes` for the rest.
     public func statusNote(days: Int) -> String {
         "In the last \(days) days, \(Bytes.format(abs(outsideHomeBytes))) was "

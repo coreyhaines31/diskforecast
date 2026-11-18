@@ -348,6 +348,9 @@ case .send(let request, let json, let wait, let needBytes):
     var response = sendLaunchingApp(request)
     if let needBytes, let status = response.status {
         response.headroom = CLIHeadroom(neededBytes: needBytes, status: status)
+    } else if needBytes != nil, response.error == nil {
+        // Never let silence read as "there is room".
+        response.error = "Disk Forecast didn't send free space, so there's no telling whether there's room."
     }
     if request.action == .scan, response.error == nil {
         if wait {
