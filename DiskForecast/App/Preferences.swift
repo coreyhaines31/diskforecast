@@ -40,6 +40,7 @@ enum Preferences {
     static let notifiesBeforeFullKey = "notifiesBeforeFull"
     static let lastDiskAlertKey = "lastDiskAlert"
     static let lastFastFillAlertKey = "lastFastFillAlert"
+    static let checksPullRequestsKey = "checksPullRequests"
 
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
@@ -47,7 +48,8 @@ enum Preferences {
             storageMeterStyleKey: StorageMeterStyle.peak.rawValue,
             staleAfterDaysKey: 30,
             onboardingDoneKey: false,
-            notifiesBeforeFullKey: true
+            notifiesBeforeFullKey: true,
+            checksPullRequestsKey: false
         ])
     }
 
@@ -75,6 +77,12 @@ enum Preferences {
 
     static var notifiesBeforeFull: Bool {
         UserDefaults.standard.bool(forKey: notifiesBeforeFullKey)
+    }
+
+    /// Whether to ask GitHub, through the person's own gh, about worktrees' pull requests. Off
+    /// unless they turn it on, since it goes online.
+    static var checksPullRequests: Bool {
+        UserDefaults.standard.bool(forKey: checksPullRequestsKey)
     }
 
     static var lastDiskAlert: Date? {

@@ -4,6 +4,7 @@ import SwiftUI
 struct ScanningSettingsView: View {
     let scan: ScanModel
     @AppStorage(Preferences.staleAfterDaysKey) private var staleAfterDays = 30
+    @AppStorage(Preferences.checksPullRequestsKey) private var checksPullRequests = false
     @State private var hasFullDiskAccess = FullDiskAccess.isGranted
 
     var body: some View {
@@ -15,6 +16,16 @@ struct ScanningSettingsView: View {
                 .onChange(of: staleAfterDays) { scan.rebuildCleanupList() }
             } footer: {
                 Text("Build folders in projects untouched this long are Safe to clear. Newer ones are Worth a look.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Section {
+                Toggle("Show worktrees' pull requests (asks GitHub with your gh command)", isOn: $checksPullRequests)
+                    .onChange(of: checksPullRequests) { scan.checkPullRequests() }
+            } footer: {
+                Text("Shows whether each git worktree's branch has a pull request that's open, merged, or "
+                    + "closed. Needs the gh command, installed and signed in. It asks GitHub for each "
+                    + "repository's pull requests; your branch names and files stay on your Mac. When this is "
+                    + "off, \(Brand.name) never runs gh.")
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section {

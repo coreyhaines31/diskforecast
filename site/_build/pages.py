@@ -1607,14 +1607,15 @@ GUIDES_HUB = {
 PRIVACY = {
     "path": "/privacy",
     "title": "Disk Forecast privacy policy: nothing leaves your Mac",
-    "description": "The Disk Forecast app collects nothing; its only network request is checking GitHub for updates. The website uses Headstream for visit analytics and UserProof to see how visitors use it.",
+    "description": "The Disk Forecast app collects nothing; unless you turn on an optional setting, its only network request is checking GitHub for updates. The website uses Headstream for visit analytics and UserProof to see how visitors use it.",
     "h1": "Privacy policy",
     "html": """
         <p><strong>Last updated November 7, 2026.</strong></p>
         <h2>The Disk Forecast app</h2>
         <p>The app collects nothing about you. There's no account, no analytics, and no telemetry.</p>
         <p>To do its job it reads file and folder names and sizes on your Mac, and keeps a small daily history of free space for the forecast. It doesn't read what's inside your files, and it never scans cloud drives like Google Drive, Dropbox, or OneDrive. All of that stays on your Mac. Nothing about your files, folders, or disk is ever sent anywhere.</p>
-        <p>The app's only network request is Sparkle's check for updates, which fetches a small update feed from the latest GitHub release. GitHub sees that request like any other web request, including your IP address. You can turn automatic checks off in Settings › General.</p>
+        <p>Unless you turn on the setting below, the app's only network request is Sparkle's check for updates, which fetches a small update feed from the latest GitHub release. GitHub sees that request like any other web request, including your IP address. You can turn automatic checks off in Settings › General.</p>
+        <p>If you turn on <strong>Show worktrees' pull requests</strong> in Settings › Scanning (it's off by default), Disk Forecast asks GitHub for the pull requests of repositories that have git worktrees, through the <code>gh</code> command you installed and signed in to. That sends those repositories' names to GitHub. Branch names and files are not sent.</p>
         <h2>diskforecast.com</h2>
         <p>This website uses the TracerKit tag manager and Headstream for visit analytics, and UserProof to see how visitors use the site (clicks, scrolling and page interactions, not anything you type). TracerKit and Headstream set first-party cookies and browser storage with random visitor and session ids so they can tell new visits from returning ones; UserProof sets no cookies and keeps random ids in your browser's storage. No ad tracking, no personal data sold or shared. The site is static pages hosted on Vercel, which keeps standard server logs. The homepage asks GitHub's public API for the repository's star count from your browser, and the pages load their fonts from Google Fonts. Both see those requests like any other web request.</p>
         <h2>Downloads</h2>

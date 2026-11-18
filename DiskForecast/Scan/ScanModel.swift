@@ -24,6 +24,8 @@ final class ScanModel {
     private(set) var trashBytes: Int64?
     /// Claude Code's temp folder, scanned beside the home folder since it's outside it.
     private var agentScratch: ScanResult?
+    /// Worktrees' pull requests by path, from the last check. Empty while checks are off.
+    private var pullRequests: [String: PullRequestState] = [:]
     /// The size of /Applications, measured beside the home folder for the storage meter. Nil until measured.
     private(set) var applicationsBytes: Int64?
     /// Something slow underway that the menu should mention, like emptying the Trash.
@@ -163,6 +165,7 @@ final class ScanModel {
         state = .done
         onChange?()
         measureTrash()
+        checkPullRequests()
     }
 
     private nonisolated static func scanAgentScratch(priority: QualityOfService) async -> ScanResult? {
@@ -210,8 +213,10 @@ final class ScanModel {
 
     private func rebuildItems() async {
         guard let result else { return }
+        let pullRequests = pullRequests
         let catalog = CleanupCatalog(
-            home: home, staleAfterDays: Preferences.staleAfterDays, agentScratch: agentScratch
+            home: home, staleAfterDays: Preferences.staleAfterDays, agentScratch: agentScratch,
+            pullRequest: { pullRequests[$0] }
         )
         items = await Task.detached(priority: .utility) { catalog.items(from: result) }.value
     }
@@ -222,6 +227,24 @@ final class ScanModel {
         Task {
             await rebuildItems()
             onChange?()
+        }
+    }
+
+    /// Asks gh about the worktrees' pull requests when that's turned on, then adds them to the
+    /// list. The list is already up without them, so a slow or failed check never holds it back.
+    func checkPullRequests() {
+        guard Preferences.checksPullRequests else {
+            guard !pullRequests.isEmpty else { return }
+            pullRequests = [:]
+            rebuildCleanupList()
+            return
+        }
+        guard let worktrees = result?.worktrees, !worktrees.isEmpty else { return }
+        Task {
+            let states = await PullRequestChecks.states(of: worktrees)
+            guard Preferences.checksPullRequests else { return }
+            pullRequests = states
+            rebuildCleanupList()
         }
     }
 
