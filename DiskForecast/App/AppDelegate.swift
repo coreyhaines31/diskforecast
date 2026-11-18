@@ -146,7 +146,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func recordSnapshot(of result: ScanResult) {
         disk.refresh()
         let unmeasured = result.skippedPaths + result.stalledPaths + result.deniedSamples
-        // Saved first without the snapshot count, so a slow tmutil can't hold up the day's reading.
+        // Saved first without swap and the snapshot count, so a slow command can't hold up the day's reading.
         let snapshot = FolderSnapshot(
             tree: result.tree, freeBytes: disk.freeBytes,
             systemData: SystemDataReading(purgeableBytes: disk.purgeableBytes, localSnapshotCount: nil),
@@ -154,11 +154,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
         try? snapshots.save(snapshot)
         Task {
+            var updated = snapshot
+            let swap = await Shell.run("/usr/sbin/sysctl", ["vm.swapusage"])
+            if let usage = Swap.parse(swap.text) {
+                updated.systemData?.swapBytes = usage.totalBytes
+                try? snapshots.save(updated)
+            }
             let listed = await Shell.run("/usr/bin/tmutil", ["listlocalsnapshots", "/"])
             guard listed.succeeded else { return }
-            var counted = snapshot
-            counted.systemData?.localSnapshotCount = LocalSnapshots.parse(listed.text).count
-            try? snapshots.save(counted)
+            updated.systemData?.localSnapshotCount = LocalSnapshots.parse(listed.text).count
+            try? snapshots.save(updated)
         }
     }
 
