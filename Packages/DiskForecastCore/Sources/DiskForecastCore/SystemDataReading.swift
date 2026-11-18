@@ -7,9 +7,12 @@ public struct SystemDataReading: Codable, Sendable, Equatable {
     public var purgeableBytes: Int64?
     /// How many local Time Machine snapshots `tmutil listlocalsnapshots /` listed.
     public var localSnapshotCount: Int?
+    /// Space the swap files take, from `sysctl vm.swapusage`. Nil in readings saved before swap was.
+    public var swapBytes: Int64?
 
-    public init(purgeableBytes: Int64?, localSnapshotCount: Int?) {
+    public init(purgeableBytes: Int64?, localSnapshotCount: Int?, swapBytes: Int64? = nil) {
         self.purgeableBytes = purgeableBytes
         self.localSnapshotCount = localSnapshotCount
+        self.swapBytes = swapBytes
     }
 }

@@ -5,7 +5,7 @@ import Foundation
 public struct FreeSpaceGap: Sendable, Equatable {
     /// How far outside-the-home-folder change has to go before it's worth explaining.
     public static let threshold: Int64 = 5_000_000_000
-    private static let purgeableThreshold: Int64 = 1_000_000_000
+    private static let gigabyteThreshold: Int64 = 1_000_000_000
     private static let sameThreshold: Int64 = 500_000_000
 
     public let freeDelta: Int64
@@ -33,7 +33,7 @@ public struct FreeSpaceGap: Sendable, Equatable {
         var compared: [String] = []
         if let before = old.systemData?.purgeableBytes, let after = new.systemData?.purgeableBytes {
             compared.append("purgeable space")
-            if abs(after - before) >= Self.purgeableThreshold {
+            if abs(after - before) >= Self.gigabyteThreshold {
                 changes.append("purgeable space went from \(Bytes.format(before)) to \(Bytes.format(after))")
             }
         }
@@ -41,6 +41,12 @@ public struct FreeSpaceGap: Sendable, Equatable {
             compared.append("local Time Machine snapshots")
             if before != after {
                 changes.append("local Time Machine snapshots went from \(before) to \(after)")
+            }
+        }
+        if let before = old.systemData?.swapBytes, let after = new.systemData?.swapBytes {
+            compared.append("swap")
+            if abs(after - before) >= Self.gigabyteThreshold {
+                changes.append("swap went from \(Bytes.format(before)) to \(Bytes.format(after))")
             }
         }
         systemDataChanges = changes
@@ -72,14 +78,18 @@ public struct FreeSpaceGap: Sendable, Equatable {
             sentences.append("Over the same period, \(systemDataChanges.joined(separator: ", and ")).")
             sentences.append("That doesn't prove what caused it.")
         } else if !comparedNames.isEmpty {
-            let names = comparedNames.joined(separator: " and ")
+            let names = comparedNames.count > 2
+                ? comparedNames.dropLast().joined(separator: ", ") + ", and " + comparedNames[comparedNames.count - 1]
+                : comparedNames.joined(separator: " and ")
             sentences.append(
                 "\(names.prefix(1).uppercased() + names.dropFirst()) stayed about the same, "
                     + "so \(Brand.name) can't say what changed."
             )
         } else {
             sentences.append("\(Brand.name) didn't record System Data back then, so it can't say what changed.")
-            sentences.append("It saves purgeable space and local Time Machine snapshots with each scan from now on.")
+            sentences.append(
+                "It saves purgeable space, local Time Machine snapshots, and swap with each scan from now on."
+            )
         }
         return sentences.joined(separator: " ")
     }
