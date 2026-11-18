@@ -12,10 +12,12 @@ public struct CleanupEntry: Sendable, Hashable, Identifiable {
     public let companions: [String]
     /// A worktree branch's pull request, when that's been looked up.
     public let pullRequest: PullRequestState?
+    /// For a folder stored twice, the copy it matched. It's compared again, every file, before it goes.
+    public let original: String?
 
     public init(
         path: String, bytes: Int64, detail: String? = nil, name: String? = nil, companions: [String] = [],
-        pullRequest: PullRequestState? = nil
+        pullRequest: PullRequestState? = nil, original: String? = nil
     ) {
         self.path = path
         self.bytes = bytes
@@ -23,5 +25,6 @@ public struct CleanupEntry: Sendable, Hashable, Identifiable {
         self.name = name ?? (path as NSString).lastPathComponent
         self.companions = companions
         self.pullRequest = pullRequest
+        self.original = original
     }
 }

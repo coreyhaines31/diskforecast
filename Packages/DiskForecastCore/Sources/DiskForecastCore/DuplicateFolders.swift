@@ -239,7 +239,7 @@ extension CleanupCatalog {
             let original = "~" + copy.original.dropFirst(home.count)
             return Candidate(
                 path: copy.path, detail: "Same file names and sizes as \(original)",
-                name: Trasher.Report.label(copy.path), bytes: copy.bytes
+                name: Trasher.Report.label(copy.path), original: copy.original, bytes: copy.bytes
             )
         }
     }

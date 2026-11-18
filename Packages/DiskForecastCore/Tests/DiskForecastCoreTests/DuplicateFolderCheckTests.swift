@@ -128,6 +128,29 @@ struct DuplicateFolderCheckTests {
         chmod(copy + "/notes.txt", 0o644)
     }
 
+    @Test func trashKeepsACopyThatNoLongerMatches() throws {
+        try writeTrip(in: [original, copy])
+        flipByte(in: copy + "/notes.txt", at: 0)
+        let entry = CleanupEntry(path: copy, bytes: 655_000, original: original)
+        for permanently in [false, true] {
+            let report = Trasher(home: base.path).trash([entry], permanently: permanently)
+            #expect(report.moved.isEmpty)
+            #expect(report.failureLines() == [
+                "• Downloads/Trip: It isn't the same as ~/Desktop/Trip any more, so it stays."
+            ])
+            #expect(FileManager.default.fileExists(atPath: copy))
+        }
+    }
+
+    @Test func trashMovesACopyThatStillMatches() throws {
+        try writeTrip(in: [original, copy])
+        let entry = CleanupEntry(path: copy, bytes: 655_000, original: original)
+        let report = Trasher(home: base.path).trash([entry])
+        #expect(report.moved == [copy])
+        #expect(FileManager.default.fileExists(atPath: original))
+        if let trashed = report.inTrash[copy] { try? FileManager.default.removeItem(atPath: trashed) }
+    }
+
     @Test func namesTheOriginalFromHome() {
         #expect(DuplicateFolders.Mismatch.originalMissing.reason(comparedWith: "~/Desktop/Trip")
             == "~/Desktop/Trip, the folder it matched, is gone or has moved, so it stays.")

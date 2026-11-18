@@ -162,3 +162,17 @@ extension DuplicateFolders {
         return true
     }
 }
+
+extension Trasher {
+    /// The folders stored twice among `entries` that no longer match their original, and why each stays.
+    func unmatchedCopies(in entries: [CleanupEntry]) -> [(path: String, reason: String)] {
+        entries.compactMap { entry in
+            // A copy that's refused anyway is reported as that.
+            guard let original = entry.original, refusal(for: entry.path) == nil,
+                  let mismatch = DuplicateFolders.mismatch(of: entry.path, with: original)
+            else { return nil }
+            let shown = original.hasPrefix(home + "/") ? "~" + original.dropFirst(home.count) : original
+            return (entry.path, mismatch.reason(comparedWith: shown))
+        }
+    }
+}

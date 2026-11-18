@@ -114,7 +114,7 @@ public struct CleanupCatalog: Sendable {
                 bytes += companions.reduce(0) { $0 + (size(of: $1, in: scan) ?? 0) }
                 return CleanupEntry(
                     path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name,
-                    companions: companions, pullRequest: candidate.pullRequest
+                    companions: companions, pullRequest: candidate.pullRequest, original: candidate.original
                 )
             }
             .filter { $0.bytes >= rule.minimumBytes }
@@ -141,6 +141,7 @@ public struct CleanupCatalog: Sendable {
         var name: String?
         var companions: [String] = []
         var pullRequest: PullRequestState?
+        var original: String?
         /// What removing it frees, when that isn't its size in the scan.
         var bytes: Int64?
     }
