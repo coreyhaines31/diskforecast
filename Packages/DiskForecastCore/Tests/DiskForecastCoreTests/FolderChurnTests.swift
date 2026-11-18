@@ -94,11 +94,31 @@ struct FolderChurnTests {
         )
         #expect(FolderChurns.churn(in: appears).isEmpty)
 
+        // Counting starts at 20 GB on day 2: down 20 to nothing on day 3, then up 18 on day 4.
         let comesAndGoes = snapshots(
             [[:], ["code/app": 20 * gigabyte], [:], ["code/app": 18 * gigabyte]], unmeasured: [nil, nil, nil, nil]
         )
         #expect(FolderChurns.churn(in: comesAndGoes) == [
-            FolderChurn(path: "code/app", movedBytes: 58 * gigabyte, netBytes: 18 * gigabyte)
+            FolderChurn(path: "code/app", movedBytes: 38 * gigabyte, netBytes: -2 * gigabyte)
+        ])
+    }
+
+    @Test func inOldSnapshotsAFolderFirstSeenPartWayThroughStartsFromItsSize() {
+        // Seen at 30 GB on day 2, then 10 and 30: only the 40 GB after it was first seen counts.
+        let window = snapshots(
+            [[:], ["code/app": 30 * gigabyte], ["code/app": 10 * gigabyte], ["code/app": 30 * gigabyte]],
+            unmeasured: [nil, nil, nil, nil]
+        )
+        #expect(FolderChurns.churn(in: window) == [
+            FolderChurn(path: "code/app", movedBytes: 40 * gigabyte, netBytes: 0)
+        ])
+    }
+
+    @Test func inNewSnapshotsAFolderThatAppearsStillCountsFromNothing() {
+        // A scan that measured the whole home folder and didn't find code/app means it wasn't there.
+        let window = snapshots([[:], ["code/app": 30 * gigabyte], ["code/app": 10 * gigabyte]])
+        #expect(FolderChurns.churn(in: window) == [
+            FolderChurn(path: "code/app", movedBytes: 50 * gigabyte, netBytes: 10 * gigabyte)
         ])
     }
 

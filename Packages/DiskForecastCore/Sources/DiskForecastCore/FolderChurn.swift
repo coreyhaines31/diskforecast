@@ -36,8 +36,10 @@ public enum FolderChurns {
     /// The folders that grew and shrank the most between consecutive snapshots, which must be in
     /// day order, ranked by how much of that movement cancelled out. Each folder is compared with
     /// the last snapshot that measured it, so a scan that couldn't read it adds nothing. A folder
-    /// absent from an old snapshot, which can't say what it missed, counts as empty there. A folder
-    /// that only grew or only shrank isn't listed, which also leaves out one that just appeared.
+    /// absent from an old snapshot, which can't say what it missed, counts as empty there once it
+    /// has been seen, and adds nothing before that, so a folder first read part-way through starts
+    /// from its size. A folder that only grew or only shrank isn't listed, which also leaves out one
+    /// that just appeared.
     ///
     /// A folder is left out when a folder inside it moved back and forth at least half as much, so
     /// that folder stands for it; and one inside a listed folder is left out, so nothing counts twice.
@@ -51,6 +53,7 @@ public enum FolderChurns {
         var net: [String: Int64] = [:]
         for snapshot in snapshots {
             for path in paths where !snapshot.couldNotMeasure(path) {
+                if snapshot.unmeasured == nil && snapshot.folders[path] == nil && last[path] == nil { continue }
                 let bytes = snapshot.folders[path] ?? 0
                 if let previous = last[path], abs(bytes - previous) >= stepThreshold {
                     moved[path, default: 0] += abs(bytes - previous)
