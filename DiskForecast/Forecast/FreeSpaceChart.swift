@@ -2,7 +2,7 @@ import Charts
 import SwiftUI
 
 /// Free space over time as a filled line, with the forecast as a dashed line to where the disk
-/// would be full.
+/// would be full. A faint bar below the line marks a day that dipped well below its last reading.
 struct FreeSpaceChart: View {
     let series: ForecastSeries
 
@@ -23,6 +23,14 @@ struct FreeSpaceChart: View {
                 .foregroundStyle(Color.accentColor)
                 .lineStyle(StrokeStyle(lineWidth: 2))
             }
+            ForEach(series.dips) { dip in
+                RuleMark(
+                    x: .value("Day", dip.date),
+                    yStart: .value("Lowest", dip.low), yEnd: .value("Free", dip.reading)
+                )
+                .foregroundStyle(Color.accentColor.opacity(0.35))
+                .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
+            }
             ForEach(series.projection) { point in
                 LineMark(
                     x: .value("Day", point.date), y: .value("Free", point.gigabytes),
@@ -36,11 +44,16 @@ struct FreeSpaceChart: View {
                     .foregroundStyle(Color.accentColor)
                     .symbolSize(44)
             }
-            if let lowest = series.lowest, lowest.date != series.history.last?.date {
+            if let lowest = series.lowest, let today = series.history.last,
+               lowest.date != today.date || series.dips.last?.date == today.date {
                 PointMark(x: .value("Day", lowest.date), y: .value("Free", lowest.gigabytes))
                     .foregroundStyle(.secondary)
                     .symbolSize(30)
-                    .annotation(position: .top, alignment: .center, spacing: 6) {
+                    // Below a dip's bar, so the label doesn't sit on it.
+                    .annotation(
+                        position: series.dips.contains { $0.date == lowest.date } ? .bottom : .top,
+                        alignment: .center, spacing: 6
+                    ) {
                         Text("Lowest").font(.caption2).foregroundStyle(.secondary)
                     }
             }
