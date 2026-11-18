@@ -48,10 +48,27 @@ struct WhatChangedView: View {
                     Text("No folder changed by more than 500 MB.")
                         .foregroundStyle(.secondary)
                 } else {
+                    let firstMeasured = top.filter(\.listedForFirstMeasured)
                     List {
-                        ForEach(top) { ChangeRow(change: $0, comparison: comparison, home: home) }
+                        ForEach(top.filter { !$0.listedForFirstMeasured }) {
+                            ChangeRow(change: $0, comparison: comparison, home: home)
+                        }
                         if abs(outside) >= 1_000_000_000 {
                             outsideRow(outside)
+                        }
+                        if !firstMeasured.isEmpty {
+                            Section {
+                                ForEach(firstMeasured) { ChangeRow(change: $0, comparison: comparison, home: home) }
+                            } header: {
+                                Text("First measured")
+                            } footer: {
+                                Text(
+                                    "The earlier scan couldn't read these folders, for example while Full Disk "
+                                        + "Access was off, so their size isn't counted as growth."
+                                )
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            }
                         }
                     }
                     .listStyle(.bordered)
@@ -117,9 +134,20 @@ private struct ChangeRow: View {
                     .padding(.vertical, 1)
                     .background(.orange.opacity(0.18), in: Capsule())
                     .foregroundStyle(.orange)
+            } else if change.listedForFirstMeasured {
+                Text(change.isFirstMeasured ? "First measured" : "First measured inside")
+                    .font(.caption2.weight(.semibold))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 1)
+                    .background(.secondary.opacity(0.18), in: Capsule())
+                    .foregroundStyle(.secondary)
             }
             Spacer()
-            DeltaText(delta: change.delta)
+            if change.listedForFirstMeasured {
+                Text(Bytes.format(change.firstMeasuredSize)).monospacedDigit().foregroundStyle(.secondary)
+            } else {
+                DeltaText(delta: change.delta)
+            }
             Button {
                 NSWorkspace.shared.activateFileViewerSelecting([URL(filePath: home + "/" + change.path)])
             } label: {

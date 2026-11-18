@@ -38,6 +38,38 @@ struct CLIArgumentsTests {
         #expect(throws: CLIUsageError.self) { try parse("open") }
         #expect(throws: CLIUsageError.self) { try parse("open finder") }
     }
+
+    @Test func readsTheSpaceStatusShouldCheckFor() throws {
+        #expect(try parse("status --need 5GB") == .send(
+            CLIRequest(action: .status), json: false, needBytes: 5_000_000_000
+        ))
+        #expect(try parse("status --json --need 500mb") == .send(
+            CLIRequest(action: .status), json: true, needBytes: 500_000_000
+        ))
+        #expect(throws: CLIUsageError.self) { try parse("status --need") }
+        #expect(throws: CLIUsageError.self) { try parse("status --need lots") }
+        #expect(throws: CLIUsageError.self) { try parse("cleanup --need 5GB") }
+    }
+}
+
+struct BytesParseTests {
+    @Test func readsSizesTheWayFinderCounts() {
+        #expect(Bytes.parse("5GB") == 5_000_000_000)
+        #expect(Bytes.parse("500MB") == 500_000_000)
+        #expect(Bytes.parse("1.5tb") == 1_500_000_000_000)
+        #expect(Bytes.parse("2G") == 2_000_000_000)
+        #expect(Bytes.parse("750K") == 750_000)
+        #expect(Bytes.parse("100B") == 100)
+    }
+
+    @Test func refusesWhatIsNotASize() {
+        #expect(Bytes.parse("5") == nil)
+        #expect(Bytes.parse("GB") == nil)
+        #expect(Bytes.parse("-5GB") == nil)
+        #expect(Bytes.parse("0GB") == nil)
+        #expect(Bytes.parse("5XB") == nil)
+        #expect(Bytes.parse("99999999999999999999TB") == nil)
+    }
 }
 
 struct CLITrashTargetsTests {
@@ -103,5 +135,52 @@ struct CLIChangesTests {
         #expect(changes.folders[0].children.map(\.path) == ["code/api"])
         #expect(changes.folders[0].delta == 3 * gigabyte)
         #expect(changes.outsideHomeBytes == 2 * gigabyte)
+    }
+
+    @Test func marksFoldersMeasuredForTheFirstTime() {
+        let gigabyte: Int64 = 1_000_000_000
+        let day = Date(timeIntervalSince1970: 1_790_000_000)
+        let old = FolderSnapshot(
+            day: day, homeBytes: 20 * gigabyte, freeBytes: 100 * gigabyte, folders: ["Library": 20 * gigabyte],
+            unmeasured: ["Library/Messages"]
+        )
+        let new = FolderSnapshot(
+            day: day.addingTimeInterval(7 * 86_400), homeBytes: 37 * gigabyte, freeBytes: 99 * gigabyte,
+            folders: ["Library": 37 * gigabyte, "Library/Messages": 16 * gigabyte]
+        )
+        let changes = CLIChanges(from: old, to: new)
+        #expect(changes.folders.map(\.delta) == [gigabyte])
+        #expect(changes.folders[0].firstMeasuredBytes == 16 * gigabyte)
+        #expect(changes.folders[0].children.map(\.firstMeasured) == [true])
+        #expect(changes.folders[0].children.map(\.listedForFirstMeasured) == [true])
+        #expect(!changes.folders[0].listedForFirstMeasured)
+        #expect(changes.outsideHomeBytes == 0)
+    }
+}
+
+struct CLIHeadroomTests {
+    let gigabyte: Int64 = 1_000_000_000
+
+    private func status(freeGB: Int64, safeToClearGB: Int64 = 0) -> CLIStatus {
+        CLIStatus(
+            freeBytes: freeGB * gigabyte, capacityBytes: 995 * gigabyte, purgeableBytes: 0, outlook: "steady",
+            forecast: "", daysUntilFull: nil, bytesPerDay: nil, lowOnSpace: false, scanning: false, lastScan: nil,
+            fullDiskAccess: true, safeToClearBytes: safeToClearGB * gigabyte
+        )
+    }
+
+    @Test func hasRoomWhenTheMarginIsLeftOver() {
+        let headroom = CLIHeadroom(neededBytes: 5 * gigabyte, status: status(freeGB: 91, safeToClearGB: 36))
+        #expect(headroom.hasRoom)
+        #expect(headroom.shortBytes == 0)
+        #expect(headroom.safeToClearBytes == 36 * gigabyte)
+    }
+
+    @Test func saysHowMuchToClearWhenTheMarginWouldBeGone() {
+        let headroom = CLIHeadroom(neededBytes: 5 * gigabyte, status: status(freeGB: 22))
+        #expect(!headroom.hasRoom)
+        #expect(headroom.shortBytes == 3 * gigabyte)
+        #expect(!CLIHeadroom(neededBytes: 100 * gigabyte, status: status(freeGB: 91)).hasRoom)
+        #expect(CLIHeadroom(neededBytes: 5 * gigabyte, status: status(freeGB: 25)).hasRoom)
     }
 }

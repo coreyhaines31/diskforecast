@@ -45,7 +45,7 @@ It's a free alternative to DiskBuddy, DaisyDisk, and CleanMyMac for the job they
 - **Says what changed.** After each scan it saves folder sizes, so it can show which folders grew since any day in the chart, down to the subfolder that did it.
 - **Explains System Data.** Local Time Machine snapshots, purgeable space, the Spotlight index, simulators, Apple Intelligence and Siri models, and Docker, each with a fix that uses Apple's or the tool's own command.
 - **Reclaims space safely.** Caches (including the ones VS Code, Cursor, Slack, and Figma keep with their data), logs, Xcode leftovers, package manager caches, what coding agents leave behind (npx packages like MCP servers, Playwright and agent-browser browsers, older Claude Code versions, and temp files from Claude Code sessions idle for 2 days, which can reach tens of gigabytes), build folders in old projects, and git's records of deleted worktrees are listed as **Safe to clear**. Big downloads, disk images, VMs, local AI models, editor data for deleted projects, and git worktrees left by coding agents (each with what removing it would lose: changed files, commits no remote has) are **Worth a look** and never selected for you. Files go to the Trash, where a cleanup can be undone, or, if you choose **Delete Immediately**, are deleted right away. Anything a running app still has open is left alone, with the app named so you can quit it.
-- **Warns you before the disk fills.** A notification when the forecast says full within a week, or space runs low, naming what grew most this week and how much emptying the Trash would get back. At most once a day, and you can turn it off in Settings.
+- **Warns you before the disk fills.** A notification when the forecast says full within a week, or space runs low, naming what grew most this week and how much emptying the Trash would get back. At most once a day, and you can turn it off in Settings. While space is low it checks every minute, and if free space is falling fast enough to run out within the hour, it says so right away (at most every 15 minutes).
 - **Works from Terminal.** The [`diskforecast` command](#command-line) gives you, or an AI agent, the forecast, what changed, and the cleanup list.
 - **Counts accurately.** APFS clones and hard links are counted once, so totals match what the disk really spends.
 - **Zero telemetry.** Checking for updates is the only time it goes online, unless you turn on worktree pull requests (below).
@@ -82,7 +82,12 @@ Install Disk Forecast, a free macOS menu bar app (https://github.com/coreyhaines
    open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
    Then tell me to turn on Disk Forecast there (it's optional), that its tape reel icon with my free space is now in the menu bar, and that from now on I can ask you why my disk is filling up or what's safe to clear. You'll use the `diskforecast` command (see `diskforecast --help`; if it isn't on the PATH, it's at "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast").
 
-Don't change any other settings and don't delete anything.
+6. Ask me whether future agent sessions should know about it. Only if I say yes, append this to your own global instructions file (~/.claude/CLAUDE.md for Claude Code, ~/.codex/AGENTS.md for Codex), unless it's already there, and tell me which file you changed:
+
+   ## Disk space
+   Disk Forecast is installed. For disk questions, or on "No space left on device", run `diskforecast status`, then `diskforecast cleanup` (see `diskforecast --help`; if it isn't on the PATH, it's at "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast"). Only move things to the Trash when I say so.
+
+Apart from that, don't change any other settings and don't delete anything.
 ```
 
 The app is signed with a Developer ID and notarized by Apple, so it opens without warnings. It updates itself through [Sparkle](https://sparkle-project.org). It isn't on the App Store because the App Store's sandbox can't measure the whole disk.
@@ -133,6 +138,7 @@ The `diskforecast` command reads the forecast, what changed, and the cleanup lis
 
 ```sh
 diskforecast status                 # free space, the forecast, and what's safe to clear
+diskforecast status --need 5GB      # is there room for 5 GB, with 20 GB still free after it?
 diskforecast changes --days 30      # which folders grew, down to the subfolder that did it
 diskforecast cleanup                # what you can reclaim, with an ID and an explanation for each
 diskforecast trash xcode-derived-data package-caches        # shows what would move
@@ -140,13 +146,14 @@ diskforecast trash xcode-derived-data package-caches --yes  # moves it to the Tr
 diskforecast undo                   # puts back everything the last trash run moved
 ```
 
-- **`status`** shows free space, the forecast, a low-space warning, and how much is Safe to clear.
+- **`status`** shows free space, the forecast, a low-space warning, and how much is Safe to clear. With `--need 5GB` (or `500MB`, `1.5TB`) it checks whether that much fits and still leaves 20 GB free, says how much to clear if it doesn't, and exits with status 3 when there isn't room, so an agent can check before a large download, install, or build.
 - **`changes`** compares the folder sizes saved after each scan, over the last 7 days or `--days N`. It also shows how much changed outside your home folder (System Data, other accounts, and apps).
 - **`cleanup`** lists the same items as the Cleanup window, grouped into **Safe to clear** and **Worth a look**, each with an ID, its size, and why it's listed.
 - **`trash`** takes item IDs or paths from the cleanup list. Without `--yes` it only shows what it would move. It refuses anything that isn't on the list, and like the app it only ever moves things to the Trash. Empty the Trash to get the space back.
 - **`undo`** puts back everything the last trash run moved, whether it ran from Terminal or the Cleanup window. If an app has already made a new folder in the same place, that item stays in the Trash.
 - **`scan`** measures again (`--wait` waits until it's done), and **`open forecast`**, **`open cleanup`**, **`open system-data`**, or **`open settings`** shows a window.
 - Add `--json` to any command for output a script or agent can read. If Disk Forecast isn't running, the command opens it in the background.
+- The command exits 0 when it worked, 1 for an error, and 3 when `status --need` finds there isn't room.
 
 **Installing the command:** Homebrew links it for you. If you installed from the DMG, open **Settings… › General** and click **Install…** next to **diskforecast command** (macOS asks for your password), or link it yourself:
 
@@ -156,6 +163,8 @@ sudo ln -sf "/Applications/Disk Forecast.app/Contents/MacOS/diskforecast" /usr/l
 ```
 
 If you installed with Homebrew before the command existed, run `brew reinstall --cask diskforecast` once to link it.
+
+**Telling your agents it's there:** in the same section, **Note for Claude Code** and **Note for Codex** add a short "Disk space" note to `~/.claude/CLAUDE.md` or `~/.codex/AGENTS.md`, so future sessions reach for `diskforecast status` and `diskforecast cleanup` instead of a slow `du` scan. **Add…** shows the exact text and file first, and only appends it to the end; **Remove** takes out just that note. It's the same note the install prompt above offers to add.
 
 **For AI agents:** paste this into Claude Code or Codex, or add it to your `CLAUDE.md` or `AGENTS.md`:
 

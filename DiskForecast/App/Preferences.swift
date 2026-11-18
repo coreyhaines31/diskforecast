@@ -39,6 +39,7 @@ enum Preferences {
     static let appliedLaunchAtLoginDefaultKey = "appliedLaunchAtLoginDefault"
     static let notifiesBeforeFullKey = "notifiesBeforeFull"
     static let lastDiskAlertKey = "lastDiskAlert"
+    static let lastFastFillAlertKey = "lastFastFillAlert"
     static let checksPullRequestsKey = "checksPullRequests"
 
     static func registerDefaults() {
@@ -87,5 +88,10 @@ enum Preferences {
     static var lastDiskAlert: Date? {
         get { UserDefaults.standard.object(forKey: lastDiskAlertKey) as? Date }
         set { UserDefaults.standard.set(newValue, forKey: lastDiskAlertKey) }
+    }
+
+    static var lastFastFillAlert: Date? {
+        get { UserDefaults.standard.object(forKey: lastFastFillAlertKey) as? Date }
+        set { UserDefaults.standard.set(newValue, forKey: lastFastFillAlertKey) }
     }
 }
