@@ -18,6 +18,7 @@ Commands:
   status    Free space, the forecast, and how much is safe to clear. --need 5GB checks there's
             room for 5 GB with 20 GB still free after it, and exits 3 when there isn't.
   changes   Which folders grew or shrank over the last 7 days (or --days N), and by how much.
+            When free space is swinging, also which grew and shrank most from scan to scan.
   cleanup   What you can reclaim, with an ID for each item and why it's safe or worth a look.
   scan      Measure the home folder again. --wait waits for the scan to finish.
   trash     Move cleanup items (by ID) or entries (by path) to the Trash. Without --yes it
@@ -205,6 +206,23 @@ func describe(_ changes: CLIChanges) -> String {
     if let gap = changes.freeSpaceGap {
         lines.append("")
         lines.append(gap)
+    }
+    if let keepsChanging = changes.keepsChanging {
+        lines.append("")
+        lines.append(describe(keepsChanging))
+    }
+    return lines.joined(separator: "\n")
+}
+
+/// Free space is swinging, so the folders that grew and shrank most from one scan to the next.
+func describe(_ keepsChanging: CLIKeepsChanging) -> String {
+    let format = Date.FormatStyle().month(.abbreviated).day()
+    let days = Int((keepsChanging.until.timeIntervalSince(keepsChanging.since) / 86_400).rounded())
+    var lines = ["What keeps changing from \(keepsChanging.since.formatted(format)) to "
+        + "\(keepsChanging.until.formatted(format)) (free space is swinging):"]
+    for folder in keepsChanging.folders {
+        let churn = FolderChurn(path: folder.path, movedBytes: folder.movedBytes, netBytes: folder.netBytes)
+        lines.append("  ~/\(folder.path): \(churn.summary(days: days))")
     }
     return lines.joined(separator: "\n")
 }
