@@ -199,6 +199,10 @@ func describe(_ changes: CLIChanges) -> String {
         )
         add(firstMeasured, depth: 0)
     }
+    if let gap = changes.freeSpaceGap {
+        lines.append("")
+        lines.append(gap)
+    }
     return lines.joined(separator: "\n")
 }
 

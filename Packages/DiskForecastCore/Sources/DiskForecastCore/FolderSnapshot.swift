@@ -19,19 +19,25 @@ public struct FolderSnapshot: Codable, Sendable, Equatable {
     /// those can't say what they missed, so a folder absent from one still counts as new.
     public var unmeasured: [String]?
 
+    /// System Data read when the scan finished. Nil in snapshots saved before it was recorded.
+    public var systemData: SystemDataReading?
+
     public init(
-        day: Date, homeBytes: Int64, freeBytes: Int64, folders: [String: Int64], unmeasured: [String]? = []
+        day: Date, homeBytes: Int64, freeBytes: Int64, folders: [String: Int64],
+        systemData: SystemDataReading? = nil, unmeasured: [String]? = []
     ) {
         self.day = day
         self.homeBytes = homeBytes
         self.freeBytes = freeBytes
         self.folders = folders
+        self.systemData = systemData
         self.unmeasured = unmeasured
     }
 
     /// `unmeasured` takes absolute paths; the ones outside the scanned folder are dropped.
     public init(
-        tree: ScanTree, freeBytes: Int64, at date: Date, calendar: Calendar = .current, unmeasured: [String] = []
+        tree: ScanTree, freeBytes: Int64, systemData: SystemDataReading? = nil, at date: Date,
+        calendar: Calendar = .current, unmeasured: [String] = []
     ) {
         var folders: [String: Int64] = [:]
         func record(under node: Int, path: String, depth: Int) {
@@ -49,7 +55,7 @@ public struct FolderSnapshot: Codable, Sendable, Equatable {
         let relative = unmeasured.filter { $0.hasPrefix(root) }.map { String($0.dropFirst(root.count)) }
         self.init(
             day: calendar.startOfDay(for: date), homeBytes: tree.totalSize, freeBytes: freeBytes, folders: folders,
-            unmeasured: Set(relative).sorted()
+            systemData: systemData, unmeasured: Set(relative).sorted()
         )
     }
 

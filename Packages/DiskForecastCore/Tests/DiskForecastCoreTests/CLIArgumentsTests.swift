@@ -135,6 +135,18 @@ struct CLIChangesTests {
         #expect(changes.folders[0].children.map(\.path) == ["code/api"])
         #expect(changes.folders[0].delta == 3 * gigabyte)
         #expect(changes.outsideHomeBytes == 2 * gigabyte)
+        #expect(changes.freeSpaceGap == nil)  // under 5 GB
+    }
+
+    @Test func changesExplainAFreeSpaceJumpTheHomeFolderDoesNotAccountFor() {
+        let gigabyte: Int64 = 1_000_000_000
+        let day = Date(timeIntervalSince1970: 1_790_000_000)
+        let old = FolderSnapshot(day: day, homeBytes: 500 * gigabyte, freeBytes: 12 * gigabyte, folders: [:])
+        let new = FolderSnapshot(
+            day: day.addingTimeInterval(86_400), homeBytes: 491 * gigabyte, freeBytes: 82 * gigabyte, folders: [:]
+        )
+        let changes = CLIChanges(from: old, to: new)
+        #expect(changes.freeSpaceGap?.hasPrefix("Free space rose 70 GB") == true)
     }
 
     @Test func marksFoldersMeasuredForTheFirstTime() {
