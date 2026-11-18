@@ -7,13 +7,14 @@ struct FolderChurnTests {
     let start = Date(timeIntervalSince1970: 1_790_000_000)
 
     /// One snapshot a day, each holding the folders given for it and, unless `steady` is false, a
-    /// Music folder that never changes, so no snapshot is empty.
+    /// Music folder that never changes, so no snapshot is empty. A nil in `unmeasured` makes that day an old
+    /// snapshot, saved before unmeasured folders were recorded.
     func snapshots(_ days: [[String: Int64]], unmeasured: [[String]?]? = nil, steady: Bool = true) -> [FolderSnapshot] {
         days.enumerated().map { index, folders in
             FolderSnapshot(
                 day: start.addingTimeInterval(Double(index) * 86_400), homeBytes: 0, freeBytes: 0,
                 folders: steady ? folders.merging(["Music": 5 * gigabyte]) { $1 } : folders,
-                unmeasured: unmeasured?[index] ?? []
+                unmeasured: unmeasured.map { $0[index] } ?? []
             )
         }
     }
