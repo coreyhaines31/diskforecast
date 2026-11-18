@@ -145,18 +145,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// what grew.
     private func recordSnapshot(of result: ScanResult) {
         disk.refresh()
-        let freeBytes = disk.freeBytes
-        let purgeableBytes = disk.purgeableBytes
-        let date = Date()
+        let unmeasured = result.skippedPaths + result.stalledPaths + result.deniedSamples
+        // Saved first without the snapshot count, so a slow tmutil can't hold up the day's reading.
+        let snapshot = FolderSnapshot(
+            tree: result.tree, freeBytes: disk.freeBytes,
+            systemData: SystemDataReading(purgeableBytes: disk.purgeableBytes, localSnapshotCount: nil),
+            at: Date(), unmeasured: unmeasured
+        )
+        try? snapshots.save(snapshot)
         Task {
             let listed = await Shell.run("/usr/bin/tmutil", ["listlocalsnapshots", "/"])
-            let reading = SystemDataReading(
-                purgeableBytes: purgeableBytes,
-                localSnapshotCount: listed.succeeded ? LocalSnapshots.parse(listed.text).count : nil
-            )
-            try? snapshots.save(
-                FolderSnapshot(tree: result.tree, freeBytes: freeBytes, systemData: reading, at: date)
-            )
+            guard listed.succeeded else { return }
+            var counted = snapshot
+            counted.systemData?.localSnapshotCount = LocalSnapshots.parse(listed.text).count
+            try? snapshots.save(counted)
         }
     }
 

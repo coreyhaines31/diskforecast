@@ -21,7 +21,9 @@ public struct FreeSpaceGap: Sendable, Equatable {
         let outside = FolderChanges.outsideHomeDelta(from: old, to: new)
         guard abs(outside) >= threshold else { return nil }
         freeDelta = new.freeBytes - old.freeBytes
-        homeDelta = new.homeBytes - old.homeBytes
+        // The same home-folder change `outside` was worked out from, which leaves out folders measured
+        // for the first time, so the sentence adds up.
+        homeDelta = (old.freeBytes - new.freeBytes) - outside
         outsideHomeBytes = outside
 
         var changes: [String] = []

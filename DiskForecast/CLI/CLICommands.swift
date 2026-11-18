@@ -71,6 +71,7 @@ final class CLICommands {
         case .gaining(let rate):
             outlook = "gaining"
             bytesPerDay = rate
+        case .cleared: outlook = "cleared"
         }
         return CLIStatus(
             freeBytes: disk.freeBytes, capacityBytes: disk.capacityBytes, purgeableBytes: disk.purgeableBytes,

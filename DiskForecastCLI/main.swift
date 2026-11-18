@@ -6,7 +6,7 @@ diskforecast: check when your Mac's disk will be full, see what's filling it, an
 the terminal.
 
 Usage:
-  diskforecast status [--json]
+  diskforecast status [--need <size>] [--json]
   diskforecast changes [--days 7] [--json]
   diskforecast cleanup [--json]
   diskforecast scan [--wait] [--json]
@@ -15,7 +15,8 @@ Usage:
   diskforecast open forecast|cleanup|system-data|settings
 
 Commands:
-  status    Free space, the forecast, and how much is safe to clear.
+  status    Free space, the forecast, and how much is safe to clear. --need 5GB checks there's
+            room for 5 GB with 20 GB still free after it, and exits 3 when there isn't.
   changes   Which folders grew or shrank over the last 7 days (or --days N), and by how much.
   cleanup   What you can reclaim, with an ID for each item and why it's safe or worth a look.
   scan      Measure the home folder again. --wait waits for the scan to finish.
@@ -25,10 +26,17 @@ Commands:
   undo      Put back everything the last trash run moved, from here or the app.
   open      Show one of Disk Forecast's windows.
 
+Exit status:
+  0 when it worked, 1 for an error, 3 when status --need finds there isn't room.
+
 Examples:
+  diskforecast status --need 5GB
   diskforecast changes --days 30
   diskforecast trash xcode-derived-data package-caches --yes
 """
+
+/// `status --need` found there isn't room. 1 is for errors.
+let notEnoughRoomExitCode: Int32 = 3
 
 func fail(_ message: String) -> Never {
     FileHandle.standardError.write(Data("diskforecast: \(message)\n".utf8))
@@ -124,11 +132,9 @@ func signed(_ bytes: Int64) -> String {
 func describe(_ status: CLIStatus) -> String {
     let percent = status.capacityBytes > 0
         ? Int((Double(status.freeBytes) / Double(status.capacityBytes) * 100).rounded()) : 0
-    var lines = [
-        "\(Bytes.format(status.freeBytes)) free of \(Bytes.format(status.capacityBytes)) (\(percent)% free)",
-        status.forecast
-    ]
-    if status.lowOnSpace { lines.append("Low on space.") }
+    var lines = status.lowOnSpace ? ["Low on space."] : []
+    lines.append("\(Bytes.format(status.freeBytes)) free of \(Bytes.format(status.capacityBytes)) (\(percent)% free)")
+    lines.append(status.forecast)
     if status.scanning {
         lines.append("Measuring your home folder now.")
     } else if status.safeToClearBytes > 0 {
@@ -140,24 +146,59 @@ func describe(_ status: CLIStatus) -> String {
     return lines.joined(separator: "\n")
 }
 
+func describe(_ headroom: CLIHeadroom, scanning: Bool) -> String {
+    let needed = Bytes.format(headroom.neededBytes)
+    let free = Bytes.format(headroom.freeBytes)
+    var lines = [headroom.hasRoom
+        ? "Room for \(needed): \(free) free, so \(Bytes.format(headroom.freeBytes - headroom.neededBytes)) "
+            + "is left after it."
+        : "Not enough room for \(needed): \(free) free, and \(Bytes.format(headroom.marginBytes)) should "
+            + "stay free. Clear \(Bytes.format(headroom.shortBytes)) first."]
+    if scanning {
+        lines.append("Measuring your home folder now.")
+    } else if headroom.safeToClearBytes > 0 {
+        lines.append("Safe to clear: \(Bytes.format(headroom.safeToClearBytes)). See it with: diskforecast cleanup")
+    } else {
+        lines.append("Nothing on the Safe to clear list right now.")
+    }
+    return lines.joined(separator: "\n")
+}
+
 func describe(_ changes: CLIChanges) -> String {
     let format = Date.FormatStyle().month(.abbreviated).day()
     var lines = ["What changed from \(changes.since.formatted(format)) to \(changes.until.formatted(format)):"]
     func add(_ folders: [CLIFolderChange], depth: Int) {
         for folder in folders {
             let name = depth == 0 ? "~/" + folder.path : (folder.path as NSString).lastPathComponent
-            let new = folder.oldBytes == 0 ? " (new)" : folder.newBytes == 0 ? " (gone)" : ""
-            let size = signed(folder.delta).padding(toLength: 9, withPad: " ", startingAt: 0)
-            lines.append(String(repeating: "  ", count: depth + 1) + size + " " + name + new)
+            let note: String
+            let amount: String
+            if folder.listedForFirstMeasured {
+                note = folder.firstMeasured ? " (first measured)" : " (first measured inside)"
+                amount = Bytes.format(folder.firstMeasured ? folder.newBytes : folder.firstMeasuredBytes)
+            } else {
+                note = folder.oldBytes == 0 ? " (new)" : folder.newBytes == 0 ? " (gone)" : ""
+                amount = signed(folder.delta)
+            }
+            let size = amount.padding(toLength: 9, withPad: " ", startingAt: 0)
+            lines.append(String(repeating: "  ", count: depth + 1) + size + " " + name + note)
             add(folder.children, depth: depth + 1)
         }
     }
-    add(changes.folders, depth: 0)
+    let firstMeasured = changes.folders.filter(\.listedForFirstMeasured)
+    add(changes.folders.filter { !$0.listedForFirstMeasured }, depth: 0)
     if abs(changes.outsideHomeBytes) >= 1_000_000_000 {
         let size = signed(changes.outsideHomeBytes).padding(toLength: 9, withPad: " ", startingAt: 0)
         lines.append("  \(size) Outside your home folder (System Data, other accounts, and apps)")
     }
     if lines.count == 1 { lines.append("  No folder changed by more than 500 MB.") }
+    if !firstMeasured.isEmpty || lines.contains(where: { $0.contains("(first measured") }) {
+        lines.append("")
+        lines.append(
+            "First measured: the earlier scan couldn't read these folders, for example while Full Disk Access "
+                + "was off, so their size isn't counted as growth."
+        )
+        add(firstMeasured, depth: 0)
+    }
     if let gap = changes.freeSpaceGap {
         lines.append("")
         lines.append(gap)
@@ -244,7 +285,11 @@ func report(_ response: CLIResponse, json asJSON: Bool) -> Bool {
     }
     response.notes.forEach(note)
     var sections: [String] = []
-    if let status = response.status { sections.append(describe(status)) }
+    if let headroom = response.headroom {
+        sections.append(describe(headroom, scanning: response.status?.scanning ?? false))
+    } else if let status = response.status {
+        sections.append(describe(status))
+    }
     if let changes = response.changes { sections.append(describe(changes)) }
     if let cleanup = response.cleanup { sections.append(describe(cleanup)) }
     if let trash = response.trash { sections.append(describe(trash)) }
@@ -280,8 +325,11 @@ case .help:
     print(usage)
 case .version:
     print(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown")
-case .send(let request, let json, let wait):
+case .send(let request, let json, let wait, let needBytes):
     var response = sendLaunchingApp(request)
+    if let needBytes, let status = response.status {
+        response.headroom = CLIHeadroom(neededBytes: needBytes, status: status)
+    }
     if request.action == .scan, response.error == nil {
         if wait {
             if response.status?.scanning == true { response = waitForScan(json: json) }
@@ -291,4 +339,5 @@ case .send(let request, let json, let wait):
         }
     }
     if !report(response, json: json) { exit(1) }
+    if response.headroom?.hasRoom == false { exit(notEnoughRoomExitCode) }
 }

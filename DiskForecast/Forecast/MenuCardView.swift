@@ -114,7 +114,7 @@ struct MenuCardView: View {
         "\(Bytes.format(disk.freeBytes)) free of \(Bytes.format(disk.capacityBytes))"
     }
 
-    /// Days until full on the drum, or dashes while learning, steady or gaining.
+    /// Days until full on the drum, or dashes while learning, steady, gaining or cleared.
     private var daysDigits: String {
         guard case .filling(let days, _) = disk.outlook, days < 999.5 else { return "---" }
         return String(format: "%03d", max(0, Int(days.rounded())))

@@ -57,6 +57,21 @@ struct FreeSpaceGapTests {
             + "Purgeable space stayed about the same, so Disk Forecast can't say what changed.")
     }
 
+    @Test func leavesFirstMeasuredFoldersOutOfTheHomeFoldersChange() throws {
+        // The home folder's total rose 41 GB, but 21 GB of that is a folder the earlier scan couldn't read.
+        let old = FolderSnapshot(
+            day: day, homeBytes: 100 * gigabyte, freeBytes: 50 * gigabyte, folders: [:], unmeasured: ["Big"]
+        )
+        let new = FolderSnapshot(
+            day: day, homeBytes: 141 * gigabyte, freeBytes: 100 * gigabyte, folders: ["Big": 21 * gigabyte]
+        )
+        let gap = try #require(FreeSpaceGap(from: old, to: new))
+        #expect(gap.homeDelta == 20 * gigabyte)
+        #expect(gap.outsideHomeBytes == -70 * gigabyte)
+        #expect(gap.explanation.hasPrefix("Free space rose 50 GB, while your home folder grew 20 GB. "
+            + "That leaves 70 GB freed outside your home folder"))
+    }
+
     @Test func oldSnapshotsWithoutSystemDataStillDecode() throws {
         let json = #"{"day":"2026-10-12T07:00:00Z","folders":{},"freeBytes":5,"homeBytes":9}"#
         let decoder = JSONDecoder()
