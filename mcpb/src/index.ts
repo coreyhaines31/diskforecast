@@ -54,7 +54,8 @@ server.registerTool(
       "(oldBytes 0 means new; firstMeasured means the earlier scan couldn't read it, so it isn't growth, and " +
       "firstMeasuredBytes inside a folder isn't growth either), plus outsideHomeBytes for System Data, other accounts, and apps. " +
       "When free space is swinging, keepsChanging lists the folders that grew and shrank most between consecutive scans " +
-      "over the last two weeks (movedBytes adds up every change either way, netBytes is where it ended). " +
+      "over the last two weeks (movedBytes adds up every change either way, netBytes is where it ended; " +
+      "inside, when present, lists the folders within one that moved most, with the same fields). " +
       "Use for 'what's eating my disk?' or 'what filled it up this month?'.",
     inputSchema: {
       days: z

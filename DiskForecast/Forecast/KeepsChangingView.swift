@@ -10,7 +10,7 @@ struct KeepsChanging {
     let until: Date
     let folders: [FolderChurn]
 
-    var days: Int { Int((until.timeIntervalSince(since) / 86_400).rounded()) }
+    var days: Int { FolderChurns.days(from: since, to: until) }
 
     init?(store: FolderSnapshotStore, outlook: Forecast.Outlook, now: Date = Date()) {
         guard case .swinging = outlook else { return nil }
@@ -25,7 +25,7 @@ struct KeepsChanging {
 }
 
 /// The few folders that moved most, each with how far it moved and where it ended:
-/// "moved 41 GB over 9 days, ended 2.0 GB up".
+/// "moved 41 GB over 9 days, ended 2.0 GB up", and disclosing the folders inside it that moved most.
 struct KeepsChangingView: View {
     let keepsChanging: KeepsChanging
 
@@ -37,16 +37,30 @@ struct KeepsChangingView: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             ForEach(keepsChanging.folders) { folder in
-                HStack(spacing: 8) {
-                    Image(systemName: "arrow.up.arrow.down").foregroundStyle(.secondary).frame(width: 18)
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text("~/" + folder.path).lineLimit(1).truncationMode(.middle)
-                        Text(folder.summary(days: keepsChanging.days))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .monospacedDigit()
+                if folder.inside.isEmpty {
+                    row(folder, name: "~/" + folder.path)
+                } else {
+                    DisclosureGroup {
+                        ForEach(folder.inside) { inner in
+                            row(inner, name: String(inner.path.dropFirst(folder.path.count + 1)))
+                        }
+                    } label: {
+                        row(folder, name: "~/" + folder.path)
                     }
                 }
+            }
+        }
+    }
+
+    private func row(_ folder: FolderChurn, name: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "arrow.up.arrow.down").foregroundStyle(.secondary).frame(width: 18)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(name).lineLimit(1).truncationMode(.middle)
+                Text(folder.summary(days: keepsChanging.days))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
             }
         }
     }
