@@ -146,7 +146,8 @@ struct TrasherTests {
         let outside = TestFolders.make("outside")
         try FileManager.default.createDirectory(at: outside, withIntermediateDirectories: true)
         try FileManager.default.createSymbolicLink(at: home.appending(path: "escape"), withDestinationURL: outside)
-        let trasher = Trasher(home: home.path)
+        // The test folders are in the real temp folder, which the Trasher would otherwise allow.
+        let trasher = Trasher(home: home.path, userTemp: TestFolders.make("T").path)
         #expect(trasher.refusal(for: home.path) == .outsideHome)
         #expect(trasher.refusal(for: home.path + "/Library") == .protectedFolder)
         #expect(trasher.refusal(for: home.path + "/Library/Caches") == .protectedFolder)
@@ -163,7 +164,7 @@ struct TrasherTests {
         let scratch = TestFolders.make("claude")
         let session = scratch.appending(path: "-Users-me-code-app/2f1c")
         try FileManager.default.createDirectory(at: session, withIntermediateDirectories: true)
-        let trasher = Trasher(home: home.path, agentScratch: scratch.path)
+        let trasher = Trasher(home: home.path, agentScratch: scratch.path, userTemp: TestFolders.make("T").path)
         #expect(trasher.refusal(for: session.path) == nil)
         #expect(trasher.refusal(for: session.deletingLastPathComponent().path) == .outsideHome)
         #expect(trasher.refusal(for: scratch.path) == .outsideHome)
