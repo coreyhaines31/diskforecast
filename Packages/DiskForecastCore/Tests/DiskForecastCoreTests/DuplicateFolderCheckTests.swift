@@ -92,16 +92,15 @@ struct DuplicateFolderCheckTests {
         #expect(DuplicateFolders.mismatch(of: copy + "/photos", with: copy) == .incomplete)
     }
 
-    @Test func passesClonesWithoutReadingThem() throws {
+    @Test func passesClonesAndReadsThemLikeAnyOtherFile() throws {
         try writeTrip(in: [original])
         try FileManager.default.createDirectory(atPath: base.path + "/Downloads", withIntermediateDirectories: true)
         try #require(clonefile(original, copy, 0) == 0)
-        // Unreadable, so reading either copy would stop the check.
-        chmod(copy + "/a.bin", 0)
-        chmod(original + "/a.bin", 0)
         #expect(DuplicateFolders.mismatch(of: copy, with: original) == nil)
-        chmod(copy + "/a.bin", 0o644)
-        chmod(original + "/a.bin", 0o644)
+        // Unreadable, so the check can't finish: a clone is read, not taken on the file system's word.
+        chmod(copy + "/a.bin", 0)
+        defer { chmod(copy + "/a.bin", 0o644) }
+        #expect(DuplicateFolders.mismatch(of: copy, with: original) == .incomplete)
     }
 
     @Test func refusesACloneThatWasChangedAfterward() throws {

@@ -27,8 +27,8 @@ extension DuplicateFolders {
     }
 
     /// Nil when `copy` holds exactly what `original` does: the same files, folders, and links by
-    /// path, with identical contents. Links are compared, never followed. Hard links and clones of
-    /// each other are the same storage and aren't read. Slow for big folders, so run it off the main thread.
+    /// path, with identical contents. Links are compared, never followed. Two names for one file (hard
+    /// links) aren't read; everything else is, clones included. Slow for big folders, so run it off the main thread.
     static func mismatch(of copy: String, with original: String) -> Mismatch? {
         withoutDownloading { () -> Mismatch? in
             do throws(Mismatch) {
@@ -101,9 +101,9 @@ extension DuplicateFolders {
         switch copy.kind {
         case S_IFREG:
             guard copy.info.st_size == original.info.st_size else { throw .differs }
+            // The same file under two names needs no reading. Clones do: they're read like any other
+            // pair, because nothing here should rest on the file system's word that they still match.
             if copy.info.st_dev == original.info.st_dev && copy.info.st_ino == original.info.st_ino { return }
-            if let one = BulkReader.clone(of: copy.path), let two = BulkReader.clone(of: original.path),
-               one.references > 1, one.id == two.id, copy.info.st_dev == original.info.st_dev { return }
             try compareBytes(copy.path, original.path, size: Int64(copy.info.st_size))
         case S_IFLNK:
             guard let one = linkTarget(copy.path), let two = linkTarget(original.path) else { throw .incomplete }

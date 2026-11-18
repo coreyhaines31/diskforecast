@@ -135,24 +135,6 @@ final class BulkReader {
         return true
     }
 
-    /// A file's clone ID and how many files share its storage, without following a link.
-    static func clone(of path: String) -> (id: UInt64, references: UInt32)? {
-        var request = attrlist()
-        request.bitmapcount = u_short(ATTR_BIT_MAP_COUNT)
-        request.forkattr = extCloneID | extCloneRefCount
-        // Packed after the length: the ID, then the count.
-        var buffer = [UInt8](repeating: 0, count: 32)
-        let status = buffer.withUnsafeMutableBytes { raw in
-            let options = UInt32(FSOPT_NOFOLLOW) | UInt32(optionCommonExtended)
-            return getattrlist(path, &request, raw.baseAddress, raw.count, options)
-        }
-        guard status == 0 else { return nil }
-        return buffer.withUnsafeBytes { raw in
-            let id = raw.loadUnaligned(fromByteOffset: 4, as: UInt64.self)
-            return (id, raw.loadUnaligned(fromByteOffset: 12, as: UInt32.self))
-        }
-    }
-
     /// The bytes of a cloned file that it doesn't share with its clones.
     static func privateSize(of path: String) -> Int64? {
         var request = attrlist()
