@@ -146,7 +146,7 @@ diskforecast trash xcode-derived-data package-caches --yes  # moves it to the Tr
 diskforecast undo                   # puts back everything the last trash run moved
 ```
 
-- **`status`** shows free space, the forecast, a low-space warning, and how much is Safe to clear. With `--need 5GB` (or `500MB`, `1.5TB`) it checks whether that much fits and still leaves 20 GB free, says how much to clear if it doesn't, and exits with status 3 when there isn't room, so an agent can check before a large download, install, or build.
+- **`status`** shows free space (and how much of it is purgeable, which is why it can read higher than `df`), the forecast, a low-space warning, and how much is Safe to clear. With `--need 5GB` (or `500MB`, `1.5TB`) it checks whether that much fits and still leaves 20 GB free, says how much to clear if it doesn't, and exits with status 3 when there isn't room, so an agent can check before a large download, install, or build.
 - **`changes`** compares the folder sizes saved after each scan, over the last 7 days or `--days N`. It also shows how much changed outside your home folder (System Data, other accounts, and apps).
 - **`cleanup`** lists the same items as the Cleanup window, grouped into **Safe to clear** and **Worth a look**, each with an ID, its size, and why it's listed.
 - **`trash`** takes item IDs or paths from the cleanup list. Without `--yes` it only shows what it would move. It refuses anything that isn't on the list, and like the app it only ever moves things to the Trash. Empty the Trash to get the space back.
