@@ -50,6 +50,10 @@ final class CLICommands {
             notes.append("Full Disk Access is off, so some folders aren't measured. "
                 + "Turn it on in System Settings › Privacy & Security › Full Disk Access.")
         }
+        let weekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        if let gap = SnapshotComparison(store: snapshots, since: weekAgo)?.freeSpaceGap {
+            notes.append(gap.statusNote(days: 7))
+        }
         return CLIResponse(notes: notes, status: status())
     }
 

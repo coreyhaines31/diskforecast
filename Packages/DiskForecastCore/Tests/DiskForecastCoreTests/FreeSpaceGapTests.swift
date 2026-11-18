@@ -25,6 +25,8 @@ struct FreeSpaceGapTests {
         let gap = try #require(FreeSpaceGap(from: old, to: new))
         #expect(gap.outsideHomeBytes == -61 * gigabyte)
         #expect(gap.systemDataChanges.isEmpty)
+        #expect(gap.statusNote(days: 7) == "In the last 7 days, 61 GB was freed outside your home folder, "
+            + "more than scans explain. See: diskforecast changes --days 7")
         #expect(gap.explanation == "Free space rose 70 GB, while your home folder shrank 9.0 GB. "
             + "That leaves 61 GB freed outside your home folder, where scans don't look. "
             + "Disk Forecast didn't record System Data back then, so it can't say what changed. "

@@ -42,6 +42,13 @@ public struct FreeSpaceGap: Sendable, Equatable {
         comparedNames = compared
     }
 
+    /// One line for `diskforecast status`, pointing at `diskforecast changes` for the rest.
+    public func statusNote(days: Int) -> String {
+        "In the last \(days) days, \(Bytes.format(abs(outsideHomeBytes))) was "
+            + "\(outsideHomeBytes > 0 ? "used" : "freed") outside your home folder, more than scans explain. "
+            + "See: diskforecast changes --days \(days)"
+    }
+
     /// A few plain sentences: how free space and the home folder moved, what's left over, and which
     /// saved System Data changed, or that nothing saved explains it.
     public var explanation: String {
