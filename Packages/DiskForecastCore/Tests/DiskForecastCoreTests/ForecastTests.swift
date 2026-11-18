@@ -241,6 +241,11 @@ struct UsageHistoryTests {
         #expect(history.samples.map(\.lowestFreeBytes) == [3, 45])
     }
 
+    @Test func demoHistoryHasDaysThatDipped() {
+        let dipped = Demo.history().samples.filter { $0.freeBytes - $0.lowestFreeBytes >= UsageHistory.notableDip }
+        #expect(dipped.count == 2)
+    }
+
     @Test func findsTheLowForADay() {
         var history = UsageHistory()
         let morning = Date(timeIntervalSince1970: 1_790_000_000)
