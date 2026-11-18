@@ -42,10 +42,13 @@ public struct CLIResponse: Codable, Equatable, Sendable {
     public var cleanup: [CLICleanupItem]?
     public var trash: CLITrashReport?
     public var undo: CLIUndoReport?
+    /// `status --need`: filled in by the command itself, from `status`.
+    public var headroom: CLIHeadroom?
 
     public init(
         error: String? = nil, notes: [String] = [], status: CLIStatus? = nil, changes: CLIChanges? = nil,
-        cleanup: [CLICleanupItem]? = nil, trash: CLITrashReport? = nil, undo: CLIUndoReport? = nil
+        cleanup: [CLICleanupItem]? = nil, trash: CLITrashReport? = nil, undo: CLIUndoReport? = nil,
+        headroom: CLIHeadroom? = nil
     ) {
         self.error = error
         self.notes = notes
@@ -54,6 +57,31 @@ public struct CLIResponse: Codable, Equatable, Sendable {
         self.cleanup = cleanup
         self.trash = trash
         self.undo = undo
+        self.headroom = headroom
+    }
+}
+
+/// Whether there's room to write `neededBytes` and still keep `marginBytes` free, for an agent
+/// to check before a large download, install, or build.
+public struct CLIHeadroom: Codable, Equatable, Sendable {
+    /// Where Disk Forecast starts warning about low space on most disks.
+    public static let margin: Int64 = 20_000_000_000
+
+    public var neededBytes: Int64
+    public var freeBytes: Int64
+    public var marginBytes: Int64
+    public var hasRoom: Bool
+    /// How much to clear first so there's room. Zero when there's room already.
+    public var shortBytes: Int64
+    public var safeToClearBytes: Int64
+
+    public init(neededBytes: Int64, status: CLIStatus) {
+        self.neededBytes = neededBytes
+        freeBytes = status.freeBytes
+        marginBytes = Self.margin
+        shortBytes = max(0, neededBytes + Self.margin - status.freeBytes)
+        hasRoom = shortBytes == 0
+        safeToClearBytes = status.safeToClearBytes
     }
 }
 
@@ -62,7 +90,7 @@ public struct CLIStatus: Codable, Equatable, Sendable {
     public var capacityBytes: Int64
     /// Space macOS holds for caches and snapshots and gives back when it's needed.
     public var purgeableBytes: Int64
-    /// learning, filling, steady, or gaining.
+    /// learning, filling, steady, gaining, or cleared (up mostly from one cleanup, so no pace).
     public var outlook: String
     /// Like "Full in ~41 days · using 3.5 GB a day".
     public var forecast: String
