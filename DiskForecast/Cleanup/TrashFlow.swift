@@ -47,11 +47,11 @@ enum TrashFlow {
         return "\n\n" + notes.joined(separator: " ")
     }
 
-    /// Deleting can take a while, so it runs off the main thread while the menu says so.
+    /// Deleting, and comparing a copy with its original, can take a while, so it runs off the main
+    /// thread while the menu and the Cleanup window say so.
     private static func dispose(_ entries: [CleanupEntry], permanently: Bool, scan: ScanModel, disk: DiskStatus) {
         let trasher = Trasher(home: scan.home)
-        let total = entries.reduce(0) { $0 + $1.bytes }
-        scan.activity = permanently ? "Deleting \(Bytes.format(total))…" : "Moving \(Bytes.format(total)) to the Trash…"
+        scan.activity = activity(entries, permanently: permanently)
         Task {
             let report = await Task.detached(priority: .userInitiated) {
                 trasher.trash(entries, permanently: permanently)
@@ -63,6 +63,16 @@ enum TrashFlow {
             scan.measureTrash()
             showResult(report, of: entries, scan: scan, disk: disk)
         }
+    }
+
+    /// "Moving 12 GB to the Trash…", saying first when copies are compared file for file.
+    static func activity(_ entries: [CleanupEntry], permanently: Bool) -> String {
+        let total = Bytes.format(entries.reduce(0) { $0 + $1.bytes })
+        let action = permanently ? "deleting \(total)" : "moving \(total) to the Trash"
+        if entries.contains(where: { $0.original != nil }) {
+            return "Comparing every file with the original, then \(action)…"
+        }
+        return permanently ? "Deleting \(total)…" : "Moving \(total) to the Trash…"
     }
 
     private static func showResult(

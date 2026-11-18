@@ -174,15 +174,19 @@ public struct Trasher: Sendable {
     }
 
     /// Moves cleanup entries to the Trash, or deletes them, each with its companions. Companions go
-    /// only when their entry did.
+    /// only when their entry did. A folder stored twice goes only if it still matches its original
+    /// file for file, which can take a while for a big one.
     public func trash(
         _ entries: [CleanupEntry], permanently: Bool = false, openFiles: OpenFiles = .current()
     ) -> Report {
+        let unmatched = unmatchedCopies(in: entries)
+        let entries = entries.filter { entry in !unmatched.contains { $0.path == entry.path } }
         let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
         let names = Dictionary(entries.map { ($0.path, $0.name) }) { first, _ in first }
         var report = dispose(
             entries.map(\.path), sizes: sizes, names: names, openFiles: openFiles, permanently: permanently
         )
+        report.failed = unmatched + report.failed
         let moved = Set(report.moved)
         let companions = dispose(
             entries.filter { moved.contains($0.path) }.flatMap(\.companions), sizes: [:], names: [:],

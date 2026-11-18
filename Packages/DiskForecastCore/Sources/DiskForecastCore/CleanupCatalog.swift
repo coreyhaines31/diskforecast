@@ -23,32 +23,6 @@ public enum CleanupAction: Sendable, Equatable {
     case useApp(name: String, bundleID: String)
 }
 
-public struct CleanupEntry: Sendable, Hashable, Identifiable {
-    public var id: String { path }
-    public let path: String
-    public let bytes: Int64
-    public let detail: String?
-    /// What the list calls it. Usually the file or folder name.
-    public let name: String
-    /// Paths that go to the Trash with it, like a worktree's records in its repository. Counted
-    /// in `bytes`.
-    public let companions: [String]
-    /// A worktree branch's pull request, when that's been looked up.
-    public let pullRequest: PullRequestState?
-
-    public init(
-        path: String, bytes: Int64, detail: String? = nil, name: String? = nil, companions: [String] = [],
-        pullRequest: PullRequestState? = nil
-    ) {
-        self.path = path
-        self.bytes = bytes
-        self.detail = detail
-        self.name = name ?? (path as NSString).lastPathComponent
-        self.companions = companions
-        self.pullRequest = pullRequest
-    }
-}
-
 public struct CleanupItem: Sendable, Identifiable {
     public let id: String
     public let title: String
@@ -140,7 +114,7 @@ public struct CleanupCatalog: Sendable {
                 bytes += companions.reduce(0) { $0 + (size(of: $1, in: scan) ?? 0) }
                 return CleanupEntry(
                     path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name,
-                    companions: companions, pullRequest: candidate.pullRequest
+                    companions: companions, pullRequest: candidate.pullRequest, original: candidate.original
                 )
             }
             .filter { $0.bytes >= rule.minimumBytes }
@@ -167,6 +141,7 @@ public struct CleanupCatalog: Sendable {
         var name: String?
         var companions: [String] = []
         var pullRequest: PullRequestState?
+        var original: String?
         /// What removing it frees, when that isn't its size in the scan.
         var bytes: Int64?
     }

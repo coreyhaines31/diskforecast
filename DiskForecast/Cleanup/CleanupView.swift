@@ -80,6 +80,9 @@ struct CleanupView: View {
                 ProgressView().controlSize(.small)
                 Text("Measuring… \(files.formatted(.number.notation(.compactName))) files")
                     .foregroundStyle(.secondary)
+            } else if let activity = scan.activity {
+                ProgressView().controlSize(.small)
+                Text(activity).foregroundStyle(.secondary)
             } else {
                 Button("Rescan") { scan.scan() }
             }
@@ -131,7 +134,7 @@ struct CleanupView: View {
                 TrashFlow.confirmAndTrash(entries, summary: chosen, scan: scan, disk: disk)
             }
             .buttonStyle(.borderedProminent)
-            .disabled(selection.isEmpty)
+            .disabled(selection.isEmpty || scan.activity != nil)
         }
         .padding()
     }

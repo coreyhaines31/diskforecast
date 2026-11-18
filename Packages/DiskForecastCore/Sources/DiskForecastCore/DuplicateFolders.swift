@@ -33,15 +33,12 @@ enum DuplicateFolders {
     typealias Candidate = (node: Int, path: String)
 
     static func find(in scan: ScanResult, home: String, minimumBytes: Int64) -> [DuplicateFolder] {
-        let tree = scan.tree
-        let materialize = IOPOL_TYPE_VFS_MATERIALIZE_DATALESS_FILES
-        let previous = getiopolicy_np(materialize, IOPOL_SCOPE_THREAD)
         // Reading a file iCloud has evicted would download it. Don't.
-        setiopolicy_np(materialize, IOPOL_SCOPE_THREAD, IOPOL_MATERIALIZE_DATALESS_FILES_OFF)
-        defer {
-            if previous >= 0 { setiopolicy_np(materialize, IOPOL_SCOPE_THREAD, previous) }
-        }
+        withoutDownloading { pairs(in: scan, home: home, minimumBytes: minimumBytes) }
+    }
 
+    private static func pairs(in scan: ScanResult, home: String, minimumBytes: Int64) -> [DuplicateFolder] {
+        let tree = scan.tree
         var found: [DuplicateFolder] = []
         var matched: [String] = []
         var comparisons = 0
@@ -242,7 +239,7 @@ extension CleanupCatalog {
             let original = "~" + copy.original.dropFirst(home.count)
             return Candidate(
                 path: copy.path, detail: "Same file names and sizes as \(original)",
-                name: Trasher.Report.label(copy.path), bytes: copy.bytes
+                name: Trasher.Report.label(copy.path), original: copy.original, bytes: copy.bytes
             )
         }
     }
