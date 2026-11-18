@@ -24,6 +24,8 @@ final class ScanModel {
     private(set) var trashBytes: Int64?
     /// Claude Code's temp folder, scanned beside the home folder since it's outside it.
     private var agentScratch: ScanResult?
+    /// The user's own temp folder, $TMPDIR, scanned beside the home folder for the same reason.
+    private var userTemp: ScanResult?
     /// Worktrees' pull requests by path, from the last check. Empty while checks are off.
     private var pullRequests: [String: PullRequestState] = [:]
     /// The size of /Applications, measured beside the home folder for the storage meter. Nil until measured.
@@ -119,12 +121,15 @@ final class ScanModel {
         showProgress(of: scanner)
         Task {
             async let scratch = Self.scanAgentScratch(priority: priority)
+            async let temp = Self.scanUserTemp(priority: priority)
             async let applications = Self.measureApplications(priority: priority)
             let result = await scanner.scan()
             let scratchResult = await scratch
+            let tempResult = await temp
             let applicationsResult = await applications
             guard generation == self.generation else { return }
             agentScratch = scratchResult
+            userTemp = tempResult
             applicationsBytes = applicationsResult
             await finish(result: result, fullAccess: fullAccess)
         }
@@ -173,6 +178,11 @@ final class ScanModel {
         return await DiskScanner(options: .init(root: URL(filePath: AgentScratch.folder), priority: priority)).scan()
     }
 
+    private nonisolated static func scanUserTemp(priority: QualityOfService) async -> ScanResult? {
+        guard FileManager.default.fileExists(atPath: UserTemp.folder) else { return nil }
+        return await DiskScanner(options: .init(root: URL(filePath: UserTemp.folder), priority: priority)).scan()
+    }
+
     private nonisolated static func measureApplications(priority: QualityOfService) async -> Int64? {
         let result = await DiskScanner(options: .init(root: URL(filePath: "/Applications"), priority: priority)).scan()
         return result.tree.directoryCount > 0 ? result.tree.totalSize : nil
@@ -215,7 +225,7 @@ final class ScanModel {
         guard let result else { return }
         let pullRequests = pullRequests
         let catalog = CleanupCatalog(
-            home: home, staleAfterDays: Preferences.staleAfterDays, agentScratch: agentScratch,
+            home: home, staleAfterDays: Preferences.staleAfterDays, agentScratch: agentScratch, userTemp: userTemp,
             pullRequest: { pullRequests[$0] }
         )
         items = await Task.detached(priority: .utility) { catalog.items(from: result) }.value
