@@ -120,6 +120,8 @@ struct CLIChangesTests {
         #expect(changes.folders.map(\.delta) == [gigabyte])
         #expect(changes.folders[0].firstMeasuredBytes == 16 * gigabyte)
         #expect(changes.folders[0].children.map(\.firstMeasured) == [true])
+        #expect(changes.folders[0].children.map(\.listedForFirstMeasured) == [true])
+        #expect(!changes.folders[0].listedForFirstMeasured)
         #expect(changes.outsideHomeBytes == 0)
     }
 }
