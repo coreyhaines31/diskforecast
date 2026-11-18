@@ -214,6 +214,20 @@ struct CLIStatusLowTests {
         #expect(status(freeGB: 76, lowGB: nil).notableLowToday == nil)
     }
 
+    @Test func leavesOutADipThatIsSmallNextToFreeSpaceNow() {
+        // Seen on a real Mac: a low of 80 GB against 82 GB free isn't worth a line.
+        #expect(status(freeGB: 82, lowGB: 80).notableLowToday == nil)
+        // 6 GB below, but under a tenth of what's free now.
+        #expect(status(freeGB: 76, lowGB: 70).notableLowToday == nil)
+        #expect(status(freeGB: 76, lowGB: 68).notableLowToday == 68 * gigabyte)
+    }
+
+    @Test func pointsOutASmallerDipThatReachedLowSpace() {
+        #expect(status(freeGB: 22, lowGB: 18).notableLowToday == 18 * gigabyte)
+        #expect(status(freeGB: 25, lowGB: 22).notableLowToday == nil)
+        #expect(status(freeGB: 4, lowGB: 3).notableLowToday == 3 * gigabyte)
+    }
+
     @Test func saysHowMuchOfFreeSpaceIsPurgeable() {
         var status = status(freeGB: 76, lowGB: nil)
         #expect(status.freeSpaceLine == "76 GB free of 995 GB (8% free)")
