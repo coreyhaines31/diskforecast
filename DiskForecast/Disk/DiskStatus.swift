@@ -2,7 +2,8 @@ import DiskForecastCore
 import Foundation
 import Observation
 
-/// Free space on the startup disk, sampled every hour into a daily history for the forecast.
+/// Free space on the startup disk, sampled every hour into a daily history for the forecast, and
+/// every minute while space is low so a disk filling within minutes can be caught.
 @MainActor
 @Observable
 final class DiskStatus {
@@ -12,10 +13,13 @@ final class DiskStatus {
     /// Space macOS is holding for caches and snapshots that it will give back when needed.
     private(set) var purgeableBytes: Int64 = 0
     private(set) var history: UsageHistory
+    /// The last ten minutes of readings, kept only while space is low.
+    private(set) var recentReadings: [FastFill.Reading] = []
     var onChange: (() -> Void)?
 
     private let historyURL: URL
     private var timer: Timer?
+    private var lowSpaceTimer: Timer?
 
     init(supportFolder: URL) {
         historyURL = supportFolder.appending(path: "history.json")
@@ -68,19 +72,47 @@ final class DiskStatus {
             return
         }
         #endif
+        guard read() else { return }
+        history.record(freeBytes: freeBytes, capacityBytes: capacityBytes, at: Date())
+        try? history.save(to: historyURL)
+        onChange?()
+    }
+
+    /// The minute check while space is low. Leaves the saved history to the hourly reading.
+    private func refreshWhileLow() {
+        guard read() else { return }
+        onChange?()
+    }
+
+    /// Reads free space, a cheap volume query, and starts or stops the minute check to match.
+    private func read() -> Bool {
         let keys: Set<URLResourceKey> = [
             .volumeTotalCapacityKey, .volumeAvailableCapacityKey, .volumeAvailableCapacityForImportantUsageKey
         ]
         guard let values = try? URL(filePath: "/").resourceValues(forKeys: keys),
               let capacity = values.volumeTotalCapacity
-        else { return }
+        else { return false }
         let available = Int64(values.volumeAvailableCapacity ?? 0)
         let important = values.volumeAvailableCapacityForImportantUsage ?? available
         capacityBytes = Int64(capacity)
         freeBytes = important
         purgeableBytes = max(0, important - available)
-        history.record(freeBytes: freeBytes, capacityBytes: capacityBytes, at: Date())
-        try? history.save(to: historyURL)
-        onChange?()
+        watchWhileLow()
+        return true
+    }
+
+    private func watchWhileLow() {
+        guard FastFill.shouldWatch(freeBytes: freeBytes, capacityBytes: capacityBytes) else {
+            lowSpaceTimer?.invalidate()
+            lowSpaceTimer = nil
+            recentReadings = []
+            return
+        }
+        recentReadings = FastFill.trimmed(recentReadings + [FastFill.Reading(date: Date(), freeBytes: freeBytes)])
+        guard lowSpaceTimer == nil else { return }
+        lowSpaceTimer = Timer.scheduledTimer(withTimeInterval: FastFill.checkInterval, repeats: true) { _ in
+            MainActor.assumeIsolated { self.refreshWhileLow() }
+        }
+        lowSpaceTimer?.tolerance = 10
     }
 }
