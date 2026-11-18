@@ -214,6 +214,15 @@ struct CLIStatusLowTests {
         #expect(status(freeGB: 76, lowGB: nil).notableLowToday == nil)
     }
 
+    @Test func saysHowMuchOfFreeSpaceIsPurgeable() {
+        var status = status(freeGB: 76, lowGB: nil)
+        #expect(status.freeSpaceLine == "76 GB free of 995 GB (8% free)")
+        status.purgeableBytes = 4_200_000_000
+        #expect(status.freeSpaceLine == "76 GB free of 995 GB (8% free), 4.2 GB of it purgeable")
+        status.purgeableBytes = 300_000_000
+        #expect(status.freeSpaceLine == "76 GB free of 995 GB (8% free)")
+    }
+
     @Test func readsAStatusFromAnAppWithoutTheLow() throws {
         let encoded = try JSONEncoder().encode(status(freeGB: 50, lowGB: nil))
         var json = try #require(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
