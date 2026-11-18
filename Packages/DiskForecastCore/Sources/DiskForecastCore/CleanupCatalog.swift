@@ -90,8 +90,9 @@ public struct CleanupCatalog: Sendable {
     public let home: String
     public let staleAfterDays: Int
     public let now: Date
-    /// A separate scan of Claude Code's temp folders, which sit outside the home folder.
+    /// Separate scans of Claude Code's temp folders and the user's own, which sit outside home.
     public let agentScratch: ScanResult?
+    public let userTemp: ScanResult?
     /// What removing a checkout would lose. Swappable for tests.
     let gitState: @Sendable (String) -> GitState?
     /// A worktree's pull request, by path. Nil when it wasn't looked up.
@@ -108,7 +109,8 @@ public struct CleanupCatalog: Sendable {
     static let minimumDuplicateBytes: Int64 = 1_000_000_000
 
     public init(
-        home: String, staleAfterDays: Int = 30, now: Date = Date(), agentScratch: ScanResult? = nil,
+        home: String, staleAfterDays: Int = 30, now: Date = Date(),
+        agentScratch: ScanResult? = nil, userTemp: ScanResult? = nil,
         gitState: @escaping @Sendable (String) -> GitState? = GitState.read(at:),
         pullRequest: @escaping @Sendable (String) -> PullRequestState? = { _ in nil }
     ) {
@@ -116,6 +118,7 @@ public struct CleanupCatalog: Sendable {
         self.staleAfterDays = staleAfterDays
         self.now = now
         self.agentScratch = agentScratch
+        self.userTemp = userTemp
         self.gitState = gitState
         self.pullRequest = pullRequest
     }
@@ -153,7 +156,7 @@ public struct CleanupCatalog: Sendable {
     }
 
     private func size(of path: String, in scan: ScanResult) -> Int64? {
-        scan.allocatedSize(of: path) ?? agentScratch?.allocatedSize(of: path)
+        scan.allocatedSize(of: path) ?? agentScratch?.allocatedSize(of: path) ?? userTemp?.allocatedSize(of: path)
     }
 
     // MARK: Sources
