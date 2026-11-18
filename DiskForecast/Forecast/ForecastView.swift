@@ -90,7 +90,8 @@ struct ForecastView: View {
         }
     }
 
-    private static let footnote = "Free space is checked every hour and saved once a day. The forecast follows "
+    private static let footnote = "Free space is checked every hour, and every minute while space is low. Each day "
+        + "keeps its last reading and its lowest. The forecast follows "
         + "the typical daily change over the last two weeks, so one big download or cleanup doesn't set it. "
         + "Folder sizes are saved after each scan to show what changed. Your history stays on this Mac."
 

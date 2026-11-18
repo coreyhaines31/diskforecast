@@ -104,11 +104,14 @@ public struct CLIStatus: Codable, Equatable, Sendable {
     public var fullDiskAccess: Bool
     /// What the cleanup list's "Safe to clear" group adds up to.
     public var safeToClearBytes: Int64
+    /// The least free space seen today. Nil before today's first reading, and from apps older than
+    /// this field.
+    public var lowestFreeBytesToday: Int64?
 
     public init(
         freeBytes: Int64, capacityBytes: Int64, purgeableBytes: Int64, outlook: String, forecast: String,
         daysUntilFull: Double?, bytesPerDay: Double?, lowOnSpace: Bool, scanning: Bool, lastScan: Date?,
-        fullDiskAccess: Bool, safeToClearBytes: Int64
+        fullDiskAccess: Bool, safeToClearBytes: Int64, lowestFreeBytesToday: Int64? = nil
     ) {
         self.freeBytes = freeBytes
         self.capacityBytes = capacityBytes
@@ -122,6 +125,13 @@ public struct CLIStatus: Codable, Equatable, Sendable {
         self.lastScan = lastScan
         self.fullDiskAccess = fullDiskAccess
         self.safeToClearBytes = safeToClearBytes
+        self.lowestFreeBytesToday = lowestFreeBytesToday
+    }
+
+    /// Today's low, when it was far enough below free space now to mention.
+    public var notableLowToday: Int64? {
+        guard let low = lowestFreeBytesToday, freeBytes - low >= UsageHistory.notableDip else { return nil }
+        return low
     }
 }
 
