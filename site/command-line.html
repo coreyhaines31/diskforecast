@@ -69,6 +69,7 @@
                 <div class="table-card glass"><div class="table-scroll"><table class="compare" style="min-width:640px">
           <thead><tr><th scope="col">Command</th><th scope="col">What it does</th></tr></thead><tbody>
             <tr><th scope="row"><code>diskforecast status</code></th><td>Free space, the forecast, a low-space warning, and how much is safe to clear</td></tr>
+            <tr><th scope="row"><code>diskforecast status --need 5GB</code></th><td>Whether 5 GB fits and still leaves 20 GB free, and how much to clear if it doesn't</td></tr>
             <tr><th scope="row"><code>diskforecast changes --days 30</code></th><td>Which folders grew or shrank, down to the subfolder, and how much changed outside your home folder</td></tr>
             <tr><th scope="row"><code>diskforecast cleanup</code></th><td>What you can reclaim, grouped into Safe to clear and Worth a look, with an ID and explanation for each</td></tr>
             <tr><th scope="row"><code>diskforecast trash &lt;id or path&gt;</code></th><td>Shows what would move to the Trash; add <code>--yes</code> to move it</td></tr>
@@ -77,6 +78,7 @@
             <tr><th scope="row"><code>diskforecast open forecast</code></th><td>Opens a window: forecast, cleanup, system-data, or settings</td></tr>
           </tbody></table></div></div>
         <p>Add <code>--json</code> to any command for output a script or agent can parse. If Disk Forecast isn't running, the command opens it in the background first.</p>
+        <p><code>--need</code> takes a size like <code>5GB</code>, <code>500MB</code>, or <code>1.5TB</code>. The command exits 0 when it worked, 1 for an error, and 3 when <code>status --need</code> finds there isn't room, so an agent can check before a large download, install, or build.</p>
 <pre><code>$ diskforecast status
 142 GB free of 494 GB (29% free)
 Full in ~30 days · using 4.7 GB a day
