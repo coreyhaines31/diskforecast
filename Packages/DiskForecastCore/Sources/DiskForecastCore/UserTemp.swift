@@ -7,7 +7,7 @@ public enum UserTemp {
     public static var folder: String { Trasher.resolved(FileManager.default.temporaryDirectory.path) }
 
     /// Untouched this long, nothing is probably coming back for it.
-    static let idleDays = 3.0
+    public static let idleDays = 3.0
     /// This many idle entries sharing a name's start are said to, so a long list reads as one batch.
     static let batchSize = 10
 

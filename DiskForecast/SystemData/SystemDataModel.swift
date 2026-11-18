@@ -45,8 +45,9 @@ final class SystemDataModel {
             async let simulators = simulatorsRow()
             async let models = appleModelsRow()
             async let docker = dockerRow()
+            async let temp = tempRow()
             disk.refresh()
-            let loaded = await [purgeableRow(), snapshots, spotlight, simulators, models, docker]
+            let loaded = await [purgeableRow(), snapshots, spotlight, temp, simulators, models, docker]
             rows = loaded.compactMap { $0 }
             isLoading = false
         }
@@ -135,6 +136,18 @@ final class SystemDataModel {
             await Shell.runAsAdministrator("/usr/bin/mdutil -E /")
         }]
         return row
+    }
+
+    private func tempRow() async -> SystemDataRow? {
+        let result = await DiskScanner(options: .init(root: URL(filePath: UserTemp.folder))).scan()
+        guard result.tree.totalSize > 0 else { return nil }
+        return SystemDataRow(
+            id: "temp", title: "Temporary files",
+            explanation: "Your own temporary folder, where apps, scripts, and test runs keep files while they work. "
+                + "Many never remove theirs. Cleanup lists what nothing has changed in \(Int(UserTemp.idleDays)) days "
+                + "under Safe to clear.",
+            bytes: result.tree.totalSize
+        )
     }
 
     private func simulatorsRow() async -> SystemDataRow? {
