@@ -137,7 +137,7 @@ def footer_family():
     """The free Mac apps as a panel of icons, cross-linked from every footer. This one is marked current."""
     items = "".join(
         f'<li><a href="{url}/" title="{esc(desc)}"{" aria-current=\"page\"" if key == "disk" else ""}>'
-        f'<img src="/images/family/{key}.png" alt="" width="56" height="56" loading="lazy">{esc(name)}</a></li>'
+        f'<img src="/images/family/{key}.webp" alt="" width="56" height="56" loading="lazy">{esc(name)}</a></li>'
         for key, name, url, desc in FAMILY)
     return f'''    <nav class="bx-family" aria-label="More free Mac apps">
       <div class="wrap">
