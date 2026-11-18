@@ -85,7 +85,8 @@ public struct UsageHistory: Codable, Sendable, Equatable {
     /// last gigabyte still has its low saved.
     public static func lowIsWorthSaving(_ low: Int64, saved: Int64?) -> Bool {
         guard let saved else { return true }
-        return saved - low >= min(notableDip, saved / 4)
+        // A low that hasn't dropped is never worth it, even when a quarter of the saved low rounds to nothing.
+        return low < saved && saved - low >= min(notableDip, saved / 4)
     }
 
     /// The saved history, or an empty one when there's none yet.

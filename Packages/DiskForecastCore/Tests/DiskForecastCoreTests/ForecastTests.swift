@@ -264,6 +264,9 @@ struct UsageHistoryTests {
         // Near empty, a quarter of what's left counts, so the last gigabyte isn't lost.
         #expect(UsageHistory.lowIsWorthSaving(600_000_000, saved: 800_000_000))
         #expect(!UsageHistory.lowIsWorthSaving(700_000_000, saved: 800_000_000))
+        // A full disk stays full: nothing new to save each minute.
+        #expect(!UsageHistory.lowIsWorthSaving(0, saved: 0))
+        #expect(!UsageHistory.lowIsWorthSaving(2, saved: 2))
     }
 
     @Test func loadsAHistorySavedBeforeLowsWereKept() throws {
