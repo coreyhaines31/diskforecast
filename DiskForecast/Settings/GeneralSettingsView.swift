@@ -110,7 +110,7 @@ struct GeneralSettingsView: View {
         case .added:
             HStack {
                 Text("Added").foregroundStyle(.secondary)
-                Button("Remove") { removeNote(file: file) }
+                Button("Remove…") { removeNote(file: file) }
             }
         }
     }
@@ -139,6 +139,13 @@ struct GeneralSettingsView: View {
 
     private func removeNote(file: URL) {
         let path = Self.displayPath(file)
+        let confirm = NSAlert()
+        confirm.messageText = "Remove the note from \(path)?"
+        confirm.informativeText = "Takes out the Disk space note. Everything else in the file stays as it is."
+        confirm.addButton(withTitle: "Remove Note")
+        confirm.addButton(withTitle: "Cancel")
+        NSApp.activate()
+        guard confirm.runModal() == .alertFirstButtonReturn else { return }
         do {
             try AgentNote.remove(from: file)
             commandNote = "Removed the note from \(path)."
