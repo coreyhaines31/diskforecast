@@ -18,6 +18,9 @@ public struct FreeSpaceGap: Sendable, Equatable {
     private let comparedNames: [String]
 
     public init?(from old: FolderSnapshot, to new: FolderSnapshot, threshold: Int64 = Self.threshold) {
+        // A snapshot from before unmeasured folders were recorded can't tell a folder that grew from one
+        // it couldn't read, so the home folder's change, and what's left over, can't be trusted against it.
+        guard old.unmeasured != nil else { return nil }
         let outside = FolderChanges.outsideHomeDelta(from: old, to: new)
         guard abs(outside) >= threshold else { return nil }
         freeDelta = new.freeBytes - old.freeBytes
