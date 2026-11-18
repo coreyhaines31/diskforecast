@@ -42,14 +42,9 @@ enum PullRequestChecks {
             process.standardOutput = pipe
             process.standardError = FileHandle.nullDevice
             process.standardInput = FileHandle.nullDevice
-            guard (try? process.run()) != nil else { return nil }
-            let deadline = DispatchWorkItem { [process] in process.terminate() }
-            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + timeout, execute: deadline)
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            process.waitUntilExit()
-            deadline.cancel()
-            guard process.terminationReason == .exit, process.terminationStatus == 0 else { return nil }
-            return data
+            guard let result = try? TimedProcess.run(process, output: pipe, timeout: timeout), result.succeeded
+            else { return nil }
+            return result.data
         }.value
     }
 }

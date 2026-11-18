@@ -143,10 +143,14 @@ public struct CLIStatus: Codable, Equatable, Sendable {
         return line
     }
 
-    /// Today's low, when it was far enough below free space now to mention.
+    /// Today's low, when it was far enough below free space now to mention: by a tenth of what's free
+    /// now, and by 5 GB, or by a gigabyte when the low went under 20 GB, the point where space is low
+    /// on any disk. The chart marks smaller dips; this is for the one-line status.
     public var notableLowToday: Int64? {
-        guard let low = lowestFreeBytesToday, freeBytes - low >= UsageHistory.notableDip else { return nil }
-        return low
+        guard let low = lowestFreeBytesToday else { return nil }
+        let dip = freeBytes - low
+        guard dip >= UsageHistory.notableDip, dip >= freeBytes / 10 else { return nil }
+        return dip >= 5_000_000_000 || low < 20_000_000_000 ? low : nil
     }
 }
 
@@ -217,11 +221,19 @@ public struct CLIFolderChurn: Codable, Equatable, Sendable {
     public var movedBytes: Int64
     /// The same changes with their signs. Negative when it ended up smaller.
     public var netBytes: Int64
+    /// The few folders inside this one that moved back and forth most. Nil when none did enough to
+    /// list, and from apps older than this field.
+    public var inside: [CLIFolderChurn]?
 
     public init(_ churn: FolderChurn) {
         path = churn.path
         movedBytes = churn.movedBytes
         netBytes = churn.netBytes
+        inside = churn.inside.isEmpty ? nil : churn.inside.map(CLIFolderChurn.init)
+    }
+
+    public var churn: FolderChurn {
+        FolderChurn(path: path, movedBytes: movedBytes, netBytes: netBytes, inside: (inside ?? []).map(\.churn))
     }
 }
 

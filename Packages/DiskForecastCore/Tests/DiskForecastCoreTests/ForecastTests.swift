@@ -97,7 +97,7 @@ struct ForecastTests {
         #expect(outlook([100, 98, 96]) == .filling(daysUntilFull: 48, bytesPerDay: -2 * Double(gigabyte)))
     }
 
-    @Test func callsARiseFromOneCleanupACleanupNotAPace() {
+    @Test func callsOneBigRiseAOneTimeJumpNotAPace() {
         // A nearly full disk, a gigabyte back here and there, then 70 GB cleared in one day.
         let outlook = Forecast.outlook(
             history: history(freeGB: [20, 18, 19, 20, 21, 91]), currentFreeBytes: 91 * gigabyte,
@@ -107,12 +107,29 @@ struct ForecastTests {
     }
 
     @Test func keepsAPaceWhenSpaceComesBackOverSeveralDays() {
-        // The rises after the big drop are spread out, so they are a pace, not one cleanup.
+        // The rises after the big drop are spread out, so they are a pace, not a one-time jump.
         let outlook = Forecast.outlook(
             history: history(freeGB: [283, 271, 230, 6, 12, 13, 16, 19]), currentFreeBytes: 19 * gigabyte,
             now: now, calendar: calendar
         )
         #expect(outlook == .gaining(bytesPerDay: Double(gigabyte)))
+    }
+
+    @Test func keepsAPaceWhenTheBiggestRiseIsOnlyAFewHundredMegabytes() {
+        var history = UsageHistory()
+        for (offset, free) in [100_000, 100_200, 100_500].enumerated() {
+            let date = calendar.date(byAdding: .day, value: offset - 2, to: now)!
+            history.record(
+                freeBytes: Int64(free) * 1_000_000, capacityBytes: 1_000 * gigabyte, at: date, calendar: calendar
+            )
+        }
+        let outlook = Forecast.outlook(
+            history: history, currentFreeBytes: 100_500_000_000, now: now, calendar: calendar
+        )
+        guard case .gaining = outlook else {
+            Issue.record("Expected a gaining pace, got \(outlook)")
+            return
+        }
     }
 
     @Test func saysFreeSpaceIsSwingingWhenDaysMoveFarMoreThanTheTrend() {

@@ -95,8 +95,9 @@ function errorFrom(stdout: string, stderr: string): string | null {
   return stderr.trim().replace(/^diskforecast: /, "") || null;
 }
 
-// The CLI exits 0 on success and 1 on any error. There is no "found a problem" status code:
-// a low disk is reported inside the JSON (lowOnSpace, outlook), not by the exit code.
+// The CLI exits 0 on success and 1 on any error, and `status --need` exits 3 when there isn't room.
+// This server never passes --need, so it only sees 0 and 1: a low disk is reported inside the JSON
+// (lowOnSpace, outlook), not by the exit code. Passing --need would need exit 3 handled as a result.
 export async function runDiskForecast(args: string[]): Promise<RunResult> {
   if (!ALLOWED_COMMANDS.has(args[0])) {
     return { ok: false, text: `Not allowed: ${args[0]}` };

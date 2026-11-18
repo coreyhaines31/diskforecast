@@ -95,7 +95,15 @@ public enum AgentNote {
         let result = removed(from: contents)
         guard result != contents else { return }
         // Write to the file a link points to, so a CLAUDE.md linked from a dotfiles folder stays a link.
-        try Data(result.utf8).write(to: file.resolvingSymlinksInPath(), options: .atomic)
+        let real = file.resolvingSymlinksInPath()
+        let folder = try FileManager.default.url(
+            for: .itemReplacementDirectory, in: .userDomainMask, appropriateFor: real, create: true
+        )
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let replacement = folder.appending(path: real.lastPathComponent)
+        try Data(result.utf8).write(to: replacement)
+        // Swaps the new text in whole, and keeps the file's permissions and extended attributes.
+        _ = try FileManager.default.replaceItemAt(real, withItemAt: replacement)
     }
 
     private static let newline = UInt8(ascii: "\n")

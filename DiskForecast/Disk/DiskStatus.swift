@@ -2,9 +2,9 @@ import DiskForecastCore
 import Foundation
 import Observation
 
-/// Free space on the startup disk, sampled every hour into a daily history for the forecast, and
-/// every minute while space is low so a disk filling within minutes can be caught and the day's low
-/// is kept.
+/// Free space on the startup disk, sampled every hour into a daily history for the forecast. Between
+/// those it's read every five minutes, and every minute while space is low or falling fast, so a disk
+/// filling within minutes can be caught and the day's low is kept.
 @MainActor
 @Observable
 final class DiskStatus {
@@ -14,7 +14,7 @@ final class DiskStatus {
     /// Space macOS is holding for caches and snapshots that it will give back when needed.
     private(set) var purgeableBytes: Int64 = 0
     private(set) var history: UsageHistory
-    /// The last ten minutes of readings, kept only while space is low.
+    /// The last ten minutes of readings.
     private(set) var recentReadings: [FastFill.Reading] = []
     var onChange: (() -> Void)?
 
@@ -22,7 +22,8 @@ final class DiskStatus {
     /// Today's low as last written to the history file, so the minute checks save only when it drops.
     @ObservationIgnored private var savedLow: (day: Date, bytes: Int64)?
     private var timer: Timer?
-    private var lowSpaceTimer: Timer?
+    private var backgroundTimer: Timer?
+    private var minuteTimer: Timer?
 
     init(supportFolder: URL) {
         historyURL = supportFolder.appending(path: "history.json")
@@ -67,6 +68,16 @@ final class DiskStatus {
             MainActor.assumeIsolated { self.refresh() }
         }
         timer?.tolerance = 300
+        #if DEBUG
+        if DemoMode.isOn { return }
+        #endif
+        backgroundTimer = Timer.scheduledTimer(withTimeInterval: FastFill.backgroundInterval, repeats: true) { _ in
+            MainActor.assumeIsolated {
+                // The minute check reads often enough while it runs.
+                if self.minuteTimer == nil { self.refreshBetweenHours() }
+            }
+        }
+        backgroundTimer?.tolerance = 30
     }
 
     func refresh() {
@@ -86,9 +97,9 @@ final class DiskStatus {
         onChange?()
     }
 
-    /// The minute check while space is low. It lowers the day's low but leaves the reading to the
-    /// hourly check, and writes the file only when the low has dropped enough to matter.
-    private func refreshWhileLow() {
+    /// The five-minute and minute checks. They lower the day's low but leave the reading to the hourly
+    /// check, and write the file only when the low has dropped enough to matter.
+    private func refreshBetweenHours() {
         guard read() else { return }
         let now = Date()
         history.recordLow(freeBytes: freeBytes, capacityBytes: capacityBytes, at: now)
@@ -118,22 +129,21 @@ final class DiskStatus {
         capacityBytes = Int64(capacity)
         freeBytes = important
         purgeableBytes = max(0, important - available)
-        watchWhileLow()
+        watchEveryMinuteIfNeeded()
         return true
     }
 
-    private func watchWhileLow() {
-        guard FastFill.shouldWatch(freeBytes: freeBytes, capacityBytes: capacityBytes) else {
-            lowSpaceTimer?.invalidate()
-            lowSpaceTimer = nil
-            recentReadings = []
+    private func watchEveryMinuteIfNeeded() {
+        recentReadings = FastFill.trimmed(recentReadings + [FastFill.Reading(date: Date(), freeBytes: freeBytes)])
+        guard FastFill.shouldWatch(readings: recentReadings, capacityBytes: capacityBytes) else {
+            minuteTimer?.invalidate()
+            minuteTimer = nil
             return
         }
-        recentReadings = FastFill.trimmed(recentReadings + [FastFill.Reading(date: Date(), freeBytes: freeBytes)])
-        guard lowSpaceTimer == nil else { return }
-        lowSpaceTimer = Timer.scheduledTimer(withTimeInterval: FastFill.checkInterval, repeats: true) { _ in
-            MainActor.assumeIsolated { self.refreshWhileLow() }
+        guard minuteTimer == nil else { return }
+        minuteTimer = Timer.scheduledTimer(withTimeInterval: FastFill.checkInterval, repeats: true) { _ in
+            MainActor.assumeIsolated { self.refreshBetweenHours() }
         }
-        lowSpaceTimer?.tolerance = 10
+        minuteTimer?.tolerance = 10
     }
 }

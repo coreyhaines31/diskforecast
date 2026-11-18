@@ -109,7 +109,7 @@ final class SystemDataModel {
         ) {
             var last = Shell.Output(status: 0, text: "")
             for date in dates {
-                last = await Shell.run("/usr/bin/tmutil", ["deletelocalsnapshots", date])
+                last = await Shell.run("/usr/bin/tmutil", ["deletelocalsnapshots", date], timeout: Shell.fixTimeout)
                 if !last.succeeded { break }
             }
             return last.succeeded ? last : await Shell.runAsAdministrator(command)
@@ -190,7 +190,10 @@ final class SystemDataModel {
                 confirmation: "Deletes simulators whose runtime is no longer installed. They can't run anyway.",
                 command: "xcrun simctl delete unavailable"
             ) {
-                await Shell.run("/usr/bin/xcrun", ["simctl", "delete", "unavailable"], environment: environment)
+                await Shell.run(
+                    "/usr/bin/xcrun", ["simctl", "delete", "unavailable"], environment: environment,
+                    timeout: Shell.fixTimeout
+                )
             })
         }
         for runtime in runtimes where runtime.isDeletable {
@@ -201,7 +204,8 @@ final class SystemDataModel {
                 command: "xcrun simctl runtime delete \(runtime.identifier)"
             ) {
                 await Shell.run(
-                    "/usr/bin/xcrun", ["simctl", "runtime", "delete", runtime.identifier], environment: environment
+                    "/usr/bin/xcrun", ["simctl", "runtime", "delete", runtime.identifier], environment: environment,
+                    timeout: Shell.fixTimeout
                 )
             })
         }
@@ -260,7 +264,7 @@ final class SystemDataModel {
                 + "Running containers, volumes, and tagged images stay.",
             command: "docker system prune -f"
         ) {
-            await Shell.run(docker, ["system", "prune", "-f"])
+            await Shell.run(docker, ["system", "prune", "-f"], timeout: Shell.fixTimeout)
         }]
         return row
     }
