@@ -97,4 +97,28 @@ struct WorktreePullRequestTests {
         #expect(scanFinding.branch == "agent")
         #expect(GitState.remoteURL(at: fixture.worktree) == fixture.base.path + "/origin.git")
     }
+
+    @Test func showsThePullRequestBesideTheGitState() async throws {
+        let fixture = try GitFixture()
+        try Data(count: 2_000_000).write(to: URL(filePath: fixture.worktree + "/big.bin"))
+        let scan = await DiskScanner(options: .init(root: fixture.base)).scan()
+        let worktree = fixture.worktree
+        let catalog = CleanupCatalog(home: fixture.base.path, pullRequest: { path in path == worktree ? .merged : nil })
+        let entry = try #require(catalog.items(from: scan).first { $0.id == "git-worktrees" }?.entries.first)
+        #expect(entry.detail == "repo · 1 changed file · pull request merged · last changed today")
+        #expect(entry.pullRequest == .merged)
+        #expect(CLICleanupItem(try #require(catalog.items(from: scan).first { $0.id == "git-worktrees" }))
+            .entries.first?.pullRequest == "merged")
+    }
+
+    @Test func leavesTheLineAloneWhenNothingIsKnown() async throws {
+        let fixture = try GitFixture()
+        try Data(count: 2_000_000).write(to: URL(filePath: fixture.worktree + "/big.bin"))
+        let scan = await DiskScanner(options: .init(root: fixture.base)).scan()
+        for state in [PullRequestState.unknown, nil] {
+            let catalog = CleanupCatalog(home: fixture.base.path, pullRequest: { _ in state })
+            let entry = try #require(catalog.items(from: scan).first { $0.id == "git-worktrees" }?.entries.first)
+            #expect(entry.detail == "repo · 1 changed file · last changed today")
+        }
+    }
 }

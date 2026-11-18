@@ -166,7 +166,9 @@ public struct CLICleanupItem: Codable, Equatable, Sendable {
         case .useTool(let name), .useApp(let name, _): tool = name
         }
         bytes = item.bytes
-        entries = item.entries.map { CLICleanupEntry(path: $0.path, bytes: $0.bytes, detail: $0.detail) }
+        entries = item.entries.map {
+            CLICleanupEntry(path: $0.path, bytes: $0.bytes, detail: $0.detail, pullRequest: $0.pullRequest?.rawValue)
+        }
     }
 }
 
@@ -174,6 +176,9 @@ public struct CLICleanupEntry: Codable, Equatable, Sendable {
     public var path: String
     public var bytes: Int64
     public var detail: String?
+    /// A worktree branch's pull request: open, merged, closed, none, or unknown. Only present
+    /// when pull request checks are on in Settings.
+    public var pullRequest: String?
 }
 
 public struct CLITrashReport: Codable, Equatable, Sendable {
