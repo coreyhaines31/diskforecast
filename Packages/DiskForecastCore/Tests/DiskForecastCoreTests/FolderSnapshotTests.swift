@@ -59,7 +59,7 @@ struct FolderSnapshotTests {
     @Test func storeKeepsOneSnapshotADayAndFindsTheBaseline() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "America/Los_Angeles")!
-        let folder = FileManager.default.temporaryDirectory.appending(path: "DiskForecastTests-\(UUID().uuidString)")
+        let folder = TestFolders.make("DiskForecastTests")
         defer { try? FileManager.default.removeItem(at: folder) }
         let store = FolderSnapshotStore(folder: folder, calendar: calendar)
         let today = calendar.startOfDay(for: day)

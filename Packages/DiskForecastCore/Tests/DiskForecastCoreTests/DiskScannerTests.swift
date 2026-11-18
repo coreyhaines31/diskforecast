@@ -7,7 +7,7 @@ struct DiskScannerTests {
     let root: URL
 
     init() throws {
-        root = FileManager.default.temporaryDirectory.appending(path: "DiskForecastScan-\(UUID().uuidString)")
+        root = TestFolders.make("DiskForecastScan")
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
     }
 

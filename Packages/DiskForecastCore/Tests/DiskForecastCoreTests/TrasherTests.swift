@@ -6,7 +6,7 @@ struct TrasherTests {
     let home: URL
 
     init() throws {
-        let base = FileManager.default.temporaryDirectory.appending(path: "DiskForecastTrash-\(UUID().uuidString)")
+        let base = TestFolders.make("DiskForecastTrash")
         try FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
         home = URL(filePath: Trasher.resolved(base.path))
     }
@@ -143,7 +143,7 @@ struct TrasherTests {
     @Test func refusesAnythingRisky() throws {
         let caches = home.appending(path: "Library/Caches")
         try FileManager.default.createDirectory(at: caches, withIntermediateDirectories: true)
-        let outside = FileManager.default.temporaryDirectory.appending(path: "outside-\(UUID().uuidString)")
+        let outside = TestFolders.make("outside")
         try FileManager.default.createDirectory(at: outside, withIntermediateDirectories: true)
         try FileManager.default.createSymbolicLink(at: home.appending(path: "escape"), withDestinationURL: outside)
         let trasher = Trasher(home: home.path)
@@ -160,7 +160,7 @@ struct TrasherTests {
     }
 
     @Test func movesClaudeCodeSessionsButNotTheirParents() throws {
-        let scratch = FileManager.default.temporaryDirectory.appending(path: "claude-\(UUID().uuidString)")
+        let scratch = TestFolders.make("claude")
         let session = scratch.appending(path: "-Users-me-code-app/2f1c")
         try FileManager.default.createDirectory(at: session, withIntermediateDirectories: true)
         let trasher = Trasher(home: home.path, agentScratch: scratch.path)

@@ -151,7 +151,7 @@ struct UsageHistoryTests {
     @Test func roundTripsThroughAFile() throws {
         var history = UsageHistory()
         history.record(freeBytes: 5, capacityBytes: 9, at: Date(timeIntervalSince1970: 1_790_000_000))
-        let url = FileManager.default.temporaryDirectory.appending(path: "history-\(UUID()).json")
+        let url = TestFolders.make("history").appendingPathExtension("json")
         try history.save(to: url)
         #expect(UsageHistory.load(from: url) == history)
         #expect(UsageHistory.load(from: url.appending(path: "missing")) == UsageHistory())
