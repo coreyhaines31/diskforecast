@@ -160,15 +160,20 @@ public struct CLIChanges: Codable, Equatable, Sendable {
     /// Why free space moved much more than the home folder did, when it did. Nil otherwise, and from
     /// apps older than this field.
     public var freeSpaceGap: String?
+    /// The folders that grew and shrank the most from scan to scan lately, when free space is
+    /// swinging. Nil otherwise, and from apps older than this field.
+    public var keepsChanging: CLIKeepsChanging?
 
     public init(
-        since: Date, until: Date, folders: [CLIFolderChange], outsideHomeBytes: Int64, freeSpaceGap: String? = nil
+        since: Date, until: Date, folders: [CLIFolderChange], outsideHomeBytes: Int64, freeSpaceGap: String? = nil,
+        keepsChanging: CLIKeepsChanging? = nil
     ) {
         self.since = since
         self.until = until
         self.folders = folders
         self.outsideHomeBytes = outsideHomeBytes
         self.freeSpaceGap = freeSpaceGap
+        self.keepsChanging = keepsChanging
     }
 
     /// Every folder that changed by 500 MB or more, each with the folders inside it that did, and
@@ -189,6 +194,34 @@ public struct CLIChanges: Codable, Equatable, Sendable {
             outsideHomeBytes: FolderChanges.outsideHomeDelta(from: old, to: new),
             freeSpaceGap: FreeSpaceGap(from: old, to: new)?.explanation
         )
+    }
+}
+
+/// What moved most between consecutive scans from `since` to `until`.
+public struct CLIKeepsChanging: Codable, Equatable, Sendable {
+    public var since: Date
+    public var until: Date
+    public var folders: [CLIFolderChurn]
+
+    public init(since: Date, until: Date, folders: [CLIFolderChurn]) {
+        self.since = since
+        self.until = until
+        self.folders = folders
+    }
+}
+
+public struct CLIFolderChurn: Codable, Equatable, Sendable {
+    /// Relative to the home folder.
+    public var path: String
+    /// Every change of 500 MB or more between consecutive scans, added up whichever way it went.
+    public var movedBytes: Int64
+    /// The same changes with their signs. Negative when it ended up smaller.
+    public var netBytes: Int64
+
+    public init(_ churn: FolderChurn) {
+        path = churn.path
+        movedBytes = churn.movedBytes
+        netBytes = churn.netBytes
     }
 }
 

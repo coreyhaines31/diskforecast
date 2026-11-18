@@ -91,7 +91,14 @@ final class CLICommands {
                     + "in that range to compare. Check back tomorrow, or try a longer --days."
             ])
         }
-        return CLIResponse(changes: CLIChanges(from: comparison.old, to: comparison.new))
+        var changes = CLIChanges(from: comparison.old, to: comparison.new)
+        if let keepsChanging = KeepsChanging(store: snapshots, outlook: disk.outlook) {
+            changes.keepsChanging = CLIKeepsChanging(
+                since: keepsChanging.since, until: keepsChanging.until,
+                folders: keepsChanging.folders.map(CLIFolderChurn.init)
+            )
+        }
+        return CLIResponse(changes: changes)
     }
 
     private func trash(_ targets: [String], confirmed: Bool) -> CLIResponse {
