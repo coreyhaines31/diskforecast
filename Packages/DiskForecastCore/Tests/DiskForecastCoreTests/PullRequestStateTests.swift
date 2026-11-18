@@ -38,8 +38,8 @@ struct PullRequestStateTests {
         #expect(list.state(of: "dropped") == .closed)
         #expect(list.state(of: "retry") == .open)
         // Someone else's fork can use the same branch name.
-        #expect(list.state(of: "fork") == PullRequestState.none)
-        #expect(list.state(of: "never") == PullRequestState.none)
+        #expect(list.state(of: "fork") == PullRequestState.noPullRequest)
+        #expect(list.state(of: "never") == PullRequestState.noPullRequest)
     }
 
     @Test func aFullListCantSayABranchHasNone() throws {
@@ -58,7 +58,7 @@ struct PullRequestStateTests {
         #expect(PullRequestState.merged.phrase == "pull request merged")
         #expect(PullRequestState.closed.phrase == "pull request closed")
         #expect(PullRequestState.open.phrase == "pull request open")
-        #expect(PullRequestState.none.phrase == "no pull request")
+        #expect(PullRequestState.noPullRequest.phrase == "no pull request")
         #expect(PullRequestState.unknown.phrase == nil)
     }
 
@@ -79,7 +79,14 @@ struct PullRequestStateTests {
             }
         )
         #expect(await asked.slugs.sorted() == ["acme/blog", "acme/shop"])
-        #expect(states == ["/w/a": .merged, "/w/b": PullRequestState.none, "/w/c": .unknown])
+        #expect(states == ["/w/a": .merged, "/w/b": PullRequestState.noPullRequest, "/w/c": .unknown])
+    }
+
+    @Test func keepsNoneOnTheWireForNoPullRequest() throws {
+        #expect(PullRequestState.noPullRequest.rawValue == "none")
+        let encoded = try JSONEncoder().encode([PullRequestState.noPullRequest])
+        #expect(String(bytes: encoded, encoding: .utf8) == #"["none"]"#)
+        #expect(try JSONDecoder().decode([PullRequestState].self, from: encoded) == [.noPullRequest])
     }
 }
 

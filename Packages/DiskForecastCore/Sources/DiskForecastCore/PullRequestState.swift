@@ -6,7 +6,8 @@ public enum PullRequestState: String, Sendable, Codable {
     case open
     case merged
     case closed
-    case none
+    /// Kept as "none" in `diskforecast cleanup --json`.
+    case noPullRequest = "none"
     /// gh couldn't be asked, or couldn't say.
     case unknown
 
@@ -16,7 +17,7 @@ public enum PullRequestState: String, Sendable, Codable {
         case .open: "pull request open"
         case .merged: "pull request merged"
         case .closed: "pull request closed"
-        case .none: "no pull request"
+        case .noPullRequest: "no pull request"
         case .unknown: nil
         }
     }
@@ -92,7 +93,7 @@ public struct PullRequestList: Sendable, Equatable {
 
     /// An open pull request outranks a merged one, which outranks a closed one.
     public func state(of branch: String) -> PullRequestState {
-        guard let found = states[branch] else { return isFull ? .unknown : .none }
+        guard let found = states[branch] else { return isFull ? .unknown : .noPullRequest }
         for state in [PullRequestState.open, .merged, .closed] where found.contains(state) {
             return state
         }
