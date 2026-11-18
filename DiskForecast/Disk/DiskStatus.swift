@@ -41,6 +41,8 @@ final class DiskStatus {
             "Steady · about the same free space each day"
         case .gaining(let bytesPerDay):
             "Free space growing ~\(Bytes.format(Int64(bytesPerDay))) a day"
+        case .cleared(let bytes):
+            "Free space up \(Bytes.format(bytes)) after a one-time jump"
         }
     }
 
