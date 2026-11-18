@@ -15,6 +15,8 @@ struct SnapshotComparison {
 
     var outsideHome: Int64 { FolderChanges.outsideHomeDelta(from: old, to: new) }
 
+    var freeSpaceGap: FreeSpaceGap? { FreeSpaceGap(from: old, to: new) }
+
     func changes(under parent: String = "") -> [FolderChange] {
         FolderChanges.changes(from: old, to: new, under: parent)
     }
@@ -56,6 +58,12 @@ struct WhatChangedView: View {
                     }
                     .listStyle(.bordered)
                     .frame(minHeight: 150)
+                }
+                if let gap = comparison.freeSpaceGap {
+                    Text(gap.explanation)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             } else {
                 Text("What changed").font(.headline)
