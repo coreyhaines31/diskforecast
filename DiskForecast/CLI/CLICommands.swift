@@ -72,6 +72,7 @@ final class CLICommands {
             outlook = "gaining"
             bytesPerDay = rate
         case .cleared: outlook = "cleared"
+        case .swinging: outlook = "swinging"
         }
         return CLIStatus(
             freeBytes: disk.freeBytes, capacityBytes: disk.capacityBytes, purgeableBytes: disk.purgeableBytes,

@@ -115,6 +115,42 @@ struct ForecastTests {
         #expect(outlook == .gaining(bytesPerDay: Double(gigabyte)))
     }
 
+    @Test func saysFreeSpaceIsSwingingWhenDaysMoveFarMoreThanTheTrend() {
+        // A real two weeks: tens of gigabytes up and down, and about one gigabyte up on the typical day.
+        let outlook = Forecast.outlook(
+            history: history(freeGB: [92, 85, 115, 109, 51, 57, 58, 47, 12, 3, 14, 56, 57, 11, 19, 76]),
+            currentFreeBytes: 76 * gigabyte, now: now, calendar: calendar
+        )
+        guard case .swinging(let typical) = outlook else {
+            Issue.record("expected swinging, got \(outlook)")
+            return
+        }
+        #expect(typical >= 5 * gigabyte)
+    }
+
+    @Test func stillWarnsWhenASwingingDiskIsFilling() {
+        let outlook = Forecast.outlook(
+            history: history(freeGB: [200, 160, 190, 140, 170, 120, 150, 100]), currentFreeBytes: 100 * gigabyte,
+            now: now, calendar: calendar
+        )
+        guard case .filling = outlook else {
+            Issue.record("expected filling, got \(outlook)")
+            return
+        }
+    }
+
+    @Test func keepsOrdinaryUseAsATrend() {
+        // A gigabyte or two a day is ordinary use, however uneven.
+        let outlook = Forecast.outlook(
+            history: history(freeGB: [50, 52, 51, 53, 54, 56]), currentFreeBytes: 56 * gigabyte,
+            now: now, calendar: calendar
+        )
+        guard case .gaining = outlook else {
+            Issue.record("expected gaining, got \(outlook)")
+            return
+        }
+    }
+
     @Test func flagsLowSpaceWhateverTheTrend() {
         #expect(Forecast.isLow(freeBytes: 17 * gigabyte, capacityBytes: 995 * gigabyte))
         #expect(Forecast.isLow(freeBytes: 15 * gigabyte, capacityBytes: 128 * gigabyte))
