@@ -192,6 +192,13 @@ extension CleanupCatalog {
                 group: .safeToClear
             ) { catalog, scan in catalog.agentLeftovers(scan) },
             CleanupRule(
+                id: "temp-files", title: "Temporary files nothing is using",
+                explanation: "Files and folders that apps, scripts, and test runs left in your temporary folder "
+                    + "and nothing has changed in \(Int(UserTemp.idleDays)) days. macOS's own and anything "
+                    + "still open stay.",
+                group: .safeToClear
+            ) { catalog, _ in catalog.idleTempFiles() },
+            CleanupRule(
                 id: "agent-history", title: "Old coding agent conversations",
                 explanation: "Claude Code and Codex conversations nobody has opened in \(staleAfterDays)+ days. "
                     + "Claude Code removes its own after 30 days unless its cleanupPeriodDays setting says otherwise; "
