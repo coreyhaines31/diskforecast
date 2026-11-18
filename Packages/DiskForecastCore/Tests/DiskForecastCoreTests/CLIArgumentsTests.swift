@@ -40,6 +40,26 @@ struct CLIArgumentsTests {
     }
 }
 
+struct BytesParseTests {
+    @Test func readsSizesTheWayFinderCounts() {
+        #expect(Bytes.parse("5GB") == 5_000_000_000)
+        #expect(Bytes.parse("500MB") == 500_000_000)
+        #expect(Bytes.parse("1.5tb") == 1_500_000_000_000)
+        #expect(Bytes.parse("2G") == 2_000_000_000)
+        #expect(Bytes.parse("750K") == 750_000)
+        #expect(Bytes.parse("100B") == 100)
+    }
+
+    @Test func refusesWhatIsNotASize() {
+        #expect(Bytes.parse("5") == nil)
+        #expect(Bytes.parse("GB") == nil)
+        #expect(Bytes.parse("-5GB") == nil)
+        #expect(Bytes.parse("0GB") == nil)
+        #expect(Bytes.parse("5XB") == nil)
+        #expect(Bytes.parse("99999999999999999999TB") == nil)
+    }
+}
+
 struct CLITrashTargetsTests {
     let home = "/Users/test"
 
