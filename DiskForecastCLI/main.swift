@@ -124,11 +124,9 @@ func signed(_ bytes: Int64) -> String {
 func describe(_ status: CLIStatus) -> String {
     let percent = status.capacityBytes > 0
         ? Int((Double(status.freeBytes) / Double(status.capacityBytes) * 100).rounded()) : 0
-    var lines = [
-        "\(Bytes.format(status.freeBytes)) free of \(Bytes.format(status.capacityBytes)) (\(percent)% free)",
-        status.forecast
-    ]
-    if status.lowOnSpace { lines.append("Low on space.") }
+    var lines = status.lowOnSpace ? ["Low on space."] : []
+    lines.append("\(Bytes.format(status.freeBytes)) free of \(Bytes.format(status.capacityBytes)) (\(percent)% free)")
+    lines.append(status.forecast)
     if status.scanning {
         lines.append("Measuring your home folder now.")
     } else if status.safeToClearBytes > 0 {
