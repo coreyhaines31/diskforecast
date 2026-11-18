@@ -6,7 +6,7 @@ struct AgentNoteTests {
     let home: URL
 
     init() throws {
-        home = FileManager.default.temporaryDirectory.appending(path: "DiskForecastAgentNote-\(UUID().uuidString)")
+        home = TestFolders.make("DiskForecastAgentNote")
         try FileManager.default.createDirectory(at: home, withIntermediateDirectories: true)
     }
 

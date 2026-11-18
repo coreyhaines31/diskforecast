@@ -6,7 +6,7 @@ struct DeleterTests {
     let home: URL
 
     init() throws {
-        let base = FileManager.default.temporaryDirectory.appending(path: "DiskForecastDelete-\(UUID().uuidString)")
+        let base = TestFolders.make("DiskForecastDelete")
         try FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
         home = URL(filePath: Trasher.resolved(base.path))
     }

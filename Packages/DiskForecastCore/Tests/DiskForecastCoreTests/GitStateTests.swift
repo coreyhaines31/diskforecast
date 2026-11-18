@@ -10,7 +10,7 @@ struct GitFixture {
 
     init() throws {
         base = URL(filePath: Trasher.resolved(
-            FileManager.default.temporaryDirectory.appending(path: "DiskForecastGit-\(UUID().uuidString)").path
+            TestFolders.make("DiskForecastGit").path
         ))
         try FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
         try git(["init", "-q", "--bare", "origin.git"], in: base.path)
