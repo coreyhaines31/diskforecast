@@ -131,10 +131,8 @@ func signed(_ bytes: Int64) -> String {
 }
 
 func describe(_ status: CLIStatus) -> String {
-    let percent = status.capacityBytes > 0
-        ? Int((Double(status.freeBytes) / Double(status.capacityBytes) * 100).rounded()) : 0
     var lines = status.lowOnSpace ? ["Low on space."] : []
-    lines.append("\(Bytes.format(status.freeBytes)) free of \(Bytes.format(status.capacityBytes)) (\(percent)% free)")
+    lines.append(status.freeSpaceLine)
     lines.append(status.forecast)
     if let low = status.notableLowToday {
         lines.append("Low today: \(Bytes.format(low)).")

@@ -12,6 +12,10 @@ struct FreeSpaceGapTests {
         )
     }
 
+    func swap(_ bytes: Int64, purgeable: Int64? = nil, snapshots: Int? = nil) -> SystemDataReading {
+        SystemDataReading(purgeableBytes: purgeable, localSnapshotCount: snapshots, swapBytes: bytes)
+    }
+
     @Test func staysQuietWhenTheHomeFolderExplainsTheChange() {
         let old = snapshot(home: 500, free: 12)
         let new = snapshot(home: 491, free: 22)
@@ -30,7 +34,7 @@ struct FreeSpaceGapTests {
         #expect(gap.explanation == "Free space rose 70 GB, while your home folder shrank 9.0 GB. "
             + "That leaves 61 GB freed outside your home folder, where scans don't look. "
             + "Disk Forecast didn't record System Data back then, so it can't say what changed. "
-            + "It saves purgeable space and local Time Machine snapshots with each scan from now on.")
+            + "It saves purgeable space, local Time Machine snapshots, and swap with each scan from now on.")
     }
 
     @Test func namesTheSystemDataThatChangedOverTheSamePeriod() throws {
@@ -44,6 +48,34 @@ struct FreeSpaceGapTests {
             "Over the same period, purgeable space went from 30 GB to 12 GB, and local Time Machine snapshots "
                 + "went from 6 to 0. That doesn't prove what caused it."
         ))
+    }
+
+    @Test func namesSwapWhenItChangedByAGigabyteOrMore() throws {
+        let old = snapshot(home: 500, free: 80, systemData: swap(4 * gigabyte))
+        let new = snapshot(home: 502, free: 20, systemData: swap(18 * gigabyte))
+        let gap = try #require(FreeSpaceGap(from: old, to: new))
+        #expect(gap.systemDataChanges == ["swap went from 4.0 GB to 18 GB"])
+    }
+
+    @Test func leavesOutSwapThatBarelyMoved() throws {
+        let old = snapshot(home: 500, free: 80, systemData: swap(4 * gigabyte, purgeable: 3 * gigabyte, snapshots: 2))
+        let new = snapshot(
+            home: 502, free: 20, systemData: swap(4 * gigabyte + gigabyte / 2, purgeable: 3 * gigabyte, snapshots: 2)
+        )
+        let gap = try #require(FreeSpaceGap(from: old, to: new))
+        #expect(gap.systemDataChanges.isEmpty)
+        #expect(gap.explanation.hasSuffix("Purgeable space, local Time Machine snapshots, and swap stayed about "
+            + "the same, so Disk Forecast can't say what changed."))
+    }
+
+    @Test func readingsSavedBeforeSwapStillDecode() throws {
+        let old = try JSONDecoder().decode(
+            SystemDataReading.self, from: Data(#"{"purgeableBytes":5,"localSnapshotCount":2}"#.utf8)
+        )
+        #expect(old == SystemDataReading(purgeableBytes: 5, localSnapshotCount: 2, swapBytes: nil))
+        let reading = SystemDataReading(purgeableBytes: 5, localSnapshotCount: 2, swapBytes: 7)
+        let decoded = try JSONDecoder().decode(SystemDataReading.self, from: JSONEncoder().encode(reading))
+        #expect(decoded == reading)
     }
 
     @Test func saysSoWhenTheSavedSystemDataDidNotChange() throws {

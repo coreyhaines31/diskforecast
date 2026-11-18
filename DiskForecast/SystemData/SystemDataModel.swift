@@ -46,8 +46,9 @@ final class SystemDataModel {
             async let models = appleModelsRow()
             async let docker = dockerRow()
             async let temp = tempRow()
+            async let swap = swapRow()
             disk.refresh()
-            let loaded = await [purgeableRow(), snapshots, spotlight, temp, simulators, models, docker]
+            let loaded = await [purgeableRow(), snapshots, swap, spotlight, temp, simulators, models, docker]
             rows = loaded.compactMap { $0 }
             isLoading = false
         }
@@ -113,6 +114,19 @@ final class SystemDataModel {
             }
             return last.succeeded ? last : await Shell.runAsAdministrator(command)
         }]
+        return row
+    }
+
+    private func swapRow() async -> SystemDataRow? {
+        let output = await Shell.run("/usr/sbin/sysctl", ["vm.swapusage"])
+        guard let swap = Swap.parse(output.text), swap.totalBytes >= 1_000_000_000 else { return nil }
+        var row = SystemDataRow(
+            id: "swap", title: "Swap",
+            explanation: "Memory macOS moved to disk because apps wanted more than this Mac has. It comes back on its "
+                + "own when those apps quit or the Mac restarts, so there's nothing to clear here.",
+            bytes: swap.totalBytes
+        )
+        row.details = ["\(Bytes.format(swap.usedBytes)) of it holds memory right now"]
         return row
     }
 

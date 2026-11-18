@@ -120,6 +120,35 @@ public enum Docker {
     }
 }
 
+public struct SwapUsage: Sendable, Equatable {
+    /// Space the swap files take on disk.
+    public let totalBytes: Int64
+    /// How much of that holds memory right now.
+    public let usedBytes: Int64
+}
+
+/// Swap files, from `sysctl vm.swapusage` ("total = 18432.00M  used = 16951.94M  free = 1480.06M").
+public enum Swap {
+    public static func parse(_ output: String) -> SwapUsage? {
+        guard let total = value(named: "total", in: output), let used = value(named: "used", in: output) else {
+            return nil
+        }
+        return SwapUsage(totalBytes: total, usedBytes: used)
+    }
+
+    /// sysctl's sizes count in powers of 1,024.
+    private static func value(named name: String, in output: String) -> Int64? {
+        let multipliers: [Character: Double] = ["B": 1, "K": 1_024, "M": 1_048_576, "G": 1_073_741_824]
+        for match in output.matches(of: /(\w+) = (\d+(?:\.\d+)?)([BKMG])\b/) where match.output.1 == name {
+            guard let number = Double(match.output.2), let unit = match.output.3.first,
+                  let multiplier = multipliers[unit]
+            else { return nil }
+            return Int64(number * multiplier)
+        }
+        return nil
+    }
+}
+
 private struct DockerRow: Decodable {
     let type: String
     let size: String

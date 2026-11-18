@@ -128,6 +128,21 @@ public struct CLIStatus: Codable, Equatable, Sendable {
         self.lowestFreeBytesToday = lowestFreeBytesToday
     }
 
+    /// Purgeable space, when there's enough of it that `df` and Finder's count would visibly differ.
+    public var notablePurgeableBytes: Int64? {
+        purgeableBytes >= 1_000_000_000 ? purgeableBytes : nil
+    }
+
+    /// "76 GB free of 995 GB (8% free), 4.2 GB of it purgeable".
+    public var freeSpaceLine: String {
+        let percent = capacityBytes > 0 ? Int((Double(freeBytes) / Double(capacityBytes) * 100).rounded()) : 0
+        var line = "\(Bytes.format(freeBytes)) free of \(Bytes.format(capacityBytes)) (\(percent)% free)"
+        if let purgeable = notablePurgeableBytes {
+            line += ", \(Bytes.format(purgeable)) of it purgeable"
+        }
+        return line
+    }
+
     /// Today's low, when it was far enough below free space now to mention.
     public var notableLowToday: Int64? {
         guard let low = lowestFreeBytesToday, freeBytes - low >= UsageHistory.notableDip else { return nil }
