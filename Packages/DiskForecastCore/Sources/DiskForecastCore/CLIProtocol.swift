@@ -117,6 +117,7 @@ public struct CLIChanges: Codable, Equatable, Sendable {
             FolderChanges.changes(from: old, to: new, under: parent).map { change in
                 CLIFolderChange(
                     path: change.path, oldBytes: change.oldBytes, newBytes: change.newBytes,
+                    firstMeasured: change.isFirstMeasured, firstMeasuredBytes: change.firstMeasuredBytes,
                     children: change.hasChildren ? changes(under: change.path) : []
                 )
             }
@@ -133,14 +134,23 @@ public struct CLIFolderChange: Codable, Equatable, Sendable {
     public var path: String
     public var oldBytes: Int64
     public var newBytes: Int64
+    /// The earlier scan couldn't measure this folder, so its size isn't growth.
+    public var firstMeasured: Bool
+    /// Bytes in folders inside this one that the earlier scan couldn't measure, left out of `delta`.
+    public var firstMeasuredBytes: Int64
     public var children: [CLIFolderChange]
 
-    public var delta: Int64 { newBytes - oldBytes }
+    public var delta: Int64 { firstMeasured ? 0 : newBytes - oldBytes - firstMeasuredBytes }
 
-    public init(path: String, oldBytes: Int64, newBytes: Int64, children: [CLIFolderChange] = []) {
+    public init(
+        path: String, oldBytes: Int64, newBytes: Int64, firstMeasured: Bool = false, firstMeasuredBytes: Int64 = 0,
+        children: [CLIFolderChange] = []
+    ) {
         self.path = path
         self.oldBytes = oldBytes
         self.newBytes = newBytes
+        self.firstMeasured = firstMeasured
+        self.firstMeasuredBytes = firstMeasuredBytes
         self.children = children
     }
 }
