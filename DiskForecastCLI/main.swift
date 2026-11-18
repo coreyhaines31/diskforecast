@@ -135,6 +135,9 @@ func describe(_ status: CLIStatus) -> String {
     var lines = status.lowOnSpace ? ["Low on space."] : []
     lines.append("\(Bytes.format(status.freeBytes)) free of \(Bytes.format(status.capacityBytes)) (\(percent)% free)")
     lines.append(status.forecast)
+    if let low = status.notableLowToday {
+        lines.append("Low today: \(Bytes.format(low)).")
+    }
     if status.scanning {
         lines.append("Measuring your home folder now.")
     } else if status.safeToClearBytes > 0 {

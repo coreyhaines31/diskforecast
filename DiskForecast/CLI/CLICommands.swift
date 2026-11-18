@@ -78,7 +78,8 @@ final class CLICommands {
             freeBytes: disk.freeBytes, capacityBytes: disk.capacityBytes, purgeableBytes: disk.purgeableBytes,
             outlook: outlook, forecast: disk.forecastPhrase, daysUntilFull: daysUntilFull, bytesPerDay: bytesPerDay,
             lowOnSpace: disk.lowSpaceWarning != nil, scanning: scan.isScanning, lastScan: scan.finishedAt,
-            fullDiskAccess: FullDiskAccess.isGranted, safeToClearBytes: scan.safeToClearBytes
+            fullDiskAccess: FullDiskAccess.isGranted, safeToClearBytes: scan.safeToClearBytes,
+            lowestFreeBytesToday: disk.history.lowestFreeBytes(on: Date())
         )
     }
 
