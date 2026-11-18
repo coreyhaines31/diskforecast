@@ -48,9 +48,9 @@ struct WhatChangedView: View {
                     Text("No folder changed by more than 500 MB.")
                         .foregroundStyle(.secondary)
                 } else {
-                    let firstMeasured = top.filter(\.isFirstMeasured)
+                    let firstMeasured = top.filter(\.listedForFirstMeasured)
                     List {
-                        ForEach(top.filter { !$0.isFirstMeasured }) {
+                        ForEach(top.filter { !$0.listedForFirstMeasured }) {
                             ChangeRow(change: $0, comparison: comparison, home: home)
                         }
                         if abs(outside) >= 1_000_000_000 {
@@ -134,8 +134,8 @@ private struct ChangeRow: View {
                     .padding(.vertical, 1)
                     .background(.orange.opacity(0.18), in: Capsule())
                     .foregroundStyle(.orange)
-            } else if change.isFirstMeasured {
-                Text("First measured")
+            } else if change.listedForFirstMeasured {
+                Text(change.isFirstMeasured ? "First measured" : "First measured inside")
                     .font(.caption2.weight(.semibold))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 1)
@@ -143,8 +143,8 @@ private struct ChangeRow: View {
                     .foregroundStyle(.secondary)
             }
             Spacer()
-            if change.isFirstMeasured {
-                Text(Bytes.format(change.newBytes)).monospacedDigit().foregroundStyle(.secondary)
+            if change.listedForFirstMeasured {
+                Text(Bytes.format(change.firstMeasuredSize)).monospacedDigit().foregroundStyle(.secondary)
             } else {
                 DeltaText(delta: change.delta)
             }
