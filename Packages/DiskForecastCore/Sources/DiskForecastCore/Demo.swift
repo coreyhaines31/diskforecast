@@ -121,7 +121,8 @@ public enum Demo {
     }
 
     /// 45 days of free space, falling about 3.5 GB a day with ordinary ups and downs, ending at
-    /// `freeBytes` today.
+    /// `freeBytes` today. Two days dipped well below their last reading, as a big download or build
+    /// that was cleared again by evening would.
     public static func history(now: Date = Date(), calendar: Calendar = .current) -> UsageHistory {
         var history = UsageHistory()
         let wobble: [Double] = [0, 1.2, -0.8, 2.1, -1.5, 0.6, 3.4, -0.4, 1.1, -2.2, 0.3, 1.8]
@@ -130,6 +131,15 @@ public enum Demo {
             guard let date = calendar.date(byAdding: .day, value: -daysAgo, to: now) else { continue }
             history.record(
                 freeBytes: Int64(gigabytes * Double(gigabyte)), capacityBytes: capacityBytes, at: date,
+                calendar: calendar
+            )
+        }
+        for (daysAgo, dip) in [(19, 30.0), (8, 34.0)] {
+            guard let date = calendar.date(byAdding: .day, value: -daysAgo, to: now),
+                  let reading = history.samples.last(where: { $0.day == calendar.startOfDay(for: date) })
+            else { continue }
+            history.recordLow(
+                freeBytes: reading.freeBytes - Int64(dip * Double(gigabyte)), capacityBytes: capacityBytes, at: date,
                 calendar: calendar
             )
         }

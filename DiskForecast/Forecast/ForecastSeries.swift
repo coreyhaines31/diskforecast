@@ -10,7 +10,16 @@ struct ForecastSeries {
         var id: Date { date }
     }
 
+    /// A day whose low was well below its last reading.
+    struct Dip: Identifiable {
+        let date: Date
+        let low: Double
+        let reading: Double
+        var id: Date { date }
+    }
+
     let history: [Point]
+    let dips: [Dip]
     let projection: [Point]
     let bytesPerDay: Double?
     let fullDate: Date?
@@ -24,14 +33,18 @@ struct ForecastSeries {
     init(disk: DiskStatus, days: Int, now: Date = Date(), calendar: Calendar = .current) {
         let today = calendar.startOfDay(for: now)
         let first = calendar.date(byAdding: .day, value: -days, to: today) ?? today
-        let points = disk.history.samples
-            .filter { $0.day >= first }
-            .map { Point(date: $0.day, gigabytes: Self.gigabytes($0.freeBytes)) }
+        let samples = disk.history.samples.filter { $0.day >= first }
+        let points = samples.map { Point(date: $0.day, gigabytes: Self.gigabytes($0.freeBytes)) }
         // Start at the first reading when the history is shorter than the range, so the line
         // fills the chart instead of sitting in one corner.
         start = max(first, points.first?.date ?? first)
         history = points
-        lowest = points.min { $0.gigabytes < $1.gigabytes }
+        dips = samples
+            .filter { $0.freeBytes - $0.lowestFreeBytes >= UsageHistory.notableDip }
+            .map { Dip(date: $0.day, low: Self.gigabytes($0.lowestFreeBytes), reading: Self.gigabytes($0.freeBytes)) }
+        lowest = samples
+            .map { Point(date: $0.day, gigabytes: Self.gigabytes($0.lowestFreeBytes)) }
+            .min { $0.gigabytes < $1.gigabytes }
 
         let rate = Forecast.bytesPerDay(history: disk.history, now: now, calendar: calendar)
         bytesPerDay = rate

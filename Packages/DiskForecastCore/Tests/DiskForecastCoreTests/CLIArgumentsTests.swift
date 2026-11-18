@@ -196,3 +196,30 @@ struct CLIHeadroomTests {
         #expect(CLIHeadroom(neededBytes: 5 * gigabyte, status: status(freeGB: 25)).hasRoom)
     }
 }
+
+struct CLIStatusLowTests {
+    let gigabyte: Int64 = 1_000_000_000
+
+    private func status(freeGB: Int64, lowGB: Int64?) -> CLIStatus {
+        CLIStatus(
+            freeBytes: freeGB * gigabyte, capacityBytes: 995 * gigabyte, purgeableBytes: 0, outlook: "steady",
+            forecast: "", daysUntilFull: nil, bytesPerDay: nil, lowOnSpace: false, scanning: false, lastScan: nil,
+            fullDiskAccess: true, safeToClearBytes: 0, lowestFreeBytesToday: lowGB.map { $0 * gigabyte }
+        )
+    }
+
+    @Test func pointsOutTodaysLowOnlyWhenItWasWellBelowNow() {
+        #expect(status(freeGB: 76, lowGB: 2).notableLowToday == 2 * gigabyte)
+        #expect(status(freeGB: 76, lowGB: 76).notableLowToday == nil)
+        #expect(status(freeGB: 76, lowGB: nil).notableLowToday == nil)
+    }
+
+    @Test func readsAStatusFromAnAppWithoutTheLow() throws {
+        let encoded = try JSONEncoder().encode(status(freeGB: 50, lowGB: nil))
+        var json = try #require(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        json.removeValue(forKey: "lowestFreeBytesToday")
+        let decoded = try JSONDecoder().decode(CLIStatus.self, from: JSONSerialization.data(withJSONObject: json))
+        #expect(decoded.lowestFreeBytesToday == nil)
+        #expect(decoded.freeBytes == 50 * gigabyte)
+    }
+}

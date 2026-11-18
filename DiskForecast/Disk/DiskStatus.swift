@@ -3,7 +3,8 @@ import Foundation
 import Observation
 
 /// Free space on the startup disk, sampled every hour into a daily history for the forecast, and
-/// every minute while space is low so a disk filling within minutes can be caught.
+/// every minute while space is low so a disk filling within minutes can be caught and the day's low
+/// is kept.
 @MainActor
 @Observable
 final class DiskStatus {
@@ -18,6 +19,8 @@ final class DiskStatus {
     var onChange: (() -> Void)?
 
     private let historyURL: URL
+    /// Today's low as last written to the history file, so the minute checks save only when it drops.
+    @ObservationIgnored private var savedLow: (day: Date, bytes: Int64)?
     private var timer: Timer?
     private var lowSpaceTimer: Timer?
 
@@ -77,15 +80,29 @@ final class DiskStatus {
         }
         #endif
         guard read() else { return }
-        history.record(freeBytes: freeBytes, capacityBytes: capacityBytes, at: Date())
-        try? history.save(to: historyURL)
+        let now = Date()
+        history.record(freeBytes: freeBytes, capacityBytes: capacityBytes, at: now)
+        saveHistory(at: now)
         onChange?()
     }
 
-    /// The minute check while space is low. Leaves the saved history to the hourly reading.
+    /// The minute check while space is low. It lowers the day's low but leaves the reading to the
+    /// hourly check, and writes the file only when the low has dropped enough to matter.
     private func refreshWhileLow() {
         guard read() else { return }
+        let now = Date()
+        history.recordLow(freeBytes: freeBytes, capacityBytes: capacityBytes, at: now)
+        let day = Calendar.current.startOfDay(for: now)
+        if let low = history.lowestFreeBytes(on: now),
+           UsageHistory.lowIsWorthSaving(low, saved: savedLow?.day == day ? savedLow?.bytes : nil) {
+            saveHistory(at: now)
+        }
         onChange?()
+    }
+
+    private func saveHistory(at now: Date) {
+        guard (try? history.save(to: historyURL)) != nil else { return }
+        savedLow = history.lowestFreeBytes(on: now).map { (Calendar.current.startOfDay(for: now), $0) }
     }
 
     /// Reads free space, a cheap volume query, and starts or stops the minute check to match.
