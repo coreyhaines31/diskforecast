@@ -144,6 +144,64 @@ struct FolderChurnTests {
         #expect(FolderChurns.churn(in: window).map(\.path) == ["Library"])
     }
 
+    @Test func listsTheFoldersInsideThatMovedMostUnderTheirParent() {
+        let window = snapshots([
+            ["Library": 100 * gigabyte, "Library/Caches": 10 * gigabyte, "Library/Developer": 10 * gigabyte,
+             "Library/Logs": 5 * gigabyte],
+            ["Library": 120 * gigabyte, "Library/Caches": 18 * gigabyte, "Library/Developer": 18 * gigabyte,
+             "Library/Logs": 9 * gigabyte],
+            ["Library": 100 * gigabyte, "Library/Caches": 10 * gigabyte, "Library/Developer": 10 * gigabyte,
+             "Library/Logs": 5 * gigabyte]
+        ])
+        let library = FolderChurns.churn(in: window).first
+        #expect(library?.inside == [
+            FolderChurn(path: "Library/Caches", movedBytes: 16 * gigabyte, netBytes: 0),
+            FolderChurn(path: "Library/Developer", movedBytes: 16 * gigabyte, netBytes: 0),
+            FolderChurn(path: "Library/Logs", movedBytes: 8 * gigabyte, netBytes: 0)
+        ])
+    }
+
+    @Test func listsAtMostThreeFoldersInside() {
+        let names = ["a", "b", "c", "d"]
+        let low = Dictionary(uniqueKeysWithValues: names.map { ("code/\($0)", 10 * gigabyte) })
+        let high = Dictionary(uniqueKeysWithValues: names.map { ("code/\($0)", 15 * gigabyte) })
+        let window = snapshots([
+            low.merging(["code": 50 * gigabyte]) { $1 }, high.merging(["code": 70 * gigabyte]) { $1 },
+            low.merging(["code": 50 * gigabyte]) { $1 }
+        ])
+        #expect(FolderChurns.churn(in: window).first?.inside.map(\.path) == ["code/a", "code/b", "code/c"])
+    }
+
+    @Test func listsADeeperFolderInsideInsteadOfItsParentWhenItDoesMostOfThatMoving() {
+        // Neither app nor .next does half of what code does, but .next does most of what app does.
+        let window = snapshots([
+            ["code": 50 * gigabyte, "code/app": 20 * gigabyte, "code/app/.next": 5 * gigabyte,
+             "code/site": 10 * gigabyte],
+            ["code": 90 * gigabyte, "code/app": 35 * gigabyte, "code/app/.next": 18 * gigabyte,
+             "code/site": 20 * gigabyte],
+            ["code": 50 * gigabyte, "code/app": 20 * gigabyte, "code/app/.next": 5 * gigabyte,
+             "code/site": 10 * gigabyte]
+        ])
+        let code = FolderChurns.churn(in: window).first
+        #expect(code?.path == "code")
+        #expect(code?.inside.map(\.path) == ["code/app/.next", "code/site"])
+    }
+
+    @Test func leavesOutFoldersInsideThatMovedLittleOrOnlyOneWay() {
+        // Logs moved back and forth under a twentieth of what Library did; Movies only grew.
+        let window = snapshots([
+            ["Library": 100 * gigabyte, "Library/Caches": 10 * gigabyte, "Library/Logs": 5 * gigabyte,
+             "Library/Movies": 10 * gigabyte],
+            ["Library": 130 * gigabyte, "Library/Caches": 20 * gigabyte, "Library/Logs": 6 * gigabyte,
+             "Library/Movies": 15 * gigabyte],
+            ["Library": 105 * gigabyte, "Library/Caches": 10 * gigabyte, "Library/Logs": 5 * gigabyte,
+             "Library/Movies": 20 * gigabyte]
+        ])
+        let library = FolderChurns.churn(in: window).first
+        #expect(library?.path == "Library")
+        #expect(library?.inside.map(\.path) == ["Library/Caches"])
+    }
+
     @Test func ranksByHowMuchMovedBackAndForth() {
         let window = snapshots([
             ["code": 10 * gigabyte, "Downloads": 10 * gigabyte],
