@@ -2,9 +2,9 @@ import DiskForecastCore
 import Foundation
 import Observation
 
-/// Free space on the startup disk, sampled every hour into a daily history for the forecast, and
-/// every minute while space is low or falling fast so a disk filling within minutes can be caught
-/// and the day's low is kept.
+/// Free space on the startup disk, sampled every hour into a daily history for the forecast. Between
+/// those it's read every five minutes, and every minute while space is low or falling fast, so a disk
+/// filling within minutes can be caught and the day's low is kept.
 @MainActor
 @Observable
 final class DiskStatus {
@@ -22,6 +22,7 @@ final class DiskStatus {
     /// Today's low as last written to the history file, so the minute checks save only when it drops.
     @ObservationIgnored private var savedLow: (day: Date, bytes: Int64)?
     private var timer: Timer?
+    private var backgroundTimer: Timer?
     private var minuteTimer: Timer?
 
     init(supportFolder: URL) {
@@ -67,6 +68,16 @@ final class DiskStatus {
             MainActor.assumeIsolated { self.refresh() }
         }
         timer?.tolerance = 300
+        #if DEBUG
+        if DemoMode.isOn { return }
+        #endif
+        backgroundTimer = Timer.scheduledTimer(withTimeInterval: FastFill.backgroundInterval, repeats: true) { _ in
+            MainActor.assumeIsolated {
+                // The minute check reads often enough while it runs.
+                if self.minuteTimer == nil { self.refreshBetweenHours() }
+            }
+        }
+        backgroundTimer?.tolerance = 30
     }
 
     func refresh() {
@@ -86,8 +97,8 @@ final class DiskStatus {
         onChange?()
     }
 
-    /// The minute check while space is low or falling fast. It lowers the day's low but leaves the
-    /// reading to the hourly check, and writes the file only when the low has dropped enough to matter.
+    /// The five-minute and minute checks. They lower the day's low but leave the reading to the hourly
+    /// check, and write the file only when the low has dropped enough to matter.
     private func refreshBetweenHours() {
         guard read() else { return }
         let now = Date()
