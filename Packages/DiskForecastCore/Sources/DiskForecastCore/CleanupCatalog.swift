@@ -96,6 +96,8 @@ public struct CleanupCatalog: Sendable {
     static let minimumWhatsAppBytes: Int64 = 5_000_000_000
     /// Chat apps' saved media is only worth a mention once it's big enough to matter.
     static let minimumChatMediaBytes: Int64 = 2_000_000_000
+    /// Folders stored twice are only compared, and listed, from this size up.
+    static let minimumDuplicateBytes: Int64 = 1_000_000_000
 
     public init(
         home: String, staleAfterDays: Int = 30, now: Date = Date(), agentScratch: ScanResult? = nil,
@@ -116,7 +118,7 @@ public struct CleanupCatalog: Sendable {
         for rule in rules {
             let entries = rule.candidates(self, scan).compactMap { candidate -> CleanupEntry? in
                 guard !claimed.contains(where: { candidate.path == $0 || candidate.path.hasPrefix($0 + "/") }),
-                      var bytes = size(of: candidate.path, in: scan)
+                      var bytes = candidate.bytes ?? size(of: candidate.path, in: scan)
                 else { return nil }
                 for inner in claimed where inner.hasPrefix(candidate.path + "/") {
                     bytes -= size(of: inner, in: scan) ?? 0
@@ -151,6 +153,8 @@ public struct CleanupCatalog: Sendable {
         var detail: String?
         var name: String?
         var companions: [String] = []
+        /// What removing it frees, when that isn't its size in the scan.
+        var bytes: Int64?
     }
 
     func path(_ relative: String) -> String {
@@ -333,6 +337,16 @@ public struct CleanupCatalog: Sendable {
             group.sorted { $0.modified > $1.modified }.dropFirst().map {
                 Candidate(path: $0.candidate.path, name: name($0.version))
             }
+        }
+    }
+
+    func duplicateFolders(_ scan: ScanResult) -> [Candidate] {
+        DuplicateFolders.find(in: scan, home: home, minimumBytes: Self.minimumDuplicateBytes).map { copy in
+            let original = "~" + copy.original.dropFirst(home.count)
+            return Candidate(
+                path: copy.path, detail: "Same files as \(original)", name: Trasher.Report.label(copy.path),
+                bytes: copy.bytes
+            )
         }
     }
 
