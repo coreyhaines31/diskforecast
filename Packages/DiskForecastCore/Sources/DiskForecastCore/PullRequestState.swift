@@ -105,6 +105,8 @@ public struct PullRequestList: Sendable, Equatable {
 public enum PullRequestLookup {
     /// How many pull requests to ask gh for per repository.
     public static let limit = 1000
+    /// How many repositories to ask about at once.
+    public static let concurrency = 4
 
     /// Worktree path to state. Worktrees with no branch checked out, or whose remote isn't on
     /// github.com, are left out. `ask` returns gh's output, or nil when it failed.
@@ -122,13 +124,20 @@ public enum PullRequestLookup {
             byRepository[repository, default: []].append((path, branch))
         }
         let lists = await withTaskGroup(of: (GitHubRepository, PullRequestList?).self) { group in
-            for repository in byRepository.keys {
+            var waiting = byRepository.keys.makeIterator()
+            func askNext() -> Bool {
+                guard let repository = waiting.next() else { return false }
                 group.addTask {
                     (repository, await ask(repository).flatMap { PullRequestList(ghJSON: $0, limit: limit) })
                 }
+                return true
             }
+            for _ in 0..<concurrency where !askNext() { break }
             var lists: [GitHubRepository: PullRequestList?] = [:]
-            for await (repository, list) in group { lists[repository] = list }
+            for await (repository, list) in group {
+                lists[repository] = list
+                _ = askNext()
+            }
             return lists
         }
         var states: [String: PullRequestState] = [:]
