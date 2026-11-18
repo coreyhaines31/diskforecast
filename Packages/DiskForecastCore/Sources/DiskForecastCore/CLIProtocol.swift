@@ -62,7 +62,7 @@ public struct CLIStatus: Codable, Equatable, Sendable {
     public var capacityBytes: Int64
     /// Space macOS holds for caches and snapshots and gives back when it's needed.
     public var purgeableBytes: Int64
-    /// learning, filling, steady, or gaining.
+    /// learning, filling, steady, gaining, or cleared (up mostly from one cleanup, so no pace).
     public var outlook: String
     /// Like "Full in ~41 days · using 3.5 GB a day".
     public var forecast: String
