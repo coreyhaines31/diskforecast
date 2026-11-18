@@ -192,4 +192,98 @@ struct UsageHistoryTests {
         #expect(UsageHistory.load(from: url) == history)
         #expect(UsageHistory.load(from: url.appending(path: "missing")) == UsageHistory())
     }
+
+    @Test func keepsTheDaysLowestReading() {
+        var history = UsageHistory()
+        let morning = Date(timeIntervalSince1970: 1_790_000_000)
+        history.record(freeBytes: 10, capacityBytes: 100, at: morning)
+        history.record(freeBytes: 2, capacityBytes: 100, at: morning.addingTimeInterval(60))
+        history.record(freeBytes: 76, capacityBytes: 100, at: morning.addingTimeInterval(120))
+        #expect(history.samples.first?.freeBytes == 76)
+        #expect(history.samples.first?.lowestFreeBytes == 2)
+    }
+
+    @Test func aNewDayStartsItsOwnLow() {
+        var history = UsageHistory()
+        let morning = Date(timeIntervalSince1970: 1_790_000_000)
+        history.record(freeBytes: 2, capacityBytes: 100, at: morning)
+        history.record(freeBytes: 50, capacityBytes: 100, at: morning.addingTimeInterval(86_400))
+        #expect(history.samples.map(\.lowestFreeBytes) == [2, 50])
+    }
+
+    @Test func aLowReadingLowersTheLowButNotTheReading() {
+        var history = UsageHistory()
+        let morning = Date(timeIntervalSince1970: 1_790_000_000)
+        history.record(freeBytes: 40, capacityBytes: 100, at: morning)
+        history.recordLow(freeBytes: 5, capacityBytes: 100, at: morning.addingTimeInterval(60))
+        history.recordLow(freeBytes: 30, capacityBytes: 100, at: morning.addingTimeInterval(120))
+        #expect(history.samples.count == 1)
+        #expect(history.samples.first?.freeBytes == 40)
+        #expect(history.samples.first?.lowestFreeBytes == 5)
+    }
+
+    @Test func aLowReadingOnADayWithNoReadingStartsOne() {
+        var history = UsageHistory()
+        let morning = Date(timeIntervalSince1970: 1_790_000_000)
+        history.record(freeBytes: 40, capacityBytes: 100, at: morning)
+        history.recordLow(freeBytes: 7, capacityBytes: 100, at: morning.addingTimeInterval(86_400))
+        #expect(history.samples.count == 2)
+        #expect(history.samples.last?.freeBytes == 7)
+        #expect(history.samples.last?.lowestFreeBytes == 7)
+    }
+
+    @Test func aLowReadingCanLandOnAnEarlierDay() {
+        var history = UsageHistory()
+        let morning = Date(timeIntervalSince1970: 1_790_000_000)
+        history.record(freeBytes: 40, capacityBytes: 100, at: morning)
+        history.record(freeBytes: 45, capacityBytes: 100, at: morning.addingTimeInterval(86_400))
+        history.recordLow(freeBytes: 3, capacityBytes: 100, at: morning.addingTimeInterval(60))
+        #expect(history.samples.map(\.lowestFreeBytes) == [3, 45])
+    }
+
+    @Test func findsTheLowForADay() {
+        var history = UsageHistory()
+        let morning = Date(timeIntervalSince1970: 1_790_000_000)
+        history.record(freeBytes: 40, capacityBytes: 100, at: morning)
+        history.recordLow(freeBytes: 4, capacityBytes: 100, at: morning.addingTimeInterval(60))
+        #expect(history.lowestFreeBytes(on: morning.addingTimeInterval(120)) == 4)
+        #expect(history.lowestFreeBytes(on: morning.addingTimeInterval(86_400)) == nil)
+    }
+
+    @Test func savesALowOnlyWhenItDropsEnough() {
+        let gigabyte: Int64 = 1_000_000_000
+        #expect(UsageHistory.lowIsWorthSaving(70 * gigabyte, saved: nil))
+        #expect(!UsageHistory.lowIsWorthSaving(70 * gigabyte, saved: 70 * gigabyte))
+        #expect(!UsageHistory.lowIsWorthSaving(69 * gigabyte + 500_000_000, saved: 70 * gigabyte))
+        #expect(UsageHistory.lowIsWorthSaving(69 * gigabyte, saved: 70 * gigabyte))
+        // Near empty, a quarter of what's left counts, so the last gigabyte isn't lost.
+        #expect(UsageHistory.lowIsWorthSaving(600_000_000, saved: 800_000_000))
+        #expect(!UsageHistory.lowIsWorthSaving(700_000_000, saved: 800_000_000))
+    }
+
+    @Test func loadsAHistorySavedBeforeLowsWereKept() throws {
+        let url = TestFolders.make("old-history").appendingPathExtension("json")
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        let json = """
+        {"samples": [{"capacityBytes": 100, "day": "2026-09-21T07:00:00Z", "freeBytes": 42}]}
+        """
+        try Data(json.utf8).write(to: url)
+        let history = UsageHistory.load(from: url)
+        #expect(history.samples.count == 1)
+        #expect(history.samples.first?.freeBytes == 42)
+        #expect(history.samples.first?.lowestFreeBytes == 42)
+    }
+
+    @Test func savesTheLowAlongsideTheKeysOlderVersionsRead() throws {
+        var history = UsageHistory()
+        history.record(freeBytes: 2, capacityBytes: 100, at: Date(timeIntervalSince1970: 1_790_000_000))
+        history.record(freeBytes: 9, capacityBytes: 100, at: Date(timeIntervalSince1970: 1_790_000_060))
+        let url = TestFolders.make("new-history").appendingPathExtension("json")
+        try history.save(to: url)
+        let saved = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any]
+        let sample = (saved?["samples"] as? [[String: Any]])?.first
+        #expect(Set(sample?.keys.map { $0 } ?? []) == ["day", "freeBytes", "capacityBytes", "lowestFreeBytes"])
+        #expect(sample?["freeBytes"] as? Int == 9)
+        #expect(sample?["lowestFreeBytes"] as? Int == 2)
+    }
 }
