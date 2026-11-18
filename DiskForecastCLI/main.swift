@@ -218,9 +218,11 @@ func describe(_ keepsChanging: CLIKeepsChanging) -> String {
     let days = FolderChurns.days(from: keepsChanging.since, to: keepsChanging.until)
     var lines = ["What keeps changing from \(keepsChanging.since.formatted(format)) to "
         + "\(keepsChanging.until.formatted(format)) (free space is swinging):"]
-    for folder in keepsChanging.folders {
-        let churn = FolderChurn(path: folder.path, movedBytes: folder.movedBytes, netBytes: folder.netBytes)
-        lines.append("  ~/\(folder.path): \(churn.summary(days: days))")
+    for folder in keepsChanging.folders.map(\.churn) {
+        lines.append("  ~/\(folder.path): \(folder.summary(days: days))")
+        for inner in folder.inside {
+            lines.append("    \(inner.path.dropFirst(folder.path.count + 1)): \(inner.summary(days: days))")
+        }
     }
     return lines.joined(separator: "\n")
 }
