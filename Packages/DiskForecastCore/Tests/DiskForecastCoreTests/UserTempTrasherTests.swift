@@ -39,6 +39,9 @@ struct UserTempTrasherTests {
         #expect(trasher.refusal(for: temp.deletingLastPathComponent().path) == .outsideHome)
         #expect(trasher.refusal(for: neighbour.path) == .outsideHome)
         #expect(trasher.refusal(for: temp.path + "-other") == .outsideHome)
+        try write("com.apple.something/blob")
+        #expect(trasher.refusal(for: temp.path + "/com.apple.something") == .outsideHome)
+        #expect(trasher.refusal(for: temp.path + "/com.apple.something/blob") == .outsideHome)
 
         let report = trasher.trash([leftover], openFiles: OpenFiles(processes: []))
         #expect(report.moved == [leftover])

@@ -62,7 +62,7 @@ extension CleanupCatalog {
 
     /// The newest change to the session folder or anything directly in it. A running session
     /// keeps writing task output there.
-    static func lastChange(of folder: String) -> Date? {
+    private static func lastChange(of folder: String) -> Date? {
         let names = (try? FileManager.default.contentsOfDirectory(atPath: folder)) ?? []
         let dates = ([folder] + names.map { folder + "/" + $0 }).compactMap { path -> Date? in
             var info = stat()

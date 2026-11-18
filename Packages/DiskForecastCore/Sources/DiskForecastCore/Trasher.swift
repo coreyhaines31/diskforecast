@@ -103,6 +103,9 @@ public struct Trasher: Sendable {
 
     private func isInUserTemp(_ path: String) -> Bool {
         guard path.hasPrefix(userTemp + "/") else { return false }
+        // macOS keeps its own things there too. Those stay, whoever asks.
+        let top = path.dropFirst(userTemp.count + 1).split(separator: "/").first.map(String.init) ?? ""
+        guard !UserTemp.isSystemEntry(top) else { return false }
         var info = stat()
         return lstat(userTemp, &info) == 0 && info.st_uid == getuid()
     }

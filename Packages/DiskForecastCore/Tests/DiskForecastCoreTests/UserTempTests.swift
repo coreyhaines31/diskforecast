@@ -72,6 +72,33 @@ struct UserTempTests {
         #expect(await entries().isEmpty)
     }
 
+    @Test func leavesAFolderSomethingChangedDeepInside() async throws {
+        try write("app/data/cache/blob", bytes: 2_000_000, modified: old)
+        // Three levels down, so the folder and what's directly in it still look old.
+        let deep = temp.appending(path: "app/data/cache/log")
+        try Data(count: 10).write(to: deep)
+        for path in [temp.path + "/app/data/cache", temp.path + "/app/data", temp.path + "/app"] {
+            try FileManager.default.setAttributes([.modificationDate: old], ofItemAtPath: path)
+        }
+        #expect(await entries().isEmpty)
+    }
+
+    @Test func leavesAFolderWithAPipeOrSocketInside() async throws {
+        try write("session/blob", bytes: 2_000_000, modified: old)
+        #expect(mkfifo(temp.path + "/session/control", 0o600) == 0)
+        try FileManager.default.setAttributes([.modificationDate: old], ofItemAtPath: temp.path + "/session/control")
+        try FileManager.default.setAttributes([.modificationDate: old], ofItemAtPath: temp.path + "/session")
+        #expect(await entries().isEmpty)
+    }
+
+    @Test func leavesAFolderTooBigToCheck() throws {
+        try write("huge/a", bytes: 10, modified: old)
+        try write("huge/b", bytes: 10, modified: old)
+        #expect(UserTemp.newestChange(in: temp.path + "/huge") != nil)
+        // The folder and two files are three entries.
+        #expect(UserTemp.newestChange(in: temp.path + "/huge", limit: 2) == nil)
+    }
+
     @Test func saysHowManySiblingsShareAName() async throws {
         for index in 0..<12 {
             try write("DiskForecastHome-\(index)/blob", bytes: 1_100_000, modified: old)

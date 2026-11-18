@@ -11,6 +11,37 @@ public enum UserTemp {
     /// This many idle entries sharing a name's start are said to, so a long list reads as one batch.
     static let batchSize = 10
 
+    /// Entries with more inside than this aren't walked, so they aren't listed.
+    static let maximumEntries = 100_000
+
+    /// The newest change to the entry or anything inside it, at any depth. Nil when that can't be
+    /// vouched for: something couldn't be read, there's too much to walk, or there's a socket or
+    /// pipe inside, which a running program may be listening on though no file is open.
+    static func newestChange(in path: String, limit: Int = maximumEntries) -> Date? {
+        var newest = 0.0
+        var seen = 0
+        var stack = [path]
+        while let next = stack.popLast() {
+            var info = stat()
+            guard lstat(next, &info) == 0 else { return nil }
+            seen += 1
+            guard seen <= limit else { return nil }
+            let type = info.st_mode & S_IFMT
+            guard type != S_IFSOCK, type != S_IFIFO else { return nil }
+            newest = max(newest, Double(info.st_mtimespec.tv_sec))
+            if type == S_IFDIR {
+                guard let names = try? FileManager.default.contentsOfDirectory(atPath: next) else { return nil }
+                stack += names.map { next + "/" + $0 }
+            }
+        }
+        return Date(timeIntervalSince1970: newest)
+    }
+
+    /// Whether macOS, not the user's own programs, keeps this entry of the temp folder.
+    static func isSystemEntry(_ name: String) -> Bool {
+        name.hasPrefix("com.apple.")
+    }
+
     /// The start of a name that tools number or randomize after: "DiskForecastHome-" in
     /// "DiskForecastHome-1A2B…".
     static func batch(of name: String) -> String {
@@ -27,14 +58,17 @@ extension CleanupCatalog {
         guard let root = userTemp?.tree.rootPath else { return [] }
         let cutoff = now.addingTimeInterval(-UserTemp.idleDays * 86_400)
         let names = ((try? FileManager.default.contentsOfDirectory(atPath: root)) ?? []).filter { name in
-            guard !name.hasPrefix("com.apple."), name != ".DS_Store" else { return false }
+            guard !UserTemp.isSystemEntry(name), name != ".DS_Store" else { return false }
             var info = stat()
             guard lstat(root + "/" + name, &info) == 0, info.st_uid == getuid() else { return false }
             let type = info.st_mode & S_IFMT
-            return type == S_IFDIR || type == S_IFREG
+            // Changed lately at the top means not idle, and too small means not listed: neither needs walking.
+            return (type == S_IFDIR || type == S_IFREG)
+                && Double(info.st_mtimespec.tv_sec) < cutoff.timeIntervalSince1970
+                && (userTemp?.allocatedSize(of: root + "/" + name) ?? 0) >= Self.minimumEntryBytes
         }
         let idle = names.compactMap { name -> (name: String, changed: Date)? in
-            guard let changed = Self.lastChange(of: root + "/" + name), changed < cutoff else { return nil }
+            guard let changed = UserTemp.newestChange(in: root + "/" + name), changed < cutoff else { return nil }
             return (name, changed)
         }
         let batches = Dictionary(idle.map { (UserTemp.batch(of: $0.name), 1) }, uniquingKeysWith: +)
