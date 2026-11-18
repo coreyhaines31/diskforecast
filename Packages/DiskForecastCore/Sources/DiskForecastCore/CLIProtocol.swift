@@ -103,12 +103,18 @@ public struct CLIChanges: Codable, Equatable, Sendable {
     public var folders: [CLIFolderChange]
     /// Change in used space outside the home folder: System Data, other accounts, and apps.
     public var outsideHomeBytes: Int64
+    /// Why free space moved much more than the home folder did, when it did. Nil otherwise, and from
+    /// apps older than this field.
+    public var freeSpaceGap: String?
 
-    public init(since: Date, until: Date, folders: [CLIFolderChange], outsideHomeBytes: Int64) {
+    public init(
+        since: Date, until: Date, folders: [CLIFolderChange], outsideHomeBytes: Int64, freeSpaceGap: String? = nil
+    ) {
         self.since = since
         self.until = until
         self.folders = folders
         self.outsideHomeBytes = outsideHomeBytes
+        self.freeSpaceGap = freeSpaceGap
     }
 
     /// Every folder that changed by 500 MB or more, each with the folders inside it that did.
@@ -123,7 +129,8 @@ public struct CLIChanges: Codable, Equatable, Sendable {
         }
         self.init(
             since: old.day, until: new.day, folders: changes(under: ""),
-            outsideHomeBytes: FolderChanges.outsideHomeDelta(from: old, to: new)
+            outsideHomeBytes: FolderChanges.outsideHomeDelta(from: old, to: new),
+            freeSpaceGap: FreeSpaceGap(from: old, to: new)?.explanation
         )
     }
 }

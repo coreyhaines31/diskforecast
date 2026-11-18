@@ -158,6 +158,10 @@ func describe(_ changes: CLIChanges) -> String {
         lines.append("  \(size) Outside your home folder (System Data, other accounts, and apps)")
     }
     if lines.count == 1 { lines.append("  No folder changed by more than 500 MB.") }
+    if let gap = changes.freeSpaceGap {
+        lines.append("")
+        lines.append(gap)
+    }
     return lines.joined(separator: "\n")
 }
 
