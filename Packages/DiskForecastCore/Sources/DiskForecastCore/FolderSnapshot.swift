@@ -14,15 +14,23 @@ public struct FolderSnapshot: Codable, Sendable, Equatable {
     /// Free space on the disk when the scan finished.
     public var freeBytes: Int64
     public var folders: [String: Int64]
+    /// System Data read when the scan finished. Nil in snapshots saved before it was recorded.
+    public var systemData: SystemDataReading?
 
-    public init(day: Date, homeBytes: Int64, freeBytes: Int64, folders: [String: Int64]) {
+    public init(
+        day: Date, homeBytes: Int64, freeBytes: Int64, folders: [String: Int64], systemData: SystemDataReading? = nil
+    ) {
         self.day = day
         self.homeBytes = homeBytes
         self.freeBytes = freeBytes
         self.folders = folders
+        self.systemData = systemData
     }
 
-    public init(tree: ScanTree, freeBytes: Int64, at date: Date, calendar: Calendar = .current) {
+    public init(
+        tree: ScanTree, freeBytes: Int64, systemData: SystemDataReading? = nil, at date: Date,
+        calendar: Calendar = .current
+    ) {
         var folders: [String: Int64] = [:]
         func record(under node: Int, path: String, depth: Int) {
             guard depth < Self.maxDepth else { return }
@@ -36,7 +44,8 @@ public struct FolderSnapshot: Codable, Sendable, Equatable {
             record(under: 0, path: "", depth: 0)
         }
         self.init(
-            day: calendar.startOfDay(for: date), homeBytes: tree.totalSize, freeBytes: freeBytes, folders: folders
+            day: calendar.startOfDay(for: date), homeBytes: tree.totalSize, freeBytes: freeBytes, folders: folders,
+            systemData: systemData
         )
     }
 }
