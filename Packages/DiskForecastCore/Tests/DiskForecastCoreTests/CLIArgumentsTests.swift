@@ -38,6 +38,18 @@ struct CLIArgumentsTests {
         #expect(throws: CLIUsageError.self) { try parse("open") }
         #expect(throws: CLIUsageError.self) { try parse("open finder") }
     }
+
+    @Test func readsTheSpaceStatusShouldCheckFor() throws {
+        #expect(try parse("status --need 5GB") == .send(
+            CLIRequest(action: .status), json: false, needBytes: 5_000_000_000
+        ))
+        #expect(try parse("status --json --need 500mb") == .send(
+            CLIRequest(action: .status), json: true, needBytes: 500_000_000
+        ))
+        #expect(throws: CLIUsageError.self) { try parse("status --need") }
+        #expect(throws: CLIUsageError.self) { try parse("status --need lots") }
+        #expect(throws: CLIUsageError.self) { try parse("cleanup --need 5GB") }
+    }
 }
 
 struct BytesParseTests {
@@ -123,5 +135,32 @@ struct CLIChangesTests {
         #expect(changes.folders[0].children.map(\.path) == ["code/api"])
         #expect(changes.folders[0].delta == 3 * gigabyte)
         #expect(changes.outsideHomeBytes == 2 * gigabyte)
+    }
+}
+
+struct CLIHeadroomTests {
+    let gigabyte: Int64 = 1_000_000_000
+
+    private func status(freeGB: Int64, safeToClearGB: Int64 = 0) -> CLIStatus {
+        CLIStatus(
+            freeBytes: freeGB * gigabyte, capacityBytes: 995 * gigabyte, purgeableBytes: 0, outlook: "steady",
+            forecast: "", daysUntilFull: nil, bytesPerDay: nil, lowOnSpace: false, scanning: false, lastScan: nil,
+            fullDiskAccess: true, safeToClearBytes: safeToClearGB * gigabyte
+        )
+    }
+
+    @Test func hasRoomWhenTheMarginIsLeftOver() {
+        let headroom = CLIHeadroom(neededBytes: 5 * gigabyte, status: status(freeGB: 91, safeToClearGB: 36))
+        #expect(headroom.hasRoom)
+        #expect(headroom.shortBytes == 0)
+        #expect(headroom.safeToClearBytes == 36 * gigabyte)
+    }
+
+    @Test func saysHowMuchToClearWhenTheMarginWouldBeGone() {
+        let headroom = CLIHeadroom(neededBytes: 5 * gigabyte, status: status(freeGB: 22))
+        #expect(!headroom.hasRoom)
+        #expect(headroom.shortBytes == 3 * gigabyte)
+        #expect(!CLIHeadroom(neededBytes: 100 * gigabyte, status: status(freeGB: 91)).hasRoom)
+        #expect(CLIHeadroom(neededBytes: 5 * gigabyte, status: status(freeGB: 25)).hasRoom)
     }
 }

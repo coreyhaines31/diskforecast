@@ -2,8 +2,9 @@ import Foundation
 
 /// What the `diskforecast` command was asked to do.
 public enum CLICommand: Equatable, Sendable {
-    /// `wait`: for scan, keep going until the scan finishes.
-    case send(CLIRequest, json: Bool, wait: Bool = false)
+    /// `wait`: for scan, keep going until the scan finishes. `needBytes`: for status, check
+    /// there's room for that much.
+    case send(CLIRequest, json: Bool, wait: Bool = false, needBytes: Int64? = nil)
     case help
     case version
 }
@@ -24,9 +25,10 @@ public enum CLIArguments {
         case "help", "-h", "--help": return .help
         case "version", "-v", "--version": return .version
         case "status", "cleanup", "undo":
-            try options.parse()
+            try options.parse(allowing: name == "status" ? ["--need"] : [])
             try options.noPositionals()
-            return .send(CLIRequest(action: CLIRequest.Action(rawValue: name) ?? .status), json: options.json)
+            let request = CLIRequest(action: CLIRequest.Action(rawValue: name) ?? .status)
+            return .send(request, json: options.json, needBytes: options.need)
         case "changes":
             try options.parse(allowing: ["--days"])
             try options.noPositionals()
@@ -66,6 +68,7 @@ public enum CLIArguments {
         var wait = false
         var yes = false
         var days: Int?
+        var need: Int64?
 
         init(command: String, arguments: [String]) {
             self.command = command
@@ -86,15 +89,27 @@ public enum CLIArguments {
                 case "--json": json = true
                 case "--wait": wait = true
                 case "--yes": yes = true
-                case "--days":
-                    guard let value = arguments.first, let number = Int(value), (1...120).contains(number) else {
-                        throw CLIUsageError("--days needs a number of days from 1 to 120, like --days 30.")
-                    }
-                    arguments.removeFirst()
-                    days = number
+                case "--days", "--need": try parseValue(of: argument)
                 default: break
                 }
             }
+        }
+
+        /// Reads the value that follows an option like --days 30.
+        private mutating func parseValue(of option: String) throws(CLIUsageError) {
+            let value = arguments.first ?? ""
+            if option == "--days" {
+                guard let number = Int(value), (1...120).contains(number) else {
+                    throw CLIUsageError("--days needs a number of days from 1 to 120, like --days 30.")
+                }
+                days = number
+            } else {
+                guard let bytes = Bytes.parse(value) else {
+                    throw CLIUsageError("--need needs a size, like --need 5GB or --need 500MB.")
+                }
+                need = bytes
+            }
+            arguments.removeFirst()
         }
 
         func noPositionals() throws(CLIUsageError) {

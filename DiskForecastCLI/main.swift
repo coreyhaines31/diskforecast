@@ -6,7 +6,7 @@ diskforecast: check when your Mac's disk will be full, see what's filling it, an
 the terminal.
 
 Usage:
-  diskforecast status [--json]
+  diskforecast status [--need <size>] [--json]
   diskforecast changes [--days 7] [--json]
   diskforecast cleanup [--json]
   diskforecast scan [--wait] [--json]
@@ -15,7 +15,8 @@ Usage:
   diskforecast open forecast|cleanup|system-data|settings
 
 Commands:
-  status    Free space, the forecast, and how much is safe to clear.
+  status    Free space, the forecast, and how much is safe to clear. --need 5GB checks there's
+            room for 5 GB with 20 GB still free after it, and exits 3 when there isn't.
   changes   Which folders grew or shrank over the last 7 days (or --days N), and by how much.
   cleanup   What you can reclaim, with an ID for each item and why it's safe or worth a look.
   scan      Measure the home folder again. --wait waits for the scan to finish.
@@ -25,10 +26,17 @@ Commands:
   undo      Put back everything the last trash run moved, from here or the app.
   open      Show one of Disk Forecast's windows.
 
+Exit status:
+  0 when it worked, 1 for an error, 3 when status --need finds there isn't room.
+
 Examples:
+  diskforecast status --need 5GB
   diskforecast changes --days 30
   diskforecast trash xcode-derived-data package-caches --yes
 """
+
+/// `status --need` found there isn't room. 1 is for errors.
+let notEnoughRoomExitCode: Int32 = 3
 
 func fail(_ message: String) -> Never {
     FileHandle.standardError.write(Data("diskforecast: \(message)\n".utf8))
@@ -140,6 +148,24 @@ func describe(_ status: CLIStatus) -> String {
     return lines.joined(separator: "\n")
 }
 
+func describe(_ headroom: CLIHeadroom, scanning: Bool) -> String {
+    let needed = Bytes.format(headroom.neededBytes)
+    let free = Bytes.format(headroom.freeBytes)
+    var lines = [headroom.hasRoom
+        ? "Room for \(needed): \(free) free, so \(Bytes.format(headroom.freeBytes - headroom.neededBytes)) "
+            + "is left after it."
+        : "Not enough room for \(needed): \(free) free, and \(Bytes.format(headroom.marginBytes)) should "
+            + "stay free. Clear \(Bytes.format(headroom.shortBytes)) first."]
+    if scanning {
+        lines.append("Measuring your home folder now.")
+    } else if headroom.safeToClearBytes > 0 {
+        lines.append("Safe to clear: \(Bytes.format(headroom.safeToClearBytes)). See it with: diskforecast cleanup")
+    } else {
+        lines.append("Nothing on the Safe to clear list right now.")
+    }
+    return lines.joined(separator: "\n")
+}
+
 func describe(_ changes: CLIChanges) -> String {
     let format = Date.FormatStyle().month(.abbreviated).day()
     var lines = ["What changed from \(changes.since.formatted(format)) to \(changes.until.formatted(format)):"]
@@ -240,7 +266,11 @@ func report(_ response: CLIResponse, json asJSON: Bool) -> Bool {
     }
     response.notes.forEach(note)
     var sections: [String] = []
-    if let status = response.status { sections.append(describe(status)) }
+    if let headroom = response.headroom {
+        sections.append(describe(headroom, scanning: response.status?.scanning ?? false))
+    } else if let status = response.status {
+        sections.append(describe(status))
+    }
     if let changes = response.changes { sections.append(describe(changes)) }
     if let cleanup = response.cleanup { sections.append(describe(cleanup)) }
     if let trash = response.trash { sections.append(describe(trash)) }
@@ -276,8 +306,11 @@ case .help:
     print(usage)
 case .version:
     print(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown")
-case .send(let request, let json, let wait):
+case .send(let request, let json, let wait, let needBytes):
     var response = sendLaunchingApp(request)
+    if let needBytes, let status = response.status {
+        response.headroom = CLIHeadroom(neededBytes: needBytes, status: status)
+    }
     if request.action == .scan, response.error == nil {
         if wait {
             if response.status?.scanning == true { response = waitForScan(json: json) }
@@ -287,4 +320,5 @@ case .send(let request, let json, let wait):
         }
     }
     if !report(response, json: json) { exit(1) }
+    if response.headroom?.hasRoom == false { exit(notEnoughRoomExitCode) }
 }
