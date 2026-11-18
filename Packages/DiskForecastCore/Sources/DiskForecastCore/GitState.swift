@@ -56,6 +56,14 @@ public struct GitState: Sendable, Equatable {
         return GitState(changed: changed, unpushed: unpushed)
     }
 
+    /// The URL of the checkout's `origin` remote, or its first remote when none is named that.
+    public static func remoteURL(at path: String) -> String? {
+        guard let remotes = run(["remote"], in: path)?.split(separator: "\n"), let first = remotes.first
+        else { return nil }
+        let name = remotes.contains("origin") ? "origin" : String(first)
+        return run(["remote", "get-url", name], in: path)
+    }
+
     /// Whether the repository's own config (not the user's) names filter programs.
     static func namesItsOwnFilters(_ path: String) -> Bool {
         guard let output = git(["config", "--show-scope", "--includes", "--get-regexp", "^filter\\."], in: path)
