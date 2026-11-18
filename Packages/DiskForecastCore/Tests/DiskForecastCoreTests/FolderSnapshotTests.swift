@@ -156,7 +156,7 @@ struct FolderSnapshotTests {
         #expect(FolderChanges.outsideHomeDelta(from: old, to: new) == 0)
     }
 
-    @Test func treatsFoldersMissingFromAnOlderSnapshotFormatAsFirstMeasured() throws {
+    @Test func countsFoldersMissingFromAnOlderSnapshotFormatAsNew() throws {
         let json = #"{"day":"2026-10-01T07:00:00Z","folders":{"code":2000000000},"freeBytes":0,"homeBytes":0}"#
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
@@ -166,12 +166,14 @@ struct FolderSnapshotTests {
             day: day, homeBytes: 0, freeBytes: 0,
             folders: ["code": 3 * gigabyte, "Library": 9 * gigabyte, "Library/Messages": 8 * gigabyte]
         )
+        // The older snapshot can't say what it missed, so nothing made since is hidden as first measured.
         let top = FolderChanges.changes(from: old, to: new)
-        #expect(top.map(\.path) == ["code", "Library"])
-        #expect(top[0].delta == gigabyte)
-        #expect(top[1].isFirstMeasured)
+        #expect(top.map(\.path) == ["Library", "code"])
+        #expect(top[0].isNew && !top[0].isFirstMeasured && top[0].delta == 9 * gigabyte)
+        #expect(top[1].delta == gigabyte)
         let library = FolderChanges.changes(from: old, to: new, under: "Library")
-        #expect(library.map(\.isFirstMeasured) == [true])
+        #expect(library.map(\.isNew) == [true])
+        #expect(FolderChanges.firstMeasuredBytes(under: "", from: old, to: new) == 0)
     }
 
     @Test func attributesGrowthOutsideTheHomeFolder() {

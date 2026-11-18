@@ -15,8 +15,8 @@ public struct FolderSnapshot: Codable, Sendable, Equatable {
     public var freeBytes: Int64
     public var folders: [String: Int64]
     /// Folders the scan couldn't read or didn't enter, relative to the home folder, like the ones
-    /// macOS guards when Full Disk Access is off. Nil in snapshots saved before this was recorded,
-    /// which can't say what they missed.
+    /// macOS guards when Full Disk Access is off. Nil in snapshots saved before this was recorded:
+    /// those can't say what they missed, so a folder absent from one still counts as new.
     public var unmeasured: [String]?
 
     public init(
@@ -53,11 +53,11 @@ public struct FolderSnapshot: Codable, Sendable, Equatable {
         )
     }
 
-    /// Whether this snapshot can't vouch for the folder being absent: the scan didn't read it or
-    /// a folder around it, or the snapshot is too old to say.
+    /// Whether the folder is absent because the scan didn't read it or a folder around it. An
+    /// older snapshot can't say, and guessing yes would hide every folder made since as "first
+    /// measured" for as long as that snapshot is compared against, so it says no.
     func couldNotMeasure(_ path: String) -> Bool {
-        guard folders[path] == nil else { return false }
-        guard let unmeasured else { return true }
+        guard folders[path] == nil, let unmeasured else { return false }
         return unmeasured.contains { path == $0 || path.hasPrefix($0 + "/") }
     }
 }
