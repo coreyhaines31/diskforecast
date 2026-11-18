@@ -157,4 +157,33 @@ struct AgentNoteTests {
         #expect(try FileManager.default.destinationOfSymbolicLink(atPath: claude.path) == real.path)
         #expect(try text(of: real) == "# Mine\n")
     }
+
+    @Test func removeKeepsTheFilesPermissionsAndAttributes() throws {
+        try write("# Mine\n")
+        try AgentNote.add(to: claude)
+        try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: claude.path)
+        let value = Array("kept".utf8)
+        #expect(setxattr(claude.path, "com.example.note", value, value.count, 0, 0) == 0)
+        try AgentNote.remove(from: claude)
+        #expect(try read() == "# Mine\n")
+        let permissions = try FileManager.default.attributesOfItem(atPath: claude.path)[.posixPermissions] as? Int
+        #expect(permissions == 0o600)
+        var buffer = [UInt8](repeating: 0, count: 16)
+        let length = getxattr(claude.path, "com.example.note", &buffer, buffer.count, 0, 0)
+        #expect(length == value.count)
+        #expect(Array(buffer.prefix(max(length, 0))) == value)
+    }
+
+    @Test func removeKeepsALinkedFilesPermissions() throws {
+        try makeClaudeFolder()
+        let real = home.appending(path: "dotfiles-CLAUDE.md")
+        try Data("# Mine\n".utf8).write(to: real)
+        try FileManager.default.createSymbolicLink(at: claude, withDestinationURL: real)
+        try AgentNote.add(to: claude)
+        try FileManager.default.setAttributes([.posixPermissions: 0o640], ofItemAtPath: real.path)
+        try AgentNote.remove(from: claude)
+        #expect(try FileManager.default.destinationOfSymbolicLink(atPath: claude.path) == real.path)
+        let permissions = try FileManager.default.attributesOfItem(atPath: real.path)[.posixPermissions] as? Int
+        #expect(permissions == 0o640)
+    }
 }

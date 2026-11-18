@@ -38,8 +38,8 @@ struct PullRequestStateTests {
         #expect(list.state(of: "dropped") == .closed)
         #expect(list.state(of: "retry") == .open)
         // Someone else's fork can use the same branch name.
-        #expect(list.state(of: "fork") == PullRequestState.none)
-        #expect(list.state(of: "never") == PullRequestState.none)
+        #expect(list.state(of: "fork") == PullRequestState.noPullRequest)
+        #expect(list.state(of: "never") == PullRequestState.noPullRequest)
     }
 
     @Test func aFullListCantSayABranchHasNone() throws {
@@ -58,7 +58,7 @@ struct PullRequestStateTests {
         #expect(PullRequestState.merged.phrase == "pull request merged")
         #expect(PullRequestState.closed.phrase == "pull request closed")
         #expect(PullRequestState.open.phrase == "pull request open")
-        #expect(PullRequestState.none.phrase == "no pull request")
+        #expect(PullRequestState.noPullRequest.phrase == "no pull request")
         #expect(PullRequestState.unknown.phrase == nil)
     }
 
@@ -79,8 +79,42 @@ struct PullRequestStateTests {
             }
         )
         #expect(await asked.slugs.sorted() == ["acme/blog", "acme/shop"])
-        #expect(states == ["/w/a": .merged, "/w/b": PullRequestState.none, "/w/c": .unknown])
+        #expect(states == ["/w/a": .merged, "/w/b": PullRequestState.noPullRequest, "/w/c": .unknown])
     }
+
+    @Test func asksAFewRepositoriesAtATime() async {
+        let worktrees = (0..<10).map { "/w/\($0)" }
+        let tracker = InFlight()
+        let states = await PullRequestLookup.states(
+            of: worktrees, branch: { _ in "main" }, remoteURL: { "https://github.com/acme/repo\($0.dropFirst(3))" },
+            ask: { _ in
+                await tracker.start()
+                try? await Task.sleep(for: .milliseconds(50))
+                await tracker.finish()
+                return Data("[]".utf8)
+            }
+        )
+        #expect(states.count == 10)
+        #expect(await tracker.peak <= PullRequestLookup.concurrency)
+        #expect(await tracker.peak > 1)
+    }
+
+    @Test func keepsNoneOnTheWireForNoPullRequest() throws {
+        #expect(PullRequestState.noPullRequest.rawValue == "none")
+        let encoded = try JSONEncoder().encode([PullRequestState.noPullRequest])
+        #expect(String(bytes: encoded, encoding: .utf8) == #"["none"]"#)
+        #expect(try JSONDecoder().decode([PullRequestState].self, from: encoded) == [.noPullRequest])
+    }
+}
+
+private actor InFlight {
+    private var now = 0
+    private(set) var peak = 0
+    func start() {
+        now += 1
+        peak = max(peak, now)
+    }
+    func finish() { now -= 1 }
 }
 
 private actor Asked {

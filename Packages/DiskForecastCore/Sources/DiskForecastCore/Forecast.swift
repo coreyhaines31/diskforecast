@@ -52,7 +52,7 @@ public enum Forecast {
         /// Changing by less than 100 MB on a typical day.
         case steady
         case gaining(bytesPerDay: Double)
-        /// Free space went up, but mostly in one day, like after a cleanup. Not a pace to plan on.
+        /// Free space went up, but mostly in one jump of gigabytes. Not a pace to plan on.
         case cleared(bytes: Int64)
         /// Free space goes up and down by gigabytes from day to day, far more than it moves overall,
         /// so the typical day says nothing about where it's heading.
@@ -105,15 +105,19 @@ public enum Forecast {
         return sizes[sizes.count / 2]
     }
 
-    /// The biggest rise between two readings in the window, when it's more than all the other
-    /// rises put together: free space came back in one go, not day by day.
+    /// A rise smaller than this is ordinary use, not a one-time jump.
+    static let minimumJumpBytes: Int64 = 5_000_000_000
+
+    /// The biggest rise between two readings in the window, when it's at least `minimumJumpBytes` and
+    /// more than all the other rises put together: free space came back in one go, not day by day.
     static func oneDayRise(history: UsageHistory, now: Date, calendar: Calendar) -> Int64? {
         guard let start = calendar.date(byAdding: .day, value: -windowDays, to: calendar.startOfDay(for: now)) else {
             return nil
         }
         let recent = history.samples.filter { $0.day >= start }
         let rises = zip(recent, recent.dropFirst()).map { $1.freeBytes - $0.freeBytes }.filter { $0 > 0 }
-        guard let biggest = rises.max(), biggest > rises.reduce(0, +) - biggest else { return nil }
+        guard let biggest = rises.max(), biggest >= minimumJumpBytes, biggest > rises.reduce(0, +) - biggest
+        else { return nil }
         return biggest
     }
 

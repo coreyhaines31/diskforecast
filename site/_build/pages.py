@@ -1539,6 +1539,7 @@ COMMAND_LINE = {
         <h2>The commands</h2>
         {{TABLE:commands}}
         <p>Add <code>--json</code> to any command for output a script or agent can parse. If Disk Forecast isn't running, the command opens it in the background first.</p>
+        <p><code>--need</code> takes a size like <code>5GB</code>, <code>500MB</code>, or <code>1.5TB</code>. The command exits 0 when it worked, 1 for an error, and 3 when <code>status --need</code> finds there isn't room, so an agent can check before a large download, install, or build.</p>
 <pre><code>$ diskforecast status
 142 GB free of 494 GB (29% free)
 Full in ~30 days · using 4.7 GB a day
@@ -1577,6 +1578,7 @@ tmutil listlocalsnapshots /       # local Time Machine snapshots</code></pre>
     """,
     "tables": {"commands": {"head": ["Command", "What it does"], "min_width": 640, "rows": [
         ("<code>diskforecast status</code>", "Free space, the forecast, a low-space warning, and how much is safe to clear"),
+        ("<code>diskforecast status --need 5GB</code>", "Whether 5 GB fits and still leaves 20 GB free, and how much to clear if it doesn't"),
         ("<code>diskforecast changes --days 30</code>", "Which folders grew or shrank, down to the subfolder, and how much changed outside your home folder"),
         ("<code>diskforecast cleanup</code>", "What you can reclaim, grouped into Safe to clear and Worth a look, with an ID and explanation for each"),
         ("<code>diskforecast trash &lt;id or path&gt;</code>", "Shows what would move to the Trash; add <code>--yes</code> to move it"),
