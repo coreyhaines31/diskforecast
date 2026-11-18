@@ -48,7 +48,7 @@ It's a free alternative to DiskBuddy, DaisyDisk, and CleanMyMac for the job they
 - **Warns you before the disk fills.** A notification when the forecast says full within a week, or space runs low, naming what grew most this week and how much emptying the Trash would get back. At most once a day, and you can turn it off in Settings.
 - **Works from Terminal.** The [`diskforecast` command](#command-line) gives you, or an AI agent, the forecast, what changed, and the cleanup list.
 - **Counts accurately.** APFS clones and hard links are counted once, so totals match what the disk really spends.
-- **Zero telemetry.** Checking for updates is the only time it goes online.
+- **Zero telemetry.** Checking for updates is the only time it goes online, unless you turn on worktree pull requests (below).
 
 ## Install
 
@@ -172,7 +172,7 @@ The extension runs the `diskforecast` tool from your installed Disk Forecast app
 ## Privacy and safety
 
 - Disk Forecast reads file sizes and names, not what's in your documents. To explain a few cleanup items it reads small records apps keep, like which project an editor's data belongs to or, when WhatsApp or Messages media is listed, the names of the chats it came from (a chat with no name is just "An unnamed chat"). Those names appear in the cleanup list, so if you use the `diskforecast` CLI or the Claude extension, your assistant sees them too.
-- Nothing about your disk is sent anywhere. The only network request is the update check, which fetches a small feed from this repo's GitHub releases. You can turn automatic checks off in Settings.
+- Nothing about your disk is sent anywhere. The only network request is the update check, which fetches a small feed from this repo's GitHub releases. You can turn automatic checks off in Settings. If you turn on **Show worktrees' pull requests** in Settings › Scanning (it's off by default), Disk Forecast also runs your own `gh` command to ask GitHub for the pull requests of each repository your git worktrees come from; it sends the repository names, never your branch names or files.
 - Files go to the Trash unless you choose to delete them, and every deletion asks first. It refuses anything outside your home folder, your home folder itself, and the standard folders in it (like Documents or Library).
 - It never scans cloud drives (iCloud Drive, Dropbox, Google Drive), so it never downloads cloud-only files.
 - Its history lives in `~/Library/Application Support/Disk Forecast/`.
