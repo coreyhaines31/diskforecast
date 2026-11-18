@@ -79,6 +79,8 @@ struct FolderSnapshotTests {
         #expect(store.baseline(since: sinceTwoWeeks)?.freeBytes == 2)
         #expect(store.baseline(since: sinceFiveDays)?.freeBytes == 3)
         #expect(store.baseline(since: today) == nil)
+        #expect(store.snapshots(since: sinceTwoWeeks).map(\.freeBytes) == [2, 3, 5])
+        #expect(store.snapshots(since: sinceFiveDays).map(\.freeBytes) == [3, 5])
         let files = try FileManager.default.contentsOfDirectory(atPath: folder.path)
         #expect(files.count == 3)
     }
