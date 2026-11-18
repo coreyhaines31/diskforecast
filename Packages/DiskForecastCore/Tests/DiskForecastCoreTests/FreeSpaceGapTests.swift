@@ -72,6 +72,16 @@ struct FreeSpaceGapTests {
             + "That leaves 70 GB freed outside your home folder"))
     }
 
+    @Test func staysQuietAgainstASnapshotThatCannotSayWhatItMissed() throws {
+        // Saved before unmeasured folders were recorded: Photos and Messages showing up for the first
+        // time read as 109 GB of growth, which would be reported as 157 GB freed somewhere else.
+        let json = #"{"day":"2026-11-10T08:00:00Z","folders":{},"freeBytes":12000000000,"homeBytes":500000000000}"#
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let old = try decoder.decode(FolderSnapshot.self, from: Data(json.utf8))
+        #expect(FreeSpaceGap(from: old, to: snapshot(home: 592, free: 76)) == nil)
+    }
+
     @Test func oldSnapshotsWithoutSystemDataStillDecode() throws {
         let json = #"{"day":"2026-10-12T07:00:00Z","folders":{},"freeBytes":5,"homeBytes":9}"#
         let decoder = JSONDecoder()
