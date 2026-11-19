@@ -497,3 +497,6 @@ section.tight { padding: 56px 0; }
   .mk-facts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .menus .menuwrap { width: 100%; max-width: 300px; }
 }
+
+/* Nine sibling apps: three even rows on wide screens instead of an orphaned card */
+@media (min-width: 881px) { #apps .bx-apps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
