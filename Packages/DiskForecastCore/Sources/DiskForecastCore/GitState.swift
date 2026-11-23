@@ -128,9 +128,12 @@ public struct GitState: Sendable, Equatable {
         process.standardOutput = pipe
         process.standardError = FileHandle.nullDevice
         process.standardInput = FileHandle.nullDevice
-        guard (try? process.run()) != nil else { return nil }
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        process.waitUntilExit()
-        return (process.terminationStatus, String(bytes: data, encoding: .utf8) ?? "")
+        // A checkout on a drive that stopped answering would otherwise hold up the whole list.
+        guard let result = try? TimedProcess.run(process, output: pipe, timeout: timeout), !result.timedOut
+        else { return nil }
+        return (result.status, String(bytes: result.data, encoding: .utf8) ?? "")
     }
+
+    /// How long one git call may take.
+    static let timeout: TimeInterval = 10
 }
