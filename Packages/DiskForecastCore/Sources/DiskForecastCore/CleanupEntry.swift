@@ -14,10 +14,12 @@ public struct CleanupEntry: Sendable, Hashable, Identifiable {
     public let pullRequest: PullRequestState?
     /// For a folder stored twice, the copy it matched. It's compared again, every file, before it goes.
     public let original: String?
+    /// For a build folder listed as rebuildable, its kind. It's checked again before it goes.
+    public let rebuildable: ArtifactKind?
 
     public init(
         path: String, bytes: Int64, detail: String? = nil, name: String? = nil, companions: [String] = [],
-        pullRequest: PullRequestState? = nil, original: String? = nil
+        pullRequest: PullRequestState? = nil, original: String? = nil, rebuildable: ArtifactKind? = nil
     ) {
         self.path = path
         self.bytes = bytes
@@ -26,5 +28,6 @@ public struct CleanupEntry: Sendable, Hashable, Identifiable {
         self.companions = companions
         self.pullRequest = pullRequest
         self.original = original
+        self.rebuildable = rebuildable
     }
 }

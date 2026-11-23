@@ -71,6 +71,12 @@ public struct CleanupCatalog: Sendable {
     let gitState: @Sendable (String) -> GitState?
     /// A worktree's pull request, by path. Nil when it wasn't looked up.
     let pullRequest: @Sendable (String) -> PullRequestState?
+    /// Why a build folder isn't simply rebuildable, given the checkouts the scan found in it.
+    /// Swappable for tests.
+    let buildFolderHold: @Sendable (ArtifactFinding, [String]) -> BuildFolderHold?
+    /// The build folders of the scan being listed that are held, by path. Worked out once per
+    /// list, since several rules ask.
+    var heldBuildFolders: [String: BuildFolderHold] = [:]
 
     /// Entries smaller than this aren't worth listing.
     static let minimumEntryBytes: Int64 = 1_000_000
@@ -86,7 +92,10 @@ public struct CleanupCatalog: Sendable {
         home: String, staleAfterDays: Int = 30, now: Date = Date(),
         agentScratch: ScanResult? = nil, userTemp: ScanResult? = nil,
         gitState: @escaping @Sendable (String) -> GitState? = GitState.read(at:),
-        pullRequest: @escaping @Sendable (String) -> PullRequestState? = { _ in nil }
+        pullRequest: @escaping @Sendable (String) -> PullRequestState? = { _ in nil },
+        buildFolderHold: @escaping @Sendable (ArtifactFinding, [String]) -> BuildFolderHold? = {
+            BuildFolderHold.check(folder: $0.path, kind: $0.kind, checkouts: $1)
+        }
     ) {
         self.home = home.hasSuffix("/") ? String(home.dropLast()) : home
         self.staleAfterDays = staleAfterDays
@@ -95,11 +104,18 @@ public struct CleanupCatalog: Sendable {
         self.userTemp = userTemp
         self.gitState = gitState
         self.pullRequest = pullRequest
+        self.buildFolderHold = buildFolderHold
     }
 
     var staleCutoff: Date { now.addingTimeInterval(-Double(staleAfterDays) * 86_400) }
 
     public func items(from scan: ScanResult) -> [CleanupItem] {
+        var catalog = self
+        catalog.heldBuildFolders = holds(in: scan)
+        return catalog.listing(scan)
+    }
+
+    private func listing(_ scan: ScanResult) -> [CleanupItem] {
         var claimed: [String] = []
         var items: [CleanupItem] = []
         for rule in rules {
@@ -114,7 +130,8 @@ public struct CleanupCatalog: Sendable {
                 bytes += companions.reduce(0) { $0 + (size(of: $1, in: scan) ?? 0) }
                 return CleanupEntry(
                     path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name,
-                    companions: companions, pullRequest: candidate.pullRequest, original: candidate.original
+                    companions: companions, pullRequest: candidate.pullRequest, original: candidate.original,
+                    rebuildable: candidate.rebuildable
                 )
             }
             .filter { $0.bytes >= rule.minimumBytes }
@@ -142,6 +159,7 @@ public struct CleanupCatalog: Sendable {
         var companions: [String] = []
         var pullRequest: PullRequestState?
         var original: String?
+        var rebuildable: ArtifactKind?
         /// What removing it frees, when that isn't its size in the scan.
         var bytes: Int64?
     }
@@ -163,16 +181,6 @@ public struct CleanupCatalog: Sendable {
         guard scan.tree.node(at: folder) != nil else { return [] }
         let names = (try? FileManager.default.contentsOfDirectory(atPath: folder)) ?? []
         return names.filter { !excluded($0) && $0 != ".DS_Store" }.map { Candidate(path: folder + "/" + $0) }
-    }
-
-    func artifacts(_ scan: ScanResult, stale: Bool) -> [Candidate] {
-        scan.artifacts
-            .filter { ($0.projectModified < staleCutoff) == stale }
-            .map { artifact in
-                let project = (artifact.projectPath as NSString).lastPathComponent
-                let age = Age.phrase(from: artifact.projectModified, to: now)
-                return Candidate(path: artifact.path, detail: "\(project) · last changed \(age)")
-            }
     }
 
     /// Cache folders that apps built on web tech (VS Code, Cursor, Slack, Figma) keep next to their
