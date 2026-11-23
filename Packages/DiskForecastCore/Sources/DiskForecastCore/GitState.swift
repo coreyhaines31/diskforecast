@@ -64,6 +64,48 @@ public struct GitState: Sendable, Equatable {
         return run(["remote", "get-url", name], in: path)
     }
 
+    /// The commit a checkout is at.
+    static func head(at path: String) -> String? {
+        run(["rev-parse", "--verify", "HEAD"], in: path)
+    }
+
+    /// Whether a folder is in a git checkout: it or a folder above it holds a `.git`. Doesn't
+    /// run git, so it's cheap to ask for every project.
+    static func isInsideRepository(_ path: String) -> Bool {
+        var current = path
+        var info = stat()
+        while current.count > 1 {
+            if lstat(current + "/.git", &info) == 0 { return true }
+            current = (current as NSString).deletingLastPathComponent
+        }
+        return false
+    }
+
+    /// How a checkout's repository treats one of its folders.
+    enum Standing: Equatable {
+        /// Nothing in it is tracked, and git ignores the rest.
+        case ignored
+        /// Some of its files are tracked.
+        case tracked
+        /// Nothing in it is tracked, but git doesn't ignore it.
+        case untracked
+    }
+
+    /// Asks how git treats the folder `name` directly inside `project`. Nil when git couldn't say.
+    static func standing(of name: String, in project: String) -> Standing? {
+        // Tracked files come back tagged with a letter and files git doesn't ignore with "?";
+        // ignored ones aren't listed. An untracked folder is one line, not one per file, and isn't
+        // listed when everything in it is ignored, as in a cache that brings its own .gitignore.
+        let arguments = [
+            "ls-files", "-z", "-t", "--cached", "--others", "--exclude-standard", "--directory",
+            "--no-empty-directory", "--", ":(literal)" + name
+        ]
+        guard let output = git(arguments, in: project), output.status == 0 else { return nil }
+        let entries = output.text.split(separator: "\0")
+        if entries.isEmpty { return .ignored }
+        return entries.contains { !$0.hasPrefix("?") } ? .tracked : .untracked
+    }
+
     /// Whether the repository's own config (not the user's) names filter programs.
     static func namesItsOwnFilters(_ path: String) -> Bool {
         guard let output = git(["config", "--show-scope", "--includes", "--get-regexp", "^filter\\."], in: path)
