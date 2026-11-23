@@ -153,6 +153,10 @@ public struct ScanResult: Sendable {
     public let diskImages: [FileFinding]
     public let artifacts: [ArtifactFinding]
     public let worktrees: [WorktreeFinding]
+    /// Folders inside a build folder that hold a `.git`: a dependency cloned from git, or a
+    /// checkout someone made there. Work in one exists nowhere else, so its build folder isn't
+    /// simply rebuildable.
+    public var nestedRepositories: [String] = []
     /// Folders macOS wouldn't let us read, usually because Full Disk Access is off.
     public let deniedCount: Int
     public let deniedSamples: [String]
