@@ -1,5 +1,6 @@
 import Darwin
 import Foundation
+import os
 
 /// Why a build folder isn't simply rebuildable: something in it exists nowhere else, or git
 /// doesn't treat it as a build folder at all. Learned from mattt/plonge.
@@ -45,8 +46,9 @@ public enum BuildFolderHold: Sendable, Equatable {
             if kind == .swiftBuild, isRestorablePackage(checkout, buildFolder: folder, project: project) { continue }
             return .holdsCheckout(String(checkout.dropFirst(folder.count + 1)))
         }
-        // Outside any repository git has no say, and nothing to protect.
-        guard GitState.isInsideRepository(project) else { return nil }
+        // Outside any repository git has no say, and nothing to protect. Without git installed
+        // there's no one to ask, and holding every build folder back would help nobody.
+        guard GitState.executable != nil, GitState.isInsideRepository(project) else { return nil }
         switch GitState.standing(of: (folder as NSString).lastPathComponent, in: project) {
         case .ignored: return nil
         case .tracked: return .tracked
@@ -61,17 +63,30 @@ public enum BuildFolderHold: Sendable, Equatable {
         check(folder: folder, kind: kind, checkouts: checkouts(in: folder, depth: recheckDepth))
     }
 
-    /// The folders at or under `folder`, down to `depth` levels, that hold a `.git`.
+    /// The folders at or under `folder`, down to `depth` levels, that hold a `.git`. Links aren't
+    /// followed: what they lead to isn't in the folder.
     static func checkouts(in folder: String, depth: Int) -> [String] {
-        var found: [String] = []
         var info = stat()
-        if lstat(folder + "/.git", &info) == 0 { found.append(folder) }
-        guard depth > 0, let names = try? FileManager.default.contentsOfDirectory(atPath: folder) else { return found }
-        for name in names where name != ".git" {
-            let child = folder + "/" + name
-            // Links aren't followed: what they lead to isn't in the folder.
-            guard lstat(child, &info) == 0, info.st_mode & S_IFMT == S_IFDIR else { continue }
-            found += checkouts(in: child, depth: depth - 1)
+        guard lstat(folder, &info) == 0, info.st_mode & S_IFMT == S_IFDIR else { return [] }
+        // The deepest level only needs the one name looked up, not the folder read.
+        guard depth > 0 else { return lstat(folder + "/.git", &info) == 0 ? [folder] : [] }
+        guard let directory = opendir(folder) else { return [] }
+        var found: [String] = []
+        var subfolders: [String] = []
+        // readdir says what each entry is, which saves asking about every file in a big folder.
+        while let entry = readdir(directory) {
+            let name = withUnsafeBytes(of: &entry.pointee.d_name) { bytes in
+                String(bytes: bytes.prefix(Int(entry.pointee.d_namlen)), encoding: .utf8) ?? ""
+            }
+            if name == ".git" {
+                found.append(folder)
+            } else if name != ".", name != "..", [DT_DIR, DT_UNKNOWN].contains(Int32(entry.pointee.d_type)) {
+                subfolders.append(name)
+            }
+        }
+        closedir(directory)
+        for name in subfolders {
+            found += checkouts(in: folder + "/" + name, depth: depth - 1)
         }
         return found
     }
@@ -99,12 +114,20 @@ extension Trasher {
     /// The build folders among `entries` that were listed as rebuildable and no longer are, and
     /// why each stays. The list can be hours old, and a checkout may have been cloned in since.
     func heldBuildFolders(in entries: [CleanupEntry]) -> [(path: String, reason: String)] {
-        entries.compactMap { entry in
-            // One that's refused anyway is reported as that.
-            guard let kind = entry.rebuildable, refusal(for: entry.path) == nil,
-                  let hold = BuildFolderHold.recheck(folder: entry.path, kind: kind)
-            else { return nil }
-            return (entry.path, "Left alone: it \(hold.sentence).")
+        // One that's refused anyway is reported as that.
+        let folders = entries.filter { $0.rebuildable != nil && refusal(for: $0.path) == nil }
+        // Each look reads a few levels of the folder and runs git once, so hundreds of them at
+        // once would otherwise be a long silence before anything moves.
+        let holds = OSAllocatedUnfairLock(initialState: [Int: BuildFolderHold]())
+        DispatchQueue.concurrentPerform(iterations: folders.count) { index in
+            guard let kind = folders[index].rebuildable,
+                  let hold = BuildFolderHold.recheck(folder: folders[index].path, kind: kind)
+            else { return }
+            holds.withLock { $0[index] = hold }
+        }
+        let held = holds.withLock { $0 }
+        return folders.indices.compactMap { index in
+            held[index].map { (folders[index].path, "Left alone: it \($0.sentence).") }
         }
     }
 }
