@@ -24,6 +24,15 @@ public enum BuildFolderHold: Sendable, Equatable {
         }
     }
 
+    /// The reason as the end of a sentence that starts "it".
+    var sentence: String {
+        switch self {
+        case .notIgnored: "isn't ignored by git"
+        case .unchecked: "couldn't be checked with git"
+        default: reason
+        }
+    }
+
     /// How deep the look before removing goes. Package managers put the checkouts they clone
     /// within a few folders of the top, and a full walk of every build folder would take minutes.
     static let recheckDepth = 4
@@ -83,6 +92,20 @@ public enum BuildFolderHold: Sendable, Equatable {
               let resolved = try? JSONDecoder().decode(ResolvedPackages.self, from: data)
         else { return [] }
         return Set(((resolved.pins ?? []) + (resolved.object?.pins ?? [])).compactMap(\.state.revision))
+    }
+}
+
+extension Trasher {
+    /// The build folders among `entries` that were listed as rebuildable and no longer are, and
+    /// why each stays. The list can be hours old, and a checkout may have been cloned in since.
+    func heldBuildFolders(in entries: [CleanupEntry]) -> [(path: String, reason: String)] {
+        entries.compactMap { entry in
+            // One that's refused anyway is reported as that.
+            guard let kind = entry.rebuildable, refusal(for: entry.path) == nil,
+                  let hold = BuildFolderHold.recheck(folder: entry.path, kind: kind)
+            else { return nil }
+            return (entry.path, "Left alone: it \(hold.sentence).")
+        }
     }
 }
 

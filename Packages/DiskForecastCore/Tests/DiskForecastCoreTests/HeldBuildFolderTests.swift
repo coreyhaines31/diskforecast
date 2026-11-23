@@ -55,4 +55,26 @@ struct HeldBuildFolderTests {
         #expect(items["active-builds"] == nil)
         #expect(items["held-builds"]?.entries.map(\.detail) == ["app · has files git tracks"])
     }
+
+    @Test func leavesABuildFolderThatGainedACheckoutSinceItWasListed() throws {
+        try write("code/api/.venv/lib/site.py", bytes: 10)
+        try write("code/web/node_modules/pkg/index.js", bytes: 10)
+        let venv = CleanupEntry(path: home.path + "/code/api/.venv", bytes: 10, rebuildable: .pythonVenv)
+        let modules = CleanupEntry(path: home.path + "/code/web/node_modules", bytes: 10, rebuildable: .nodeModules)
+        // Cloned in after the list was made.
+        try write("code/api/.venv/src/forked-lib/.git/HEAD", bytes: 10)
+        let report = Trasher(home: home.path).trash([venv, modules], openFiles: OpenFiles(processes: []))
+        #expect(report.moved == [modules.path])
+        #expect(report.failed.map(\.path) == [venv.path])
+        #expect(report.failed.map(\.reason) == ["Left alone: it holds a git checkout at src/forked-lib."])
+        #expect(FileManager.default.fileExists(atPath: venv.path + "/src/forked-lib/.git/HEAD"))
+    }
+
+    @Test func removesAHeldBuildFolderTheUserPicked() throws {
+        try write("code/api/.venv/src/forked-lib/.git/HEAD", bytes: 10)
+        // Listed under Worth a look with its reason, so it isn't marked rebuildable.
+        let venv = CleanupEntry(path: home.path + "/code/api/.venv", bytes: 10)
+        let report = Trasher(home: home.path).trash([venv], openFiles: OpenFiles(processes: []))
+        #expect(report.moved == [venv.path])
+    }
 }
