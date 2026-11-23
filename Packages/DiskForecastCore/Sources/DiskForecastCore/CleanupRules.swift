@@ -248,6 +248,13 @@ extension CleanupCatalog {
                 group: .worthALook
             ) { catalog, scan in catalog.artifacts(scan, stale: false) },
             CleanupRule(
+                id: "held-builds", title: "Build folders with work in them",
+                explanation: "Folders named like build or package folders that hold something a rebuild "
+                    + "wouldn't bring back: a git checkout with its own history, files git tracks, or files git "
+                    + "doesn't ignore. Each says which. Look inside before removing one.",
+                group: .worthALook
+            ) { catalog, scan in catalog.heldArtifacts(scan) },
+            CleanupRule(
                 id: "git-worktrees", title: "Git worktrees",
                 explanation: "Extra checkouts of a repository, often left behind by coding agents like Claude Code, "
                     + "Codex, and Conductor. Each shows changes and commits that exist only there; files git "

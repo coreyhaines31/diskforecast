@@ -70,6 +70,7 @@ public final class DiskScanner: @unchecked Sendable {
     private var diskImages: [FileFinding] = []
     private var artifacts: [ArtifactFinding] = []
     private var worktrees: [WorktreeFinding] = []
+    private var nestedRepositories: [String] = []
     private var deniedCount = 0
     private var deniedSamples: [String] = []
     private var skippedPaths: [String] = []
@@ -146,6 +147,7 @@ public final class DiskScanner: @unchecked Sendable {
             diskImages: diskImages.sorted { $0.bytes > $1.bytes },
             artifacts: artifacts.sorted { $0.path < $1.path },
             worktrees: worktrees.sorted { $0.path < $1.path },
+            nestedRepositories: nestedRepositories.sorted(),
             deniedCount: deniedCount,
             deniedSamples: deniedSamples,
             skippedPaths: skippedPaths.sorted(),
@@ -219,6 +221,7 @@ public final class DiskScanner: @unchecked Sendable {
         largeFiles.append(contentsOf: listing.large)
         diskImages.append(contentsOf: listing.images)
         if let worktree = listing.worktree { worktrees.append(worktree) }
+        if listing.holdsRepository { nestedRepositories.append(job.path) }
         skippedPaths.append(contentsOf: listing.skipped)
         if cancelled { return }
         var artifactNodes: [String: Int32] = [:]
@@ -260,6 +263,7 @@ extension DiskScanner {
         var images: [FileFinding] = []
         var artifacts: [(kind: ArtifactKind, projectModified: Date)] = []
         var worktree: WorktreeFinding?
+        var holdsRepository = false
     }
 
     fileprivate func list(_ job: Job, reader: BulkReader) -> Listing {
@@ -327,6 +331,8 @@ extension DiskScanner {
            let gitDirectory = WorktreeFinding.gitDirectory(fromGitFile: contents, checkout: job.path) {
             listing.worktree = WorktreeFinding(path: job.path, gitDirectory: gitDirectory, modified: newest)
         }
+        // A clone's .git is a folder; a submodule's or a worktree's is a file.
+        listing.holdsRepository = job.insideArtifact && (directories.contains(".git") || files.contains(".git"))
         let found = job.insideArtifact ? [] : ArtifactKind.detect(directories: directories, files: files)
         listing.artifacts = found.map { ($0, newest) }
         return Set(found.map(\.folderName))

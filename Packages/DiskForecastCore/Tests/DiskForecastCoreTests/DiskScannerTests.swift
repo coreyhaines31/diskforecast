@@ -88,6 +88,20 @@ struct DiskScannerTests {
         #expect(result.size(of: nodeModules) >= 10_000)
     }
 
+    @Test func notesRepositoriesInsideBuildFolders() async throws {
+        try write("py/pyproject.toml", bytes: 10)
+        try write("py/.venv/src/forked-lib/.git/HEAD", bytes: 10)
+        try write("py/.venv/lib/site.py", bytes: 5_000)
+        try write("web/package.json", bytes: 10)
+        // A submodule's or a worktree's .git is a file.
+        try write("web/node_modules/linked/.git", bytes: 10)
+        try write("plain/.git/HEAD", bytes: 10)
+        let result = await scan()
+        #expect(result.nestedRepositories == [
+            rootPath + "/py/.venv/src/forked-lib", rootPath + "/web/node_modules/linked"
+        ])
+    }
+
     @Test func findsToolCachesBesideTheirProjectFiles() async throws {
         try write("web/package.json", bytes: 10)
         try write("web/.turbo/cache/blob", bytes: 5_000)
