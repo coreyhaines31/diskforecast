@@ -52,6 +52,8 @@ enum TrashFlow {
     private static func dispose(_ entries: [CleanupEntry], permanently: Bool, scan: ScanModel, disk: DiskStatus) {
         let trasher = Trasher(home: scan.home)
         scan.activity = activity(entries, permanently: permanently)
+        disk.refresh()
+        let before = disk.freeBytes
         Task {
             let report = await Task.detached(priority: .userInitiated) {
                 trasher.trash(entries, permanently: permanently)
@@ -61,7 +63,10 @@ enum TrashFlow {
             scan.remove(Set(report.moved))
             disk.refresh()
             scan.measureTrash()
-            showResult(report, of: entries, scan: scan, disk: disk)
+            // Only deleting frees anything; what moved to the Trash still takes its space.
+            let freed = permanently && !report.moved.isEmpty
+                ? FreedSpace(estimate: report.movedBytes, before: before, after: disk.freeBytes) : nil
+            showResult(report, freed: freed, of: entries, scan: scan, disk: disk)
         }
     }
 
@@ -76,10 +81,10 @@ enum TrashFlow {
     }
 
     private static func showResult(
-        _ report: Trasher.Report, of entries: [CleanupEntry], scan: ScanModel, disk: DiskStatus
+        _ report: Trasher.Report, freed: FreedSpace?, of entries: [CleanupEntry], scan: ScanModel, disk: DiskStatus
     ) {
         let done = NSAlert()
-        (done.messageText, done.informativeText) = resultText(report)
+        (done.messageText, done.informativeText) = resultText(report, freed: freed)
         var buttons: [String]
         if report.diskFull {
             buttons = ["Delete Instead", "Empty Trash…", "Done"]
@@ -120,13 +125,15 @@ enum TrashFlow {
         }
     }
 
-    private static func resultText(_ report: Trasher.Report) -> (title: String, details: String) {
+    private static func resultText(
+        _ report: Trasher.Report, freed: FreedSpace?
+    ) -> (title: String, details: String) {
         let amount = Bytes.format(report.movedBytes)
         let title: String
         var details: [String] = []
         if report.deleted {
             title = report.moved.isEmpty ? "Nothing was deleted" : "Deleted \(amount)"
-            if !report.moved.isEmpty { details.append("The space is free now.") }
+            if !report.moved.isEmpty { details.append(freed?.summary ?? "The space is free now.") }
         } else if report.diskFull {
             title = report.moved.isEmpty
                 ? "Your disk is too full to use the Trash" : "Moved \(amount), then the disk filled up"
@@ -265,15 +272,16 @@ extension TrashFlow {
             TrashHistory.clear()
             disk.refresh()
             scan.measureTrash()
-            let freed = max(0, disk.freeBytes - before)
-            if report?.moved.isEmpty == false { onEmptied?(held ?? freed) }
+            // What stayed in the Trash still counts in `held`, so the comparison only runs when it all went.
+            let estimate = report?.failed.isEmpty == true ? held : nil
+            let freed = FreedSpace(estimate: estimate, before: before, after: disk.freeBytes)
+            if report?.moved.isEmpty == false { onEmptied?(held ?? freed.gained) }
             let done = NSAlert()
             done.messageText = report?.moved.isEmpty == false ? "Emptied the Trash" : "The Trash wasn't emptied"
-            var details = freed > 0 ? ["\(Bytes.format(freed)) is free again."] : []
+            var details = freed.gained > 0 || freed.fellShort ? [freed.summary] : []
             if let report, !report.failed.isEmpty {
-                details.append(
-                    "Left \(report.failed.count) in the Trash:\n" + report.failureLines().joined(separator: "\n")
-                )
+                let lines = report.failureLines().joined(separator: "\n")
+                details.append("Left \(report.failed.count) in the Trash:\n" + lines)
             }
             done.informativeText = details.joined(separator: "\n\n")
             done.runModal()
