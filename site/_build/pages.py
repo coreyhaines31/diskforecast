@@ -431,6 +431,81 @@ PAGES = [
             """},
         ],
     },
+    # ------------------------------------------------------------------ plonge
+    # No search demand yet ("plonge" is weeks old); the page is for people who arrive from the tool's own
+    # audience. Facts, checked 2026-11-23: github.com/mattt/plonge README, docs/rules.md, and the GitHub API
+    # (MIT, Go, 316 stars, first commit 2026-11-07, macOS and Linux, Homebrew tap mattt/tap).
+    {
+        "slug": "plonge",
+        "new_rows": {"Command line for scripts and AI agents": "Yes, it's a command-line tool"},
+        "competitor": "plonge",
+        "checked": "November 2026",
+        "title": "plonge cache cleaner, compared with a free Mac app",
+        "description": "plonge is a free command-line tool that deletes developer caches safely. Disk Forecast is a free menu bar app that warns weeks before your disk fills.",
+        "eyebrow": "plonge alternative",
+        "h1": "plonge clears developer caches from Terminal. Disk Forecast <em>tells you when you'll need to.</em>",
+        "lede": "plonge, by Mattt, is an open-source command-line tool for clearing build folders and package caches after a few weeks of coding agents and git worktrees. Disk Forecast overlaps with its build-folder cleanup from the menu bar, and adds the part plonge doesn't do: telling you when you'll run out.",
+        "tldr": "Pick plonge if you want one command, on macOS or Linux, that you or your coding agent can run to delete developer caches, with strict git checks before anything goes. Pick Disk Forecast if you want a Mac app that counts down to a full disk, explains everything taking space (not only developer files), and sends cleanups to the Trash. Both are free, and they work side by side.",
+        "card_title": "plonge",
+        "card_blurb": "The careful command for clearing developer caches.",
+        "cta": "Know before it's full.",
+        "faqs": [
+            ("What is plonge?", "A command-line tool by Mattt, written in Go and licensed under MIT. plonge scan lists build folders like node_modules, .build, DerivedData, target, and .venv with their size, project, and last activity. plonge clean deletes the ones in quiet projects, and plonge clean --global runs each package manager's own cleanup."),
+            ("Is plonge safe?", "It's one of the most careful tools of its kind. It deletes a build folder only if git ignores it, it holds no tracked files, no running process is using it, and it holds no git repository of its own. Without --apply it only lists what it would delete. What it deletes is gone, though; nothing goes to the Trash."),
+            ("How do I install plonge?", "With Homebrew: brew install mattt/tap/plonge. It also installs through mise or go install, and its releases page has builds for macOS and Linux."),
+            ("Does plonge work with Claude Code?", "Yes. plonge mcp serves its scan, clean, and disk commands to coding agents, it ships a skill file, and plonge disk --warn-below can run as a session hook. Disk Forecast has its own diskforecast command and a Claude extension."),
+            ("Is Disk Forecast free?", "Yes, at home or at work, with no account. The source is on GitHub and the app collects no telemetry."),
+        ],
+        "sections": [
+            {"id": "why", "html": """
+        <h2>What plonge does well</h2>
+        <p>Its README starts from a real moment: the disk is full, you need space now, and that's a bad time to delete folders by hand. The folder that looks disposable, it says, “actually had work that hadn't been pushed anywhere yet.”</p>
+        <ul>
+          <li><code>plonge scan</code> lists each build folder with its size, its project, and when the project was last active.</li>
+          <li><code>plonge clean</code> shows what it would delete, and <code>plonge clean --apply</code> deletes it. By default only projects that have been quiet for 24 hours qualify.</li>
+          <li><code>plonge clean --global</code> runs each package manager's own cleanup, like <code>uv cache prune</code> and <code>pnpm store prune</code>, and says which ones remove only stale data and which clear everything.</li>
+          <li><code>plonge mcp</code> lets a coding agent do all of it, with a preview the agent has to show you first.</li>
+        </ul>
+        <p>The checks are the point. A build folder goes only if git ignores it, nothing in it is tracked, no running process has it open, and it holds no git repository of its own, since a cloned dependency can carry commits nobody pushed. It runs on macOS and Linux, and it's open source under the MIT license.</p>
+        <h3>Where it stops</h3>
+        <p><strong>It runs when you run it.</strong> plonge can print a warning when a coding session starts, but nothing watches the disk in between or says how many days are left.</p>
+        <p><strong>Nothing goes to the Trash.</strong> What <code>--apply</code> removes is gone. Disk Forecast moves cleanups to the Trash unless you choose to delete right away, so you can change your mind.</p>
+        <p><strong>Developer files only.</strong> Chat attachments, AI models, old downloads, disk images, and System Data aren't its job. On many Macs, those are most of the disk.</p>
+        <p><strong>It finds projects through mise.</strong> By default plonge only scans projects where mise has loaded a config file. Any other project has to be named with <code>--root</code>.</p>
+            """},
+            {"id": "compare", "lit": True, "html": """
+        <h2>Disk Forecast vs plonge</h2>
+        <p>plonge facts come from its GitHub README and rule reference, as of November 2026.</p>
+        {{TABLE}}
+        <h3>What plonge does better</h3>
+        <p>Depth on package managers. It knows the cleanup command for mise, uv, pnpm, Go, Cargo, Gradle, Maven, NuGet, and more, and it documents what each one can and can't restore. It also runs on Linux, and several of its safety checks are ones Disk Forecast learned from.</p>
+        <h3>What Disk Forecast does better</h3>
+        <p>Telling you ahead of time, covering the whole disk, and keeping cleanups reversible. It lists git worktrees with what removing each one would lose, finds projects anywhere in your home folder without being told where to look, and never needs you to remember to run it.</p>
+            """, "table": [
+                ("Price", "Free", "Free"),
+                ("Where it runs", "Menu bar app", "Terminal, on macOS and Linux"),
+                ("Tells you when the disk will be full", "Yes, in the menu bar", "—"),
+                ("System Data broken down", "Every part it can measure, in plain English, with Apple's fixes", "—"),
+                ("Cleans up beyond developer files", "Yes: downloads, disk images, AI models, chat media", "—"),
+                ("Build folders in old projects", "Yes, after 30 days without changes", "Yes, after 24 hours without activity"),
+                ("Git worktrees left by coding agents", "Listed, with changes and unpushed commits", "Their build folders only"),
+                ("Runs each tool's own cleanup command", "For Docker and Xcode simulators", "Yes, for about 20 tools"),
+                ("Deletes go to the Trash", "By default", "No, deleted permanently"),
+                ("Preview before deleting", "Every item listed and explained", "Yes, nothing is deleted without --apply"),
+                ("Finds projects", "Scans your home folder", "From mise's records, or --root"),
+                ("Source available", "Yes, on GitHub", "Yes, MIT"),
+            ]},
+            {"id": "switch", "html": """
+        <h2>Using them together</h2>
+        <ol class="steps">
+          <li><b>Install Disk Forecast.</b> <code>brew install --cask coreyhaines31/tap/diskforecast</code>, or download the app from GitHub.</li>
+          <li><b>Let it watch.</b> Free space shows in the menu bar right away, and the forecast appears after 3 days of history.</li>
+          <li><b>See what your agents left.</b> Open Cleanup to find worktrees, build folders, and what coding agents downloaded, each with an explanation. It all goes to the Trash.</li>
+          <li><b>Keep plonge for package caches.</b> <code>plonge clean --global</code> prunes the shared caches of the tools you use. Read its dry run first.</li>
+        </ol>
+            """},
+        ],
+    },
     # ------------------------------------------------------------------ Disk Inventory X
     # Targets "disk inventory x" (300/mo US, KD 0), "disk inventory x alternative", and "disk inventory x apple silicon".
     # Facts, checked 2026-10-06: derlien.com and its release notes (1.3 on 2019-12-08; 1.2 "64 Bit (Intel only)";
@@ -573,6 +648,7 @@ HUB = {
         ("A free treemap and nothing else", "GrandPerspective"),
         ("Windows' WizTree, on a Mac", "WizTreeMac"),
         ("A cleaner and system stats in Terminal", "Mole"),
+        ("One careful command for developer caches, on Mac or Linux", "plonge"),
         ("Just to remove an app and its leftovers", "AppCleaner"),
         ("Free maintenance: rebuild indexes, hidden settings", "OnyX"),
         ("Duplicates, compression, and a Windows license too", "DiskBuddy"),
