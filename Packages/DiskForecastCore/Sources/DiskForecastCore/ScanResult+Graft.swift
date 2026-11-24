@@ -39,6 +39,7 @@ extension ScanResult {
             diskImages: (diskImages + branch.diskImages).sorted { $0.bytes > $1.bytes },
             artifacts: (artifacts + movedArtifacts).sorted { $0.path < $1.path },
             worktrees: (worktrees + branch.worktrees).sorted { $0.path < $1.path },
+            nestedRepositories: (nestedRepositories + branch.nestedRepositories).sorted(),
             deniedCount: deniedCount + branch.deniedCount,
             deniedSamples: deniedSamples + branch.deniedSamples,
             skippedPaths: skippedPaths.filter { $0 != branchRoot } + branch.skippedPaths,

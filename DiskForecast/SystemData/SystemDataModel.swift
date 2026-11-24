@@ -45,8 +45,13 @@ final class SystemDataModel {
             async let simulators = simulatorsRow()
             async let models = appleModelsRow()
             async let docker = dockerRow()
+            async let temp = tempRow()
+            async let swap = swapRow()
+            async let toolCaches = toolCachesRow()
             disk.refresh()
-            let loaded = await [purgeableRow(), snapshots, spotlight, simulators, models, docker]
+            let loaded = await [
+                purgeableRow(), snapshots, swap, spotlight, temp, simulators, models, docker, toolCaches
+            ]
             rows = loaded.compactMap { $0 }
             isLoading = false
         }
@@ -107,11 +112,24 @@ final class SystemDataModel {
         ) {
             var last = Shell.Output(status: 0, text: "")
             for date in dates {
-                last = await Shell.run("/usr/bin/tmutil", ["deletelocalsnapshots", date])
+                last = await Shell.run("/usr/bin/tmutil", ["deletelocalsnapshots", date], timeout: Shell.fixTimeout)
                 if !last.succeeded { break }
             }
             return last.succeeded ? last : await Shell.runAsAdministrator(command)
         }]
+        return row
+    }
+
+    private func swapRow() async -> SystemDataRow? {
+        let output = await Shell.run("/usr/sbin/sysctl", ["vm.swapusage"])
+        guard let swap = Swap.parse(output.text), swap.totalBytes >= 1_000_000_000 else { return nil }
+        var row = SystemDataRow(
+            id: "swap", title: "Swap",
+            explanation: "Memory macOS moved to disk because apps wanted more than this Mac has. It comes back on its "
+                + "own when those apps quit or the Mac restarts, so there's nothing to clear here.",
+            bytes: swap.totalBytes
+        )
+        row.details = ["\(Bytes.format(swap.usedBytes)) of it holds memory right now"]
         return row
     }
 
@@ -135,6 +153,18 @@ final class SystemDataModel {
             await Shell.runAsAdministrator("/usr/bin/mdutil -E /")
         }]
         return row
+    }
+
+    private func tempRow() async -> SystemDataRow? {
+        let result = await DiskScanner(options: .init(root: URL(filePath: UserTemp.folder))).scan()
+        guard result.tree.totalSize > 0 else { return nil }
+        return SystemDataRow(
+            id: "temp", title: "Temporary files",
+            explanation: "Your own temporary folder, where apps, scripts, and test runs keep files while they work. "
+                + "Many never remove theirs. Cleanup lists what nothing has changed in \(Int(UserTemp.idleDays)) days "
+                + "under Safe to clear.",
+            bytes: result.tree.totalSize
+        )
     }
 
     private func simulatorsRow() async -> SystemDataRow? {
@@ -163,7 +193,10 @@ final class SystemDataModel {
                 confirmation: "Deletes simulators whose runtime is no longer installed. They can't run anyway.",
                 command: "xcrun simctl delete unavailable"
             ) {
-                await Shell.run("/usr/bin/xcrun", ["simctl", "delete", "unavailable"], environment: environment)
+                await Shell.run(
+                    "/usr/bin/xcrun", ["simctl", "delete", "unavailable"], environment: environment,
+                    timeout: Shell.fixTimeout
+                )
             })
         }
         for runtime in runtimes where runtime.isDeletable {
@@ -174,7 +207,8 @@ final class SystemDataModel {
                 command: "xcrun simctl runtime delete \(runtime.identifier)"
             ) {
                 await Shell.run(
-                    "/usr/bin/xcrun", ["simctl", "runtime", "delete", runtime.identifier], environment: environment
+                    "/usr/bin/xcrun", ["simctl", "runtime", "delete", runtime.identifier], environment: environment,
+                    timeout: Shell.fixTimeout
                 )
             })
         }
@@ -233,7 +267,7 @@ final class SystemDataModel {
                 + "Running containers, volumes, and tagged images stay.",
             command: "docker system prune -f"
         ) {
-            await Shell.run(docker, ["system", "prune", "-f"])
+            await Shell.run(docker, ["system", "prune", "-f"], timeout: Shell.fixTimeout)
         }]
         return row
     }

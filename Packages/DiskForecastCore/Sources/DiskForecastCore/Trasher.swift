@@ -1,8 +1,8 @@
 import Foundation
 
 /// Moves things to the Trash, or deletes them when asked, and only things it's safe to remove:
-/// inside the home folder or a Claude Code session's temp files, never the home folder or one of
-/// its standard folders, and never through a link that leads out.
+/// inside the home folder, a Claude Code session's temp files, or what's in the user's own temp
+/// folder, never the home folder or one of its standard folders, and never through a link that leads out.
 public struct Trasher: Sendable {
     public enum Refusal: Error, Equatable, CustomStringConvertible {
         case outsideHome
@@ -68,10 +68,13 @@ public struct Trasher: Sendable {
     /// Claude Code's temp folder. The one place outside home it moves things from, and only
     /// whole sessions or what's inside them.
     let agentScratch: String
+    /// The user's own temp folder. Only what's inside it, never the folder itself.
+    let userTemp: String
 
-    public init(home: String, agentScratch: String = AgentScratch.folder) {
+    public init(home: String, agentScratch: String = AgentScratch.folder, userTemp: String = UserTemp.folder) {
         self.home = Self.resolved(home)
         self.agentScratch = Self.resolved(agentScratch)
+        self.userTemp = Self.resolved(userTemp)
     }
 
     /// Why a path can't go to the Trash, or nil when it can.
@@ -80,7 +83,9 @@ public struct Trasher: Sendable {
         let name = (path as NSString).lastPathComponent
         guard !name.isEmpty, name != ".", name != ".." else { return .protectedFolder }
         let full = parent + "/" + name
-        guard full.hasPrefix(home + "/") || isInScratchSession(full) else { return .outsideHome }
+        guard full.hasPrefix(home + "/") || isInScratchSession(full) || isInUserTemp(full) else {
+            return .outsideHome
+        }
         if parent == home && Self.protectedNames.contains(name) { return .protectedFolder }
         if full == home + "/Library/Caches" || full == home + "/Library/Logs" { return .protectedFolder }
         var info = stat()
@@ -94,6 +99,15 @@ public struct Trasher: Sendable {
         var info = stat()
         guard lstat(agentScratch, &info) == 0, info.st_uid == getuid() else { return false }
         return path.dropFirst(agentScratch.count + 1).split(separator: "/").count >= 2
+    }
+
+    private func isInUserTemp(_ path: String) -> Bool {
+        guard path.hasPrefix(userTemp + "/") else { return false }
+        // macOS keeps its own things there too. Those stay, whoever asks.
+        let top = path.dropFirst(userTemp.count + 1).split(separator: "/").first.map(String.init) ?? ""
+        guard !UserTemp.isSystemEntry(top) else { return false }
+        var info = stat()
+        return lstat(userTemp, &info) == 0 && info.st_uid == getuid()
     }
 
     /// Moves each path to the Trash. `sizes` reports what each one held, for the total. Deeper
@@ -160,15 +174,20 @@ public struct Trasher: Sendable {
     }
 
     /// Moves cleanup entries to the Trash, or deletes them, each with its companions. Companions go
-    /// only when their entry did.
+    /// only when their entry did. A folder stored twice goes only if it still matches its original
+    /// file for file, which can take a while for a big one. A build folder listed as rebuildable
+    /// goes only if it still is, and so does a worktree listed as finished.
     public func trash(
         _ entries: [CleanupEntry], permanently: Bool = false, openFiles: OpenFiles = .current()
     ) -> Report {
+        let unmatched = unmatchedCopies(in: entries) + heldBuildFolders(in: entries) + changedWorktrees(in: entries)
+        let entries = entries.filter { entry in !unmatched.contains { $0.path == entry.path } }
         let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
         let names = Dictionary(entries.map { ($0.path, $0.name) }) { first, _ in first }
         var report = dispose(
             entries.map(\.path), sizes: sizes, names: names, openFiles: openFiles, permanently: permanently
         )
+        report.failed = unmatched + report.failed
         let moved = Set(report.moved)
         let companions = dispose(
             entries.filter { moved.contains($0.path) }.flatMap(\.companions), sizes: [:], names: [:],

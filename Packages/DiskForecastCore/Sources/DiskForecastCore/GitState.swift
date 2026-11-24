@@ -11,17 +11,26 @@ public struct GitState: Sendable, Equatable {
     public let changed: Int?
     /// Commits in the checkout that no remote has. Nil when the repository has no remote.
     public let unpushed: Int?
+    /// Whether the commit it's at is already in a main branch of a remote, as last fetched. Nil
+    /// when the repository has no remote, git couldn't say, or the checkout isn't clean and pushed,
+    /// where it wouldn't change anything.
+    public let merged: Bool?
 
-    public init(changed: Int?, unpushed: Int?) {
+    public init(changed: Int?, unpushed: Int?, merged: Bool? = nil) {
         self.changed = changed
         self.unpushed = unpushed
+        self.merged = merged
     }
 
     /// Nothing would be lost by removing it.
     public var isClean: Bool { changed == 0 && unpushed == 0 }
 
-    /// "clean and pushed", "3 changed files, 2 commits not pushed".
+    /// Clean, and the work in it has already landed: nothing left to look at before removing it.
+    public var isFinished: Bool { isClean && merged == true }
+
+    /// "clean and pushed", "clean, pushed and merged", "3 changed files, 2 commits not pushed".
     public var summary: String {
+        if isFinished { return "clean, pushed and merged" }
         if isClean { return "clean and pushed" }
         var parts: [String] = []
         switch changed {
@@ -46,14 +55,126 @@ public struct GitState: Sendable, Equatable {
         var changed: Int?
         if !namesItsOwnFilters(path) {
             // Submodules are other checkouts with configs of their own.
-            changed = run(["status", "--porcelain=v1", "-z", "--no-renames", "--ignore-submodules=all"], in: path)
-                .map { $0.split(separator: "\0").count }
+            // Untracked files are asked for by name, since a person's own config can hide them.
+            let arguments = [
+                "status", "--porcelain=v1", "-z", "--no-renames", "--ignore-submodules=all", "--untracked-files=normal"
+            ]
+            changed = run(arguments, in: path).map { $0.split(separator: "\0").count }
         }
         var unpushed: Int?
+        var merged: Bool?
         if let remotes = run(["remote"], in: path), !remotes.isEmpty {
             unpushed = run(["rev-list", "--count", "HEAD", "--not", "--remotes"], in: path).flatMap { Int($0) }
+            // Only a clean, pushed checkout is ever called finished, so the rest aren't asked. And
+            // only the main branches are looked at: walking every remote branch took seconds per
+            // worktree in a repository with a couple of thousand of them.
+            if changed == 0, unpushed == 0 {
+                let patterns = mainBranches.sorted().map { "refs/remotes/*/" + $0 }
+                merged = run(["for-each-ref", "--contains", "HEAD", "--format=%(refname)"] + patterns, in: path)
+                    .map { $0.split(separator: "\n").contains { isMainBranch(remoteRef: String($0)) } }
+            }
         }
-        return GitState(changed: changed, unpushed: unpushed)
+        return GitState(changed: changed, unpushed: unpushed, merged: merged)
+    }
+
+    /// The branch names work lands on. A squash merge leaves the branch's own commits out of
+    /// these, so it reads as not merged, which errs toward keeping it.
+    static let mainBranches: Set<String> = ["HEAD", "main", "master", "development", "develop", "trunk"]
+
+    /// Whether `refs/remotes/<remote>/<branch>` is one of a remote's main branches. Only a plain
+    /// name counts: `feature/main` is somebody's branch, not where work lands.
+    static func isMainBranch(remoteRef: String) -> Bool {
+        let parts = remoteRef.split(separator: "/")
+        return parts.count == 4 && parts[0] == "refs" && parts[1] == "remotes"
+            && mainBranches.contains(String(parts[3]))
+    }
+
+    /// How many files or folders in the checkout git ignores that a rebuild wouldn't bring back,
+    /// like `.env.local` or a local database. Build and package folders aren't counted. Nil when
+    /// git couldn't say.
+    public static func ignoredKeepsakes(at path: String) -> Int? {
+        let arguments = ["ls-files", "-z", "--others", "--ignored", "--exclude-standard", "--directory"]
+        guard let output = git(arguments, in: path), output.status == 0 else { return nil }
+        return output.text.split(separator: "\0").filter { entry in
+            let trimmed = entry.hasSuffix("/") ? entry.dropLast() : entry
+            let name = trimmed.split(separator: "/").last.map(String.init) ?? ""
+            return !rebuildableNames.contains(name)
+        }.count
+    }
+
+    /// Names git usually ignores because something makes them again.
+    static let rebuildableNames: Set<String> = Set(ArtifactKind.allCases.map(\.folderName))
+        .union([".DS_Store", "tmp", "log", "logs", "coverage", ".cache", ".vercel", ".swiftpm", "xcuserdata"])
+
+    /// The URL of the checkout's `origin` remote, or its first remote when none is named that.
+    public static func remoteURL(at path: String) -> String? {
+        guard let remotes = run(["remote"], in: path)?.split(separator: "\n"), let first = remotes.first
+        else { return nil }
+        let name = remotes.contains("origin") ? "origin" : String(first)
+        return run(["remote", "get-url", name], in: path)
+    }
+
+    /// The commit a checkout is at.
+    static func head(at path: String) -> String? {
+        run(["rev-parse", "--verify", "HEAD"], in: path)
+    }
+
+    /// Whether a folder is in a git checkout: it or a folder above it holds a `.git`. Doesn't
+    /// run git, so it's cheap to ask for every project.
+    static func isInsideRepository(_ path: String) -> Bool {
+        var current = path
+        var info = stat()
+        while current.count > 1 {
+            if lstat(current + "/.git", &info) == 0 { return true }
+            current = (current as NSString).deletingLastPathComponent
+        }
+        return false
+    }
+
+    /// Whether git itself says a folder isn't in a repository, as it does for a `.git` that's
+    /// empty or half deleted. Any other failure, like a repository it won't trust, isn't that.
+    static func saysNotARepository(_ path: String) -> Bool {
+        guard let executable else { return false }
+        let process = Process()
+        process.executableURL = URL(filePath: executable)
+        process.arguments = ["-C", path, "rev-parse", "--git-dir"]
+        var environment = ProcessInfo.processInfo.environment
+        // The message is matched, so it has to be in English.
+        environment["LC_ALL"] = "C"
+        process.environment = environment
+        let pipe = Pipe()
+        process.standardError = pipe
+        process.standardOutput = FileHandle.nullDevice
+        process.standardInput = FileHandle.nullDevice
+        guard let result = try? TimedProcess.run(process, output: pipe, timeout: timeout), !result.timedOut
+        else { return false }
+        return result.status != 0 && (String(bytes: result.data, encoding: .utf8) ?? "")
+            .contains("not a git repository")
+    }
+
+    /// How a checkout's repository treats one of its folders.
+    enum Standing: Equatable {
+        /// Nothing in it is tracked, and git ignores the rest.
+        case ignored
+        /// Some of its files are tracked.
+        case tracked
+        /// Nothing in it is tracked, but git doesn't ignore it.
+        case untracked
+    }
+
+    /// Asks how git treats the folder `name` directly inside `project`. Nil when git couldn't say.
+    static func standing(of name: String, in project: String) -> Standing? {
+        // Tracked files come back tagged with a letter and files git doesn't ignore with "?";
+        // ignored ones aren't listed. An untracked folder is one line, not one per file, and isn't
+        // listed when everything in it is ignored, as in a cache that brings its own .gitignore.
+        let arguments = [
+            "ls-files", "-z", "-t", "--cached", "--others", "--exclude-standard", "--directory",
+            "--no-empty-directory", "--", ":(literal)" + name
+        ]
+        guard let output = git(arguments, in: project), output.status == 0 else { return nil }
+        let entries = output.text.split(separator: "\0")
+        if entries.isEmpty { return .ignored }
+        return entries.contains { !$0.hasPrefix("?") } ? .tracked : .untracked
     }
 
     /// Whether the repository's own config (not the user's) names filter programs.
@@ -120,9 +241,12 @@ public struct GitState: Sendable, Equatable {
         process.standardOutput = pipe
         process.standardError = FileHandle.nullDevice
         process.standardInput = FileHandle.nullDevice
-        guard (try? process.run()) != nil else { return nil }
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        process.waitUntilExit()
-        return (process.terminationStatus, String(bytes: data, encoding: .utf8) ?? "")
+        // A checkout on a drive that stopped answering would otherwise hold up the whole list.
+        guard let result = try? TimedProcess.run(process, output: pipe, timeout: timeout), !result.timedOut
+        else { return nil }
+        return (result.status, String(bytes: result.data, encoding: .utf8) ?? "")
     }
+
+    /// How long one git call may take.
+    static let timeout: TimeInterval = 10
 }

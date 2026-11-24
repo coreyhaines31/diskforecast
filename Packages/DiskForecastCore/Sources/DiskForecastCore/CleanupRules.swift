@@ -20,13 +20,28 @@ extension CleanupCatalog {
                 explanation: "node_modules, build, and package folders in projects you haven't changed in "
                     + "\(staleAfterDays)+ days. Reinstalling or rebuilding brings them back.",
                 group: .safeToClear
-            ) { catalog, scan in catalog.artifacts(scan, stale: true) },
+            ) { catalog, scan in catalog.artifacts(scan, tier: .stale) },
+            CleanupRule(
+                id: "idle-build-output", title: "Build output not in use",
+                explanation: "Folders a framework fills as it runs and makes again by itself, like .next, .turbo, "
+                    + "and DerivedData, in projects you've changed recently. Nothing has written to them for a "
+                    + "day, and there's nothing to reinstall: the next dev run or build makes them again.",
+                group: .safeToClear
+            ) { catalog, scan in catalog.artifacts(scan, tier: .idleOutput) },
             CleanupRule(
                 id: "worktree-leftovers", title: "Leftover worktree data",
                 explanation: "Git's records for worktrees whose folder is gone, including any submodule copies. "
                     + "git worktree prune removes the same thing.",
                 group: .safeToClear
             ) { catalog, scan in catalog.leftoverWorktreeData(scan) },
+            CleanupRule(
+                id: "finished-worktrees", title: "Finished git worktrees",
+                explanation: "Extra checkouts with nothing left only in them: no changed files, every commit "
+                    + "pushed and already in the repository's main branch, no submodules, nothing git ignores "
+                    + "except build and package folders, and unused for 2 days. Its records in the repository go "
+                    + "with it, as with git worktree remove; the branch and its commits stay.",
+                group: .safeToClear
+            ) { catalog, scan in catalog.worktrees(scan, finished: true) },
             CleanupRule(
                 id: "ollama", title: "Ollama models",
                 explanation: "Local AI models downloaded by Ollama. Running ollama pull downloads one again, "
@@ -192,6 +207,13 @@ extension CleanupCatalog {
                 group: .safeToClear
             ) { catalog, scan in catalog.agentLeftovers(scan) },
             CleanupRule(
+                id: "temp-files", title: "Temporary files nothing is using",
+                explanation: "Files and folders that apps, scripts, and test runs left in your temporary folder "
+                    + "and nothing has changed in \(Int(UserTemp.idleDays)) days. macOS's own and anything "
+                    + "still open stay.",
+                group: .safeToClear
+            ) { catalog, _ in catalog.idleTempFiles() },
+            CleanupRule(
                 id: "agent-history", title: "Old coding agent conversations",
                 explanation: "Claude Code and Codex conversations nobody has opened in \(staleAfterDays)+ days. "
                     + "Claude Code removes its own after 30 days unless its cleanupPeriodDays setting says otherwise; "
@@ -215,6 +237,19 @@ extension CleanupCatalog {
                 }
             },
             CleanupRule(
+                id: "pnpm-store", title: "pnpm store",
+                explanation: "Every package pnpm has installed, shared by your projects, so removing the folder "
+                    + "frees far less than its size and breaks their installs. pnpm's own prune removes only "
+                    + "what no project uses.",
+                group: .worthALook, action: .useTool("pnpm"), minimumBytes: CleanupCatalog.minimumToolCacheBytes
+            ) { catalog, _ in catalog.fixed(["Library/pnpm/store", ".local/share/pnpm/store"]) },
+            CleanupRule(
+                id: "go-modules", title: "Go module cache",
+                explanation: "Every Go module downloaded for your projects. Go makes these files read-only, so "
+                    + "its own command is the way to remove them. The next build downloads what it needs again.",
+                group: .worthALook, action: .useTool("go"), minimumBytes: CleanupCatalog.minimumToolCacheBytes
+            ) { catalog, _ in catalog.fixed(["go/pkg/mod"]) },
+            CleanupRule(
                 id: "disk-images", title: "Disk images and installers",
                 explanation: "DMG, ISO, and PKG files. Once an app is installed, its installer is usually not needed.",
                 group: .worthALook
@@ -235,11 +270,25 @@ extension CleanupCatalog {
                     .flatMap { catalog.children(of: $0, in: scan) }
             },
             CleanupRule(
+                id: "quiet-builds", title: "Build folders in quiet projects",
+                explanation: "Build and package folders in projects with no commit, checkout, or Claude Code "
+                    + "conversation in a week, though files there changed in the last \(staleAfterDays) days. "
+                    + "Safe to remove; you'll wait for a reinstall or rebuild when you're back.",
+                group: .worthALook
+            ) { catalog, scan in catalog.artifacts(scan, tier: .quiet) },
+            CleanupRule(
                 id: "active-builds", title: "Build folders in active projects",
                 explanation: "Build and package folders in projects you've changed recently. Safe to remove, but "
                     + "you'll wait for a reinstall or rebuild next time.",
                 group: .worthALook
-            ) { catalog, scan in catalog.artifacts(scan, stale: false) },
+            ) { catalog, scan in catalog.artifacts(scan, tier: .active) },
+            CleanupRule(
+                id: "held-builds", title: "Build folders with work in them",
+                explanation: "Folders named like build or package folders that hold something a rebuild "
+                    + "wouldn't bring back: a git checkout with its own history, files git tracks, or files git "
+                    + "doesn't ignore. Each says which. Look inside before removing one.",
+                group: .worthALook
+            ) { catalog, scan in catalog.heldArtifacts(scan) },
             CleanupRule(
                 id: "git-worktrees", title: "Git worktrees",
                 explanation: "Extra checkouts of a repository, often left behind by coding agents like Claude Code, "
@@ -247,7 +296,7 @@ extension CleanupCatalog {
                     + "ignores, like .env, aren't counted. Its records in the repository go with it, as with git "
                     + "worktree remove; the branch and its commits stay.",
                 group: .worthALook
-            ) { catalog, scan in catalog.worktrees(scan) },
+            ) { catalog, scan in catalog.worktrees(scan, finished: false) },
             CleanupRule(
                 id: "orphaned-workspaces", title: "Editor data for deleted projects",
                 explanation: "What VS Code, Cursor, and similar editors saved about projects that are no longer on "
@@ -276,6 +325,15 @@ extension CleanupCatalog {
                     + "read again.",
                 group: .safeToClear
             ) { catalog, scan in catalog.children(of: "Library/Logs", in: scan) },
+            CleanupRule(
+                id: "duplicate-folders", title: "Folders stored twice",
+                explanation: "Large folders that look like copies of another folder: the same file names and "
+                    + "exact sizes, and matching contents in their largest files. Smaller files aren't compared "
+                    + "byte for byte, so open both before removing one. Each says where the other is, and its "
+                    + "size is what removing it frees. Copies that share their storage, as copies Finder makes "
+                    + "on the same disk do, cost nothing and aren't listed.",
+                group: .worthALook, minimumBytes: CleanupCatalog.minimumDuplicateBytes
+            ) { catalog, scan in catalog.duplicateFolders(scan) },
             CleanupRule(
                 id: "downloads", title: "Big downloads",
                 explanation: "Large files and folders in Downloads. Most were needed once.",

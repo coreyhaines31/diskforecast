@@ -66,4 +66,29 @@ struct SystemDataParserTests {
         #expect(Docker.bytes("1.433GB (50%)") == 1_433_000_000)
         #expect(Docker.bytes("nonsense") == nil)
     }
+
+    @Test func parsesSwapUsage() {
+        let mebibyte: Int64 = 1_048_576
+        let output = "vm.swapusage: total = 18432.00M  used = 16951.94M  free = 1480.06M  (encrypted)\n"
+        let swap = Swap.parse(output)
+        #expect(swap == SwapUsage(totalBytes: 18_432 * mebibyte, usedBytes: Int64(16_951.94 * Double(mebibyte))))
+    }
+
+    @Test func parsesSwapInGigabytes() {
+        let mebibyte: Int64 = 1_048_576
+        let swap = Swap.parse("total = 2.00G  used = 512.00M  free = 1.50G  (encrypted)")
+        #expect(swap == SwapUsage(totalBytes: 2_048 * mebibyte, usedBytes: 512 * mebibyte))
+    }
+
+    @Test func parsesNoSwap() {
+        let swap = Swap.parse("vm.swapusage: total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)")
+        #expect(swap == SwapUsage(totalBytes: 0, usedBytes: 0))
+    }
+
+    @Test func ignoresSwapOutputItCannotRead() {
+        #expect(Swap.parse("") == nil)
+        #expect(Swap.parse("sysctl: unknown oid 'vm.swapusage'") == nil)
+        #expect(Swap.parse("total = lots  used = 1.00M") == nil)
+        #expect(Swap.parse("total = 1.00X  used = 1.00M") == nil)
+    }
 }

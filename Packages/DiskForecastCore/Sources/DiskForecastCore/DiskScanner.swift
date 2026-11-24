@@ -70,6 +70,7 @@ public final class DiskScanner: @unchecked Sendable {
     private var diskImages: [FileFinding] = []
     private var artifacts: [ArtifactFinding] = []
     private var worktrees: [WorktreeFinding] = []
+    private var nestedRepositories: [String] = []
     private var deniedCount = 0
     private var deniedSamples: [String] = []
     private var skippedPaths: [String] = []
@@ -83,6 +84,14 @@ public final class DiskScanner: @unchecked Sendable {
         let node: Int32
         let path: String
         let insideArtifact: Bool
+        /// Build folders to look for here because of what sits beside this folder, like `cache`
+        /// in the `tmp` of a Rails project.
+        var expected: [Expected] = []
+    }
+
+    fileprivate struct Expected {
+        let kind: ArtifactKind
+        let projectModified: Date
     }
 
     public init(options: Options) {
@@ -146,6 +155,7 @@ public final class DiskScanner: @unchecked Sendable {
             diskImages: diskImages.sorted { $0.bytes > $1.bytes },
             artifacts: artifacts.sorted { $0.path < $1.path },
             worktrees: worktrees.sorted { $0.path < $1.path },
+            nestedRepositories: nestedRepositories.sorted(),
             deniedCount: deniedCount,
             deniedSamples: deniedSamples,
             skippedPaths: skippedPaths.sorted(),
@@ -219,6 +229,7 @@ public final class DiskScanner: @unchecked Sendable {
         largeFiles.append(contentsOf: listing.large)
         diskImages.append(contentsOf: listing.images)
         if let worktree = listing.worktree { worktrees.append(worktree) }
+        if listing.holdsRepository { nestedRepositories.append(job.path) }
         skippedPaths.append(contentsOf: listing.skipped)
         if cancelled { return }
         var artifactNodes: [String: Int32] = [:]
@@ -233,7 +244,8 @@ public final class DiskScanner: @unchecked Sendable {
             queue.append(Job(
                 node: child,
                 path: job.path + "/" + subdirectory.name,
-                insideArtifact: subdirectory.insideArtifact
+                insideArtifact: subdirectory.insideArtifact,
+                expected: listing.expected[subdirectory.name] ?? []
             ))
         }
         for artifact in listing.artifacts {
@@ -255,11 +267,14 @@ extension DiskScanner {
         var bytes: Int64 = 0
         var files = 0
         var subdirectories: [(name: String, insideArtifact: Bool)] = []
+        /// Build folders to look for one level down, by the folder they'd be in.
+        var expected: [String: [Expected]] = [:]
         var skipped: [String] = []
         var large: [FileFinding] = []
         var images: [FileFinding] = []
         var artifacts: [(kind: ArtifactKind, projectModified: Date)] = []
         var worktree: WorktreeFinding?
+        var holdsRepository = false
     }
 
     fileprivate func list(_ job: Job, reader: BulkReader) -> Listing {
@@ -327,9 +342,16 @@ extension DiskScanner {
            let gitDirectory = WorktreeFinding.gitDirectory(fromGitFile: contents, checkout: job.path) {
             listing.worktree = WorktreeFinding(path: job.path, gitDirectory: gitDirectory, modified: newest)
         }
-        let found = job.insideArtifact ? [] : ArtifactKind.detect(directories: directories, files: files)
-        listing.artifacts = found.map { ($0, newest) }
-        return Set(found.map(\.folderName))
+        // A clone's .git is a folder; a submodule's or a worktree's is a file.
+        listing.holdsRepository = job.insideArtifact && (directories.contains(".git") || files.contains(".git"))
+        guard !job.insideArtifact else { return [] }
+        let found = ArtifactKind.detect(directories: directories, files: files).map { ($0, newest) }
+            + job.expected.filter { directories.contains($0.kind.folderName) }.map { ($0.kind, $0.projectModified) }
+        listing.artifacts = found
+        for kind in ArtifactKind.expected(directories: directories, files: files) {
+            listing.expected[kind.parentName ?? "", default: []].append(Expected(kind: kind, projectModified: newest))
+        }
+        return Set(found.map(\.0.folderName))
     }
 
     /// Only a plain file is read: a `.git` that's a link or a pipe could lead anywhere, or never end.

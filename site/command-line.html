@@ -69,6 +69,7 @@
                 <div class="table-card glass"><div class="table-scroll"><table class="compare" style="min-width:640px">
           <thead><tr><th scope="col">Command</th><th scope="col">What it does</th></tr></thead><tbody>
             <tr><th scope="row"><code>diskforecast status</code></th><td>Free space, the forecast, a low-space warning, and how much is safe to clear</td></tr>
+            <tr><th scope="row"><code>diskforecast status --need 5GB</code></th><td>Whether 5 GB fits and still leaves 20 GB free, and how much to clear if it doesn't</td></tr>
             <tr><th scope="row"><code>diskforecast changes --days 30</code></th><td>Which folders grew or shrank, down to the subfolder, and how much changed outside your home folder</td></tr>
             <tr><th scope="row"><code>diskforecast cleanup</code></th><td>What you can reclaim, grouped into Safe to clear and Worth a look, with an ID and explanation for each</td></tr>
             <tr><th scope="row"><code>diskforecast trash &lt;id or path&gt;</code></th><td>Shows what would move to the Trash; add <code>--yes</code> to move it</td></tr>
@@ -77,6 +78,7 @@
             <tr><th scope="row"><code>diskforecast open forecast</code></th><td>Opens a window: forecast, cleanup, system-data, or settings</td></tr>
           </tbody></table></div></div>
         <p>Add <code>--json</code> to any command for output a script or agent can parse. If Disk Forecast isn't running, the command opens it in the background first.</p>
+        <p><code>--need</code> takes a size like <code>5GB</code>, <code>500MB</code>, or <code>1.5TB</code>. The command exits 0 when it worked, 1 for an error, and 3 when <code>status --need</code> finds there isn't room, so an agent can check before a large download, install, or build.</p>
 <pre><code>$ diskforecast status
 142 GB free of 494 GB (29% free)
 Full in ~30 days · using 4.7 GB a day
@@ -197,7 +199,7 @@ tmutil listlocalsnapshots /       # local Time Machine snapshots</code></pre>
     <div class="footer-lists">
       <div class="wrap">
       <nav class="footer-alts" aria-label="Guides"><a class="label" href="/guides">Guides</a><a href="/how-to-check-storage-on-mac">Check Mac storage</a><a href="/free-up-space-on-mac">Free up space on Mac</a><a href="/how-to-clear-cache-on-mac">Clear cache on Mac</a><a href="/what-is-system-data-on-mac">What is System Data</a><a href="/system-data">Clear System Data</a><a href="/purgeable-space-mac">Purgeable space</a><a href="/time-machine-local-snapshots">Time Machine snapshots</a><a href="/other-users-and-shared-mac">Other Users &amp; Shared</a><a href="/empty-trash-mac">Empty the Trash</a><a href="/is-256gb-enough-for-mac">Is 256 GB enough?</a><a href="/other-storage-mac">Other storage</a><a href="/memory-vs-storage-mac">Memory vs storage</a><a href="/command-line">Command line</a><a href="/clear-cache">Clear cache by tool</a><a href="/ai-models">Delete local AI models</a><a href="/taking-up-space">What&#x27;s taking up space</a></nav>
-      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/alternatives/onyx">OnyX alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
+      <nav class="footer-alts" aria-label="Alternatives"><a class="label" href="/alternatives">Alternatives</a><a href="/alternatives/diskbuddy">DiskBuddy alternative</a><a href="/alternatives/daisydisk">DaisyDisk alternative</a><a href="/alternatives/cleanmymac">CleanMyMac alternative</a><a href="/alternatives/grandperspective">GrandPerspective alternative</a><a href="/alternatives/omnidisksweeper">OmniDiskSweeper alternative</a><a href="/alternatives/windirstat-mac">WinDirStat for Mac</a><a href="/alternatives/mole">Mole alternative</a><a href="/alternatives/plonge">plonge alternative</a><a href="/alternatives/disk-inventory-x">Disk Inventory X alternative</a><a href="/alternatives/onyx">OnyX alternative</a><a href="/best-free-mac-cleaner">Best free Mac cleaner</a><a href="/disk-space-analyzer-mac">Disk space analyzers</a><a href="/is-cleanmymac-safe">Is CleanMyMac safe?</a><a href="/alternatives/compare">Compare all apps</a></nav>
       </div>
     </div>
     <div class="bx-footer">

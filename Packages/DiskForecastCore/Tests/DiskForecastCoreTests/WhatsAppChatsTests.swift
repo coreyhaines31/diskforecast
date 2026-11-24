@@ -8,7 +8,7 @@ struct WhatsAppChatsTests {
     let container: URL
 
     init() throws {
-        let base = FileManager.default.temporaryDirectory.appending(path: "WhatsApp-\(UUID().uuidString)")
+        let base = TestFolders.make("WhatsApp")
         container = URL(filePath: Trasher.resolved(base.path))
         try FileManager.default.createDirectory(at: container, withIntermediateDirectories: true)
     }

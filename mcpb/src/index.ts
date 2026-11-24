@@ -2,8 +2,9 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { runDiskForecast } from "./cli.js";
+import { registerFeedbackTool } from "./feedback.js";
 
-const VERSION = "0.1.0";
+const VERSION = "0.1.1";
 
 const server = new McpServer(
   { name: "diskforecast", version: VERSION },
@@ -51,7 +52,11 @@ server.registerTool(
     title: "What's been filling the disk",
     description:
       "Which folders grew or shrank over the last N days, as a tree of home-relative paths with oldBytes and newBytes " +
-      "(oldBytes 0 means new), plus outsideHomeBytes for System Data, other accounts, and apps. " +
+      "(oldBytes 0 means new; firstMeasured means the earlier scan couldn't read it, so it isn't growth, and " +
+      "firstMeasuredBytes inside a folder isn't growth either), plus outsideHomeBytes for System Data, other accounts, and apps. " +
+      "When free space is swinging, keepsChanging lists the folders that grew and shrank most between consecutive scans " +
+      "over the last two weeks (movedBytes adds up every change either way, netBytes is where it ended; " +
+      "inside, when present, lists the folders within one that moved most, with the same fields). " +
       "Use for 'what's eating my disk?' or 'what filled it up this month?'.",
     inputSchema: {
       days: z
@@ -82,5 +87,7 @@ server.registerTool(
   },
   async () => respond(["cleanup"]),
 );
+
+registerFeedbackTool(server, VERSION);
 
 await server.connect(new StdioServerTransport());

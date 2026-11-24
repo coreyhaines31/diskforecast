@@ -24,6 +24,7 @@ struct ForecastView: View {
     let openSystemData: () -> Void
     @State private var range = Range.month
     @State private var comparison: SnapshotComparison?
+    @State private var keepsChanging: KeepsChanging?
 
     var body: some View {
         let series = ForecastSeries(disk: disk, days: range.rawValue)
@@ -64,6 +65,9 @@ struct ForecastView: View {
                     .frame(maxWidth: .infinity, minHeight: 200, idealHeight: 240, maxHeight: 280)
                 facts(series)
             }
+            if let keepsChanging {
+                KeepsChangingView(keepsChanging: keepsChanging)
+            }
             WhatChangedView(comparison: comparison, home: scan.home, openSystemData: openSystemData)
                 .frame(maxHeight: .infinity, alignment: .top)
             Text(Self.footnote)
@@ -73,9 +77,10 @@ struct ForecastView: View {
         }
         .padding(24)
         .frame(minWidth: 560, minHeight: 640)
-        .task(id: "\(range.rawValue)-\(scan.finishedAt?.timeIntervalSince1970 ?? 0)") {
+        .task(id: "\(range.rawValue)-\(scan.finishedAt?.timeIntervalSince1970 ?? 0)-\(disk.forecastPhrase)") {
             let start = series.start
             comparison = SnapshotComparison(store: snapshots, since: start)
+            keepsChanging = KeepsChanging(store: snapshots, outlook: disk.outlook)
         }
     }
 
@@ -90,7 +95,8 @@ struct ForecastView: View {
         }
     }
 
-    private static let footnote = "Free space is checked every hour and saved once a day. The forecast follows "
+    private static let footnote = "Free space is saved every hour and checked every five minutes, or every minute "
+        + "while space is low or falling fast. Each day keeps its last reading and its lowest. The forecast follows "
         + "the typical daily change over the last two weeks, so one big download or cleanup doesn't set it. "
         + "Folder sizes are saved after each scan to show what changed. Your history stays on this Mac."
 

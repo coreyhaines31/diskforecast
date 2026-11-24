@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { accessSync, constants } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { withBugHint } from "./feedback.js";
 
 export const INSTALL_MESSAGE =
   "Disk Forecast isn't installed on this Mac, so there's nothing to ask yet. " +
@@ -95,8 +96,9 @@ function errorFrom(stdout: string, stderr: string): string | null {
   return stderr.trim().replace(/^diskforecast: /, "") || null;
 }
 
-// The CLI exits 0 on success and 1 on any error. There is no "found a problem" status code:
-// a low disk is reported inside the JSON (lowOnSpace, outlook), not by the exit code.
+// The CLI exits 0 on success and 1 on any error, and `status --need` exits 3 when there isn't room.
+// This server never passes --need, so it only sees 0 and 1: a low disk is reported inside the JSON
+// (lowOnSpace, outlook), not by the exit code. Passing --need would need exit 3 handled as a result.
 export async function runDiskForecast(args: string[]): Promise<RunResult> {
   if (!ALLOWED_COMMANDS.has(args[0])) {
     return { ok: false, text: `Not allowed: ${args[0]}` };
@@ -120,13 +122,13 @@ export async function runDiskForecast(args: string[]): Promise<RunResult> {
           if (code === 0) return resolve({ ok: true, text: truncate(compact(stdout)) });
           if (message) return resolve({ ok: false, text: message });
           if (error?.killed) {
-            return resolve({ ok: false, text: `Disk Forecast didn't answer within ${TIMEOUT_MS / 1000} seconds.` });
+            return resolve({ ok: false, text: withBugHint(`Disk Forecast didn't answer within ${TIMEOUT_MS / 1000} seconds.`) });
           }
-          resolve({ ok: false, text: `Disk Forecast's command line tool failed: ${error?.message ?? "unknown error"}` });
+          resolve({ ok: false, text: withBugHint(`Disk Forecast's command line tool failed: ${error?.message ?? "unknown error"}`) });
         },
       );
     } catch (error) {
-      resolve({ ok: false, text: `Couldn't start Disk Forecast's command line tool at ${cli}: ${(error as Error).message}` });
+      resolve({ ok: false, text: withBugHint(`Couldn't start Disk Forecast's command line tool at ${cli}: ${(error as Error).message}`) });
     }
   });
 }

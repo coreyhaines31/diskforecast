@@ -8,7 +8,7 @@ struct CleanupCatalogTests {
     let now = Date()
 
     init() throws {
-        let base = FileManager.default.temporaryDirectory.appending(path: "DiskForecastHome-\(UUID().uuidString)")
+        let base = TestFolders.make("DiskForecastHome")
         try FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
         home = URL(filePath: Trasher.resolved(base.path))
     }

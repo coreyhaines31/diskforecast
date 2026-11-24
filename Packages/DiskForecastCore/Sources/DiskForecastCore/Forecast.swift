@@ -52,6 +52,11 @@ public enum Forecast {
         /// Changing by less than 100 MB on a typical day.
         case steady
         case gaining(bytesPerDay: Double)
+        /// Free space went up, but mostly in one jump of gigabytes. Not a pace to plan on.
+        case cleared(bytes: Int64)
+        /// Free space goes up and down by gigabytes from day to day, far more than it moves overall,
+        /// so the typical day says nothing about where it's heading.
+        case swinging(typicalBytes: Int64)
     }
 
     public static func outlook(
@@ -68,7 +73,52 @@ public enum Forecast {
         if rate < -noiseBytesPerDay {
             return .filling(daysUntilFull: Double(currentFreeBytes) / -rate, bytesPerDay: rate)
         }
-        return rate > noiseBytesPerDay ? .gaining(bytesPerDay: rate) : .steady
+        // Never instead of a filling forecast: a warning that might be early beats none.
+        if let swing = typicalSwing(history: history, now: now, calendar: calendar) {
+            return .swinging(typicalBytes: swing)
+        }
+        guard rate > noiseBytesPerDay else { return .steady }
+        if let cleared = oneDayRise(history: history, now: now, calendar: calendar) {
+            return .cleared(bytes: cleared)
+        }
+        return .gaining(bytesPerDay: rate)
+    }
+
+    /// A day-to-day change smaller than this is ordinary use, not a swing.
+    static let minimumSwingBytes: Int64 = 5_000_000_000
+    /// How many big rises, and as many big falls, the window needs before it counts as swinging. One
+    /// crash and a slow recovery is a trend; this is back and forth.
+    static let minimumSwings = 3
+
+    /// How far free space moves between readings on a typical day, when it keeps going both up and
+    /// down by gigabytes: the median size of the changes in the window. Nil otherwise.
+    static func typicalSwing(history: UsageHistory, now: Date, calendar: Calendar) -> Int64? {
+        guard let start = calendar.date(byAdding: .day, value: -windowDays, to: calendar.startOfDay(for: now)) else {
+            return nil
+        }
+        let recent = history.samples.filter { $0.day >= start }
+        let changes = zip(recent, recent.dropFirst()).map { $1.freeBytes - $0.freeBytes }
+        guard changes.filter({ $0 >= minimumSwingBytes }).count >= minimumSwings,
+              changes.filter({ $0 <= -minimumSwingBytes }).count >= minimumSwings
+        else { return nil }
+        let sizes = changes.map(abs).sorted()
+        return sizes[sizes.count / 2]
+    }
+
+    /// A rise smaller than this is ordinary use, not a one-time jump.
+    static let minimumJumpBytes: Int64 = 5_000_000_000
+
+    /// The biggest rise between two readings in the window, when it's at least `minimumJumpBytes` and
+    /// more than all the other rises put together: free space came back in one go, not day by day.
+    static func oneDayRise(history: UsageHistory, now: Date, calendar: Calendar) -> Int64? {
+        guard let start = calendar.date(byAdding: .day, value: -windowDays, to: calendar.startOfDay(for: now)) else {
+            return nil
+        }
+        let recent = history.samples.filter { $0.day >= start }
+        let rises = zip(recent, recent.dropFirst()).map { $1.freeBytes - $0.freeBytes }.filter { $0 > 0 }
+        guard let biggest = rises.max(), biggest >= minimumJumpBytes, biggest > rises.reduce(0, +) - biggest
+        else { return nil }
+        return biggest
     }
 
     /// Whether the disk is low on space whatever the trend: under 10% free, or under 20 GB.

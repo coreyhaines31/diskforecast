@@ -39,6 +39,9 @@ enum Preferences {
     static let appliedLaunchAtLoginDefaultKey = "appliedLaunchAtLoginDefault"
     static let notifiesBeforeFullKey = "notifiesBeforeFull"
     static let lastDiskAlertKey = "lastDiskAlert"
+    static let lastFastFillAlertKey = "lastFastFillAlert"
+    static let lastCriticalFloorKey = "lastCriticalFloor"
+    static let checksPullRequestsKey = "checksPullRequests"
 
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
@@ -46,7 +49,8 @@ enum Preferences {
             storageMeterStyleKey: StorageMeterStyle.peak.rawValue,
             staleAfterDaysKey: 30,
             onboardingDoneKey: false,
-            notifiesBeforeFullKey: true
+            notifiesBeforeFullKey: true,
+            checksPullRequestsKey: false
         ])
     }
 
@@ -76,8 +80,25 @@ enum Preferences {
         UserDefaults.standard.bool(forKey: notifiesBeforeFullKey)
     }
 
+    /// Whether to ask GitHub, through the person's own gh, about worktrees' pull requests. Off
+    /// unless they turn it on, since it goes online.
+    static var checksPullRequests: Bool {
+        UserDefaults.standard.bool(forKey: checksPullRequestsKey)
+    }
+
     static var lastDiskAlert: Date? {
         get { UserDefaults.standard.object(forKey: lastDiskAlertKey) as? Date }
         set { UserDefaults.standard.set(newValue, forKey: lastDiskAlertKey) }
+    }
+
+    static var lastFastFillAlert: Date? {
+        get { UserDefaults.standard.object(forKey: lastFastFillAlertKey) as? Date }
+        set { UserDefaults.standard.set(newValue, forKey: lastFastFillAlertKey) }
+    }
+
+    /// The critical free-space floor already warned about, in bytes.
+    static var lastCriticalFloor: Int64? {
+        get { (UserDefaults.standard.object(forKey: lastCriticalFloorKey) as? NSNumber)?.int64Value }
+        set { UserDefaults.standard.set(newValue.map { NSNumber(value: $0) }, forKey: lastCriticalFloorKey) }
     }
 }

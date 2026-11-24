@@ -8,7 +8,7 @@ struct MessagesChatsTests {
     let messages: URL
 
     init() throws {
-        let base = FileManager.default.temporaryDirectory.appending(path: "Messages-\(UUID().uuidString)")
+        let base = TestFolders.make("Messages")
         messages = URL(filePath: Trasher.resolved(base.path))
         try FileManager.default.createDirectory(at: messages, withIntermediateDirectories: true)
     }

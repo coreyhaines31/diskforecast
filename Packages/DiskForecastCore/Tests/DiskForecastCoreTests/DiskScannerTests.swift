@@ -7,7 +7,7 @@ struct DiskScannerTests {
     let root: URL
 
     init() throws {
-        root = FileManager.default.temporaryDirectory.appending(path: "DiskForecastScan-\(UUID().uuidString)")
+        root = TestFolders.make("DiskForecastScan")
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
     }
 
@@ -88,6 +88,20 @@ struct DiskScannerTests {
         #expect(result.size(of: nodeModules) >= 10_000)
     }
 
+    @Test func notesRepositoriesInsideBuildFolders() async throws {
+        try write("py/pyproject.toml", bytes: 10)
+        try write("py/.venv/src/forked-lib/.git/HEAD", bytes: 10)
+        try write("py/.venv/lib/site.py", bytes: 5_000)
+        try write("web/package.json", bytes: 10)
+        // A submodule's or a worktree's .git is a file.
+        try write("web/node_modules/linked/.git", bytes: 10)
+        try write("plain/.git/HEAD", bytes: 10)
+        let result = await scan()
+        #expect(result.nestedRepositories == [
+            rootPath + "/py/.venv/src/forked-lib", rootPath + "/web/node_modules/linked"
+        ])
+    }
+
     @Test func findsToolCachesBesideTheirProjectFiles() async throws {
         try write("web/package.json", bytes: 10)
         try write("web/.turbo/cache/blob", bytes: 5_000)
@@ -100,6 +114,74 @@ struct DiskScannerTests {
         let kinds = await scan().artifacts.map(\.kind)
         #expect(Set(kinds) == [.turborepo, .parcel, .pytest, .mypy, .ruff])
         #expect(kinds.count == 5)
+    }
+
+    @Test func findsBuildFoldersOfMoreTools() async throws {
+        try write("site/package.json", bytes: 10)
+        try write("site/.svelte-kit/output/app.js", bytes: 5_000)
+        try write("site/.astro/types.d.ts", bytes: 5_000)
+        try write("site/dist/index.html", bytes: 5_000)
+        try write("java/pom.xml", bytes: 10)
+        try write("java/target/classes/App.class", bytes: 5_000)
+        try write("lib/pyproject.toml", bytes: 10)
+        try write("lib/build/lib/module.py", bytes: 5_000)
+        try write("lib/venv/bin/python", bytes: 5_000)
+        try write("lib/.tox/py312/log", bytes: 5_000)
+        try write("android/settings.gradle.kts", bytes: 10)
+        try write("android/.gradle/8.5/fileHashes.bin", bytes: 5_000)
+        try write("android/build/outputs/app.apk", bytes: 5_000)
+        try write("zig/build.zig", bytes: 10)
+        try write("zig/.zig-cache/o/main.o", bytes: 5_000)
+        let kinds = await scan().artifacts.map(\.kind)
+        #expect(Set(kinds) == [
+            .svelteKit, .astro, .dist, .mavenTarget, .pythonBuild, .plainVenv, .tox, .gradleCache, .gradleBuild,
+            .zigCache
+        ])
+        #expect(kinds.count == 10)
+    }
+
+    @Test func matchesProjectFilesByTheirEnding() async throws {
+        try write("api/Api.csproj", bytes: 10)
+        try write("api/bin/Debug/Api.dll", bytes: 5_000)
+        try write("api/obj/project.assets.json", bytes: 5_000)
+        // An Xcode project is a folder.
+        try write("app/App.xcodeproj/project.pbxproj", bytes: 10)
+        try write("app/DerivedData/App/Build/app.o", bytes: 5_000)
+        try write("tools/bin/run.sh", bytes: 5_000)
+        try write("notes/DerivedData/thing", bytes: 5_000)
+        let result = await scan()
+        #expect(result.artifacts.map(\.path) == [
+            rootPath + "/api/bin", rootPath + "/api/obj", rootPath + "/app/DerivedData"
+        ])
+        #expect(result.artifacts.map(\.kind) == [.dotnetBin, .dotnetObj, .derivedData])
+    }
+
+    @Test func findsAFolderNameTwoToolsShareOnce() async throws {
+        try write("mixed/Cargo.toml", bytes: 10)
+        try write("mixed/pom.xml", bytes: 10)
+        try write("mixed/target/debug/app", bytes: 5_000)
+        #expect(await scan().artifacts.map(\.kind) == [.rustTarget])
+    }
+
+    @Test func findsBuildFoldersOneLevelBelowTheProjectFile() async throws {
+        let old = Date(timeIntervalSince1970: 1_600_000_000)
+        try write("shop/config.ru", bytes: 10, modified: old)
+        try write("shop/Gemfile", bytes: 10, modified: old)
+        try write("shop/tmp/cache/bootsnap/load-path-cache", bytes: 5_000)
+        try write("shop/tmp/pids/server.pid", bytes: 10)
+        try write("shop/vendor/bundle/ruby/3.3.0/gems/rack/lib/rack.rb", bytes: 5_000)
+        try write("shop/vendor/bundle/ruby/3.3.0/bundler/gems/forked/.git/HEAD", bytes: 10)
+        try write("shop/vendor/javascript/app.js", bytes: 5_000)
+        // No project file beside these, so they're just folders.
+        try write("notes/tmp/cache/thing", bytes: 5_000)
+        try write("notes/vendor/bundle/thing", bytes: 5_000)
+        let result = await scan()
+        #expect(result.artifacts.map(\.path) == [rootPath + "/shop/tmp/cache", rootPath + "/shop/vendor/bundle"])
+        #expect(result.artifacts.map(\.kind) == [.railsCache, .bundle])
+        #expect(result.artifacts.map(\.projectPath) == [rootPath + "/shop", rootPath + "/shop"])
+        #expect(result.nestedRepositories == [rootPath + "/shop/vendor/bundle/ruby/3.3.0/bundler/gems/forked"])
+        let cache = try #require(result.artifacts.first)
+        #expect(result.size(of: cache) >= 5_000 && result.size(of: cache) < 100_000)
     }
 
     @Test func findsDiskImages() async throws {

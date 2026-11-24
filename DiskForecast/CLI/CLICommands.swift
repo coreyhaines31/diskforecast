@@ -19,7 +19,7 @@ final class CLICommands {
         self.open = open
     }
 
-    func handle(_ request: CLIRequest) -> CLIResponse {
+    func handle(_ request: CLIRequest) async -> CLIResponse {
         switch request.action {
         case .status:
             return statusResponse()
@@ -34,7 +34,7 @@ final class CLICommands {
             scan.scan()
             return CLIResponse(status: status())
         case .trash:
-            return trash(request.targets ?? [], confirmed: request.confirmed ?? false)
+            return await trash(request.targets ?? [], confirmed: request.confirmed ?? false)
         case .undo:
             return undo()
         case .open:
@@ -49,6 +49,11 @@ final class CLICommands {
         if !FullDiskAccess.isGranted {
             notes.append("Full Disk Access is off, so some folders aren't measured. "
                 + "Turn it on in System Settings › Privacy & Security › Full Disk Access.")
+        }
+        let weekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        if let gap = SnapshotComparison(store: snapshots, since: weekAgo)?.freeSpaceGap,
+           gap.isWorthAStatusNote(capacityBytes: disk.capacityBytes) {
+            notes.append(gap.statusNote(days: 7))
         }
         return CLIResponse(notes: notes, status: status())
     }
@@ -67,12 +72,15 @@ final class CLICommands {
         case .gaining(let rate):
             outlook = "gaining"
             bytesPerDay = rate
+        case .cleared: outlook = "cleared"
+        case .swinging: outlook = "swinging"
         }
         return CLIStatus(
             freeBytes: disk.freeBytes, capacityBytes: disk.capacityBytes, purgeableBytes: disk.purgeableBytes,
             outlook: outlook, forecast: disk.forecastPhrase, daysUntilFull: daysUntilFull, bytesPerDay: bytesPerDay,
             lowOnSpace: disk.lowSpaceWarning != nil, scanning: scan.isScanning, lastScan: scan.finishedAt,
-            fullDiskAccess: FullDiskAccess.isGranted, safeToClearBytes: scan.safeToClearBytes
+            fullDiskAccess: FullDiskAccess.isGranted, safeToClearBytes: scan.safeToClearBytes,
+            lowestFreeBytesToday: disk.history.lowestFreeBytes(on: Date()), trashBytes: scan.trashBytes
         )
     }
 
@@ -84,10 +92,17 @@ final class CLICommands {
                     + "in that range to compare. Check back tomorrow, or try a longer --days."
             ])
         }
-        return CLIResponse(changes: CLIChanges(from: comparison.old, to: comparison.new))
+        var changes = CLIChanges(from: comparison.old, to: comparison.new)
+        if let keepsChanging = KeepsChanging(store: snapshots, outlook: disk.outlook) {
+            changes.keepsChanging = CLIKeepsChanging(
+                since: keepsChanging.since, until: keepsChanging.until,
+                folders: keepsChanging.folders.map(CLIFolderChurn.init)
+            )
+        }
+        return CLIResponse(changes: changes)
     }
 
-    private func trash(_ targets: [String], confirmed: Bool) -> CLIResponse {
+    private func trash(_ targets: [String], confirmed: Bool) async -> CLIResponse {
         guard scan.result != nil else { return notScannedYet() }
         let entries: [CleanupEntry]
         do {
@@ -102,7 +117,8 @@ final class CLICommands {
             ))
         }
         let trasher = Trasher(home: scan.home)
-        let report = trasher.trash(entries)
+        // Comparing a copy of a folder with its original can take minutes, so it runs off the main thread.
+        let report = await Task.detached(priority: .userInitiated) { trasher.trash(entries) }.value
         TrashHistory.record(report, trasher: trasher)
         scan.remove(Set(report.moved))
         disk.refresh()

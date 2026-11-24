@@ -23,26 +23,6 @@ public enum CleanupAction: Sendable, Equatable {
     case useApp(name: String, bundleID: String)
 }
 
-public struct CleanupEntry: Sendable, Hashable, Identifiable {
-    public var id: String { path }
-    public let path: String
-    public let bytes: Int64
-    public let detail: String?
-    /// What the list calls it. Usually the file or folder name.
-    public let name: String
-    /// Paths that go to the Trash with it, like a worktree's records in its repository. Counted
-    /// in `bytes`.
-    public let companions: [String]
-
-    public init(path: String, bytes: Int64, detail: String? = nil, name: String? = nil, companions: [String] = []) {
-        self.path = path
-        self.bytes = bytes
-        self.detail = detail
-        self.name = name ?? (path as NSString).lastPathComponent
-        self.companions = companions
-    }
-}
-
 public struct CleanupItem: Sendable, Identifiable {
     public let id: String
     public let title: String
@@ -84,10 +64,27 @@ public struct CleanupCatalog: Sendable {
     public let home: String
     public let staleAfterDays: Int
     public let now: Date
-    /// A separate scan of Claude Code's temp folders, which sit outside the home folder.
+    /// Separate scans of Claude Code's temp folders and the user's own, which sit outside home.
     public let agentScratch: ScanResult?
+    public let userTemp: ScanResult?
     /// What removing a checkout would lose. Swappable for tests.
     let gitState: @Sendable (String) -> GitState?
+    /// A worktree's pull request, by path. Nil when it wasn't looked up.
+    let pullRequest: @Sendable (String) -> PullRequestState?
+    /// Why a build folder isn't simply rebuildable, given the checkouts the scan found in it.
+    /// Swappable for tests.
+    let buildFolderHold: @Sendable (ArtifactFinding, [String]) -> BuildFolderHold?
+    /// When each project was last worked in, by path; a project that's missing isn't known.
+    /// Swappable for tests.
+    let projectActivity: @Sendable ([String]) -> [String: Date]
+    /// When the projects of the scan being listed were last worked in. Worked out once per list.
+    var lastWorkedIn: [String: Date] = [:]
+    /// The build folders of the scan being listed that are held, by path. Worked out once per
+    /// list, since several rules ask.
+    var heldBuildFolders: [String: BuildFolderHold] = [:]
+    /// What removing each worktree of the scan being listed would lose, by path. Worked out once
+    /// per list, since two rules ask.
+    var worktreeStates: [String: GitState?] = [:]
 
     /// Entries smaller than this aren't worth listing.
     static let minimumEntryBytes: Int64 = 1_000_000
@@ -96,27 +93,54 @@ public struct CleanupCatalog: Sendable {
     static let minimumWhatsAppBytes: Int64 = 5_000_000_000
     /// Chat apps' saved media is only worth a mention once it's big enough to matter.
     static let minimumChatMediaBytes: Int64 = 2_000_000_000
+    /// A package manager's cache is only worth its own row and button from this size up.
+    public static let minimumToolCacheBytes: Int64 = 50_000_000
+    /// Folders stored twice are only compared, and listed, from this size up.
+    static let minimumDuplicateBytes: Int64 = 1_000_000_000
 
     public init(
-        home: String, staleAfterDays: Int = 30, now: Date = Date(), agentScratch: ScanResult? = nil,
-        gitState: @escaping @Sendable (String) -> GitState? = GitState.read(at:)
+        home: String, staleAfterDays: Int = 30, now: Date = Date(),
+        agentScratch: ScanResult? = nil, userTemp: ScanResult? = nil,
+        gitState: @escaping @Sendable (String) -> GitState? = GitState.read(at:),
+        pullRequest: @escaping @Sendable (String) -> PullRequestState? = { _ in nil },
+        buildFolderHold: @escaping @Sendable (ArtifactFinding, [String]) -> BuildFolderHold? = {
+            BuildFolderHold.check(folder: $0.path, kind: $0.kind, checkouts: $1)
+        },
+        projectActivity: @escaping @Sendable ([String]) -> [String: Date] = { projects in
+            let conversations = ProjectActivity.conversations(in: NSHomeDirectory() + "/.claude/projects")
+            return ProjectActivity.last(for: projects, conversations: conversations)
+        }
     ) {
         self.home = home.hasSuffix("/") ? String(home.dropLast()) : home
         self.staleAfterDays = staleAfterDays
         self.now = now
         self.agentScratch = agentScratch
+        self.userTemp = userTemp
         self.gitState = gitState
+        self.pullRequest = pullRequest
+        self.buildFolderHold = buildFolderHold
+        self.projectActivity = projectActivity
     }
 
     var staleCutoff: Date { now.addingTimeInterval(-Double(staleAfterDays) * 86_400) }
 
     public func items(from scan: ScanResult) -> [CleanupItem] {
+        var catalog = self
+        catalog.heldBuildFolders = holds(in: scan)
+        catalog.lastWorkedIn = projectActivity(scan.artifacts.map(\.projectPath))
+        for worktree in scan.worktrees {
+            catalog.worktreeStates.updateValue(gitState(worktree.path), forKey: worktree.path)
+        }
+        return catalog.listing(scan)
+    }
+
+    private func listing(_ scan: ScanResult) -> [CleanupItem] {
         var claimed: [String] = []
         var items: [CleanupItem] = []
         for rule in rules {
             let entries = rule.candidates(self, scan).compactMap { candidate -> CleanupEntry? in
                 guard !claimed.contains(where: { candidate.path == $0 || candidate.path.hasPrefix($0 + "/") }),
-                      var bytes = size(of: candidate.path, in: scan)
+                      var bytes = candidate.bytes ?? size(of: candidate.path, in: scan)
                 else { return nil }
                 for inner in claimed where inner.hasPrefix(candidate.path + "/") {
                     bytes -= size(of: inner, in: scan) ?? 0
@@ -125,7 +149,8 @@ public struct CleanupCatalog: Sendable {
                 bytes += companions.reduce(0) { $0 + (size(of: $1, in: scan) ?? 0) }
                 return CleanupEntry(
                     path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name,
-                    companions: companions
+                    companions: companions, pullRequest: candidate.pullRequest, original: candidate.original,
+                    rebuildable: candidate.rebuildable, finishedWorktree: candidate.finishedWorktree
                 )
             }
             .filter { $0.bytes >= rule.minimumBytes }
@@ -141,7 +166,7 @@ public struct CleanupCatalog: Sendable {
     }
 
     private func size(of path: String, in scan: ScanResult) -> Int64? {
-        scan.allocatedSize(of: path) ?? agentScratch?.allocatedSize(of: path)
+        scan.allocatedSize(of: path) ?? agentScratch?.allocatedSize(of: path) ?? userTemp?.allocatedSize(of: path)
     }
 
     // MARK: Sources
@@ -151,6 +176,12 @@ public struct CleanupCatalog: Sendable {
         var detail: String?
         var name: String?
         var companions: [String] = []
+        var pullRequest: PullRequestState?
+        var original: String?
+        var rebuildable: ArtifactKind?
+        var finishedWorktree = false
+        /// What removing it frees, when that isn't its size in the scan.
+        var bytes: Int64?
     }
 
     func path(_ relative: String) -> String {
@@ -170,16 +201,6 @@ public struct CleanupCatalog: Sendable {
         guard scan.tree.node(at: folder) != nil else { return [] }
         let names = (try? FileManager.default.contentsOfDirectory(atPath: folder)) ?? []
         return names.filter { !excluded($0) && $0 != ".DS_Store" }.map { Candidate(path: folder + "/" + $0) }
-    }
-
-    func artifacts(_ scan: ScanResult, stale: Bool) -> [Candidate] {
-        scan.artifacts
-            .filter { ($0.projectModified < staleCutoff) == stale }
-            .map { artifact in
-                let project = (artifact.projectPath as NSString).lastPathComponent
-                let age = Age.phrase(from: artifact.projectModified, to: now)
-                return Candidate(path: artifact.path, detail: "\(project) · last changed \(age)")
-            }
     }
 
     /// Cache folders that apps built on web tech (VS Code, Cursor, Slack, Figma) keep next to their
@@ -241,59 +262,6 @@ public struct CleanupCatalog: Sendable {
                     )
                 }
         }
-    }
-
-    /// Git worktree checkouts, each with what removing it would lose.
-    func worktrees(_ scan: ScanResult) -> [Candidate] {
-        scan.worktrees.map { worktree in
-            var parts = [worktree.repository]
-            if let state = gitState(worktree.path) { parts.append(state.summary) }
-            parts.append("last changed \(Age.phrase(from: worktree.modified, to: now))")
-            // Its records go too, as with git worktree remove; they can hold whole submodule copies.
-            // Only when they point back at this checkout, as git's own do, so a stray .git file
-            // can't send something else to the Trash.
-            let pointsBack = Self.checkoutGitFile(recordedIn: worktree.gitDirectory) == worktree.path + "/.git"
-            return Candidate(
-                path: worktree.path, detail: parts.joined(separator: " · "),
-                companions: pointsBack ? [worktree.gitDirectory] : []
-            )
-        }
-    }
-
-    /// Git's records for worktrees whose folder is gone, which is what `git worktree prune`
-    /// removes. Locked worktrees and ones on a drive that isn't connected are left out.
-    func leftoverWorktreeData(_ scan: ScanResult) -> [Candidate] {
-        let tree = scan.tree
-        let recordFolders = tree.names.indices.filter { node in
-            guard node > 0, tree.names[node] == "worktrees" else { return false }
-            let parent = tree.names[Int(tree.parents[node])]
-            return parent == ".git" || parent.hasSuffix(".git")
-        }
-        // A checkout moved by hand still points at its records; they aren't left over.
-        let inUse = Set(scan.worktrees.map(\.gitDirectory))
-        return recordFolders.flatMap { records in
-            tree.children[records].map(Int.init).compactMap { node -> Candidate? in
-                let folder = tree.path(of: node)
-                guard !inUse.contains(folder), !FileManager.default.fileExists(atPath: folder + "/locked"),
-                      let checkoutGit = Self.checkoutGitFile(recordedIn: folder),
-                      !checkoutGit.hasPrefix("/Volumes/"), Self.isMissing(checkoutGit)
-                else { return nil }
-                let checkout = (checkoutGit as NSString).deletingLastPathComponent
-                return Candidate(
-                    path: folder,
-                    detail: "\(WorktreeFinding.repository(of: folder)) · worktree folder deleted",
-                    name: (checkout as NSString).lastPathComponent
-                )
-            }
-        }
-    }
-
-    /// The checkout's `.git` file that a worktree's records say they belong to.
-    static func checkoutGitFile(recordedIn records: String) -> String? {
-        guard let pointer = try? String(contentsOfFile: records + "/gitdir", encoding: .utf8) else { return nil }
-        let target = pointer.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !target.isEmpty else { return nil }
-        return ((target.hasPrefix("/") ? target : records + "/" + target) as NSString).standardizingPath
     }
 
     /// True only when nothing is there. A folder macOS won't let the app look into isn't missing.

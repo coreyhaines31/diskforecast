@@ -37,6 +37,12 @@ public struct FolderSnapshotStore: Sendable {
         return all.first { $0.day >= start && $0.day < latest.day }.flatMap { load($0.url) }
     }
 
+    /// Every snapshot from `date` on, oldest first.
+    public func snapshots(since date: Date) -> [FolderSnapshot] {
+        let start = calendar.startOfDay(for: date)
+        return files().filter { $0.day >= start }.compactMap { load($0.url) }
+    }
+
     private func files() -> [(day: Date, url: URL)] {
         let urls = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? []
         return urls.compactMap { url -> (Date, URL)? in

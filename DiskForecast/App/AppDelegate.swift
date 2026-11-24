@@ -106,7 +106,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case .settings: self?.settingsWindow.show()
             }
         }
-        cliServer = CLIServer { commands.handle($0) }
+        cliServer = CLIServer { await commands.handle($0) }
         cliServer?.start()
     }
 
@@ -141,10 +141,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Preferences.appliedLaunchAtLoginDefault = true
     }
 
-    /// Saves today's folder sizes, so later scans can say what grew.
+    /// Saves today's folder sizes, with the System Data that's quick to read, so later scans can say
+    /// what grew.
     private func recordSnapshot(of result: ScanResult) {
         disk.refresh()
-        try? snapshots.save(FolderSnapshot(tree: result.tree, freeBytes: disk.freeBytes, at: Date()))
+        let unmeasured = result.skippedPaths + result.stalledPaths + result.deniedSamples
+        // Saved first without swap and the snapshot count, so a slow command can't hold up the day's reading.
+        let snapshot = FolderSnapshot(
+            tree: result.tree, freeBytes: disk.freeBytes,
+            systemData: SystemDataReading(purgeableBytes: disk.purgeableBytes, localSnapshotCount: nil),
+            at: Date(), unmeasured: unmeasured
+        )
+        try? snapshots.save(snapshot)
+        Task {
+            var updated = snapshot
+            let swap = await Shell.run("/usr/sbin/sysctl", ["vm.swapusage"])
+            if let usage = Swap.parse(swap.text) {
+                updated.systemData?.swapBytes = usage.totalBytes
+                try? snapshots.save(updated)
+            }
+            let listed = await Shell.run("/usr/bin/tmutil", ["listlocalsnapshots", "/"])
+            guard listed.succeeded else { return }
+            updated.systemData?.localSnapshotCount = LocalSnapshots.parse(listed.text).count
+            try? snapshots.save(updated)
+        }
     }
 
     /// Polls while onboarding is open, since granting access in System Settings posts nothing.

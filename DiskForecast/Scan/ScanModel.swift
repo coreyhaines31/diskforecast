@@ -24,6 +24,10 @@ final class ScanModel {
     private(set) var trashBytes: Int64?
     /// Claude Code's temp folder, scanned beside the home folder since it's outside it.
     private var agentScratch: ScanResult?
+    /// The user's own temp folder, $TMPDIR, scanned beside the home folder for the same reason.
+    private var userTemp: ScanResult?
+    /// Worktrees' pull requests by path, from the last check. Empty while checks are off.
+    private var pullRequests: [String: PullRequestState] = [:]
     /// The size of /Applications, measured beside the home folder for the storage meter. Nil until measured.
     private(set) var applicationsBytes: Int64?
     /// Something slow underway that the menu should mention, like emptying the Trash.
@@ -117,12 +121,15 @@ final class ScanModel {
         showProgress(of: scanner)
         Task {
             async let scratch = Self.scanAgentScratch(priority: priority)
+            async let temp = Self.scanUserTemp(priority: priority)
             async let applications = Self.measureApplications(priority: priority)
             let result = await scanner.scan()
             let scratchResult = await scratch
+            let tempResult = await temp
             let applicationsResult = await applications
             guard generation == self.generation else { return }
             agentScratch = scratchResult
+            userTemp = tempResult
             applicationsBytes = applicationsResult
             await finish(result: result, fullAccess: fullAccess)
         }
@@ -163,11 +170,17 @@ final class ScanModel {
         state = .done
         onChange?()
         measureTrash()
+        checkPullRequests()
     }
 
     private nonisolated static func scanAgentScratch(priority: QualityOfService) async -> ScanResult? {
         guard FileManager.default.fileExists(atPath: AgentScratch.folder) else { return nil }
         return await DiskScanner(options: .init(root: URL(filePath: AgentScratch.folder), priority: priority)).scan()
+    }
+
+    private nonisolated static func scanUserTemp(priority: QualityOfService) async -> ScanResult? {
+        guard FileManager.default.fileExists(atPath: UserTemp.folder) else { return nil }
+        return await DiskScanner(options: .init(root: URL(filePath: UserTemp.folder), priority: priority)).scan()
     }
 
     private nonisolated static func measureApplications(priority: QualityOfService) async -> Int64? {
@@ -210,8 +223,10 @@ final class ScanModel {
 
     private func rebuildItems() async {
         guard let result else { return }
+        let pullRequests = pullRequests
         let catalog = CleanupCatalog(
-            home: home, staleAfterDays: Preferences.staleAfterDays, agentScratch: agentScratch
+            home: home, staleAfterDays: Preferences.staleAfterDays, agentScratch: agentScratch, userTemp: userTemp,
+            pullRequest: { pullRequests[$0] }
         )
         items = await Task.detached(priority: .utility) { catalog.items(from: result) }.value
     }
@@ -222,6 +237,24 @@ final class ScanModel {
         Task {
             await rebuildItems()
             onChange?()
+        }
+    }
+
+    /// Asks gh about the worktrees' pull requests when that's turned on, then adds them to the
+    /// list. The list is already up without them, so a slow or failed check never holds it back.
+    func checkPullRequests() {
+        guard Preferences.checksPullRequests else {
+            guard !pullRequests.isEmpty else { return }
+            pullRequests = [:]
+            rebuildCleanupList()
+            return
+        }
+        guard let worktrees = result?.worktrees, !worktrees.isEmpty else { return }
+        Task {
+            let states = await PullRequestChecks.states(of: worktrees)
+            guard Preferences.checksPullRequests else { return }
+            pullRequests = states
+            rebuildCleanupList()
         }
     }
 

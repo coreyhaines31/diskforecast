@@ -42,10 +42,13 @@ public struct CLIResponse: Codable, Equatable, Sendable {
     public var cleanup: [CLICleanupItem]?
     public var trash: CLITrashReport?
     public var undo: CLIUndoReport?
+    /// `status --need`: filled in by the command itself, from `status`.
+    public var headroom: CLIHeadroom?
 
     public init(
         error: String? = nil, notes: [String] = [], status: CLIStatus? = nil, changes: CLIChanges? = nil,
-        cleanup: [CLICleanupItem]? = nil, trash: CLITrashReport? = nil, undo: CLIUndoReport? = nil
+        cleanup: [CLICleanupItem]? = nil, trash: CLITrashReport? = nil, undo: CLIUndoReport? = nil,
+        headroom: CLIHeadroom? = nil
     ) {
         self.error = error
         self.notes = notes
@@ -54,6 +57,31 @@ public struct CLIResponse: Codable, Equatable, Sendable {
         self.cleanup = cleanup
         self.trash = trash
         self.undo = undo
+        self.headroom = headroom
+    }
+}
+
+/// Whether there's room to write `neededBytes` and still keep `marginBytes` free, for an agent
+/// to check before a large download, install, or build.
+public struct CLIHeadroom: Codable, Equatable, Sendable {
+    /// Where Disk Forecast starts warning about low space on most disks.
+    public static let margin: Int64 = 20_000_000_000
+
+    public var neededBytes: Int64
+    public var freeBytes: Int64
+    public var marginBytes: Int64
+    public var hasRoom: Bool
+    /// How much to clear first so there's room. Zero when there's room already.
+    public var shortBytes: Int64
+    public var safeToClearBytes: Int64
+
+    public init(neededBytes: Int64, status: CLIStatus) {
+        self.neededBytes = neededBytes
+        freeBytes = status.freeBytes
+        marginBytes = Self.margin
+        shortBytes = max(0, neededBytes + Self.margin - status.freeBytes)
+        hasRoom = shortBytes == 0
+        safeToClearBytes = status.safeToClearBytes
     }
 }
 
@@ -62,7 +90,8 @@ public struct CLIStatus: Codable, Equatable, Sendable {
     public var capacityBytes: Int64
     /// Space macOS holds for caches and snapshots and gives back when it's needed.
     public var purgeableBytes: Int64
-    /// learning, filling, steady, or gaining.
+    /// learning, filling, steady, gaining, cleared (up mostly in one jump, so no pace), or swinging
+    /// (up and down by gigabytes a day, so no pace).
     public var outlook: String
     /// Like "Full in ~41 days · using 3.5 GB a day".
     public var forecast: String
@@ -75,11 +104,18 @@ public struct CLIStatus: Codable, Equatable, Sendable {
     public var fullDiskAccess: Bool
     /// What the cleanup list's "Safe to clear" group adds up to.
     public var safeToClearBytes: Int64
+    /// The least free space seen today. Nil before today's first reading, and from apps older than
+    /// this field.
+    public var lowestFreeBytesToday: Int64?
+    /// What the Trash holds, as last measured. Nil when it couldn't be read, and from apps older
+    /// than this field.
+    public var trashBytes: Int64?
 
     public init(
         freeBytes: Int64, capacityBytes: Int64, purgeableBytes: Int64, outlook: String, forecast: String,
         daysUntilFull: Double?, bytesPerDay: Double?, lowOnSpace: Bool, scanning: Bool, lastScan: Date?,
-        fullDiskAccess: Bool, safeToClearBytes: Int64
+        fullDiskAccess: Bool, safeToClearBytes: Int64, lowestFreeBytesToday: Int64? = nil,
+        trashBytes: Int64? = nil
     ) {
         self.freeBytes = freeBytes
         self.capacityBytes = capacityBytes
@@ -93,6 +129,40 @@ public struct CLIStatus: Codable, Equatable, Sendable {
         self.lastScan = lastScan
         self.fullDiskAccess = fullDiskAccess
         self.safeToClearBytes = safeToClearBytes
+        self.lowestFreeBytesToday = lowestFreeBytesToday
+        self.trashBytes = trashBytes
+    }
+
+    /// Purgeable space, when there's enough of it that `df` and Finder's count would visibly differ.
+    public var notablePurgeableBytes: Int64? {
+        purgeableBytes >= 1_000_000_000 ? purgeableBytes : nil
+    }
+
+    /// "76 GB free of 995 GB (8% free), 4.2 GB of it purgeable".
+    public var freeSpaceLine: String {
+        let percent = capacityBytes > 0 ? Int((Double(freeBytes) / Double(capacityBytes) * 100).rounded()) : 0
+        var line = "\(Bytes.format(freeBytes)) free of \(Bytes.format(capacityBytes)) (\(percent)% free)"
+        if let purgeable = notablePurgeableBytes {
+            line += ", \(Bytes.format(purgeable)) of it purgeable"
+        }
+        return line
+    }
+
+    /// Today's low, when it was far enough below free space now to mention: by a tenth of what's free
+    /// now, and by 5 GB, or by a gigabyte when the low went under 20 GB, the point where space is low
+    /// on any disk. The chart marks smaller dips; this is for the one-line status.
+    public var notableLowToday: Int64? {
+        guard let low = lowestFreeBytesToday else { return nil }
+        let dip = freeBytes - low
+        guard dip >= UsageHistory.notableDip, dip >= freeBytes / 10 else { return nil }
+        return dip >= 5_000_000_000 || low < 20_000_000_000 ? low : nil
+    }
+
+    /// What the Trash holds, when space is low and emptying it would give back a gigabyte or more.
+    /// It's the quickest space there is: nothing to pick, nothing to rebuild.
+    public var notableTrashBytes: Int64? {
+        guard lowOnSpace, let trashBytes, trashBytes >= 1_000_000_000 else { return nil }
+        return trashBytes
     }
 }
 
@@ -103,28 +173,79 @@ public struct CLIChanges: Codable, Equatable, Sendable {
     public var folders: [CLIFolderChange]
     /// Change in used space outside the home folder: System Data, other accounts, and apps.
     public var outsideHomeBytes: Int64
+    /// Why free space moved much more than the home folder did, when it did. Nil otherwise, and from
+    /// apps older than this field.
+    public var freeSpaceGap: String?
+    /// The folders that grew and shrank the most from scan to scan lately, when free space is
+    /// swinging. Nil otherwise, and from apps older than this field.
+    public var keepsChanging: CLIKeepsChanging?
 
-    public init(since: Date, until: Date, folders: [CLIFolderChange], outsideHomeBytes: Int64) {
+    public init(
+        since: Date, until: Date, folders: [CLIFolderChange], outsideHomeBytes: Int64, freeSpaceGap: String? = nil,
+        keepsChanging: CLIKeepsChanging? = nil
+    ) {
         self.since = since
         self.until = until
         self.folders = folders
         self.outsideHomeBytes = outsideHomeBytes
+        self.freeSpaceGap = freeSpaceGap
+        self.keepsChanging = keepsChanging
     }
 
-    /// Every folder that changed by 500 MB or more, each with the folders inside it that did.
+    /// Every folder that changed by 500 MB or more, each with the folders inside it that did, and
+    /// the ones where that much was measured for the first time.
     public init(from old: FolderSnapshot, to new: FolderSnapshot) {
         func changes(under parent: String) -> [CLIFolderChange] {
             FolderChanges.changes(from: old, to: new, under: parent).map { change in
                 CLIFolderChange(
                     path: change.path, oldBytes: change.oldBytes, newBytes: change.newBytes,
+                    firstMeasured: change.isFirstMeasured, firstMeasuredBytes: change.firstMeasuredBytes,
+                    listedForFirstMeasured: change.listedForFirstMeasured,
                     children: change.hasChildren ? changes(under: change.path) : []
                 )
             }
         }
         self.init(
             since: old.day, until: new.day, folders: changes(under: ""),
-            outsideHomeBytes: FolderChanges.outsideHomeDelta(from: old, to: new)
+            outsideHomeBytes: FolderChanges.outsideHomeDelta(from: old, to: new),
+            freeSpaceGap: FreeSpaceGap(from: old, to: new)?.explanation
         )
+    }
+}
+
+/// What moved most between consecutive scans from `since` to `until`.
+public struct CLIKeepsChanging: Codable, Equatable, Sendable {
+    public var since: Date
+    public var until: Date
+    public var folders: [CLIFolderChurn]
+
+    public init(since: Date, until: Date, folders: [CLIFolderChurn]) {
+        self.since = since
+        self.until = until
+        self.folders = folders
+    }
+}
+
+public struct CLIFolderChurn: Codable, Equatable, Sendable {
+    /// Relative to the home folder.
+    public var path: String
+    /// Every change of 500 MB or more between consecutive scans, added up whichever way it went.
+    public var movedBytes: Int64
+    /// The same changes with their signs. Negative when it ended up smaller.
+    public var netBytes: Int64
+    /// The few folders inside this one that moved back and forth most. Nil when none did enough to
+    /// list, and from apps older than this field.
+    public var inside: [CLIFolderChurn]?
+
+    public init(_ churn: FolderChurn) {
+        path = churn.path
+        movedBytes = churn.movedBytes
+        netBytes = churn.netBytes
+        inside = churn.inside.isEmpty ? nil : churn.inside.map(CLIFolderChurn.init)
+    }
+
+    public var churn: FolderChurn {
+        FolderChurn(path: path, movedBytes: movedBytes, netBytes: netBytes, inside: (inside ?? []).map(\.churn))
     }
 }
 
@@ -133,14 +254,26 @@ public struct CLIFolderChange: Codable, Equatable, Sendable {
     public var path: String
     public var oldBytes: Int64
     public var newBytes: Int64
+    /// The earlier scan couldn't measure this folder, so its size isn't growth.
+    public var firstMeasured: Bool
+    /// Bytes in folders inside this one that the earlier scan couldn't measure, left out of `delta`.
+    public var firstMeasuredBytes: Int64
+    /// Listed for what was measured for the first time, not for growing or shrinking.
+    public var listedForFirstMeasured: Bool
     public var children: [CLIFolderChange]
 
-    public var delta: Int64 { newBytes - oldBytes }
+    public var delta: Int64 { firstMeasured ? 0 : newBytes - oldBytes - firstMeasuredBytes }
 
-    public init(path: String, oldBytes: Int64, newBytes: Int64, children: [CLIFolderChange] = []) {
+    public init(
+        path: String, oldBytes: Int64, newBytes: Int64, firstMeasured: Bool = false, firstMeasuredBytes: Int64 = 0,
+        listedForFirstMeasured: Bool = false, children: [CLIFolderChange] = []
+    ) {
         self.path = path
         self.oldBytes = oldBytes
         self.newBytes = newBytes
+        self.firstMeasured = firstMeasured
+        self.firstMeasuredBytes = firstMeasuredBytes
+        self.listedForFirstMeasured = listedForFirstMeasured
         self.children = children
     }
 }
@@ -166,7 +299,9 @@ public struct CLICleanupItem: Codable, Equatable, Sendable {
         case .useTool(let name), .useApp(let name, _): tool = name
         }
         bytes = item.bytes
-        entries = item.entries.map { CLICleanupEntry(path: $0.path, bytes: $0.bytes, detail: $0.detail) }
+        entries = item.entries.map {
+            CLICleanupEntry(path: $0.path, bytes: $0.bytes, detail: $0.detail, pullRequest: $0.pullRequest?.rawValue)
+        }
     }
 }
 
@@ -174,6 +309,9 @@ public struct CLICleanupEntry: Codable, Equatable, Sendable {
     public var path: String
     public var bytes: Int64
     public var detail: String?
+    /// A worktree branch's pull request: open, merged, closed, none, or unknown. Only present
+    /// when pull request checks are on in Settings.
+    public var pullRequest: String?
 }
 
 public struct CLITrashReport: Codable, Equatable, Sendable {

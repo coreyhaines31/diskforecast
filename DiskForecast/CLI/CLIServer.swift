@@ -6,12 +6,12 @@ import os
 /// processes running as the signed-in user can connect, and each connection carries one
 /// request and one response.
 final class CLIServer: Sendable {
-    private let handler: @MainActor @Sendable (CLIRequest) -> CLIResponse
+    private let handler: @MainActor @Sendable (CLIRequest) async -> CLIResponse
     private let path = CLIProtocol.socketURL.path
     /// The socket file this instance created, so quitting never removes another instance's.
     private let ownSocket = OSAllocatedUnfairLock<ino_t?>(initialState: nil)
 
-    init(handler: @escaping @MainActor @Sendable (CLIRequest) -> CLIResponse) {
+    init(handler: @escaping @MainActor @Sendable (CLIRequest) async -> CLIResponse) {
         self.handler = handler
     }
 
@@ -77,7 +77,9 @@ final class CLIServer: Sendable {
         return address
     }
 
-    private static func serve(_ client: Int32, handler: @escaping @MainActor @Sendable (CLIRequest) -> CLIResponse) {
+    private static func serve(
+        _ client: Int32, handler: @escaping @MainActor @Sendable (CLIRequest) async -> CLIResponse
+    ) {
         var uid = uid_t()
         var gid = gid_t()
         guard getpeereid(client, &uid, &gid) == 0, uid == getuid() else {
@@ -98,8 +100,8 @@ final class CLIServer: Sendable {
                   to: client)
             return
         }
-        DispatchQueue.main.async {
-            let response = MainActor.assumeIsolated { handler(request) }
+        Task { @MainActor in
+            let response = await handler(request)
             DispatchQueue.global().async { reply(response, to: client) }
         }
     }
