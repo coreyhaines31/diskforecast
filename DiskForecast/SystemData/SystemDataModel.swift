@@ -47,8 +47,11 @@ final class SystemDataModel {
             async let docker = dockerRow()
             async let temp = tempRow()
             async let swap = swapRow()
+            async let toolCaches = toolCachesRow()
             disk.refresh()
-            let loaded = await [purgeableRow(), snapshots, swap, spotlight, temp, simulators, models, docker]
+            let loaded = await [
+                purgeableRow(), snapshots, swap, spotlight, temp, simulators, models, docker, toolCaches
+            ]
             rows = loaded.compactMap { $0 }
             isLoading = false
         }
