@@ -12,7 +12,8 @@ public struct GitState: Sendable, Equatable {
     /// Commits in the checkout that no remote has. Nil when the repository has no remote.
     public let unpushed: Int?
     /// Whether the commit it's at is already in a main branch of a remote, as last fetched. Nil
-    /// when the repository has no remote, or git couldn't say.
+    /// when the repository has no remote, git couldn't say, or the checkout isn't clean and pushed,
+    /// where it wouldn't change anything.
     public let merged: Bool?
 
     public init(changed: Int?, unpushed: Int?, merged: Bool? = nil) {
@@ -64,8 +65,14 @@ public struct GitState: Sendable, Equatable {
         var merged: Bool?
         if let remotes = run(["remote"], in: path), !remotes.isEmpty {
             unpushed = run(["rev-list", "--count", "HEAD", "--not", "--remotes"], in: path).flatMap { Int($0) }
-            merged = run(["for-each-ref", "--contains", "HEAD", "--format=%(refname)", "refs/remotes"], in: path)
-                .map { $0.split(separator: "\n").contains { isMainBranch(remoteRef: String($0)) } }
+            // Only a clean, pushed checkout is ever called finished, so the rest aren't asked. And
+            // only the main branches are looked at: walking every remote branch took seconds per
+            // worktree in a repository with a couple of thousand of them.
+            if changed == 0, unpushed == 0 {
+                let patterns = mainBranches.sorted().map { "refs/remotes/*/" + $0 }
+                merged = run(["for-each-ref", "--contains", "HEAD", "--format=%(refname)"] + patterns, in: path)
+                    .map { $0.split(separator: "\n").contains { isMainBranch(remoteRef: String($0)) } }
+            }
         }
         return GitState(changed: changed, unpushed: unpushed, merged: merged)
     }

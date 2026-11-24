@@ -77,7 +77,8 @@ struct GitStateTests {
         try fixture.commit(in: fixture.worktree)
         try Data("draft".utf8).write(to: URL(filePath: fixture.worktree + "/draft.txt"))
         let state = try #require(GitState.read(at: fixture.worktree))
-        #expect(state == GitState(changed: 1, unpushed: 1, merged: false))
+        // Whether it's merged isn't asked of a checkout with changes.
+        #expect(state == GitState(changed: 1, unpushed: 1))
         #expect(state.summary == "1 changed file, 1 commit not pushed")
     }
 
