@@ -116,6 +116,53 @@ struct DiskScannerTests {
         #expect(kinds.count == 5)
     }
 
+    @Test func findsBuildFoldersOfMoreTools() async throws {
+        try write("site/package.json", bytes: 10)
+        try write("site/.svelte-kit/output/app.js", bytes: 5_000)
+        try write("site/.astro/types.d.ts", bytes: 5_000)
+        try write("site/dist/index.html", bytes: 5_000)
+        try write("java/pom.xml", bytes: 10)
+        try write("java/target/classes/App.class", bytes: 5_000)
+        try write("lib/pyproject.toml", bytes: 10)
+        try write("lib/build/lib/module.py", bytes: 5_000)
+        try write("lib/venv/bin/python", bytes: 5_000)
+        try write("lib/.tox/py312/log", bytes: 5_000)
+        try write("android/settings.gradle.kts", bytes: 10)
+        try write("android/.gradle/8.5/fileHashes.bin", bytes: 5_000)
+        try write("android/build/outputs/app.apk", bytes: 5_000)
+        try write("zig/build.zig", bytes: 10)
+        try write("zig/.zig-cache/o/main.o", bytes: 5_000)
+        let kinds = await scan().artifacts.map(\.kind)
+        #expect(Set(kinds) == [
+            .svelteKit, .astro, .dist, .mavenTarget, .pythonBuild, .plainVenv, .tox, .gradleCache, .gradleBuild,
+            .zigCache
+        ])
+        #expect(kinds.count == 10)
+    }
+
+    @Test func matchesProjectFilesByTheirEnding() async throws {
+        try write("api/Api.csproj", bytes: 10)
+        try write("api/bin/Debug/Api.dll", bytes: 5_000)
+        try write("api/obj/project.assets.json", bytes: 5_000)
+        // An Xcode project is a folder.
+        try write("app/App.xcodeproj/project.pbxproj", bytes: 10)
+        try write("app/DerivedData/App/Build/app.o", bytes: 5_000)
+        try write("tools/bin/run.sh", bytes: 5_000)
+        try write("notes/DerivedData/thing", bytes: 5_000)
+        let result = await scan()
+        #expect(result.artifacts.map(\.path) == [
+            rootPath + "/api/bin", rootPath + "/api/obj", rootPath + "/app/DerivedData"
+        ])
+        #expect(result.artifacts.map(\.kind) == [.dotnetBin, .dotnetObj, .derivedData])
+    }
+
+    @Test func findsAFolderNameTwoToolsShareOnce() async throws {
+        try write("mixed/Cargo.toml", bytes: 10)
+        try write("mixed/pom.xml", bytes: 10)
+        try write("mixed/target/debug/app", bytes: 5_000)
+        #expect(await scan().artifacts.map(\.kind) == [.rustTarget])
+    }
+
     @Test func findsDiskImages() async throws {
         try write("Downloads/Installer.dmg", bytes: 200_000)
         try write("Downloads/small.dmg", bytes: 1_000)

@@ -54,6 +54,16 @@ struct BuildFolderHoldTests {
         #expect(check("node_modules", in: loose) == nil)
     }
 
+    @Test func aCommonNameNeedsARepositoryToVouchForIt() throws {
+        let loose = fixture.base.path + "/downloaded-library"
+        try write(loose + "/dist/library.min.js")
+        #expect(check("dist", kind: .dist, in: loose) == .unvouched)
+        #expect(check("bin", kind: .dotnetBin, in: loose) == .unvouched)
+        try write(project + "/.gitignore", "dist\n")
+        try write(project + "/dist/app.js")
+        #expect(check("dist", kind: .dist) == nil)
+    }
+
     @Test func aCheckoutInsideIsHeldEvenWhenTheFolderIsIgnored() throws {
         try write(project + "/.gitignore", ".venv\n")
         try write(project + "/.venv/src/forked-lib/.git/HEAD")
@@ -123,6 +133,23 @@ struct BuildFolderHoldTests {
         let package = try package()
         try write(package.project + "/.build/scratch/.git/HEAD")
         #expect(check(".build", kind: .swiftBuild, in: package.project) == .holdsCheckout("scratch"))
+    }
+
+    @Test func anUntouchedXcodePackageCheckoutIsRebuildable() throws {
+        let app = fixture.base.path + "/app"
+        let checkout = app + "/DerivedData/App-abc/SourcePackages/checkouts/dep"
+        try fixture.git(["init", "-q", app], in: fixture.base.path)
+        try write(app + "/.gitignore", "DerivedData\n")
+        try write(app + "/DerivedData/App-abc/SourcePackages/checkouts/.keep")
+        try fixture.git(["clone", "-q", fixture.main, checkout], in: app)
+        let head = try #require(GitState.head(at: checkout))
+        try write(app + "/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved", """
+        {"pins": [{"identity": "dep", "state": {"revision": "\(head)"}}], "version": 2}
+        """)
+        #expect(check("DerivedData", kind: .derivedData, in: app) == nil)
+        try write(checkout + "/README.md", "edited")
+        let held = BuildFolderHold.holdsCheckout("App-abc/SourcePackages/checkouts/dep")
+        #expect(check("DerivedData", kind: .derivedData, in: app) == held)
     }
 
     @Test func readsTheOlderPackageResolvedFormat() throws {
