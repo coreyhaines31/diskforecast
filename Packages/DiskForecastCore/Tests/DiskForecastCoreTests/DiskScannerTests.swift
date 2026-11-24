@@ -163,6 +163,27 @@ struct DiskScannerTests {
         #expect(await scan().artifacts.map(\.kind) == [.rustTarget])
     }
 
+    @Test func findsBuildFoldersOneLevelBelowTheProjectFile() async throws {
+        let old = Date(timeIntervalSince1970: 1_600_000_000)
+        try write("shop/config.ru", bytes: 10, modified: old)
+        try write("shop/Gemfile", bytes: 10, modified: old)
+        try write("shop/tmp/cache/bootsnap/load-path-cache", bytes: 5_000)
+        try write("shop/tmp/pids/server.pid", bytes: 10)
+        try write("shop/vendor/bundle/ruby/3.3.0/gems/rack/lib/rack.rb", bytes: 5_000)
+        try write("shop/vendor/bundle/ruby/3.3.0/bundler/gems/forked/.git/HEAD", bytes: 10)
+        try write("shop/vendor/javascript/app.js", bytes: 5_000)
+        // No project file beside these, so they're just folders.
+        try write("notes/tmp/cache/thing", bytes: 5_000)
+        try write("notes/vendor/bundle/thing", bytes: 5_000)
+        let result = await scan()
+        #expect(result.artifacts.map(\.path) == [rootPath + "/shop/tmp/cache", rootPath + "/shop/vendor/bundle"])
+        #expect(result.artifacts.map(\.kind) == [.railsCache, .bundle])
+        #expect(result.artifacts.map(\.projectPath) == [rootPath + "/shop", rootPath + "/shop"])
+        #expect(result.nestedRepositories == [rootPath + "/shop/vendor/bundle/ruby/3.3.0/bundler/gems/forked"])
+        let cache = try #require(result.artifacts.first)
+        #expect(result.size(of: cache) >= 5_000 && result.size(of: cache) < 100_000)
+    }
+
     @Test func findsDiskImages() async throws {
         try write("Downloads/Installer.dmg", bytes: 200_000)
         try write("Downloads/small.dmg", bytes: 1_000)

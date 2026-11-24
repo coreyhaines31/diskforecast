@@ -108,7 +108,10 @@ public struct ArtifactFinding: Sendable, Hashable {
     public let projectModified: Date
     public let node: Int
 
-    public var projectPath: String { (path as NSString).deletingLastPathComponent }
+    public var projectPath: String {
+        let parent = (path as NSString).deletingLastPathComponent
+        return kind.parentName == nil ? parent : (parent as NSString).deletingLastPathComponent
+    }
 }
 
 /// A git worktree: a checkout whose `.git` is a file pointing into another repository's

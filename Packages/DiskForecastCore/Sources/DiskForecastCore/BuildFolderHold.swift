@@ -14,6 +14,9 @@ public enum BuildFolderHold: Sendable, Equatable {
     case notIgnored
     /// It's in a repository and git couldn't say how it stands.
     case unchecked
+    /// A Mix build holds a release for this environment. A release can carry a generated cookie
+    /// and the earlier versions an upgrade needs, which compiling again doesn't bring back.
+    case holdsRelease(String)
     /// Its name is a common one for things made by hand or downloaded prebuilt, and no
     /// repository ignores it to say it's build output.
     case unvouched
@@ -26,6 +29,7 @@ public enum BuildFolderHold: Sendable, Equatable {
         case .notIgnored: "git doesn't ignore it"
         case .unchecked: "git couldn't check it"
         case .unvouched: "no repository marks it as build output"
+        case .holdsRelease(let environment): "holds a release at \(environment)/rel"
         }
     }
 
@@ -42,6 +46,8 @@ public enum BuildFolderHold: Sendable, Equatable {
     /// How deep the look before removing goes. Package managers put the checkouts they clone
     /// within a few folders of the top, and a full walk of every build folder would take minutes.
     static let recheckDepth = 4
+    /// Bundler keeps gems from git one level further down, in `ruby/<version>/bundler/gems`.
+    static let bundleRecheckDepth = 5
 
     /// Checks a build folder of a given kind. `checkouts` are the folders in it that hold a
     /// `.git`, as the scan found them. Nil when a rebuild brings back everything in it.
@@ -51,24 +57,35 @@ public enum BuildFolderHold: Sendable, Equatable {
             if isRestorablePackage(checkout, kind: kind, buildFolder: folder, project: project) { continue }
             return .holdsCheckout(String(checkout.dropFirst(folder.count + 1)))
         }
+        if kind == .mixBuild, let environment = releaseEnvironment(inMixBuild: folder) {
+            return .holdsRelease(environment)
+        }
         // Outside any repository git has no say, and nothing to protect. Without git installed
         // there's no one to ask, and holding every build folder back would help nobody. A name
         // like dist is the exception: only a repository can say it's build output.
-        guard GitState.executable != nil, GitState.isInsideRepository(project) else {
-            return kind.needsRepository ? .unvouched : nil
-        }
+        let unvouched: BuildFolderHold? = kind.needsRepository ? .unvouched : nil
+        guard GitState.executable != nil, GitState.isInsideRepository(project) else { return unvouched }
         switch GitState.standing(of: (folder as NSString).lastPathComponent, in: project) {
         case .ignored: return nil
         case .tracked: return .tracked
         case .untracked: return .notIgnored
-        case nil: return .unchecked
+        // A .git that git doesn't recognise protects nothing, so it's as if there were none.
+        case nil: return GitState.saysNotARepository(project) ? unvouched : .unchecked
         }
     }
 
     /// Checks a build folder as it is now, finding the checkouts in it by looking
     /// `recheckDepth` folders deep. For right before it's removed, when the scan may be hours old.
     public static func recheck(folder: String, kind: ArtifactKind) -> BuildFolderHold? {
-        check(folder: folder, kind: kind, checkouts: checkouts(in: folder, depth: recheckDepth))
+        let depth = kind == .bundle ? bundleRecheckDepth : recheckDepth
+        return check(folder: folder, kind: kind, checkouts: checkouts(in: folder, depth: depth))
+    }
+
+    /// The first environment of a Mix `_build` that holds a release, in `<environment>/rel`.
+    static func releaseEnvironment(inMixBuild folder: String) -> String? {
+        let environments = ((try? FileManager.default.contentsOfDirectory(atPath: folder)) ?? []).sorted()
+        var info = stat()
+        return environments.first { lstat(folder + "/" + $0 + "/rel", &info) == 0 }
     }
 
     /// The folders at or under `folder`, down to `depth` levels, that hold a `.git`. Links aren't

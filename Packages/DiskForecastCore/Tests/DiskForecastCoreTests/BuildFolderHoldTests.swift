@@ -48,6 +48,17 @@ struct BuildFolderHoldTests {
         #expect(check("build", kind: .gradleBuild) == .tracked)
     }
 
+    @Test func aBrokenRepositoryCountsAsNone() throws {
+        let broken = fixture.base.path + "/broken"
+        try write(broken + "/.git/description")
+        try write(broken + "/node_modules/pkg/index.js")
+        try write(broken + "/dist/app.js")
+        #expect(GitState.saysNotARepository(broken))
+        #expect(!GitState.saysNotARepository(project))
+        #expect(check("node_modules", in: broken) == nil)
+        #expect(check("dist", kind: .dist, in: broken) == .unvouched)
+    }
+
     @Test func aFolderOutsideAnyRepositoryIsRebuildable() throws {
         let loose = fixture.base.path + "/loose"
         try write(loose + "/node_modules/pkg/index.js")
@@ -62,6 +73,28 @@ struct BuildFolderHoldTests {
         try write(project + "/.gitignore", "dist\n")
         try write(project + "/dist/app.js")
         #expect(check("dist", kind: .dist) == nil)
+    }
+
+    @Test func aMixBuildWithAReleaseIsHeld() throws {
+        try write(project + "/.gitignore", "_build\n")
+        try write(project + "/_build/dev/lib/app/ebin/app.beam")
+        #expect(check("_build", kind: .mixBuild) == nil)
+        try write(project + "/_build/prod/rel/app/releases/COOKIE")
+        #expect(check("_build", kind: .mixBuild) == .holdsRelease("prod"))
+        #expect(BuildFolderHold.holdsRelease("prod").reason == "holds a release at prod/rel")
+    }
+
+    @Test func looksFurtherDownForTheGemsBundlerClones() throws {
+        try write(project + "/.gitignore", "vendor/bundle\n")
+        try write(project + "/vendor/bundle/ruby/3.3.0/bundler/gems/forked/.git/HEAD")
+        let hold = BuildFolderHold.recheck(folder: project + "/vendor/bundle", kind: .bundle)
+        #expect(hold == .holdsCheckout("ruby/3.3.0/bundler/gems/forked"))
+    }
+
+    @Test func aRailsCacheGitIgnoresIsRebuildable() throws {
+        try write(project + "/.gitignore", "/tmp/*\n")
+        try write(project + "/tmp/cache/bootsnap/load-path-cache")
+        #expect(BuildFolderHold.recheck(folder: project + "/tmp/cache", kind: .railsCache) == nil)
     }
 
     @Test func aCheckoutInsideIsHeldEvenWhenTheFolderIsIgnored() throws {

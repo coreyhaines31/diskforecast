@@ -81,6 +81,27 @@ public struct GitState: Sendable, Equatable {
         return false
     }
 
+    /// Whether git itself says a folder isn't in a repository, as it does for a `.git` that's
+    /// empty or half deleted. Any other failure, like a repository it won't trust, isn't that.
+    static func saysNotARepository(_ path: String) -> Bool {
+        guard let executable else { return false }
+        let process = Process()
+        process.executableURL = URL(filePath: executable)
+        process.arguments = ["-C", path, "rev-parse", "--git-dir"]
+        var environment = ProcessInfo.processInfo.environment
+        // The message is matched, so it has to be in English.
+        environment["LC_ALL"] = "C"
+        process.environment = environment
+        let pipe = Pipe()
+        process.standardError = pipe
+        process.standardOutput = FileHandle.nullDevice
+        process.standardInput = FileHandle.nullDevice
+        guard let result = try? TimedProcess.run(process, output: pipe, timeout: timeout), !result.timedOut
+        else { return false }
+        return result.status != 0 && (String(bytes: result.data, encoding: .utf8) ?? "")
+            .contains("not a git repository")
+    }
+
     /// How a checkout's repository treats one of its folders.
     enum Standing: Equatable {
         /// Nothing in it is tracked, and git ignores the rest.
