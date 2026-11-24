@@ -106,7 +106,7 @@ du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
         <div class="head center">
           <h2>Disk Forecast finds this for you</h2>
 
-          <p>Homebrew&#39;s cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>Homebrew</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, checked by default, and moves it to the Trash. Old versions in the Cellar aren&#39;t listed; <code>brew cleanup</code> is the right tool for those, and <strong>System Data › Package manager caches</strong> runs <code>brew cleanup --prune=all</code> for you, after showing you the command. It&#39;s free.</p>
+          <p>Homebrew&#39;s cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>Homebrew</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, checked by default, and moves it to the Trash. Old versions in the Cellar aren&#39;t listed; <code>brew cleanup</code> is the right tool for those, and once Homebrew&#39;s downloads pass 50 MB, <strong>System Data › Package manager caches</strong> offers to run <code>brew cleanup --prune=all</code> for you, after showing you the command. It&#39;s free.</p>
     
           <div class="actions">
             <a class="bx-btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>

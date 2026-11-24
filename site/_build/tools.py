@@ -679,7 +679,7 @@ du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
         <p>Next: <a href="/clear-cache/pip">pip's cache</a> sits beside Homebrew's, and <a href="/clear-cache/npm">npm's</a> is often the biggest. Or see <a href="/clear-cache">every tool's cache</a>.</p>
     """,
     "finds": """
-          <p>Homebrew&#39;s cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>Homebrew</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, checked by default, and moves it to the Trash. Old versions in the Cellar aren&#39;t listed; <code>brew cleanup</code> is the right tool for those, and <strong>System Data › Package manager caches</strong> runs <code>brew cleanup --prune=all</code> for you, after showing you the command. It&#39;s free.</p>
+          <p>Homebrew&#39;s cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>Homebrew</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, checked by default, and moves it to the Trash. Old versions in the Cellar aren&#39;t listed; <code>brew cleanup</code> is the right tool for those, and once Homebrew&#39;s downloads pass 50 MB, <strong>System Data › Package manager caches</strong> offers to run <code>brew cleanup --prune=all</code> for you, after showing you the command. It&#39;s free.</p>
     """,
     "mockup": "cleanup",
     "related": ["/clear-cache/pip", "/clear-cache/npm", "/clear-cache/xcode"],
