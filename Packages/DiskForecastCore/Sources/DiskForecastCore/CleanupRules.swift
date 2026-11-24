@@ -230,6 +230,19 @@ extension CleanupCatalog {
                 }
             },
             CleanupRule(
+                id: "pnpm-store", title: "pnpm store",
+                explanation: "Every package pnpm has installed, shared by your projects, so removing the folder "
+                    + "frees far less than its size and breaks their installs. pnpm's own prune removes only "
+                    + "what no project uses.",
+                group: .worthALook, action: .useTool("pnpm"), minimumBytes: CleanupCatalog.minimumToolCacheBytes
+            ) { catalog, _ in catalog.fixed(["Library/pnpm/store", ".local/share/pnpm/store"]) },
+            CleanupRule(
+                id: "go-modules", title: "Go module cache",
+                explanation: "Every Go module downloaded for your projects. Go makes these files read-only, so "
+                    + "its own command is the way to remove them. The next build downloads what it needs again.",
+                group: .worthALook, action: .useTool("go"), minimumBytes: CleanupCatalog.minimumToolCacheBytes
+            ) { catalog, _ in catalog.fixed(["go/pkg/mod"]) },
+            CleanupRule(
                 id: "disk-images", title: "Disk images and installers",
                 explanation: "DMG, ISO, and PKG files. Once an app is installed, its installer is usually not needed.",
                 group: .worthALook

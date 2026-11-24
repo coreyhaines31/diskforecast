@@ -88,6 +88,8 @@ public struct CleanupCatalog: Sendable {
     static let minimumWhatsAppBytes: Int64 = 5_000_000_000
     /// Chat apps' saved media is only worth a mention once it's big enough to matter.
     static let minimumChatMediaBytes: Int64 = 2_000_000_000
+    /// A package manager's cache is only worth its own row and button from this size up.
+    public static let minimumToolCacheBytes: Int64 = 50_000_000
     /// Folders stored twice are only compared, and listed, from this size up.
     static let minimumDuplicateBytes: Int64 = 1_000_000_000
 

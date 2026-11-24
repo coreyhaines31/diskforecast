@@ -39,3 +39,26 @@ struct ToolCacheTests {
         #expect(ToolCache.executable(named: "zig", home: "/Users/me", isExecutable: installed.contains) == nil)
     }
 }
+
+struct ToolCacheCleanupTests {
+    @Test func pointsToTheToolForCachesTheTrashHandlesBadly() async throws {
+        let base = TestFolders.make("DiskForecastToolCaches")
+        let home = URL(filePath: Trasher.resolved(base.path))
+        for file in ["Library/pnpm/store/v11/files/00/abc", "go/pkg/mod/cache/download/big.zip"] {
+            let url = home.appending(path: file)
+            let folder = url.deletingLastPathComponent()
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            try Data(count: 60_000_000).write(to: url)
+        }
+        let scan = await DiskScanner(options: .init(root: home)).scan()
+        let items = Dictionary(
+            uniqueKeysWithValues: CleanupCatalog(home: home.path).items(from: scan).map { ($0.id, $0) }
+        )
+        #expect(items["pnpm-store"]?.action == .useTool("pnpm"))
+        #expect(items["pnpm-store"]?.group == .worthALook)
+        #expect(items["go-modules"]?.action == .useTool("go"))
+        // Neither is offered to the Trash by a broader rule.
+        let trashable = items.values.filter { $0.action == .trash }.flatMap(\.entries).map(\.path)
+        #expect(!trashable.contains { $0.contains("/pnpm/") || $0.contains("/go/pkg") })
+    }
+}
