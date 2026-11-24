@@ -54,6 +54,7 @@ extension StorageBreakdown {
         var projects = scan.artifacts.map(\.projectPath) + scan.worktrees.map(\.path)
         projects += entries(of: "stale-builds", in: items).map { ($0.path as NSString).deletingLastPathComponent }
         projects += entries(of: "active-builds", in: items).map { ($0.path as NSString).deletingLastPathComponent }
+        projects += entries(of: "quiet-builds", in: items).map { ($0.path as NSString).deletingLastPathComponent }
         projects += entries(of: "idle-build-output", in: items).map { ($0.path as NSString).deletingLastPathComponent }
         projects += entries(of: "held-builds", in: items).map { ($0.path as NSString).deletingLastPathComponent }
         projects += entries(of: "git-worktrees", in: items).map(\.path)
