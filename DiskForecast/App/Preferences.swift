@@ -40,6 +40,7 @@ enum Preferences {
     static let notifiesBeforeFullKey = "notifiesBeforeFull"
     static let lastDiskAlertKey = "lastDiskAlert"
     static let lastFastFillAlertKey = "lastFastFillAlert"
+    static let lastCriticalFloorKey = "lastCriticalFloor"
     static let checksPullRequestsKey = "checksPullRequests"
 
     static func registerDefaults() {
@@ -93,5 +94,11 @@ enum Preferences {
     static var lastFastFillAlert: Date? {
         get { UserDefaults.standard.object(forKey: lastFastFillAlertKey) as? Date }
         set { UserDefaults.standard.set(newValue, forKey: lastFastFillAlertKey) }
+    }
+
+    /// The critical free-space floor already warned about, in bytes.
+    static var lastCriticalFloor: Int64? {
+        get { (UserDefaults.standard.object(forKey: lastCriticalFloorKey) as? NSNumber)?.int64Value }
+        set { UserDefaults.standard.set(newValue.map { NSNumber(value: $0) }, forKey: lastCriticalFloorKey) }
     }
 }

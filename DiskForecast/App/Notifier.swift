@@ -19,7 +19,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         UNUserNotificationCenter.current().delegate = self
     }
 
-    /// Sends an alert if one is due: a disk filling within minutes first, then the daily alert.
+    /// Sends an alert if one is due: a disk filling within minutes first, then one nearly out of
+    /// space, then the daily alert.
     /// Cheap enough to call on every free-space reading.
     func check() {
         #if DEBUG
@@ -30,7 +31,18 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             // It already says space is low, so the daily alert waits a day rather than following a minute later.
             Preferences.lastFastFillAlert = Date()
             Preferences.lastDiskAlert = Date()
+            // It names what's left too, so the floor it's already under doesn't get its own alert.
+            Preferences.lastCriticalFloor = CriticalSpace.floor(under: disk.freeBytes) ?? Preferences.lastCriticalFloor
             send(warning.message(trashBytes: scan.trashBytes), identifier: "fastFill")
+            return
+        }
+        let critical = CriticalSpace.decide(freeBytes: disk.freeBytes, lastFloor: Preferences.lastCriticalFloor)
+        Preferences.lastCriticalFloor = critical.remembered
+        if critical.alert != nil {
+            Preferences.lastDiskAlert = Date()
+            send(
+                CriticalSpace.message(freeBytes: disk.freeBytes, trashBytes: scan.trashBytes), identifier: "critical"
+            )
             return
         }
         guard let alert = DiskAlert.due(
