@@ -135,6 +135,23 @@ struct BuildFolderHoldTests {
         #expect(check(".build", kind: .swiftBuild, in: package.project) == .holdsCheckout("scratch"))
     }
 
+    @Test func anUntouchedXcodePackageCheckoutIsRebuildable() throws {
+        let app = fixture.base.path + "/app"
+        let checkout = app + "/DerivedData/App-abc/SourcePackages/checkouts/dep"
+        try fixture.git(["init", "-q", app], in: fixture.base.path)
+        try write(app + "/.gitignore", "DerivedData\n")
+        try write(app + "/DerivedData/App-abc/SourcePackages/checkouts/.keep")
+        try fixture.git(["clone", "-q", fixture.main, checkout], in: app)
+        let head = try #require(GitState.head(at: checkout))
+        try write(app + "/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved", """
+        {"pins": [{"identity": "dep", "state": {"revision": "\(head)"}}], "version": 2}
+        """)
+        #expect(check("DerivedData", kind: .derivedData, in: app) == nil)
+        try write(checkout + "/README.md", "edited")
+        let held = BuildFolderHold.holdsCheckout("App-abc/SourcePackages/checkouts/dep")
+        #expect(check("DerivedData", kind: .derivedData, in: app) == held)
+    }
+
     @Test func readsTheOlderPackageResolvedFormat() throws {
         let file = fixture.base.path + "/Package.resolved"
         try write(file, #"{"object": {"pins": [{"state": {"revision": "abc"}}]}, "version": 1}"#)

@@ -48,7 +48,7 @@ public enum BuildFolderHold: Sendable, Equatable {
     public static func check(folder: String, kind: ArtifactKind, checkouts: [String]) -> BuildFolderHold? {
         let project = (folder as NSString).deletingLastPathComponent
         for checkout in checkouts.sorted() where checkout == folder || checkout.hasPrefix(folder + "/") {
-            if kind == .swiftBuild, isRestorablePackage(checkout, buildFolder: folder, project: project) { continue }
+            if isRestorablePackage(checkout, kind: kind, buildFolder: folder, project: project) { continue }
             return .holdsCheckout(String(checkout.dropFirst(folder.count + 1)))
         }
         // Outside any repository git has no say, and nothing to protect. Without git installed
@@ -99,14 +99,37 @@ public enum BuildFolderHold: Sendable, Equatable {
         return found
     }
 
-    /// Whether a checkout is one Swift Package Manager cloned into `.build/checkouts` and can
-    /// clone again: at the revision `Package.resolved` pins, with nothing changed.
-    static func isRestorablePackage(_ checkout: String, buildFolder: String, project: String) -> Bool {
-        guard (checkout as NSString).deletingLastPathComponent == buildFolder + "/checkouts",
-              let head = GitState.head(at: checkout),
-              pinnedRevisions(in: project + "/Package.resolved").contains(head)
+    /// Whether a checkout is one Swift Package Manager cloned and can clone again: in the
+    /// `checkouts` folder of a `.build` or of Xcode's `SourcePackages`, at a revision a
+    /// `Package.resolved` of the project pins, with nothing changed.
+    static func isRestorablePackage(
+        _ checkout: String, kind: ArtifactKind, buildFolder: String, project: String
+    ) -> Bool {
+        let parent = (checkout as NSString).deletingLastPathComponent
+        let inside = parent.dropFirst(buildFolder.count + 1).split(separator: "/")
+        switch kind {
+        case .swiftBuild: guard inside == ["checkouts"] else { return false }
+        // Xcode keeps them in SourcePackages, straight in DerivedData or in a project's folder there.
+        case .derivedData: guard inside.suffix(2) == ["SourcePackages", "checkouts"], inside.count <= 3
+            else { return false }
+        default: return false
+        }
+        guard let head = GitState.head(at: checkout), pinnedRevisions(forProject: project).contains(head)
         else { return false }
         return GitState.read(at: checkout)?.changed == 0
+    }
+
+    /// The revisions pinned by a project's `Package.resolved` files: its own, and the ones Xcode
+    /// keeps inside a project or workspace.
+    static func pinnedRevisions(forProject project: String) -> Set<String> {
+        let names = (try? FileManager.default.contentsOfDirectory(atPath: project)) ?? []
+        var files = [project + "/Package.resolved"]
+        for name in names {
+            let shared = "/xcshareddata/swiftpm/Package.resolved"
+            if name.hasSuffix(".xcodeproj") { files.append(project + "/" + name + "/project.xcworkspace" + shared) }
+            if name.hasSuffix(".xcworkspace") { files.append(project + "/" + name + shared) }
+        }
+        return files.reduce(into: Set<String>()) { $0.formUnion(pinnedRevisions(in: $1)) }
     }
 
     /// The revisions a `Package.resolved` pins, in either of its formats.
