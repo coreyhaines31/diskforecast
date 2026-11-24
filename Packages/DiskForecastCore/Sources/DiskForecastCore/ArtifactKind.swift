@@ -65,6 +65,42 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
         }
     }
 
+    /// What getting the folder back takes, cheapest first.
+    public enum RestoreCost: String, Sendable, Comparable {
+        /// The tool that made it makes it again the next time the project runs.
+        case regenerates
+        /// Someone has to run the build.
+        case rebuild
+        /// Dependencies have to be downloaded and installed again.
+        case install
+
+        public var phrase: String {
+            switch self {
+            case .regenerates: "comes back on the next run"
+            case .rebuild: "needs a rebuild"
+            case .install: "needs a reinstall"
+            }
+        }
+
+        public static func < (one: RestoreCost, other: RestoreCost) -> Bool {
+            let order: [RestoreCost] = [.regenerates, .rebuild, .install]
+            return order.firstIndex(of: one)! < order.firstIndex(of: other)!
+        }
+    }
+
+    public var restoreCost: RestoreCost {
+        switch self {
+        case .nextBuild, .turborepo, .parcel, .pytest, .mypy, .ruff, .derivedData, .svelteKit, .astro, .zigCache,
+             .oldZigCache, .railsCache:
+            .regenerates
+        case .rustTarget, .mavenTarget, .swiftBuild, .gradleBuild, .pythonBuild, .dist, .dotnetBin, .dotnetObj,
+             .mixBuild:
+            .rebuild
+        case .nodeModules, .pythonVenv, .plainVenv, .cocoaPods, .tox, .nox, .gradleCache, .bundle:
+            .install
+        }
+    }
+
     /// The folder it sits in, for one that isn't directly beside its project file: Rails keeps
     /// its cache in `tmp/cache`, and Bundler installs into `vendor/bundle`.
     public var parentName: String? {
