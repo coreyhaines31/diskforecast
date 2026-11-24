@@ -20,7 +20,14 @@ extension CleanupCatalog {
                 explanation: "node_modules, build, and package folders in projects you haven't changed in "
                     + "\(staleAfterDays)+ days. Reinstalling or rebuilding brings them back.",
                 group: .safeToClear
-            ) { catalog, scan in catalog.artifacts(scan, stale: true) },
+            ) { catalog, scan in catalog.artifacts(scan, tier: .stale) },
+            CleanupRule(
+                id: "idle-build-output", title: "Build output not in use",
+                explanation: "Folders a framework fills as it runs and makes again by itself, like .next, .turbo, "
+                    + "and DerivedData, in projects you've changed recently. Nothing has written to them for a "
+                    + "day, and there's nothing to reinstall: the next dev run or build makes them again.",
+                group: .safeToClear
+            ) { catalog, scan in catalog.artifacts(scan, tier: .idleOutput) },
             CleanupRule(
                 id: "worktree-leftovers", title: "Leftover worktree data",
                 explanation: "Git's records for worktrees whose folder is gone, including any submodule copies. "
@@ -254,7 +261,7 @@ extension CleanupCatalog {
                 explanation: "Build and package folders in projects you've changed recently. Safe to remove, but "
                     + "you'll wait for a reinstall or rebuild next time.",
                 group: .worthALook
-            ) { catalog, scan in catalog.artifacts(scan, stale: false) },
+            ) { catalog, scan in catalog.artifacts(scan, tier: .active) },
             CleanupRule(
                 id: "held-builds", title: "Build folders with work in them",
                 explanation: "Folders named like build or package folders that hold something a rebuild "
