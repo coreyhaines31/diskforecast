@@ -54,6 +54,16 @@ struct BuildFolderHoldTests {
         #expect(check("node_modules", in: loose) == nil)
     }
 
+    @Test func aCommonNameNeedsARepositoryToVouchForIt() throws {
+        let loose = fixture.base.path + "/downloaded-library"
+        try write(loose + "/dist/library.min.js")
+        #expect(check("dist", kind: .dist, in: loose) == .unvouched)
+        #expect(check("bin", kind: .dotnetBin, in: loose) == .unvouched)
+        try write(project + "/.gitignore", "dist\n")
+        try write(project + "/dist/app.js")
+        #expect(check("dist", kind: .dist) == nil)
+    }
+
     @Test func aCheckoutInsideIsHeldEvenWhenTheFolderIsIgnored() throws {
         try write(project + "/.gitignore", ".venv\n")
         try write(project + "/.venv/src/forked-lib/.git/HEAD")

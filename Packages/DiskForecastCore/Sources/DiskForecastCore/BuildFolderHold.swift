@@ -14,6 +14,9 @@ public enum BuildFolderHold: Sendable, Equatable {
     case notIgnored
     /// It's in a repository and git couldn't say how it stands.
     case unchecked
+    /// Its name is a common one for things made by hand or downloaded prebuilt, and no
+    /// repository ignores it to say it's build output.
+    case unvouched
 
     public var reason: String {
         switch self {
@@ -22,6 +25,7 @@ public enum BuildFolderHold: Sendable, Equatable {
         case .tracked: "has files git tracks"
         case .notIgnored: "git doesn't ignore it"
         case .unchecked: "git couldn't check it"
+        case .unvouched: "no repository marks it as build output"
         }
     }
 
@@ -30,6 +34,7 @@ public enum BuildFolderHold: Sendable, Equatable {
         switch self {
         case .notIgnored: "isn't ignored by git"
         case .unchecked: "couldn't be checked with git"
+        case .unvouched: "isn't marked as build output by any repository"
         default: reason
         }
     }
@@ -47,8 +52,11 @@ public enum BuildFolderHold: Sendable, Equatable {
             return .holdsCheckout(String(checkout.dropFirst(folder.count + 1)))
         }
         // Outside any repository git has no say, and nothing to protect. Without git installed
-        // there's no one to ask, and holding every build folder back would help nobody.
-        guard GitState.executable != nil, GitState.isInsideRepository(project) else { return nil }
+        // there's no one to ask, and holding every build folder back would help nobody. A name
+        // like dist is the exception: only a repository can say it's build output.
+        guard GitState.executable != nil, GitState.isInsideRepository(project) else {
+            return kind.needsRepository ? .unvouched : nil
+        }
         switch GitState.standing(of: (folder as NSString).lastPathComponent, in: project) {
         case .ignored: return nil
         case .tracked: return .tracked
