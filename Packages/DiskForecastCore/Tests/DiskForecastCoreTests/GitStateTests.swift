@@ -208,6 +208,53 @@ struct WorktreeCleanupTests {
         #expect(Date().timeIntervalSince(CleanupCatalog.lastUsed(finding)) < 60)
     }
 
+    /// The fixture's worktree as a finished entry, listed three days after its last commit.
+    func finishedEntry(_ fixture: GitFixture) async throws -> CleanupEntry {
+        try Data(count: 2_000_000).write(to: URL(filePath: fixture.worktree + "/big.bin"))
+        try fixture.git(["add", "big.bin"], in: fixture.worktree)
+        try fixture.git(["commit", "-q", "-m", "Big"], in: fixture.worktree)
+        try fixture.git(["push", "-q", "origin", "agent:main"], in: fixture.worktree)
+        try fixture.git(["fetch", "-q", "origin"], in: fixture.worktree)
+        let scan = await DiskScanner(options: .init(root: fixture.base)).scan()
+        let items = CleanupCatalog(home: fixture.base.path, now: Date().addingTimeInterval(3 * 86_400))
+            .items(from: scan)
+        let entry = try #require(items.first { $0.id == "finished-worktrees" }?.entries.first)
+        #expect(entry.finishedWorktree)
+        return entry
+    }
+
+    @Test func aFinishedWorktreeIsTrashedWithItsRecords() async throws {
+        let fixture = try GitFixture()
+        let entry = try await finishedEntry(fixture)
+        let report = Trasher(home: fixture.base.path).trash([entry])
+        #expect(report.failed.isEmpty)
+        #expect(Set(report.moved) == [fixture.worktree, fixture.main + "/.git/worktrees/repo-agent"])
+    }
+
+    @Test func aWorktreeWorkedInSinceTheListWasMadeIsLeftAlone() async throws {
+        let fixture = try GitFixture()
+        let entry = try await finishedEntry(fixture)
+        try Data("new idea".utf8).write(to: URL(filePath: fixture.worktree + "/draft.txt"))
+        let report = Trasher(home: fixture.base.path).trash([entry])
+        #expect(report.moved.isEmpty)
+        #expect(report.failed.map(\.path) == [fixture.worktree])
+        #expect(report.failed.first?.reason
+            == "Left alone: since the list was made, it changed (1 changed file).")
+        #expect(FileManager.default.fileExists(atPath: fixture.worktree + "/draft.txt"))
+    }
+
+    @Test func aWorktreeListedForALookIsNotAskedAgain() async throws {
+        let fixture = try GitFixture()
+        try Data(count: 2_000_000).write(to: URL(filePath: fixture.worktree + "/big.bin"))
+        let scan = await DiskScanner(options: .init(root: fixture.base)).scan()
+        let entry = try #require(
+            CleanupCatalog(home: fixture.base.path).items(from: scan).first { $0.id == "git-worktrees" }?.entries.first
+        )
+        #expect(!entry.finishedWorktree)
+        // The person chose it knowing it has a changed file, so it goes.
+        #expect(Trasher(home: fixture.base.path).trash([entry]).failed.isEmpty)
+    }
+
     @Test func anOpenPullRequestKeepsAWorktreeOutOfSafeToClear() async throws {
         let items = try await items(daysLater: 3, pullRequest: .open)
         #expect(!items.contains { $0.id == "finished-worktrees" })
