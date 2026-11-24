@@ -107,3 +107,25 @@ struct BuildTierTests {
         #expect(ArtifactKind.RestoreCost.rebuild < .install)
     }
 }
+
+struct TrashContentsTests {
+    @Test func whatIsAlreadyInTheTrashIsNotOfferedAgain() async throws {
+        let base = TestFolders.make("DiskForecastTrashed")
+        let home = URL(filePath: Trasher.resolved(base.path))
+        let old = Date().addingTimeInterval(-90 * 86_400)
+        for project in ["code/old", ".Trash/old-project"] {
+            let folder = home.appending(path: project)
+            try FileManager.default.createDirectory(
+                at: folder.appending(path: "node_modules/pkg"), withIntermediateDirectories: true
+            )
+            try Data(count: 10).write(to: folder.appending(path: "package.json"))
+            try Data(count: 2_000_000).write(to: folder.appending(path: "node_modules/pkg/index.js"))
+            for path in [folder.path, folder.path + "/package.json", folder.path + "/node_modules"] {
+                try FileManager.default.setAttributes([.modificationDate: old], ofItemAtPath: path)
+            }
+        }
+        let scan = await DiskScanner(options: .init(root: home)).scan()
+        let entries = CleanupCatalog(home: home.path).items(from: scan).flatMap(\.entries)
+        #expect(entries.map(\.path) == [home.path + "/code/old/node_modules"])
+    }
+}
