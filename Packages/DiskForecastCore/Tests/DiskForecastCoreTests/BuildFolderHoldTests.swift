@@ -48,6 +48,17 @@ struct BuildFolderHoldTests {
         #expect(check("build", kind: .gradleBuild) == .tracked)
     }
 
+    @Test func aBrokenRepositoryCountsAsNone() throws {
+        let broken = fixture.base.path + "/broken"
+        try write(broken + "/.git/description")
+        try write(broken + "/node_modules/pkg/index.js")
+        try write(broken + "/dist/app.js")
+        #expect(GitState.saysNotARepository(broken))
+        #expect(!GitState.saysNotARepository(project))
+        #expect(check("node_modules", in: broken) == nil)
+        #expect(check("dist", kind: .dist, in: broken) == .unvouched)
+    }
+
     @Test func aFolderOutsideAnyRepositoryIsRebuildable() throws {
         let loose = fixture.base.path + "/loose"
         try write(loose + "/node_modules/pkg/index.js")

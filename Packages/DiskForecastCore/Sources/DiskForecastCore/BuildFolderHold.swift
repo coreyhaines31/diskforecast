@@ -63,14 +63,14 @@ public enum BuildFolderHold: Sendable, Equatable {
         // Outside any repository git has no say, and nothing to protect. Without git installed
         // there's no one to ask, and holding every build folder back would help nobody. A name
         // like dist is the exception: only a repository can say it's build output.
-        guard GitState.executable != nil, GitState.isInsideRepository(project) else {
-            return kind.needsRepository ? .unvouched : nil
-        }
+        let unvouched: BuildFolderHold? = kind.needsRepository ? .unvouched : nil
+        guard GitState.executable != nil, GitState.isInsideRepository(project) else { return unvouched }
         switch GitState.standing(of: (folder as NSString).lastPathComponent, in: project) {
         case .ignored: return nil
         case .tracked: return .tracked
         case .untracked: return .notIgnored
-        case nil: return .unchecked
+        // A .git that git doesn't recognise protects nothing, so it's as if there were none.
+        case nil: return GitState.saysNotARepository(project) ? unvouched : .unchecked
         }
     }
 
