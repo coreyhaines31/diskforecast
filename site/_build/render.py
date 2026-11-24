@@ -236,14 +236,14 @@ def with_new_rows(rows, them):
     return list(rows[:at]) + added + list(rows[at:])
 
 
-def table(rows, competitor):
+def table(rows, competitor, checked="October 2026"):
     out = ['        <div class="table-card glass"><div class="table-scroll"><table class="compare">',
            f'          <thead><tr><td></td><th scope="col" class="us">Disk Forecast</th><th scope="col">{esc(competitor)}</th></tr></thead><tbody>']
     for label, us, them in rows:
         cls = ' class="n"' if them == "—" else ""
         out.append(f'            <tr><th scope="row">{label}</th><td class="us">{us}</td><td{cls}>{them}</td></tr>')
     out.append('          </tbody></table></div></div>')
-    out.append('        <p class="table-foot">“—” means we couldn\'t confirm it from the vendor\'s own materials as of October 2026.</p>')
+    out.append(f'        <p class="table-foot">“—” means we couldn\'t confirm it from the vendor\'s own materials as of {checked}.</p>')
     return "\n".join(out)
 
 
@@ -378,7 +378,7 @@ def render_page(p):
         theirs = p.get("new_rows", {})
         if sec.get("table"):
             rows = with_new_rows(sec["table"], lambda label: [theirs.get(label, "—")])
-            body = body.replace("{{TABLE}}", table(rows, p["competitor"]))
+            body = body.replace("{{TABLE}}", table(rows, p["competitor"], p.get("checked", "October 2026")))
         if sec.get("grid"):
             columns = len(sec["grid"]["head"]) - 2
             rows = with_new_rows(sec["grid"]["rows"], lambda label: theirs.get(label, ["—"] * columns))
