@@ -30,9 +30,9 @@ extension CleanupCatalog {
             CleanupRule(
                 id: "finished-worktrees", title: "Finished git worktrees",
                 explanation: "Extra checkouts with nothing left only in them: no changed files, every commit "
-                    + "pushed and already in the repository's main branch, and untouched for 2 days. Files git "
-                    + "ignores, like .env, aren't counted. Its records in the repository go with it, as with git "
-                    + "worktree remove; the branch and its commits stay.",
+                    + "pushed and already in the repository's main branch, no submodules, nothing git ignores "
+                    + "except build and package folders, and unused for 2 days. Its records in the repository go "
+                    + "with it, as with git worktree remove; the branch and its commits stay.",
                 group: .safeToClear
             ) { catalog, scan in catalog.worktrees(scan, finished: true) },
             CleanupRule(
