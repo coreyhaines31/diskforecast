@@ -16,10 +16,14 @@ public struct CleanupEntry: Sendable, Hashable, Identifiable {
     public let original: String?
     /// For a build folder listed as rebuildable, its kind. It's checked again before it goes.
     public let rebuildable: ArtifactKind?
+    /// Whether it was listed as a git worktree with nothing left only in it. It's asked again
+    /// before it goes.
+    public let finishedWorktree: Bool
 
     public init(
         path: String, bytes: Int64, detail: String? = nil, name: String? = nil, companions: [String] = [],
-        pullRequest: PullRequestState? = nil, original: String? = nil, rebuildable: ArtifactKind? = nil
+        pullRequest: PullRequestState? = nil, original: String? = nil, rebuildable: ArtifactKind? = nil,
+        finishedWorktree: Bool = false
     ) {
         self.path = path
         self.bytes = bytes
@@ -29,5 +33,6 @@ public struct CleanupEntry: Sendable, Hashable, Identifiable {
         self.pullRequest = pullRequest
         self.original = original
         self.rebuildable = rebuildable
+        self.finishedWorktree = finishedWorktree
     }
 }

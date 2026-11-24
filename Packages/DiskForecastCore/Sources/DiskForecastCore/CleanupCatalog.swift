@@ -139,7 +139,7 @@ public struct CleanupCatalog: Sendable {
                 return CleanupEntry(
                     path: candidate.path, bytes: max(0, bytes), detail: candidate.detail, name: candidate.name,
                     companions: companions, pullRequest: candidate.pullRequest, original: candidate.original,
-                    rebuildable: candidate.rebuildable
+                    rebuildable: candidate.rebuildable, finishedWorktree: candidate.finishedWorktree
                 )
             }
             .filter { $0.bytes >= rule.minimumBytes }
@@ -168,6 +168,7 @@ public struct CleanupCatalog: Sendable {
         var pullRequest: PullRequestState?
         var original: String?
         var rebuildable: ArtifactKind?
+        var finishedWorktree = false
         /// What removing it frees, when that isn't its size in the scan.
         var bytes: Int64?
     }

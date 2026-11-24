@@ -176,11 +176,11 @@ public struct Trasher: Sendable {
     /// Moves cleanup entries to the Trash, or deletes them, each with its companions. Companions go
     /// only when their entry did. A folder stored twice goes only if it still matches its original
     /// file for file, which can take a while for a big one. A build folder listed as rebuildable
-    /// goes only if it still is.
+    /// goes only if it still is, and so does a worktree listed as finished.
     public func trash(
         _ entries: [CleanupEntry], permanently: Bool = false, openFiles: OpenFiles = .current()
     ) -> Report {
-        let unmatched = unmatchedCopies(in: entries) + heldBuildFolders(in: entries)
+        let unmatched = unmatchedCopies(in: entries) + heldBuildFolders(in: entries) + changedWorktrees(in: entries)
         let entries = entries.filter { entry in !unmatched.contains { $0.path == entry.path } }
         let sizes = Dictionary(entries.map { ($0.path, $0.bytes) }) { first, _ in first }
         let names = Dictionary(entries.map { ($0.path, $0.name) }) { first, _ in first }

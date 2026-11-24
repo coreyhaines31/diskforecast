@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 /// The cleanup list's git worktrees: finished ones, the rest, and records left by deleted ones.
 extension CleanupCatalog {
@@ -16,7 +17,7 @@ extension CleanupCatalog {
             let pullRequest = pullRequest(worktree.path)
             var isFinished = state?.isFinished == true && pullRequest != .open
                 && now.timeIntervalSince(Self.lastUsed(worktree)) >= Self.finishedWorktreeIdle
-            if isFinished, let kept = Self.keptOnlyHere(worktree) {
+            if isFinished, let kept = Self.keptOnlyHere(path: worktree.path, gitDirectory: worktree.gitDirectory) {
                 // Says why an otherwise finished worktree still needs a look.
                 parts.append(kept)
                 isFinished = false
@@ -30,7 +31,8 @@ extension CleanupCatalog {
             let pointsBack = Self.checkoutGitFile(recordedIn: worktree.gitDirectory) == worktree.path + "/.git"
             return Candidate(
                 path: worktree.path, detail: parts.joined(separator: " · "),
-                companions: pointsBack ? [worktree.gitDirectory] : [], pullRequest: pullRequest
+                companions: pointsBack ? [worktree.gitDirectory] : [], pullRequest: pullRequest,
+                finishedWorktree: finished
             )
         }
     }
@@ -50,11 +52,11 @@ extension CleanupCatalog {
     /// there's nothing. Submodules keep their own history inside the worktree's records, where the
     /// checkout's git status doesn't look, so any at all count. When git can't say what it ignores,
     /// that counts too.
-    static func keptOnlyHere(_ worktree: WorktreeFinding) -> String? {
+    static func keptOnlyHere(path: String, gitDirectory: String) -> String? {
         let files = FileManager.default
-        let modules = (try? files.contentsOfDirectory(atPath: worktree.gitDirectory + "/modules")) ?? []
-        if !modules.isEmpty || files.fileExists(atPath: worktree.path + "/.gitmodules") { return "has submodules" }
-        switch GitState.ignoredKeepsakes(at: worktree.path) {
+        let modules = (try? files.contentsOfDirectory(atPath: gitDirectory + "/modules")) ?? []
+        if !modules.isEmpty || files.fileExists(atPath: path + "/.gitmodules") { return "has submodules" }
+        switch GitState.ignoredKeepsakes(at: path) {
         case 0?: return nil
         case 1?: return "keeps 1 file git ignores"
         case let count?: return "keeps \(count) files git ignores"
@@ -96,5 +98,35 @@ extension CleanupCatalog {
         let target = pointer.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !target.isEmpty else { return nil }
         return ((target.hasPrefix("/") ? target : records + "/" + target) as NSString).standardizingPath
+    }
+}
+
+extension Trasher {
+    /// The worktrees among `entries` that were listed as finished and no longer are, and why each
+    /// stays. The list can be hours old, and someone may have worked in one since.
+    func changedWorktrees(in entries: [CleanupEntry]) -> [(path: String, reason: String)] {
+        // One that's refused anyway is reported as that.
+        let worktrees = entries.filter { $0.finishedWorktree && refusal(for: $0.path) == nil }
+        let reasons = OSAllocatedUnfairLock(initialState: [Int: String]())
+        // A few git calls each, so they run side by side.
+        DispatchQueue.concurrentPerform(iterations: worktrees.count) { index in
+            guard let reason = Self.unfinishedReason(worktrees[index]) else { return }
+            reasons.withLock { $0[index] = reason }
+        }
+        let found = reasons.withLock { $0 }
+        return worktrees.indices.compactMap { index in
+            found[index].map { (worktrees[index].path, "Left alone: since the list was made, it \($0).") }
+        }
+    }
+
+    /// Why a worktree listed as finished isn't any more, or nil when it still is. When git can't
+    /// say, that counts as not finished.
+    static func unfinishedReason(_ entry: CleanupEntry) -> String? {
+        guard let state = GitState.read(at: entry.path) else { return "can no longer be read by git" }
+        guard state.isFinished else { return "changed (\(state.summary))" }
+        let gitFile = try? String(contentsOfFile: entry.path + "/.git", encoding: .utf8)
+        guard let records = gitFile.flatMap({ WorktreeFinding.gitDirectory(fromGitFile: $0, checkout: entry.path) })
+        else { return "is no longer a worktree" }
+        return CleanupCatalog.keptOnlyHere(path: entry.path, gitDirectory: records).map { "\($0)" }
     }
 }
