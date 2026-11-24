@@ -513,7 +513,7 @@ MAIL = {
 # Code, Codex, Conductor, Clinch) make worktrees. Facts measured on the same Mac on 2026-10-20: 36 worktree checkouts in
 # ~/code (find for .git files pointing into .git/worktrees, maxdepth 4), 39 GB with their node_modules; one repo's
 # .git/worktrees at 8.2 GB, two worktrees with 4.1 GB of submodule copies each. Claude Code's are in <repo>/.claude/worktrees
-# on this Mac. Disk Forecast claims trace to CleanupRules.swift (git-worktrees, worktree-leftovers) and GitState.swift.
+# on this Mac. Disk Forecast claims trace to CleanupRules.swift (finished-worktrees, git-worktrees, worktree-leftovers) and GitState.swift.
 GIT_WORKTREES = {
     "slug": "git-worktrees",
     "title": "Git worktrees taking up space on Mac: find and remove them",

@@ -77,6 +77,9 @@ public struct CleanupCatalog: Sendable {
     /// The build folders of the scan being listed that are held, by path. Worked out once per
     /// list, since several rules ask.
     var heldBuildFolders: [String: BuildFolderHold] = [:]
+    /// What removing each worktree of the scan being listed would lose, by path. Worked out once
+    /// per list, since two rules ask.
+    var worktreeStates: [String: GitState?] = [:]
 
     /// Entries smaller than this aren't worth listing.
     static let minimumEntryBytes: Int64 = 1_000_000
@@ -112,6 +115,9 @@ public struct CleanupCatalog: Sendable {
     public func items(from scan: ScanResult) -> [CleanupItem] {
         var catalog = self
         catalog.heldBuildFolders = holds(in: scan)
+        for worktree in scan.worktrees {
+            catalog.worktreeStates.updateValue(gitState(worktree.path), forKey: worktree.path)
+        }
         return catalog.listing(scan)
     }
 
@@ -242,61 +248,6 @@ public struct CleanupCatalog: Sendable {
                     )
                 }
         }
-    }
-
-    /// Git worktree checkouts, each with what removing it would lose.
-    func worktrees(_ scan: ScanResult) -> [Candidate] {
-        scan.worktrees.map { worktree in
-            var parts = [worktree.repository]
-            if let state = gitState(worktree.path) { parts.append(state.summary) }
-            let pullRequest = pullRequest(worktree.path)
-            if let phrase = pullRequest?.phrase { parts.append(phrase) }
-            parts.append("last changed \(Age.phrase(from: worktree.modified, to: now))")
-            // Its records go too, as with git worktree remove; they can hold whole submodule copies.
-            // Only when they point back at this checkout, as git's own do, so a stray .git file
-            // can't send something else to the Trash.
-            let pointsBack = Self.checkoutGitFile(recordedIn: worktree.gitDirectory) == worktree.path + "/.git"
-            return Candidate(
-                path: worktree.path, detail: parts.joined(separator: " · "),
-                companions: pointsBack ? [worktree.gitDirectory] : [], pullRequest: pullRequest
-            )
-        }
-    }
-
-    /// Git's records for worktrees whose folder is gone, which is what `git worktree prune`
-    /// removes. Locked worktrees and ones on a drive that isn't connected are left out.
-    func leftoverWorktreeData(_ scan: ScanResult) -> [Candidate] {
-        let tree = scan.tree
-        let recordFolders = tree.names.indices.filter { node in
-            guard node > 0, tree.names[node] == "worktrees" else { return false }
-            let parent = tree.names[Int(tree.parents[node])]
-            return parent == ".git" || parent.hasSuffix(".git")
-        }
-        // A checkout moved by hand still points at its records; they aren't left over.
-        let inUse = Set(scan.worktrees.map(\.gitDirectory))
-        return recordFolders.flatMap { records in
-            tree.children[records].map(Int.init).compactMap { node -> Candidate? in
-                let folder = tree.path(of: node)
-                guard !inUse.contains(folder), !FileManager.default.fileExists(atPath: folder + "/locked"),
-                      let checkoutGit = Self.checkoutGitFile(recordedIn: folder),
-                      !checkoutGit.hasPrefix("/Volumes/"), Self.isMissing(checkoutGit)
-                else { return nil }
-                let checkout = (checkoutGit as NSString).deletingLastPathComponent
-                return Candidate(
-                    path: folder,
-                    detail: "\(WorktreeFinding.repository(of: folder)) · worktree folder deleted",
-                    name: (checkout as NSString).lastPathComponent
-                )
-            }
-        }
-    }
-
-    /// The checkout's `.git` file that a worktree's records say they belong to.
-    static func checkoutGitFile(recordedIn records: String) -> String? {
-        guard let pointer = try? String(contentsOfFile: records + "/gitdir", encoding: .utf8) else { return nil }
-        let target = pointer.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !target.isEmpty else { return nil }
-        return ((target.hasPrefix("/") ? target : records + "/" + target) as NSString).standardizingPath
     }
 
     /// True only when nothing is there. A folder macOS won't let the app look into isn't missing.

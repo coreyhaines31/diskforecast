@@ -56,6 +56,7 @@ extension StorageBreakdown {
         projects += entries(of: "active-builds", in: items).map { ($0.path as NSString).deletingLastPathComponent }
         projects += entries(of: "held-builds", in: items).map { ($0.path as NSString).deletingLastPathComponent }
         projects += entries(of: "git-worktrees", in: items).map(\.path)
+        projects += entries(of: "finished-worktrees", in: items).map(\.path)
         var folders: [String] = []
         for project in projects where project.hasPrefix(home + "/") {
             let relative = project.dropFirst(home.count + 1)

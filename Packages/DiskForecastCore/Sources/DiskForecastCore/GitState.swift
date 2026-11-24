@@ -11,17 +11,25 @@ public struct GitState: Sendable, Equatable {
     public let changed: Int?
     /// Commits in the checkout that no remote has. Nil when the repository has no remote.
     public let unpushed: Int?
+    /// Whether the commit it's at is already in a main branch of a remote, as last fetched. Nil
+    /// when the repository has no remote, or git couldn't say.
+    public let merged: Bool?
 
-    public init(changed: Int?, unpushed: Int?) {
+    public init(changed: Int?, unpushed: Int?, merged: Bool? = nil) {
         self.changed = changed
         self.unpushed = unpushed
+        self.merged = merged
     }
 
     /// Nothing would be lost by removing it.
     public var isClean: Bool { changed == 0 && unpushed == 0 }
 
-    /// "clean and pushed", "3 changed files, 2 commits not pushed".
+    /// Clean, and the work in it has already landed: nothing left to look at before removing it.
+    public var isFinished: Bool { isClean && merged == true }
+
+    /// "clean and pushed", "clean, pushed and merged", "3 changed files, 2 commits not pushed".
     public var summary: String {
+        if isFinished { return "clean, pushed and merged" }
         if isClean { return "clean and pushed" }
         var parts: [String] = []
         switch changed {
@@ -46,15 +54,50 @@ public struct GitState: Sendable, Equatable {
         var changed: Int?
         if !namesItsOwnFilters(path) {
             // Submodules are other checkouts with configs of their own.
-            changed = run(["status", "--porcelain=v1", "-z", "--no-renames", "--ignore-submodules=all"], in: path)
-                .map { $0.split(separator: "\0").count }
+            // Untracked files are asked for by name, since a person's own config can hide them.
+            let arguments = [
+                "status", "--porcelain=v1", "-z", "--no-renames", "--ignore-submodules=all", "--untracked-files=normal"
+            ]
+            changed = run(arguments, in: path).map { $0.split(separator: "\0").count }
         }
         var unpushed: Int?
+        var merged: Bool?
         if let remotes = run(["remote"], in: path), !remotes.isEmpty {
             unpushed = run(["rev-list", "--count", "HEAD", "--not", "--remotes"], in: path).flatMap { Int($0) }
+            merged = run(["for-each-ref", "--contains", "HEAD", "--format=%(refname)", "refs/remotes"], in: path)
+                .map { $0.split(separator: "\n").contains { isMainBranch(remoteRef: String($0)) } }
         }
-        return GitState(changed: changed, unpushed: unpushed)
+        return GitState(changed: changed, unpushed: unpushed, merged: merged)
     }
+
+    /// The branch names work lands on. A squash merge leaves the branch's own commits out of
+    /// these, so it reads as not merged, which errs toward keeping it.
+    static let mainBranches: Set<String> = ["HEAD", "main", "master", "development", "develop", "trunk"]
+
+    /// Whether `refs/remotes/<remote>/<branch>` is one of a remote's main branches. Only a plain
+    /// name counts: `feature/main` is somebody's branch, not where work lands.
+    static func isMainBranch(remoteRef: String) -> Bool {
+        let parts = remoteRef.split(separator: "/")
+        return parts.count == 4 && parts[0] == "refs" && parts[1] == "remotes"
+            && mainBranches.contains(String(parts[3]))
+    }
+
+    /// How many files or folders in the checkout git ignores that a rebuild wouldn't bring back,
+    /// like `.env.local` or a local database. Build and package folders aren't counted. Nil when
+    /// git couldn't say.
+    public static func ignoredKeepsakes(at path: String) -> Int? {
+        let arguments = ["ls-files", "-z", "--others", "--ignored", "--exclude-standard", "--directory"]
+        guard let output = git(arguments, in: path), output.status == 0 else { return nil }
+        return output.text.split(separator: "\0").filter { entry in
+            let trimmed = entry.hasSuffix("/") ? entry.dropLast() : entry
+            let name = trimmed.split(separator: "/").last.map(String.init) ?? ""
+            return !rebuildableNames.contains(name)
+        }.count
+    }
+
+    /// Names git usually ignores because something makes them again.
+    static let rebuildableNames: Set<String> = Set(ArtifactKind.allCases.map(\.folderName))
+        .union([".DS_Store", "tmp", "log", "logs", "coverage", ".cache", ".vercel", ".swiftpm", "xcuserdata"])
 
     /// The URL of the checkout's `origin` remote, or its first remote when none is named that.
     public static func remoteURL(at path: String) -> String? {

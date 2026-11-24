@@ -46,7 +46,30 @@ struct GitStateTests {
         let fixture = try GitFixture()
         let state = try #require(GitState.read(at: fixture.worktree))
         #expect(state.isClean)
+        // It sits on the commit the remote's main branch has.
+        #expect(state.isFinished)
+        #expect(state.summary == "clean, pushed and merged")
+    }
+
+    @Test func pushedButNotMergedIsNotFinished() throws {
+        let fixture = try GitFixture()
+        try fixture.commit(in: fixture.worktree)
+        try fixture.git(["push", "-q", "origin", "agent"], in: fixture.worktree)
+        let state = try #require(GitState.read(at: fixture.worktree))
+        #expect(state == GitState(changed: 0, unpushed: 0, merged: false))
+        #expect(!state.isFinished)
         #expect(state.summary == "clean and pushed")
+    }
+
+    @Test func knowsARemotesMainBranches() {
+        #expect(GitState.isMainBranch(remoteRef: "refs/remotes/origin/main"))
+        #expect(GitState.isMainBranch(remoteRef: "refs/remotes/origin/HEAD"))
+        #expect(GitState.isMainBranch(remoteRef: "refs/remotes/upstream/development"))
+        #expect(!GitState.isMainBranch(remoteRef: "refs/remotes/origin/cf/development"))
+        #expect(!GitState.isMainBranch(remoteRef: "refs/remotes/origin/feature/main"))
+        #expect(!GitState.isMainBranch(remoteRef: "refs/remotes/origin/agent"))
+        #expect(!GitState.isMainBranch(remoteRef: "refs/remotes/origin/feature/12/main"))
+        #expect(!GitState.isMainBranch(remoteRef: "refs/heads/main"))
     }
 
     @Test func countsChangesAndCommitsNoRemoteHas() throws {
@@ -54,7 +77,7 @@ struct GitStateTests {
         try fixture.commit(in: fixture.worktree)
         try Data("draft".utf8).write(to: URL(filePath: fixture.worktree + "/draft.txt"))
         let state = try #require(GitState.read(at: fixture.worktree))
-        #expect(state == GitState(changed: 1, unpushed: 1))
+        #expect(state == GitState(changed: 1, unpushed: 1, merged: false))
         #expect(state.summary == "1 changed file, 1 commit not pushed")
     }
 
@@ -103,6 +126,94 @@ struct WorktreeFindingTests {
 }
 
 struct WorktreeCleanupTests {
+    /// The fixture's worktree, as the catalog lists it some days after it was made.
+    func items(
+        daysLater: Double, pullRequest: PullRequestState? = nil, prepare: (GitFixture) throws -> Void = { _ in }
+    ) async throws -> [CleanupItem] {
+        let fixture = try GitFixture()
+        try prepare(fixture)
+        try Data(count: 2_000_000).write(to: URL(filePath: fixture.worktree + "/big.bin"))
+        try fixture.git(["add", "big.bin"], in: fixture.worktree)
+        try fixture.git(["commit", "-q", "-m", "Big"], in: fixture.worktree)
+        try fixture.git(["push", "-q", "origin", "agent:main"], in: fixture.worktree)
+        try fixture.git(["fetch", "-q", "origin"], in: fixture.worktree)
+        let scan = await DiskScanner(options: .init(root: fixture.base)).scan()
+        return CleanupCatalog(
+            home: fixture.base.path, now: Date().addingTimeInterval(daysLater * 86_400),
+            pullRequest: { _ in pullRequest }
+        ).items(from: scan)
+    }
+
+    @Test func aFinishedWorktreeLeftForDaysIsSafeToClear() async throws {
+        let items = try await items(daysLater: 3)
+        let finished = try #require(items.first { $0.id == "finished-worktrees" })
+        #expect(finished.group == .safeToClear)
+        #expect(finished.entries.first?.detail == "repo · clean, pushed and merged · last changed 3 days ago")
+        #expect(finished.entries.first?.companions.count == 1)
+        #expect(!items.contains { $0.id == "git-worktrees" })
+    }
+
+    @Test func aFinishedWorktreeUsedThisWeekStillNeedsALook() async throws {
+        let items = try await items(daysLater: 1)
+        #expect(!items.contains { $0.id == "finished-worktrees" })
+        #expect(items.first { $0.id == "git-worktrees" }?.group == .worthALook)
+    }
+
+    @Test func aFileGitIgnoresKeepsAWorktreeOutOfSafeToClear() async throws {
+        let items = try await items(daysLater: 3) { fixture in
+            try Data("*.local\nnode_modules\n".utf8).write(to: URL(filePath: fixture.worktree + "/.gitignore"))
+            try fixture.git(["add", ".gitignore"], in: fixture.worktree)
+            try Data("SECRET=1".utf8).write(to: URL(filePath: fixture.worktree + "/.env.local"))
+            try FileManager.default.createDirectory(
+                atPath: fixture.worktree + "/node_modules/pkg", withIntermediateDirectories: true
+            )
+        }
+        #expect(!items.contains { $0.id == "finished-worktrees" })
+        let detail = items.first { $0.id == "git-worktrees" }?.entries.first?.detail
+        #expect(detail == "repo · clean, pushed and merged · keeps 1 file git ignores · last changed 3 days ago")
+    }
+
+    @Test func buildFoldersGitIgnoresDoNotHoldAWorktreeBack() async throws {
+        let items = try await items(daysLater: 3) { fixture in
+            try Data("node_modules\n.next\n".utf8).write(to: URL(filePath: fixture.worktree + "/.gitignore"))
+            try fixture.git(["add", ".gitignore"], in: fixture.worktree)
+            try FileManager.default.createDirectory(
+                atPath: fixture.worktree + "/node_modules/pkg", withIntermediateDirectories: true
+            )
+            try Data("x".utf8).write(to: URL(filePath: fixture.worktree + "/node_modules/pkg/index.js"))
+        }
+        #expect(items.contains { $0.id == "finished-worktrees" })
+    }
+
+    @Test func aWorktreeWithSubmodulesAlwaysNeedsALook() async throws {
+        let items = try await items(daysLater: 3) { fixture in
+            // Stands in for a submodule: its history lives in the worktree's records.
+            try FileManager.default.createDirectory(
+                atPath: fixture.main + "/.git/worktrees/repo-agent/modules/lib", withIntermediateDirectories: true
+            )
+        }
+        #expect(!items.contains { $0.id == "finished-worktrees" })
+        let detail = items.first { $0.id == "git-worktrees" }?.entries.first?.detail
+        #expect(detail?.contains("has submodules") == true)
+    }
+
+    @Test func aCommitMadeYesterdayCountsAsUse() async throws {
+        // Three days by the files' dates, but git's log of the worktree says otherwise.
+        let fixture = try GitFixture()
+        let finding = WorktreeFinding(
+            path: fixture.worktree, gitDirectory: fixture.main + "/.git/worktrees/repo-agent",
+            modified: Date().addingTimeInterval(-3 * 86_400)
+        )
+        try fixture.commit(in: fixture.worktree)
+        #expect(Date().timeIntervalSince(CleanupCatalog.lastUsed(finding)) < 60)
+    }
+
+    @Test func anOpenPullRequestKeepsAWorktreeOutOfSafeToClear() async throws {
+        let items = try await items(daysLater: 3, pullRequest: .open)
+        #expect(!items.contains { $0.id == "finished-worktrees" })
+        #expect(items.contains { $0.id == "git-worktrees" })
+    }
+
     @Test func listsWorktreesWithWhatTheyWouldLose() async throws {
         let fixture = try GitFixture()
         try Data(count: 2_000_000).write(to: URL(filePath: fixture.worktree + "/big.bin"))
