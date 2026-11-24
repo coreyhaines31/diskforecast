@@ -80,7 +80,7 @@ final class CLICommands {
             outlook: outlook, forecast: disk.forecastPhrase, daysUntilFull: daysUntilFull, bytesPerDay: bytesPerDay,
             lowOnSpace: disk.lowSpaceWarning != nil, scanning: scan.isScanning, lastScan: scan.finishedAt,
             fullDiskAccess: FullDiskAccess.isGranted, safeToClearBytes: scan.safeToClearBytes,
-            lowestFreeBytesToday: disk.history.lowestFreeBytes(on: Date())
+            lowestFreeBytesToday: disk.history.lowestFreeBytes(on: Date()), trashBytes: scan.trashBytes
         )
     }
 

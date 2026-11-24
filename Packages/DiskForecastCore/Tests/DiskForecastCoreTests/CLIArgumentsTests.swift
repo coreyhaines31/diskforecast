@@ -208,6 +208,19 @@ struct CLIStatusLowTests {
         )
     }
 
+    @Test func namesTheTrashOnlyWhenSpaceIsLowAndItWouldHelp() {
+        var low = status(freeGB: 3, lowGB: nil)
+        low.lowOnSpace = true
+        low.trashBytes = 45 * gigabyte
+        #expect(low.notableTrashBytes == 45 * gigabyte)
+        low.trashBytes = 200_000_000
+        #expect(low.notableTrashBytes == nil)
+        var roomy = status(freeGB: 300, lowGB: nil)
+        roomy.trashBytes = 45 * gigabyte
+        #expect(roomy.notableTrashBytes == nil)
+        #expect(status(freeGB: 3, lowGB: nil).notableTrashBytes == nil)
+    }
+
     @Test func pointsOutTodaysLowOnlyWhenItWasWellBelowNow() {
         #expect(status(freeGB: 76, lowGB: 2).notableLowToday == 2 * gigabyte)
         #expect(status(freeGB: 76, lowGB: 76).notableLowToday == nil)

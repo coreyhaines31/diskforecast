@@ -139,6 +139,9 @@ func describe(_ status: CLIStatus) -> String {
     if let low = status.notableLowToday {
         lines.append("Low today: \(Bytes.format(low)).")
     }
+    if let trash = status.notableTrashBytes {
+        lines.append("The Trash holds \(Bytes.format(trash)). Emptying it is the quickest way to get space back.")
+    }
     if status.scanning {
         lines.append("Measuring your home folder now.")
     } else if status.safeToClearBytes > 0 {
