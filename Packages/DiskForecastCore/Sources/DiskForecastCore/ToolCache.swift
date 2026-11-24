@@ -20,6 +20,9 @@ public struct ToolCache: Sendable, Identifiable, Equatable {
     /// Arguments that make the tool print where the cache is.
     public let pathArguments: [String]
     public let cleanArguments: [String]
+    /// Arguments for a dry run that says how much the cleanup would free, for a tool whose
+    /// cleanup reaches past the cache folder.
+    public var dryRunArguments: [String]?
     public let kind: Kind
     /// What running it removes and keeps, shown before it runs.
     public let confirmation: String
@@ -61,8 +64,9 @@ public struct ToolCache: Sendable, Identifiable, Equatable {
                 + "compiles from scratch."
         ),
         ToolCache(
-            id: "homebrew", tool: "brew", name: "Homebrew downloads", action: "Clean up Homebrew",
-            pathArguments: ["--cache"], cleanArguments: ["cleanup", "--prune=all"], kind: .clear,
+            id: "homebrew", tool: "brew", name: "Homebrew downloads and old versions", action: "Clean up Homebrew",
+            pathArguments: ["--cache"], cleanArguments: ["cleanup", "--prune=all"],
+            dryRunArguments: ["cleanup", "--prune=all", "--dry-run"], kind: .clear,
             confirmation: "Removes every download Homebrew kept and the old versions of formulae it left "
                 + "installed beside the current ones. What you have installed now stays."
         )
@@ -74,6 +78,16 @@ public struct ToolCache: Sendable, Identifiable, Equatable {
         output.split(whereSeparator: \.isNewline)
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .last { $0.hasPrefix("/") && $0.count > 1 }
+    }
+
+    /// What a dry run says the cleanup would free, from a line like Homebrew's "This operation
+    /// would free approximately 103.5MB of disk space." Nil when it says nothing of the kind.
+    public static func freedBytes(fromDryRun output: String) -> Int64? {
+        let pattern = /approximately ([0-9.]+)\s?([KMGT]?)B/
+        guard let match = output.firstMatch(of: pattern), let amount = Double(match.1) else { return nil }
+        // Homebrew counts in steps of 1024 and writes them as KB, MB, GB.
+        let steps = ["": 0, "K": 1, "M": 2, "G": 3, "T": 4][String(match.2)] ?? 0
+        return Int64(amount * pow(1024, Double(steps)))
     }
 
     /// Folders where developer tools get installed, most specific first. An app doesn't get the

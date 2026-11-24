@@ -12,10 +12,17 @@ extension SystemDataModel {
             // Tools installed with npm are scripts that need node, which sits beside them.
             let path = ["PATH": (tool as NSString).deletingLastPathComponent + ":" + Shell.searchPath]
             let located = await Shell.run(tool, cache.pathArguments, environment: path)
-            guard located.succeeded, let folder = ToolCache.path(fromOutput: located.text),
-                  FileManager.default.fileExists(atPath: folder)
-            else { continue }
-            let bytes = await DiskScanner(options: .init(root: URL(filePath: folder))).scan().tree.totalSize
+            guard located.succeeded, let folder = ToolCache.path(fromOutput: located.text) else { continue }
+            var bytes: Int64 = 0
+            if FileManager.default.fileExists(atPath: folder) {
+                bytes = await DiskScanner(options: .init(root: URL(filePath: folder))).scan().tree.totalSize
+            }
+            // Homebrew's cleanup also removes old versions outside this folder, even when the folder
+            // is empty or gone; its dry run says how much.
+            if let dryRun = cache.dryRunArguments {
+                let preview = await Shell.run(tool, dryRun, environment: path)
+                bytes = ToolCache.freedBytes(fromDryRun: preview.text) ?? bytes
+            }
             guard bytes >= CleanupCatalog.minimumToolCacheBytes else { continue }
             total += bytes
             details.append("\(cache.name): \(Bytes.format(bytes)) · \(cache.kindNote)")

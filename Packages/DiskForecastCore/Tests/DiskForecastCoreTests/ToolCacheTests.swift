@@ -28,6 +28,18 @@ struct ToolCacheTests {
         #expect(ToolCache.path(fromOutput: "") == nil)
     }
 
+    @Test func readsWhatADryRunWouldFree() {
+        let output = """
+        Would remove: /opt/homebrew/Cellar/node/22.1.0 (2,015 files, 68.9MB)
+        ==> This operation would free approximately 103.5MB of disk space.
+        """
+        #expect(ToolCache.freedBytes(fromDryRun: output) == Int64(103.5 * 1024 * 1024))
+        #expect(ToolCache.freedBytes(fromDryRun: "would free approximately 2.1GB of disk space") == 2_254_857_830)
+        #expect(ToolCache.freedBytes(fromDryRun: "would free approximately 512B of disk space") == 512)
+        #expect(ToolCache.freedBytes(fromDryRun: "") == nil)
+        #expect(ToolCache.all.first { $0.id == "homebrew" }?.dryRunArguments == ["cleanup", "--prune=all", "--dry-run"])
+    }
+
     @Test func looksForToolsWhereTheyGetInstalled() {
         let installed: Set<String> = ["/Users/me/.nvm/versions/node/v22.23.4/bin/pnpm", "/opt/homebrew/bin/uv"]
         let folders = ToolCache.searchFolders(home: "/Users/me", nodeVersions: ["v18.20.0", "v22.23.4", "v9.1.0"])
