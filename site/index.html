@@ -404,7 +404,7 @@ Apart from that, don't change any other settings and don't delete anything.</pre
             <h3>Rebuilds itself</h3>
             <ul class="ticks">
               <li><b>Build folders in old projects</b>node_modules, build, and package folders in projects you haven&#39;t touched lately.</li>
-              <li><b>Package manager caches</b>npm, Bun, Cargo, Gradle, pip, and friends. Not the pnpm store, which projects share.</li>
+              <li><b>Package manager caches</b>npm, Bun, Cargo, Gradle, pip, and friends. The pnpm store is handed to pnpm&#39;s own prune.</li>
               <li><b>Left behind by coding agents</b>npx packages, Playwright and Puppeteer browsers, older Claude Code versions, idle session temp files.</li>
               <li><b>Xcode DerivedData</b>Build products and indexes, rebuilt on the next build.</li>
               <li><b>Xcode device support</b>Debug symbols, copied again when you plug the device in.</li>
@@ -422,7 +422,9 @@ Apart from that, don't change any other settings and don't delete anything.</pre
               <li><b>Ollama, LM Studio, and Hugging Face models</b>Local AI models, each downloadable again.</li>
               <li><b>Git worktrees</b>Each shows changes and commits that exist only there. The branch and its commits stay.</li>
               <li><b>Old coding agent conversations</b>Claude Code and Codex chats nobody has opened in 30 days.</li>
+              <li><b>Build folders in quiet projects</b>No commit, checkout, or Claude Code session there in a week.</li>
               <li><b>Build folders in active projects</b>Safe, but you&#39;ll wait for a reinstall or rebuild.</li>
+              <li><b>Build folders with work in them</b>A git checkout inside, files git tracks, or files git doesn&#39;t ignore. Each says which.</li>
               <li><b>Editor data for deleted projects</b>Open tabs and, in Cursor, chat history for projects no longer on your Mac.</li>
               <li><b>Xcode archives</b>Keep the ones you still read crash reports for.</li>
               <li><b>Screen Studio projects</b>Raw recordings behind videos you may have already exported.</li>
@@ -436,6 +438,7 @@ Apart from that, don't change any other settings and don't delete anything.</pre
             <span class="tag">Handed back · their own app</span>
             <h3>Cleared where it&#39;s safe</h3>
             <ul class="ticks">
+              <li><b>pnpm store and Go modules</b>Trashing them frees little or fails, so System Data runs pnpm&#39;s or Go&#39;s own cleanup after showing you the command.</li>
               <li><b>WhatsApp media</b>Past 5 GB, with the biggest chats named. A known sync bug can fill it past what WhatsApp shows. Opens WhatsApp.</li>
               <li><b>Messages attachments</b>Past 2 GB, with the biggest conversations. Trashing them by hand would leave broken attachments. Opens Messages.</li>
               <li><b>Signal attachments</b>Encrypted and only on your devices, so they can&#39;t be downloaded again. Opens Signal.</li>

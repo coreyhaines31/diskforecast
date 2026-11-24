@@ -137,7 +137,7 @@ npm cache clean --force                # empty _cacache</code></pre>
         <p>Using Yarn instead? See <a href="/clear-cache/yarn">how to clear Yarn cache</a>. All the others: <a href="/clear-cache">clear cache by tool</a>.</p>
     """,
     "finds": """
-          <p>Disk Forecast lists <code>~/.npm/_cacache</code> under <strong>Cleanup › Safe to clear › Package manager caches</strong>, next to Bun&#39;s cache, and <code>~/.npm/_npx</code> under <strong>Left behind by coding agents</strong>. It leaves the pnpm store out: projects share its files, so trashing it frees much less than its size, and <code>pnpm store prune</code> is the right tool. Your <code>node_modules</code> folders show up too, only where a <code>package.json</code> sits beside them: under <strong>Build folders in old projects</strong> if the project hasn&#39;t changed in 30 days, or <strong>Build folders in active projects</strong> if it has. Everything goes to the Trash unless you choose to delete it. It&#39;s free.</p>
+          <p>Disk Forecast lists <code>~/.npm/_cacache</code> under <strong>Cleanup › Safe to clear › Package manager caches</strong>, next to Bun&#39;s cache, and <code>~/.npm/_npx</code> under <strong>Left behind by coding agents</strong>. It lists the pnpm store under <strong>Worth a look</strong> but never trashes it: projects share its files, so that would free much less than its size. <strong>System Data › Package manager caches</strong> runs <code>pnpm store prune</code> instead, after showing you the command. Your <code>node_modules</code> folders show up too, only where a <code>package.json</code> sits beside them: under <strong>Build folders in old projects</strong> if the project hasn&#39;t changed in 30 days, or <strong>Build folders in active projects</strong> if it has. Everything goes to the Trash unless you choose to delete it. It&#39;s free.</p>
     """,
     "mockup": "cleanup",
     "related": ["/clear-cache/yarn", "/clear-cache/docker", "/clear-cache/homebrew"],
@@ -560,7 +560,7 @@ go clean -fuzzcache    # inputs saved by go test -fuzz</code></pre>
         <p>Also writing Rust? See <a href="/clear-cache/cargo">cargo clean</a>. Or <a href="/clear-cache/homebrew">Homebrew</a>, and <a href="/clear-cache">every tool's cache</a>.</p>
     """,
     "finds": """
-          <p>Go&#39;s build cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>go-build</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, and moves it to the Trash. The module cache in <code>~/go/pkg/mod</code> isn&#39;t listed, since its read-only files are a job for <code>go clean -modcache</code>. Disk Forecast also shows where your space goes and forecasts when your disk will be full. It&#39;s free.</p>
+          <p>Go&#39;s build cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>go-build</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, and moves it to the Trash. The module cache in <code>~/go/pkg/mod</code> is listed under <strong>Worth a look</strong> but not trashed, since its read-only files are a job for <code>go clean -modcache</code>. <strong>System Data › Package manager caches</strong> runs that for you, after showing you the command. Disk Forecast also shows where your space goes and forecasts when your disk will be full. It&#39;s free.</p>
     """,
     "mockup": "cleanup",
     "related": ["/clear-cache/cargo", "/clear-cache/homebrew", "/clear-cache/gradle"],
@@ -679,7 +679,7 @@ du -sh $(brew --prefix)/Cellar/* | sort -h | tail</code></pre>
         <p>Next: <a href="/clear-cache/pip">pip's cache</a> sits beside Homebrew's, and <a href="/clear-cache/npm">npm's</a> is often the biggest. Or see <a href="/clear-cache">every tool's cache</a>.</p>
     """,
     "finds": """
-          <p>Homebrew&#39;s cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>Homebrew</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, checked by default, and moves it to the Trash. Old versions in the Cellar aren&#39;t listed; <code>brew cleanup</code> is the right tool for those. It&#39;s free.</p>
+          <p>Homebrew&#39;s cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>Homebrew</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, checked by default, and moves it to the Trash. Old versions in the Cellar aren&#39;t listed; <code>brew cleanup</code> is the right tool for those, and once Homebrew&#39;s downloads pass 50 MB, <strong>System Data › Package manager caches</strong> offers to run <code>brew cleanup --prune=all</code> for you, after showing you the command. It&#39;s free.</p>
     """,
     "mockup": "cleanup",
     "related": ["/clear-cache/pip", "/clear-cache/npm", "/clear-cache/xcode"],

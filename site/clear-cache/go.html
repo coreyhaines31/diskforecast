@@ -101,7 +101,7 @@ go clean -fuzzcache    # inputs saved by go test -fuzz</code></pre>
         <div class="head center">
           <h2>Disk Forecast finds this for you</h2>
 
-          <p>Go&#39;s build cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>go-build</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, and moves it to the Trash. The module cache in <code>~/go/pkg/mod</code> isn&#39;t listed, since its read-only files are a job for <code>go clean -modcache</code>. Disk Forecast also shows where your space goes and forecasts when your disk will be full. It&#39;s free.</p>
+          <p>Go&#39;s build cache lives in <code>~/Library/Caches</code>, so Disk Forecast lists it as the <code>go-build</code> entry under <strong>Cleanup › Safe to clear › App caches</strong>, and moves it to the Trash. The module cache in <code>~/go/pkg/mod</code> is listed under <strong>Worth a look</strong> but not trashed, since its read-only files are a job for <code>go clean -modcache</code>. <strong>System Data › Package manager caches</strong> runs that for you, after showing you the command. Disk Forecast also shows where your space goes and forecasts when your disk will be full. It&#39;s free.</p>
     
           <div class="actions">
             <a class="bx-btn" href="https://github.com/coreyhaines31/diskforecast/releases/latest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download free</a>
