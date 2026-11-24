@@ -107,11 +107,15 @@ public struct CLIStatus: Codable, Equatable, Sendable {
     /// The least free space seen today. Nil before today's first reading, and from apps older than
     /// this field.
     public var lowestFreeBytesToday: Int64?
+    /// What the Trash holds, as last measured. Nil when it couldn't be read, and from apps older
+    /// than this field.
+    public var trashBytes: Int64?
 
     public init(
         freeBytes: Int64, capacityBytes: Int64, purgeableBytes: Int64, outlook: String, forecast: String,
         daysUntilFull: Double?, bytesPerDay: Double?, lowOnSpace: Bool, scanning: Bool, lastScan: Date?,
-        fullDiskAccess: Bool, safeToClearBytes: Int64, lowestFreeBytesToday: Int64? = nil
+        fullDiskAccess: Bool, safeToClearBytes: Int64, lowestFreeBytesToday: Int64? = nil,
+        trashBytes: Int64? = nil
     ) {
         self.freeBytes = freeBytes
         self.capacityBytes = capacityBytes
@@ -126,6 +130,7 @@ public struct CLIStatus: Codable, Equatable, Sendable {
         self.fullDiskAccess = fullDiskAccess
         self.safeToClearBytes = safeToClearBytes
         self.lowestFreeBytesToday = lowestFreeBytesToday
+        self.trashBytes = trashBytes
     }
 
     /// Purgeable space, when there's enough of it that `df` and Finder's count would visibly differ.
@@ -151,6 +156,13 @@ public struct CLIStatus: Codable, Equatable, Sendable {
         let dip = freeBytes - low
         guard dip >= UsageHistory.notableDip, dip >= freeBytes / 10 else { return nil }
         return dip >= 5_000_000_000 || low < 20_000_000_000 ? low : nil
+    }
+
+    /// What the Trash holds, when space is low and emptying it would give back a gigabyte or more.
+    /// It's the quickest space there is: nothing to pick, nothing to rebuild.
+    public var notableTrashBytes: Int64? {
+        guard lowOnSpace, let trashBytes, trashBytes >= 1_000_000_000 else { return nil }
+        return trashBytes
     }
 }
 
