@@ -18,10 +18,13 @@ extension CleanupCatalog {
             .filter { heldBuildFolders[$0.path] == nil && self.tier(of: $0) == tier }
             .map { artifact in
                 let project = (artifact.projectPath as NSString).lastPathComponent
-                let age = Age.phrase(from: artifact.projectModified, to: now)
+                var when = "last changed \(Age.phrase(from: artifact.projectModified, to: now))"
+                if tier == .quiet, let worked = lastWorkedIn[artifact.projectPath] {
+                    when = "last commit or agent session \(Age.phrase(from: worked, to: now))"
+                }
                 return Candidate(
                     path: artifact.path,
-                    detail: "\(project) · last changed \(age) · \(artifact.kind.restoreCost.phrase)",
+                    detail: "\(project) · \(when) · \(artifact.kind.restoreCost.phrase)",
                     rebuildable: artifact.kind
                 )
             }
@@ -34,6 +37,9 @@ extension CleanupCatalog {
         /// In a recent project, but it makes itself again on the next run and nothing has written
         /// to it for a day.
         case idleOutput
+        /// In a recent project where nobody has committed, checked out, or talked to a coding agent
+        /// for a week, and nothing has written to the folder for a day.
+        case quiet
         /// Everything else in a recent project.
         case active
     }
@@ -41,12 +47,21 @@ extension CleanupCatalog {
     /// How long output that regenerates has to sit unwritten before it's offered as safe to clear.
     static let idleOutputAfter: TimeInterval = 86_400
 
+    /// How long a project has to go without a commit, checkout, or agent conversation to count as quiet.
+    static let quietAfter: TimeInterval = 7 * 86_400
+
     func tier(of artifact: ArtifactFinding) -> BuildTier {
         if artifact.projectModified < staleCutoff { return .stale }
-        guard artifact.kind.restoreCost == .regenerates,
-              let written = Self.lastWritten(artifact.path), now.timeIntervalSince(written) >= Self.idleOutputAfter
+        let regenerates = artifact.kind.restoreCost == .regenerates
+        // Reading a folder like node_modules to see when it was written is slow, so the cheap
+        // question about the project comes first.
+        if !regenerates {
+            guard let worked = lastWorkedIn[artifact.projectPath], now.timeIntervalSince(worked) >= Self.quietAfter
+            else { return .active }
+        }
+        guard let written = Self.lastWritten(artifact.path), now.timeIntervalSince(written) >= Self.idleOutputAfter
         else { return .active }
-        return .idleOutput
+        return regenerates ? .idleOutput : .quiet
     }
 
     /// The newest modification date of the folder and the entries directly in it. A dev server or

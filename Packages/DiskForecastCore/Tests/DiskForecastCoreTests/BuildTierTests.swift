@@ -59,6 +59,42 @@ struct BuildTierTests {
         #expect(items["stale-builds"] == nil)
     }
 
+    @Test func dependenciesInAProjectNobodyHasWorkedInGetTheirOwnItem() async throws {
+        let quiet = home.path + "/code/shop"
+        let busy = home.path + "/code/site"
+        try write("code/shop/package.json", bytes: 10)
+        try writeBuildFolder("code/shop/node_modules", written: now.addingTimeInterval(-2 * 86_400))
+        try write("code/site/package.json", bytes: 10)
+        try writeBuildFolder("code/site/node_modules", written: now.addingTimeInterval(-2 * 86_400))
+        // A quiet project, but something installed into it an hour ago.
+        try write("code/blog/package.json", bytes: 10)
+        try writeBuildFolder("code/blog/node_modules", written: now.addingTimeInterval(-3_600))
+        let now = now
+        let scan = await DiskScanner(options: .init(root: home)).scan()
+        let catalog = CleanupCatalog(home: home.path, now: now, projectActivity: { _ in
+            [
+                quiet: now.addingTimeInterval(-10 * 86_400), busy: now.addingTimeInterval(-86_400),
+                quiet.replacingOccurrences(of: "shop", with: "blog"): now.addingTimeInterval(-10 * 86_400)
+            ]
+        })
+        let items = Dictionary(uniqueKeysWithValues: catalog.items(from: scan).map { ($0.id, $0) })
+        let item = try #require(items["quiet-builds"])
+        #expect(item.group == .worthALook)
+        #expect(item.entries.map(\.path) == [quiet + "/node_modules"])
+        #expect(item.entries.first?.detail == "shop · last commit or agent session 10 days ago · needs a reinstall")
+        #expect(item.entries.first?.rebuildable == .nodeModules)
+        let active = Set(items["active-builds"]?.entries.map(\.path) ?? [])
+        #expect(active == [busy + "/node_modules", home.path + "/code/blog/node_modules"])
+    }
+
+    @Test func aProjectOutsideGitIsNeverCalledQuiet() async throws {
+        try write("code/loose/package.json", bytes: 10)
+        try writeBuildFolder("code/loose/node_modules", written: now.addingTimeInterval(-2 * 86_400))
+        let items = await items()
+        #expect(items["quiet-builds"] == nil)
+        #expect(items["active-builds"]?.entries.count == 1)
+    }
+
     @Test func aBuildFolderThatCannotBeReadWaitsForALook() {
         #expect(CleanupCatalog.lastWritten(home.path + "/missing/.next") == nil)
     }

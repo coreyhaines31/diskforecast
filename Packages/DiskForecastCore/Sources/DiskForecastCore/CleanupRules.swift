@@ -270,6 +270,13 @@ extension CleanupCatalog {
                     .flatMap { catalog.children(of: $0, in: scan) }
             },
             CleanupRule(
+                id: "quiet-builds", title: "Build folders in quiet projects",
+                explanation: "Build and package folders in projects with no commit, checkout, or Claude Code "
+                    + "conversation in a week, though files there changed in the last \(staleAfterDays) days. "
+                    + "Safe to remove; you'll wait for a reinstall or rebuild when you're back.",
+                group: .worthALook
+            ) { catalog, scan in catalog.artifacts(scan, tier: .quiet) },
+            CleanupRule(
                 id: "active-builds", title: "Build folders in active projects",
                 explanation: "Build and package folders in projects you've changed recently. Safe to remove, but "
                     + "you'll wait for a reinstall or rebuild next time.",

@@ -74,6 +74,11 @@ public struct CleanupCatalog: Sendable {
     /// Why a build folder isn't simply rebuildable, given the checkouts the scan found in it.
     /// Swappable for tests.
     let buildFolderHold: @Sendable (ArtifactFinding, [String]) -> BuildFolderHold?
+    /// When each project was last worked in, by path; a project that's missing isn't known.
+    /// Swappable for tests.
+    let projectActivity: @Sendable ([String]) -> [String: Date]
+    /// When the projects of the scan being listed were last worked in. Worked out once per list.
+    var lastWorkedIn: [String: Date] = [:]
     /// The build folders of the scan being listed that are held, by path. Worked out once per
     /// list, since several rules ask.
     var heldBuildFolders: [String: BuildFolderHold] = [:]
@@ -100,6 +105,10 @@ public struct CleanupCatalog: Sendable {
         pullRequest: @escaping @Sendable (String) -> PullRequestState? = { _ in nil },
         buildFolderHold: @escaping @Sendable (ArtifactFinding, [String]) -> BuildFolderHold? = {
             BuildFolderHold.check(folder: $0.path, kind: $0.kind, checkouts: $1)
+        },
+        projectActivity: @escaping @Sendable ([String]) -> [String: Date] = { projects in
+            let conversations = ProjectActivity.conversations(in: NSHomeDirectory() + "/.claude/projects")
+            return ProjectActivity.last(for: projects, conversations: conversations)
         }
     ) {
         self.home = home.hasSuffix("/") ? String(home.dropLast()) : home
@@ -110,6 +119,7 @@ public struct CleanupCatalog: Sendable {
         self.gitState = gitState
         self.pullRequest = pullRequest
         self.buildFolderHold = buildFolderHold
+        self.projectActivity = projectActivity
     }
 
     var staleCutoff: Date { now.addingTimeInterval(-Double(staleAfterDays) * 86_400) }
@@ -117,6 +127,7 @@ public struct CleanupCatalog: Sendable {
     public func items(from scan: ScanResult) -> [CleanupItem] {
         var catalog = self
         catalog.heldBuildFolders = holds(in: scan)
+        catalog.lastWorkedIn = projectActivity(scan.artifacts.map(\.projectPath))
         for worktree in scan.worktrees {
             catalog.worktreeStates.updateValue(gitState(worktree.path), forKey: worktree.path)
         }
