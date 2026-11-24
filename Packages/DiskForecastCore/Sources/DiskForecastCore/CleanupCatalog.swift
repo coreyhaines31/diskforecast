@@ -135,7 +135,8 @@ public struct CleanupCatalog: Sendable {
     }
 
     private func listing(_ scan: ScanResult) -> [CleanupItem] {
-        var claimed: [String] = []
+        // What's already in the Trash is Empty Trash's to offer, not something to move there again.
+        var claimed: [String] = [path(".Trash")]
         var items: [CleanupItem] = []
         for rule in rules {
             let entries = rule.candidates(self, scan).compactMap { candidate -> CleanupEntry? in
