@@ -72,6 +72,7 @@
 - [OmniDiskSweeper](https://diskforecast.com/alternatives/omnidisksweeper): The classic free size list, from The Omni Group.
 - [WinDirStat for Mac](https://diskforecast.com/alternatives/windirstat-mac): WinDirStat, WizTree, and TreeSize, and what runs on a Mac.
 - [Mole](https://diskforecast.com/alternatives/mole): The popular open-source cleaner you run in Terminal.
+- [plonge](https://diskforecast.com/alternatives/plonge): The careful command for clearing developer caches.
 - [Disk Inventory X](https://diskforecast.com/alternatives/disk-inventory-x): The treemap many Mac users learned on. Last updated in 2019.
 - [OnyX](https://diskforecast.com/alternatives/onyx): The free maintenance utility people install to clean up.
 - [Is CleanMyMac safe?](https://diskforecast.com/is-cleanmymac-safe): What it deletes, what it costs in 2026, and the free options.
