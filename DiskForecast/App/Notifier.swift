@@ -37,7 +37,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
             return
         }
         let critical = CriticalSpace.decide(freeBytes: disk.freeBytes, lastFloor: Preferences.lastCriticalFloor)
-        Preferences.lastCriticalFloor = critical.remembered
+        if critical.remembered != Preferences.lastCriticalFloor { Preferences.lastCriticalFloor = critical.remembered }
         if critical.alert != nil {
             Preferences.lastDiskAlert = Date()
             send(
