@@ -77,6 +77,9 @@ public struct CleanupCatalog: Sendable {
     /// The build folders of the scan being listed that are held, by path. Worked out once per
     /// list, since several rules ask.
     var heldBuildFolders: [String: BuildFolderHold] = [:]
+    /// What removing each worktree of the scan being listed would lose, by path. Worked out once
+    /// per list, since two rules ask.
+    var worktreeStates: [String: GitState] = [:]
 
     /// Entries smaller than this aren't worth listing.
     static let minimumEntryBytes: Int64 = 1_000_000
@@ -112,6 +115,9 @@ public struct CleanupCatalog: Sendable {
     public func items(from scan: ScanResult) -> [CleanupItem] {
         var catalog = self
         catalog.heldBuildFolders = holds(in: scan)
+        for worktree in scan.worktrees {
+            catalog.worktreeStates[worktree.path] = gitState(worktree.path)
+        }
         return catalog.listing(scan)
     }
 
@@ -244,12 +250,21 @@ public struct CleanupCatalog: Sendable {
         }
     }
 
-    /// Git worktree checkouts, each with what removing it would lose.
-    func worktrees(_ scan: ScanResult) -> [Candidate] {
-        scan.worktrees.map { worktree in
+    /// How long a finished worktree has to sit untouched before it's offered as safe to clear.
+    static let finishedWorktreeIdle: TimeInterval = 2 * 86_400
+
+    /// Git worktree checkouts, each with what removing it would lose. `finished` picks the ones
+    /// with nothing left only in them (clean, pushed, already merged, no open pull request, and
+    /// untouched for two days) or the rest.
+    func worktrees(_ scan: ScanResult, finished: Bool) -> [Candidate] {
+        scan.worktrees.compactMap { worktree in
             var parts = [worktree.repository]
-            if let state = gitState(worktree.path) { parts.append(state.summary) }
+            let state = worktreeStates[worktree.path] ?? gitState(worktree.path)
+            if let state { parts.append(state.summary) }
             let pullRequest = pullRequest(worktree.path)
+            let isFinished = state?.isFinished == true && pullRequest != .open
+                && now.timeIntervalSince(worktree.modified) >= Self.finishedWorktreeIdle
+            guard isFinished == finished else { return nil }
             if let phrase = pullRequest?.phrase { parts.append(phrase) }
             parts.append("last changed \(Age.phrase(from: worktree.modified, to: now))")
             // Its records go too, as with git worktree remove; they can hold whole submodule copies.
