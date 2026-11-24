@@ -28,6 +28,9 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
     case dotnetObj
     case zigCache
     case oldZigCache
+    case railsCache
+    case bundle
+    case mixBuild
 
     /// The folder's name.
     public var folderName: String {
@@ -56,6 +59,19 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
         case .dotnetObj: "obj"
         case .zigCache: ".zig-cache"
         case .oldZigCache: "zig-cache"
+        case .railsCache: "cache"
+        case .bundle: "bundle"
+        case .mixBuild: "_build"
+        }
+    }
+
+    /// The folder it sits in, for one that isn't directly beside its project file: Rails keeps
+    /// its cache in `tmp/cache`, and Bundler installs into `vendor/bundle`.
+    public var parentName: String? {
+        switch self {
+        case .railsCache: "tmp"
+        case .bundle: "vendor"
+        default: nil
         }
     }
 
@@ -81,6 +97,11 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
         case .cocoaPods: ["Podfile"]
         case .dotnetBin, .dotnetObj: Self.dotnet
         case .zigCache, .oldZigCache: ["build.zig"]
+        // Rails finds its root by config.ru. The rest of tmp holds pids, sockets, and the
+        // development secret key, so only the cache counts.
+        case .railsCache: ["config.ru"]
+        case .bundle: ["Gemfile", "gems.rb"]
+        case .mixBuild: ["mix.exs"]
         }
     }
 
@@ -119,6 +140,9 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
         case .nox: "nox environments"
         case .dotnetBin, .dotnetObj: ".NET build folders"
         case .zigCache, .oldZigCache: "Zig caches"
+        case .railsCache: "Rails caches"
+        case .bundle: "Bundler gems"
+        case .mixBuild: "Mix builds"
         }
     }
 
@@ -146,17 +170,22 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
         case .nox: "nox"
         case .dotnetBin, .dotnetObj: "dotnet build"
         case .zigCache, .oldZigCache: "zig build"
+        case .railsCache: "rails server"
+        case .bundle: "bundle install"
+        case .mixBuild: "mix compile"
         }
     }
 
-    private static let folderNames = Set(allCases.map(\.folderName))
+    private static let besideProject = allCases.filter { $0.parentName == nil }
+    private static let folderNames = Set(besideProject.map(\.folderName))
+    private static let oneLevelDown = allCases.filter { $0.parentName != nil }
 
     /// The kinds found in a folder, given the names of the folders and files directly inside it.
     /// A folder name two kinds share, like `target`, is found once, as the first whose marker is there.
     static func detect(directories: Set<String>, files: Set<String>) -> [ArtifactKind] {
         // This runs for every folder in a scan, so the cheap question comes first.
         guard !directories.isDisjoint(with: folderNames) else { return [] }
-        let named = allCases.filter { directories.contains($0.folderName) }
+        let named = besideProject.filter { directories.contains($0.folderName) }
         let endings = Set(directories.union(files).compactMap { name in
             name.lastIndex(of: ".").map { String(name[$0...]) }
         })
@@ -168,5 +197,13 @@ public enum ArtifactKind: String, Sendable, CaseIterable, Codable {
             if !found.contains(where: { $0.folderName == kind.folderName }) { found.append(kind) }
         }
         return found
+    }
+
+    /// The kinds a project folder may hold one level down, given what's directly inside it. The
+    /// folder they'd sit in is there and so is their project file; whether they are isn't known yet.
+    static func expected(directories: Set<String>, files: Set<String>) -> [ArtifactKind] {
+        oneLevelDown.filter { kind in
+            kind.parentName.map(directories.contains) == true && kind.markers.contains(where: files.contains)
+        }
     }
 }

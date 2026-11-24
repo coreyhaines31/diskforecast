@@ -64,6 +64,28 @@ struct BuildFolderHoldTests {
         #expect(check("dist", kind: .dist) == nil)
     }
 
+    @Test func aMixBuildWithAReleaseIsHeld() throws {
+        try write(project + "/.gitignore", "_build\n")
+        try write(project + "/_build/dev/lib/app/ebin/app.beam")
+        #expect(check("_build", kind: .mixBuild) == nil)
+        try write(project + "/_build/prod/rel/app/releases/COOKIE")
+        #expect(check("_build", kind: .mixBuild) == .holdsRelease("prod"))
+        #expect(BuildFolderHold.holdsRelease("prod").reason == "holds a release at prod/rel")
+    }
+
+    @Test func looksFurtherDownForTheGemsBundlerClones() throws {
+        try write(project + "/.gitignore", "vendor/bundle\n")
+        try write(project + "/vendor/bundle/ruby/3.3.0/bundler/gems/forked/.git/HEAD")
+        let hold = BuildFolderHold.recheck(folder: project + "/vendor/bundle", kind: .bundle)
+        #expect(hold == .holdsCheckout("ruby/3.3.0/bundler/gems/forked"))
+    }
+
+    @Test func aRailsCacheGitIgnoresIsRebuildable() throws {
+        try write(project + "/.gitignore", "/tmp/*\n")
+        try write(project + "/tmp/cache/bootsnap/load-path-cache")
+        #expect(BuildFolderHold.recheck(folder: project + "/tmp/cache", kind: .railsCache) == nil)
+    }
+
     @Test func aCheckoutInsideIsHeldEvenWhenTheFolderIsIgnored() throws {
         try write(project + "/.gitignore", ".venv\n")
         try write(project + "/.venv/src/forked-lib/.git/HEAD")
